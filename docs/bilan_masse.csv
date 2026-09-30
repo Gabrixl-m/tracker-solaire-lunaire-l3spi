@@ -1,31 +1,36 @@
 Piece;Quantite;Materiau;Masse totale (kg);Description
 Unite_Controle_Corps;1;masse forfaitaire;17.000;Unité de contrôle / stockage sous MLI
-Carter_Actionneur_Azimut;1;masse forfaitaire;5.500;Actionneur azimut coaxial (moteur + réducteur harmonique)
-Carter_Actionneur_Elevation;1;masse forfaitaire;4.800;Actionneur élévation double sortie
-Substrat_Panneau;1;Nid d'abeille Al + peaux CFRP (eq);3.743;Substrat nid d'abeille 20 mm
 Patin;3;Al 7075-T73;3.677;Patin Ø220 à crampons + logement de rotule
-Nervure_Panneau;2;Al 7075-T73;2.204;Nervure de support du panneau
-Cellules_PV;1;Cellules GaInP/GaAs/Ge + CMG (eq);1.809;300 modules de cellules triple jonction 74.6x73.5
 Ferrure_Jambe;3;Ti-6Al-4V;1.420;Ferrure d'articulation de jambe
-Cadre_Panneau;1;CFRP M55J/cyanate;1.307;Cadre périphérique creux 25x26
 Collier_Superieur;1;Ti-6Al-4V;1.265;Moyeu d'articulation des jambes
-Flasque_Sortie;2;Ti-6Al-4V;1.220;Flasque de sortie élévation
 Unite_Controle_Radiateur;1;Al 6061-T6;1.212;Radiateur zénithal (peinture blanche / OSR)
-Plateau_Azimut;1;Al 6061-T6;1.204;Plateau tournant + jupe labyrinthe
-Mat_Rotatif;1;CFRP M55J/cyanate;1.171;Mât tournant Ø90x4
 Piquet_Ancrage;3;Ti-6Al-4V;1.093;Piquet d'ancrage régolithe 450 mm
 Embout_Rotule;3;Ti-6Al-4V;1.029;Embout à rotule Ø36
-Lisse_Panneau;2;CFRP M55J/cyanate;1.023;Lisse longitudinale 30x25x2
 Tube_Jambe_Superieur;3;Al 7075-T73;0.994;Tube Ø40x1,5 anodisé dur
-Tube_Torsion;2;CFRP M55J/cyanate;0.909;Demi-tube de torsion Ø70x3
 Colonne_Centrale;1;Al 7075-T73;0.884;Colonne centrale Ø80x2,5 anodisée dur
 Faisceau_Cables;1;PTFE/cuivre (eq);0.862;Faisceau puissance + données Ø18
+Embase_Tete;1;Al 6061-T6;0.796;Embase fixe de la tête (sur la colonne)
+Couronne_Azimut;1;Al 7075-T73;0.711;Couronne d'azimut m1.5 Z120, anodisée dur + MoS2
 Bague_Blocage;3;Ti-6Al-4V;0.707;Bague de blocage télescopique
+Lamine_PV;1;Verre 3,2 mm + EVA + backsheet (eq);0.701;Verre + EVA + face arrière
+Etrier_Tete;1;Al 6061-T6;0.658;Étrier en U de la tête
 Collier_Inferieur;1;Ti-6Al-4V;0.584;Collier coulissant des entretoises
 Bride_Entretoise;3;Ti-6Al-4V;0.513;Bride de fixation d'entretoise
+Roulement_Azimut;1;Acier 440C;0.403;Roulement d'azimut à section mince Ø90/Ø50
 Entretoise;3;Al 7075-T73;0.374;Entretoise Ø20x1,5
+Support_Panneau;1;Al 6061-T6;0.363;Berceau de fixation du panneau
+Moteur_PasAPas_Azimut;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'azimut (axe vertical)
+Moteur_PasAPas_Elevation;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'élévation (axe horizontal)
 Tube_Jambe_Inferieur;3;Al 7075-T73;0.353;Tube coulissant Ø34x1,5
+Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
+Rail_Fixation_Panneau;2;Al 6061-T6;0.135;Rail 20x5 vissé sur le cadre
 Axe_Entretoise;6;Ti-6Al-4V;0.109;Axe Ø10
 Axe_Articulation;3;Ti-6Al-4V;0.081;Axe Ø10 revêtu MoS2
-Capteur_Solaire;1;Al 6061-T6;0.059;Capteur solaire fin 2 axes
-TOTAL;;;57.11;
+Roue_Elevation;1;Al 7075-T73;0.080;Roue d'élévation m1.0 Z72, anodisée noire + MoS2
+Arbre_Elevation;1;Ti-6Al-4V;0.069;Axe d'élévation Ø12
+Pignon_Azimut;1;Acier inox 17-4PH;0.062;Pignon d'azimut m1.5 Z18
+Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
+Pignon_Elevation;1;Acier inox 17-4PH;0.025;Pignon d'élévation m1.0 Z24
+Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
+Palier_Elevation;1;Al 6061-T6;0.016;Chapeau de palier d'élévation
+TOTAL;;;37.21;

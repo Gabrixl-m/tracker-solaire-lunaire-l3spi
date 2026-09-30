@@ -128,11 +128,13 @@ def main():
         sun_draw = tuple(v / n for v in sun_draw)
         ren = build_renderer(assy, sun_draw)
         tag = fname.replace("Tracker_Lunaire_", "").lower()
-        shoot(ren, f"apercu_{tag}_iso.png", (3900, 2500, 4200))
-        shoot(ren, f"apercu_{tag}_face.png", (0, 1100, 6200))
-        shoot(ren, f"apercu_{tag}_profil.png", (6200, 1100, 0))
-        shoot(ren, f"apercu_{tag}_arriere.png", (-3600, 2600, -4300))
-        shoot(ren, f"apercu_{tag}_detail_tete.png", (-1500, 1900, -1500), focal=(0, 1250, 0), angle=35)
+        f0 = (0, 650, 0)
+        shoot(ren, f"apercu_{tag}_iso.png", (2700, 1800, 3000), focal=f0)
+        shoot(ren, f"apercu_{tag}_face.png", (0, 1000, 4300), focal=f0)
+        shoot(ren, f"apercu_{tag}_profil.png", (4300, 1000, 0), focal=f0)
+        shoot(ren, f"apercu_{tag}_arriere.png", (-2600, 1900, -3100), focal=f0)
+        shoot(ren, f"apercu_{tag}_detail_tete.png", (-640, 1170, -600), focal=(0, 950, 0), angle=32)
+        shoot(ren, f"apercu_{tag}_detail_tete_avant.png", (-700, 1130, 720), focal=(0, 960, 0), angle=32)
         shoot(ren, f"apercu_{tag}_detail_pied.png", (1250, 750, 1750),
               focal=(0.866 * 800 * 0.8, 150, 0.5 * 800 * 0.8), angle=30)
 

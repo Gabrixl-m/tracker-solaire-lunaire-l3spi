@@ -64,7 +64,7 @@ def build_renderer(assy, sun, ground=True, edges=True):
             ren.AddActor(ae)
     if ground:
         g = vtkCylinderSource()
-        g.SetRadius(2600)
+        g.SetRadius(1800)
         g.SetHeight(4)
         g.SetResolution(120)
         g.SetCenter(0, -2.1, 0)
@@ -128,16 +128,14 @@ def main():
         sun_draw = tuple(v / n for v in sun_draw)
         ren = build_renderer(assy, sun_draw)
         tag = fname.replace("Tracker_Lunaire_", "").lower()
-        f0 = (0, 650, 0)
-        shoot(ren, f"apercu_{tag}_iso.png", (2700, 1800, 3000), focal=f0)
-        shoot(ren, f"apercu_{tag}_face.png", (0, 1000, 4300), focal=f0)
-        shoot(ren, f"apercu_{tag}_profil.png", (4300, 1000, 0), focal=f0)
-        shoot(ren, f"apercu_{tag}_arriere.png", (-2600, 1900, -3100), focal=f0)
-        shoot(ren, f"apercu_{tag}_detail_tete.png", (-640, 1170, -600), focal=(0, 950, 0), angle=32)
-        shoot(ren, f"apercu_{tag}_detail_tete_avant.png", (-700, 1130, 720), focal=(0, 960, 0), angle=32)
-        shoot(ren, f"apercu_{tag}_detail_pied.png", (1250, 750, 1750),
-              focal=(0.866 * 800 * 0.8, 150, 0.5 * 800 * 0.8), angle=30)
-
+        f0 = (0, 420, 0)
+        shoot(ren, f"apercu_{tag}_iso.png", (1900, 1250, 2150), focal=f0)
+        shoot(ren, f"apercu_{tag}_face.png", (0, 700, 3000), focal=f0)
+        shoot(ren, f"apercu_{tag}_profil.png", (3000, 700, 0), focal=f0)
+        shoot(ren, f"apercu_{tag}_arriere.png", (-1800, 1300, -2150), focal=f0)
+        shoot(ren, f"apercu_{tag}_detail_tete.png", (-640, 870, -600), focal=(0, 650, 0), angle=32)
+        shoot(ren, f"apercu_{tag}_detail_tete_avant.png", (-700, 830, 720), focal=(0, 660, 0), angle=32)
+        shoot(ren, f"apercu_{tag}_detail_pied.png", (1000, 430, 900), focal=(390, 70, 225), angle=30)
 
 if __name__ == "__main__":
     main()

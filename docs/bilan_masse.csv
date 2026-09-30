@@ -1,36 +1,36 @@
 Piece;Quantite;Materiau;Masse totale (kg);Description
 Unite_Controle_Corps;1;masse forfaitaire;17.000;Unité de contrôle / stockage sous MLI
-Patin;3;Al 7075-T73;3.677;Patin Ø220 à crampons + logement de rotule
-Ferrure_Jambe;3;Ti-6Al-4V;1.420;Ferrure d'articulation de jambe
-Collier_Superieur;1;Ti-6Al-4V;1.265;Moyeu d'articulation des jambes
 Unite_Controle_Radiateur;1;Al 6061-T6;1.212;Radiateur zénithal (peinture blanche / OSR)
-Piquet_Ancrage;3;Ti-6Al-4V;1.093;Piquet d'ancrage régolithe 450 mm
-Embout_Rotule;3;Ti-6Al-4V;1.029;Embout à rotule Ø36
-Tube_Jambe_Superieur;3;Al 7075-T73;0.994;Tube Ø40x1,5 anodisé dur
-Colonne_Centrale;1;Al 7075-T73;0.884;Colonne centrale Ø80x2,5 anodisée dur
-Faisceau_Cables;1;PTFE/cuivre (eq);0.862;Faisceau puissance + données Ø18
-Embase_Tete;1;Al 6061-T6;0.796;Embase fixe de la tête (sur la colonne)
+Ancrage_Helicoidal;3;Ti-6Al-4V;1.020;Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe
+Patin;3;Al 7075-T73;0.935;Patin Ø120 à crampons + logement de rotule
+Embase_Tete;1;Al 6061-T6;0.741;Embase fixe de la tête (sur la colonne)
 Couronne_Azimut;1;Al 7075-T73;0.711;Couronne d'azimut m1.5 Z120, anodisée dur + MoS2
-Bague_Blocage;3;Ti-6Al-4V;0.707;Bague de blocage télescopique
 Lamine_PV;1;Verre 3,2 mm + EVA + backsheet (eq);0.701;Verre + EVA + face arrière
 Etrier_Tete;1;Al 6061-T6;0.658;Étrier en U de la tête
-Collier_Inferieur;1;Ti-6Al-4V;0.584;Collier coulissant des entretoises
-Bride_Entretoise;3;Ti-6Al-4V;0.513;Bride de fixation d'entretoise
+Faisceau_Cables;1;PTFE/cuivre (eq);0.515;Faisceau puissance + données Ø18
+Collier_Superieur;1;Ti-6Al-4V;0.441;Moyeu d'articulation des jambes
 Roulement_Azimut;1;Acier 440C;0.403;Roulement d'azimut à section mince Ø90/Ø50
-Entretoise;3;Al 7075-T73;0.374;Entretoise Ø20x1,5
+Ferrure_Jambe;3;Ti-6Al-4V;0.402;Ferrure d'articulation de jambe
 Support_Panneau;1;Al 6061-T6;0.363;Berceau de fixation du panneau
 Moteur_PasAPas_Azimut;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'azimut (axe vertical)
 Moteur_PasAPas_Elevation;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'élévation (axe horizontal)
-Tube_Jambe_Inferieur;3;Al 7075-T73;0.353;Tube coulissant Ø34x1,5
+Tube_Jambe_Superieur;3;Al 7075-T73;0.344;Tube Ø25x1,5 anodisé dur
+Colonne_Centrale;1;Al 7075-T73;0.282;Colonne centrale Ø50x2 anodisée dur
 Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
+Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
+Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
+Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
+Tube_Jambe_Inferieur;3;Al 7075-T73;0.148;Tube coulissant Ø20x1,5
 Rail_Fixation_Panneau;2;Al 6061-T6;0.135;Rail 20x5 vissé sur le cadre
-Axe_Entretoise;6;Ti-6Al-4V;0.109;Axe Ø10
-Axe_Articulation;3;Ti-6Al-4V;0.081;Axe Ø10 revêtu MoS2
+Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
+Entretoise;3;Al 7075-T73;0.089;Entretoise Ø12x1
 Roue_Elevation;1;Al 7075-T73;0.080;Roue d'élévation m1.0 Z72, anodisée noire + MoS2
 Arbre_Elevation;1;Ti-6Al-4V;0.069;Axe d'élévation Ø12
 Pignon_Azimut;1;Acier inox 17-4PH;0.062;Pignon d'azimut m1.5 Z18
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
 Pignon_Elevation;1;Acier inox 17-4PH;0.025;Pignon d'élévation m1.0 Z24
 Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
+Axe_Articulation;3;Ti-6Al-4V;0.021;Axe Ø6 revêtu MoS2
+Axe_Entretoise;6;Ti-6Al-4V;0.021;Axe Ø5
 Palier_Elevation;1;Al 6061-T6;0.016;Chapeau de palier d'élévation
-TOTAL;;;37.21;
+TOTAL;;;28.12;

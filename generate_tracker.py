@@ -39,18 +39,26 @@ P = dict(
     pan_back=60.0,         # distance axe d'élévation -> dos du cadre
     cell_nx=9, cell_ny=8,
     # Axes
-    z_el=1000.0,           # hauteur de l'axe d'élévation au-dessus du sol
+    z_el=700.0,            # hauteur de l'axe d'élévation au-dessus du sol
     el_min=-2.0, el_max=92.0,   # butées mécaniques d'élévation
     phi_motor_az=150.0,    # position du moteur d'azimut sous l'embase (entre deux jambes)
-    # Trépied
-    r_hinge=110.0, z_hinge=780.0,  # articulation haute des jambes
-    r_foot=800.0, z_ball=65.0,     # centre de la rotule de pied
+    # Trépied, dimensionné pour le panneau 356 x 253 et la tête à engrenages
+    col_od=50.0, col_t=2.0, z_col_bot=200.0,   # colonne centrale
+    r_hinge=70.0,                  # articulation haute des jambes (hauteur : sous l'embase)
+    r_foot=480.0, z_ball=40.0,     # centre de la rotule de pied
     leg_phis=(90.0, 210.0, 330.0), # orientation des jambes (repère Z-up)
-    z_lower_collar=400.0,
-    s_clamp=480.0,         # position de la bride d'entretoise le long de la jambe
+    tube_up=(25.0, 1.5), tube_low=(20.0, 1.5),  # tubes de jambe (Ø, épaisseur)
+    s_up_end=400.0, s_low_start=340.0,          # recouvrement télescopique
+    z_lower_collar=250.0, r_lower_pin=52.0,     # collier inférieur des entretoises
+    s_clamp=290.0, lug_off=28.0,   # bride d'entretoise le long de la jambe
+    pad_d=120.0,                   # patin
+    anchor_x=110.0, anchor_depth=400.0, anchor_helix_d=60.0,   # vis d'ancrage hélicoïdale
     # Unité de contrôle au sol et faisceau
-    phi_box=30.0, r_box=1400.0,
+    phi_box=30.0, r_box=950.0,
 )
+
+Z_EMB = P["z_el"] - 185.0          # dessus de la colonne = dessous de l'embase de la tête
+P["z_hinge"] = Z_EMB - 35.0        # moyeu des jambes juste sous la tête
 
 # Géométrie dérivée du trépied
 _dr = P["r_foot"] - P["r_hinge"]
@@ -151,12 +159,12 @@ def trans(x, y, z):
 # PIÈCES — TRÉPIED (fixe)
 # ---------------------------------------------------------------------------
 def p_colonne():
-    z0, z1 = 330.0, 815.0
-    t = tube_z(80, 2.5, z1 - z0, z0)
-    # bouchon inférieur conique creux (évite l'accumulation de régolithe)
-    cone = cq.Workplane().add(cq.Solid.makeCone(40, 12, 40, Vector(0, 0, z0), Vector(0, 0, -1)))
-    cone = cone.cut(cq.Workplane().add(cq.Solid.makeCone(37.5, 10, 37.5, Vector(0, 0, z0), Vector(0, 0, -1))))
-    return t.union(cone)
+    od, t, z0 = P["col_od"], P["col_t"], P["z_col_bot"]
+    tb = tube_z(od, t, Z_EMB - z0, z0)
+    # embout inférieur conique creux (évite l'accumulation de régolithe)
+    cone = cq.Workplane().add(cq.Solid.makeCone(od / 2, 6, 25, Vector(0, 0, z0), Vector(0, 0, -1)))
+    cone = cone.cut(cq.Workplane().add(cq.Solid.makeCone(od / 2 - t, 4.5, 23, Vector(0, 0, z0), Vector(0, 0, -1))))
+    return tb.union(cone)
 
 
 def _clevis_pair(r_in, r_pin, z_pin, gap, thick, height, r_round, hole):
@@ -174,24 +182,25 @@ def _clevis_pair(r_in, r_pin, z_pin, gap, thick, height, r_round, hole):
 
 
 def p_collier_sup():
-    zc = P["z_hinge"]
-    body = ring_z(100, 80.2, 60, zc - 30)
+    zc, od = P["z_hinge"], P["col_od"]
+    body = ring_z(od + 16, od + 0.2, 44, zc - 22)
     for phi in P["leg_phis"]:
-        cl = _clevis_pair(46, P["r_hinge"], zc, 42, 7, 36, 18, 10.2)
+        cl = _clevis_pair(od / 2 + 4, P["r_hinge"], zc, 26, 5, 24, 12, 6.2)
         body = body.union(cl.rotate((0, 0, 0), (0, 0, 1), phi - 90))
     # vis de serrage sur la colonne
+    rr = (od + 16) / 2 - 2
     for phi in P["leg_phis"]:
         a = math.radians(phi + 60)
-        body = body.union(cyl_dir(12, 10, (48 * math.cos(a), 48 * math.sin(a), zc - 18),
+        body = body.union(cyl_dir(8, 8, (rr * math.cos(a), rr * math.sin(a), zc - 12),
                                   (math.cos(a), math.sin(a), 0)))
     return body
 
 
 def p_collier_inf():
-    zc = P["z_lower_collar"]
-    body = ring_z(96, 80.2, 44, zc - 22)
+    zc, od = P["z_lower_collar"], P["col_od"]
+    body = ring_z(od + 10, od + 0.2, 30, zc - 15)
     for phi in P["leg_phis"]:
-        cl = _clevis_pair(46, 85, zc, 21, 5, 26, 13, 10.2)
+        cl = _clevis_pair(od / 2 + 2, P["r_lower_pin"], zc, 13, 4, 16, 8, 5.2)
         body = body.union(cl.rotate((0, 0, 0), (0, 0, 1), phi - 90))
     return body
 
@@ -199,51 +208,56 @@ def p_collier_inf():
 # --- repère jambe : origine = axe d'articulation, axe X = axe de l'articulation,
 #     jambe selon -Z, extérieur = +Y (avant rotation d'écartement)
 def p_ferrure_jambe():
-    body = cyl_x(36, 40, -20)
-    body = body.union(box_span(-20, 20, -18, 18, -45, 0))
-    body = body.union(cyl_z(48, 50, z=-80))
-    body = body.cut(cyl_z(40.2, 36, z=-81))            # alésage du tube
-    body = body.cut(cyl_x(10.2, 44, -22))               # passage d'axe
+    D = P["tube_up"][0]
+    body = cyl_x(24, 24, -12)
+    body = body.union(box_span(-12, 12, -12, 12, -28, 0))
+    body = body.union(cyl_z(D + 6, 35, z=-55))
+    body = body.cut(cyl_z(D + 0.2, 26, z=-56))          # alésage du tube
+    body = body.cut(cyl_x(6.2, 28, -14))                 # passage d'axe
     return body
 
 
-def p_axe(d=10.0, span=58.0, head=16.0):
+def p_axe(d, span, head):
     shaft = cyl_x(d, span + 4, -span / 2)
     return shaft.union(cyl_x(head, 6, -span / 2 - 6))
 
 
 def p_tube_sup():
-    return tube_z(40, 1.5, 700 - 50, -700)
+    D, t = P["tube_up"]
+    return tube_z(D, t, P["s_up_end"] - 32, -P["s_up_end"])
 
 
 def p_bague_blocage():
-    b = ring_z(50, 40.2, 30, -700).union(ring_z(50, 34.2, 20, -720))
-    lever = box_span(-6, 6, 25, 55, -712, -688)
-    lever = lever.union(cyl_x(16, 20, -10, 55, -700))
+    D, d, s = P["tube_up"][0], P["tube_low"][0], P["s_up_end"]
+    ro = (D + 7) / 2
+    b = ring_z(D + 7, D + 0.2, 20, -s).union(ring_z(D + 7, d + 0.2, 12, -s - 12))
+    lever = box_span(-4, 4, ro - 1, ro + 18, -s - 8, -s + 8)
+    lever = lever.union(cyl_x(10, 12, -6, ro + 18, -s))
     return b.union(lever)
 
 
 def p_tube_inf():
-    return tube_z(34, 1.5, (LEG_L - 100) - 620, -(LEG_L - 100))
+    d, t = P["tube_low"]
+    return tube_z(d, t, (LEG_L - 60) - P["s_low_start"], -(LEG_L - 60))
 
 
 def p_embout_rotule():
-    L = LEG_L
-    plug = cyl_z(34, 40, z=-(L - 60))            # s de L-100 à L-60 (bout du tube inférieur)
-    neck = cyl_z(22, 61, z=-L)                   # col Ø22 jusqu'au centre de la rotule
-    ball = cq.Workplane().sphere(18).translate((0, 0, -L))
+    L, d = LEG_L, P["tube_low"][0]
+    plug = cyl_z(d, 24, z=-(L - 36))             # s de L-60 à L-36 (bout du tube inférieur)
+    neck = cyl_z(13, 37, z=-L)                   # col Ø13 jusqu'au centre de la rotule
+    ball = cq.Workplane().sphere(11).translate((0, 0, -L))
     return plug.union(neck).union(ball)
 
 
 def p_bride_entretoise():
-    s = P["s_clamp"]
-    ring = ring_z(52, 40.2, 36, -s - 18)
+    s, D, lo = P["s_clamp"], P["tube_up"][0], P["lug_off"]
+    ring = ring_z(D + 7, D + 0.2, 22, -s - 11)
     lug = None                                   # chape tournée vers la colonne (-Y)
     for sgn in (1, -1):
-        xa, xb = sorted((sgn * 10.5, sgn * 16.5))
-        plate = box_span(xa, xb, -45, -20, -s - 11, -s + 11)
-        plate = plate.union(cyl_x(24, xb - xa, xa, -45, -s))
-        plate = plate.cut(cyl_x(10.2, xb - xa + 2, xa - 1, -45, -s))
+        xa, xb = sorted((sgn * 6.5, sgn * 10.5))
+        plate = box_span(xa, xb, -lo, -(D / 2 + 2), -s - 7, -s + 7)
+        plate = plate.union(cyl_x(15, xb - xa, xa, -lo, -s))
+        plate = plate.cut(cyl_x(5.2, xb - xa + 2, xa - 1, -lo, -s))
         lug = plate if lug is None else lug.union(plate)
     return ring.union(lug)
 
@@ -261,52 +275,56 @@ def leg_point(phi, local):
 
 
 def p_entretoise(length):
-    eye0 = cyl_x(26, 20, -10).cut(cyl_x(10.2, 22, -11))
-    eye1 = cyl_x(26, 20, -10, 0, length).cut(cyl_x(10.2, 22, -11, 0, length))
-    t = tube_z(20, 1.5, length - 2 * 11, 11)
+    eye0 = cyl_x(16, 12, -6).cut(cyl_x(5.2, 14, -7))
+    eye1 = cyl_x(16, 12, -6, 0, length).cut(cyl_x(5.2, 14, -7, 0, length))
+    t = tube_z(12, 1, length - 2 * 7, 7)
     return eye0.union(eye1).union(t)
 
 
 def p_patin():
     """Repère patin : origine au sol sous la rotule, +X = direction radiale."""
-    zb = P["z_ball"]
+    zb, R, ax = P["z_ball"], P["pad_d"] / 2, P["anchor_x"]
     b = math.radians(LEG_BETA)
     u = (-math.sin(b), 0.0, math.cos(b))                  # vers l'articulation
-    base = cyl_z(220, 5)
+    base = cyl_z(2 * R, 4)
     # crampons sous la semelle (accroche dans le régolithe)
     for k in range(6):
         a = math.radians(30 + 60 * k)
         base = base.union(cq.Workplane().add(cq.Solid.makeCone(
-            7, 1, 14, Vector(80 * math.cos(a), 80 * math.sin(a), 0), Vector(0, 0, -1))))
-    ped = cq.Workplane().add(cq.Solid.makeCone(56, 30, zb - 5 - 10, Vector(0, 0, 5), Vector(0, 0, 1)))
-    ped = ped.cut(cq.Workplane().add(cq.Solid.makeCone(52, 26, zb - 5 - 14, Vector(0, 0, 5), Vector(0, 0, 1))))
+            4, 0.5, 8, Vector(0.66 * R * math.cos(a), 0.66 * R * math.sin(a), 0), Vector(0, 0, -1))))
+    ped = cq.Workplane().add(cq.Solid.makeCone(0.5 * R, 17, zb - 12, Vector(0, 0, 4), Vector(0, 0, 1)))
+    ped = ped.cut(cq.Workplane().add(cq.Solid.makeCone(0.5 * R - 3, 12, 20, Vector(0, 0, 4), Vector(0, 0, 1))))
     # douille alignée sur l'axe nominal de la jambe (débattement de rotule ±20°)
-    sock = cyl_dir(62, 48, (-40 * u[0], 0, zb - 40 * u[2]), u)
+    sock = cyl_dir(36, 30, (-22 * u[0], 0, zb - 22 * u[2]), u)
     body = base.union(ped).union(sock)
     # nervures radiales
     for k in range(6):
-        a = 60 * k
-        rib = (cq.Workplane("XZ").polyline([(50, 5), (104, 5), (104, 10), (40, zb - 22), (40, zb - 30)])
-               .close().extrude(2.5, both=True))
-        body = body.union(rib.rotate((0, 0, 0), (0, 0, 1), a))
-    # patte de piquet d'ancrage (côté extérieur)
-    lug = box_span(95, 140, -20, 20, 0, 14).union(cyl_z(40, 14, 140, 0, 0))
-    body = body.cut(cyl_z(12, 7, 0, 0, -1))      # évent du piédestal creux (pas de volume clos sous vide)
-    body = body.union(lug)
-    body = body.cut(cyl_z(14.6, 40, 140, 0, -10))
+        rib = (cq.Workplane("XZ").polyline([(0.45 * R, 4), (0.87 * R, 4), (0.87 * R, 7), (24, zb - 14), (24, zb - 19)])
+               .close().extrude(1.5, both=True))
+        body = body.union(rib.rotate((0, 0, 0), (0, 0, 1), 60 * k))
+    # anneau de la vis d'ancrage (côté extérieur) : l'hélice Ø60 passe dans l'alésage Ø64
+    ring = cyl_z(80, 8, ax, 0, 0).union(box_span(R - 8, ax - 35, -10, 10, 0, 8))
+    body = body.cut(cyl_z(8, 6, 0, 0, -1))       # évent du piédestal creux (pas de volume clos sous vide)
+    body = body.union(ring)
+    body = body.cut(cyl_z(P["anchor_helix_d"] + 4, 12, ax, 0, -2))
     # logement sphérique de la rotule (jeu 0,2 mm)
-    body = body.cut(cq.Workplane().sphere(18.2).translate((0, 0, zb)))
+    body = body.cut(cq.Workplane().sphere(11.2).translate((0, 0, zb)))
     return body
 
 
-def p_piquet():
-    """Piquet d'ancrage Ti Ø14, 450 mm enfoncés dans le régolithe."""
-    shaft = cyl_z(14, 450 + 14, z=-450)
-    tip = cq.Workplane().add(cq.Solid.makeCone(7, 0.5, 25, Vector(0, 0, -450), Vector(0, 0, -1)))
-    head = cyl_z(30, 10, z=14)
-    eye = (cq.Workplane("XZ").circle(14).circle(8).extrude(3, both=True)
-           .translate((0, 0, 24 + 12)))
-    return shaft.union(tip).union(head).union(eye)
+def p_ancrage():
+    """Vis d'ancrage hélicoïdale Ti : tige Ø12, hélice Ø60 dans la couche compacte."""
+    H, B = P["anchor_depth"], P["anchor_helix_d"]
+    shaft = cyl_z(12, H + 12, z=-H)
+    tip = cq.Workplane().add(cq.Solid.makeCone(6, 0.5, 20, Vector(0, 0, -H), Vector(0, 0, -1)))
+    z0 = -H + 15
+    rm = (B / 2 + 5.5) / 2                        # rayon moyen de la spire (de Ø11 à B)
+    helix = cq.Wire.makeHelix(pitch=20, height=20, radius=rm, center=Vector(0, 0, z0))
+    flight = (cq.Workplane("XZ").center(rm, z0).rect(B / 2 - 5.5, 3)
+              .sweep(cq.Workplane().add(helix), isFrenet=True))
+    washer = cyl_z(76, 4, z=8)                    # appui sur l'anneau du patin
+    hexa = cq.Workplane("XY").polygon(6, 19.6).extrude(14).translate((0, 0, 12))   # six pans de 17
+    return shaft.union(tip).union(flight).union(washer).union(hexa)
 
 
 # ---------------------------------------------------------------------------
@@ -383,7 +401,7 @@ def gear_x(z, m, w, x0=0.0, **kw):
 #   étrier en U, moteur pas à pas d'azimut (axe vertical = Y SolidWorks)
 #   sous l'embase, moteur pas à pas d'élévation (axe horizontal = X) dans l'étrier.
 # ---------------------------------------------------------------------------
-Z_EMB = 815.0              # dessous de l'embase = dessus de la colonne
+# Z_EMB (dessus de la colonne) est défini avec les paramètres, à partir de z_el
 Z_ROUL = Z_EMB + 8         # roulement d'azimut
 Z_COUR = Z_ROUL + 12       # couronne d'azimut (épaisseur 15)
 Z_ETR = Z_COUR + 15        # semelle de l'étrier
@@ -407,7 +425,7 @@ def p_embase():
     plate = plate.union(cyl_z(64, t, mx, my, Z_EMB))
     plate = plate.union(box_span(0, ENTRAXE_AZ, -30, 30, Z_EMB, Z_EMB + t)
                         .rotate((0, 0, 0), (0, 0, 1), P["phi_motor_az"]))
-    plate = plate.union(ring_z(74.5, 50, 10, Z_EMB - 10))            # centrage dans la colonne
+    plate = plate.union(ring_z(P["col_od"] - 2 * P["col_t"] - 0.5, 36, 10, Z_EMB - 10))   # centrage dans la colonne
     ab = math.radians(P["phi_box"])                                  # embase connecteur (vers le bas)
     plate = plate.union(cyl_z(30, 25, 82 * math.cos(ab), 82 * math.sin(ab), Z_EMB - 25))
     plate = plate.cut(cyl_z(40, 40, z=Z_EMB - 20))                   # passage central des câbles
@@ -583,8 +601,9 @@ def p_faisceau():
     a = math.radians(P["phi_box"])
     c, s = math.cos(a), math.sin(a)
     r_end = P["r_box"] - BOX_L / 2 - 25
-    rz = [(82, 790), (95, 700), (170, 520), (330, 260), (520, 60), (720, 10),
-          (950, 10), (r_end - 60, 55), (r_end, 70)]
+    z0 = Z_EMB - 25
+    rz = [(82, z0), (92, z0 - 70), (150, z0 - 190), (260, z0 - 330), (380, 35), (500, 10),
+          (r_end - 120, 10), (r_end - 50, 50), (r_end, 70)]
     pts = [Vector(r * c, r * s, z) for r, z in rz]
     tans = [Vector(0, 0, -1), Vector(c, s, 0)]
     path = cq.Wire.assembleEdges([cq.Edge.makeSpline(pts, tangents=tans)])
@@ -605,19 +624,20 @@ def reg(name, wp, mat, col, desc):
 
 def build_parts():
     PARTS.clear()
-    reg("Colonne_Centrale", p_colonne(), "Al 7075-T73", COL["alu"], "Colonne centrale Ø80x2,5 anodisée dur")
+    reg("Colonne_Centrale", p_colonne(), "Al 7075-T73", COL["alu"], "Colonne centrale Ø50x2 anodisée dur")
     reg("Collier_Superieur", p_collier_sup(), "Ti-6Al-4V", COL["ti"], "Moyeu d'articulation des jambes")
     reg("Collier_Inferieur", p_collier_inf(), "Ti-6Al-4V", COL["ti"], "Collier coulissant des entretoises")
     reg("Ferrure_Jambe", p_ferrure_jambe(), "Ti-6Al-4V", COL["ti"], "Ferrure d'articulation de jambe")
-    reg("Axe_Articulation", p_axe(), "Ti-6Al-4V", COL["alu_d"], "Axe Ø10 revêtu MoS2")
-    reg("Tube_Jambe_Superieur", p_tube_sup(), "Al 7075-T73", COL["alu"], "Tube Ø40x1,5 anodisé dur")
+    reg("Axe_Articulation", p_axe(6, 36, 10), "Ti-6Al-4V", COL["alu_d"], "Axe Ø6 revêtu MoS2")
+    reg("Tube_Jambe_Superieur", p_tube_sup(), "Al 7075-T73", COL["alu"], "Tube Ø25x1,5 anodisé dur")
     reg("Bague_Blocage", p_bague_blocage(), "Ti-6Al-4V", COL["orange"], "Bague de blocage télescopique")
-    reg("Tube_Jambe_Inferieur", p_tube_inf(), "Al 7075-T73", COL["alu"], "Tube coulissant Ø34x1,5")
-    reg("Embout_Rotule", p_embout_rotule(), "Ti-6Al-4V", COL["ti"], "Embout à rotule Ø36")
+    reg("Tube_Jambe_Inferieur", p_tube_inf(), "Al 7075-T73", COL["alu"], "Tube coulissant Ø20x1,5")
+    reg("Embout_Rotule", p_embout_rotule(), "Ti-6Al-4V", COL["ti"], "Embout à rotule Ø22")
     reg("Bride_Entretoise", p_bride_entretoise(), "Ti-6Al-4V", COL["ti"], "Bride de fixation d'entretoise")
-    reg("Patin", p_patin(), "Al 7075-T73", COL["alu_d"], "Patin Ø220 à crampons + logement de rotule")
-    reg("Piquet_Ancrage", p_piquet(), "Ti-6Al-4V", COL["orange"], "Piquet d'ancrage régolithe 450 mm")
-    reg("Axe_Entretoise", p_axe(10, 33, 16), "Ti-6Al-4V", COL["alu_d"], "Axe Ø10")
+    reg("Patin", p_patin(), "Al 7075-T73", COL["alu_d"], "Patin Ø120 à crampons + logement de rotule")
+    reg("Ancrage_Helicoidal", p_ancrage(), "Ti-6Al-4V", COL["orange"],
+        "Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe")
+    reg("Axe_Entretoise", p_axe(5, 21, 8), "Ti-6Al-4V", COL["alu_d"], "Axe Ø5")
     reg("Embase_Tete", p_embase(), "Al 6061-T6", COL["blue"], "Embase fixe de la tête (sur la colonne)")
     reg("Roulement_Azimut", p_roulement_azimut(), "Acier 440C", COL["steel"],
         "Roulement d'azimut à section mince Ø90/Ø50")
@@ -661,8 +681,9 @@ def add(assy, name, loc=None, inst=None):
 def strut_geom(phi):
     """Points d'axe (repère monde Z-up) d'une entretoise."""
     a = math.radians(phi)
-    p_in = (85 * math.cos(a), 85 * math.sin(a), P["z_lower_collar"])
-    p_out = leg_point(phi, (0, -45, -P["s_clamp"]))
+    rl = P["r_lower_pin"]
+    p_in = (rl * math.cos(a), rl * math.sin(a), P["z_lower_collar"])
+    p_out = leg_point(phi, (0, -P["lug_off"], -P["s_clamp"]))
     return p_in, p_out
 
 
@@ -678,18 +699,18 @@ def build_tripod():
     for i, phi in enumerate(P["leg_phis"], 1):
         t.add(leg, name=f"Jambe_{i}", loc=leg_loc(phi))
         a = math.radians(phi)
-        # patin + piquet
+        # patin + vis d'ancrage
         pl = trans(P["r_foot"] * math.cos(a), P["r_foot"] * math.sin(a), 0) * rot((0, 0, 1), phi)
         add(t, "Patin", pl, f"Patin_{i}")
-        add(t, "Piquet_Ancrage", pl * trans(140, 0, 0), f"Piquet_{i}")
+        add(t, "Ancrage_Helicoidal", pl * trans(P["anchor_x"], 0, 0), f"Ancrage_{i}")
         # entretoise
         p_in, p_out = strut_geom(phi)
-        rr = math.hypot(p_out[0], p_out[1]) - 85
+        rr = math.hypot(p_out[0], p_out[1]) - P["r_lower_pin"]
         dz = p_out[2] - p_in[2]
         L = math.hypot(rr, dz)
         gam = math.degrees(math.atan2(-rr, dz))
         name = f"Entretoise_{i}"
-        PARTS.setdefault("Entretoise", (p_entretoise(L), "Al 7075-T73", COL["alu"], "Entretoise Ø20x1,5"))
+        PARTS.setdefault("Entretoise", (p_entretoise(L), "Al 7075-T73", COL["alu"], "Entretoise Ø12x1"))
         wp, mat, col, _ = PARTS["Entretoise"]
         sl = trans(*p_in) * rot((0, 0, 1), phi - 90) * rot((1, 0, 0), gam)
         t.add(wp, name=name, loc=sl, color=col)
@@ -792,7 +813,7 @@ def part_key(inst):
     for k in sorted(PARTS, key=len, reverse=True):
         if base.startswith(k):
             return k
-    aliases = {"Patin_": "Patin", "Piquet_": "Piquet_Ancrage", "Axe_Entretoise_": "Axe_Entretoise",
+    aliases = {"Patin_": "Patin", "Ancrage_": "Ancrage_Helicoidal", "Axe_Entretoise_": "Axe_Entretoise",
                "Rail_Fixation_": "Rail_Fixation_Panneau"}
     for a, k in aliases.items():
         if base.startswith(a):
@@ -852,12 +873,15 @@ def tipping(cg_zup):
     return min(angs)
 
 
-def min_clearance(moving, fixed):
+def min_clearance(moving, fixed, cutoff=40.0):
+    """Distance mini entre deux groupes ; les paires dont les boîtes englobantes sont
+    à plus de 'cutoff' mm ne sont pas calculées (résultat alors = cutoff)."""
     from OCP.BRepExtrema import BRepExtrema_DistShapeShape
-    best = (1e9, None, None)
+    best = (cutoff, "> seuil", "> seuil")
     for na, a in moving:
+        ba = a.BoundingBox()
         for nb, b in fixed:
-            ba, bb = a.BoundingBox(), b.BoundingBox()
+            bb = b.BoundingBox()
             gap = max(ba.xmin - bb.xmax, bb.xmin - ba.xmax, ba.ymin - bb.ymax,
                       bb.ymin - ba.ymax, ba.zmin - bb.zmax, bb.zmin - ba.zmax)
             if gap > best[0]:
@@ -951,8 +975,8 @@ def main():
     print(f"\nMasse totale (avec unité sol + faisceau) : {M:.1f} kg")
     print(f"Masse tracker seul : {Mt:.1f} kg  -> poids lunaire {Mt*1.62:.0f} N (terrestre {Mt*9.81:.0f} N)")
     print(f"CdG tracker (pôle Sud) : x={cgt.x:.0f} y={cgt.y:.0f} z={cgt.z:.0f} mm")
-    print(f"Angle de basculement mini (sans piquets) : {tipping(cgt):.1f}°")
-    pad_area = math.pi * 0.110 ** 2
+    print(f"Angle de basculement mini (sans ancrage) : {tipping(cgt):.1f}°")
+    pad_area = math.pi * (P["pad_d"] / 2000) ** 2
     print(f"Pression sous patin (Lune) : {Mt*1.62/3/pad_area:.0f} Pa")
 
     # CdG tracker pour la pose latitude moyenne
@@ -999,7 +1023,7 @@ def main():
             assy = build_assembly(float(az), el, "chk")
             flat = flatten(assy)
             fixed = [(n, s) for n, s in flat if n.split("/")[1] in fixed_names]
-            panel = [(n, s) for n, s in flat if "/SA_Panneau/" in n]
+            panel = [(n, s) for n, s in flat if "/SA_Panneau/" in n and "Cellules" not in n]
             head = [(n, s) for n, s in flat if "SA_Tete_Orientable" in n and "/SA_Panneau/" not in n]
             body = [(n, s) for n, s in panel if not n.split("/")[-1].startswith(tilt_itf)]
             roue = [(n, s) for n, s in panel if n.split("/")[-1].startswith("Roue_Elevation")]

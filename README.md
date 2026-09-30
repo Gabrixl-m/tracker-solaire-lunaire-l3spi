@@ -22,7 +22,9 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `CAO/pieces/*.step` | Les 34 pièces seules, chacune dans son repère de construction |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png` | Rendus (iso, face, profil, arrière, détails de la tête et du pied) |
+| `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
+| `optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `render_apercu.py` | Génère les rendus PNG |
 
 ### Ouvrir dans SolidWorks
@@ -129,21 +131,48 @@ vaut donc presque exactement 90° moins la latitude du site :
 ## 6. Trépied
 
 Le trépied a été **redimensionné pour le panneau de 356 × 253 mm et la tête à
-engrenages**. L'architecture ne change pas : trois jambes articulées sur un moyeu,
-entretoises vers un collier inférieur coulissant, jambes télescopiques, patins sur rotule
-et ancrages. Seules les dimensions suivent les nouvelles contraintes.
+engrenages**. L'architecture ne change pas : trois jambes en Y à 120°, articulées sur un
+moyeu, avec entretoises vers un collier inférieur coulissant, jambes télescopiques,
+patins sur rotule et ancrages.
+
+### Angle φ des jambes : optimisé, **φ = 37°** (angle entre jambe et colonne)
+
+L'articulation haute est fixée par le panneau : tout le trépied doit rester sous le volume
+qu'il balaie, à 480 mm du sol. φ fixe alors le rayon des pieds, la longueur des jambes et
+leur course télescopique. `optimisation_angle.py` évalue chaque angle de 25° à 60°
+avec les masses et le centre de gravité réels de la CAO, dans la pire orientation du panneau.
+
+| Contrainte | Exigence | Effet de φ |
+|---|---|---|
+| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 37°** |
+| **C2 Mise à niveau** | Les jambes télescopiques (deux tubes) remettent la tête de niveau sur une pente de 10° | Plus φ est grand, plus la course nécessaire croît vite : φ ≤ 50,5° |
+| **C3 Garde au sol** | Pointe de la colonne à au moins 150 mm du sol | φ ≤ 46° |
+
+Tous les autres critères se dégradent quand φ augmente : longueur et masse des jambes,
+poussée reprise par les entretoises (le frottement au sol est six fois plus faible sur la
+Lune), course de nivelage et emprise au sol. **L'optimum est donc le plus petit angle
+admissible, 37°** (plage admissible : 37° à 46°). La rigidité latérale, maximale à 54,7°,
+ne dimensionne pas sur la Lune, où il n'y a pas de vent. L'ancien angle de 43° était
+admissible, mais pas optimal.
+
+L'optimum dépend des exigences. Par exemple, il passe à 42,5° pour une pente de 20° ou une marge de 10°. Le détail est dans
+[`docs/optimisation_angle_jambes.md`](docs/optimisation_angle_jambes.md). Si la masse
+de la tête ou du panneau change, relancer `python optimisation_angle.py`.
+
+### Dimensions qui en découlent
 
 | Dimension | Ce qui l'a fixée |
 |---|---|
-| **Axe d'élévation à 700 mm** (au lieu de 1500) | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Un panneau placé plus haut est aussi moins exposé à l'ombre des petits reliefs quand le Soleil est rasant (pôle Sud). Au-delà, le tracker serait plus lourd et moins stable sans raison. |
+| **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
 | **Moyeu des jambes à 480 mm**, juste sous la tête | Tout le trépied reste sous le volume balayé par le panneau. Le moteur d'azimut pend sous l'embase, entre deux jambes. |
-| **Pieds sur un cercle de Ø960 mm, jambes écartées de 43°** | La **stabilité**. Le centre de gravité du tracker est à 0,39 m : il ne bascule qu'au-delà de **30,8°** de pente, sans ancrage (20,5° pour le premier trépied). Plus de marge est voulue ici, car un tracker plus léger est plus sensible aux chocs en 1/6 g. |
-| **Longueur de jambe 601 mm**, repliable contre la colonne | Conséquence des deux lignes précédentes. Replié, le trépied tient dans un cylindre d'environ Ø0,25 × 0,7 m pour le transport. |
-| **Tubes Ø25 × 1,5 et Ø20 × 1,5, entretoises Ø12 × 1, colonne Ø50 × 2, axes Ø6** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
-| **Patins Ø120 à crampons, rotule ±20°** | La pression sur le régolithe (≈ 450 Pa sur la Lune) et l'adaptation aux pentes et aux cailloux. |
-| **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Sur la Lune, un piquet lisse tient par frottement, et ce frottement est six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. |
+| **Pieds sur un cercle de Ø803 mm**, jambes de 551 mm | Conséquence de φ = 37°. Basculement sans ancrage à 25,0° dans la pire orientation du panneau (exigé : 24,7°). |
+| **Course télescopique ±89 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
+| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (266 mm). |
+| **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
+| **Patins Ø120 à crampons, rotule ±20°** | Pression sur le régolithe d'environ 450 Pa sur la Lune ; adaptation aux pentes et aux cailloux. |
+| **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Un piquet lisse tient par frottement, six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. |
 
-Le trépied pèse 4,4 kg (13,1 kg pour la première version).
+Le trépied pèse 4,4 kg (13,1 kg pour la première version, conçue pour le panneau de 1,6 × 1,2 m).
 
 ## 7. Matériaux
 
@@ -162,7 +191,8 @@ Le trépied pèse 4,4 kg (13,1 kg pour la première version).
 | Grandeur | Valeur |
 |---|---|
 | Hauteur de l'axe d'élévation | 700 mm |
-| Emprise au sol | Pieds sur Ø960 mm, Ø1080 mm hors patins (≈ Ø1260 mm avec les anneaux d'ancrage) |
+| Angle des jambes | φ = 37° par rapport à la colonne (optimisé) |
+| Emprise au sol | Pieds sur Ø803 mm, Ø923 mm hors patins (≈ Ø1100 mm avec les anneaux d'ancrage) |
 | Panneau | 356 × 253 × 30 mm, 72 cellules |
 | Puissance du panneau | ≈ 10 W crête sur Terre (valeur typique de ce format, à confirmer sur sa fiche) |
 | Débattements | Azimut 360°, élévation −2° à +92° |
@@ -179,8 +209,15 @@ sol ont une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 * **Interférences pièce à pièce** dans les deux poses : **aucune**. Les engrenages sont
   en prise avec leur jeu de denture, sans chevauchement.
-* **Garde sur toute la plage de mouvement** (élévation de −2° à +92°, azimut sur 360°) :
-  voir la sortie de `python generate_tracker.py --balayage`, reportée ci-dessous.
+* **Garde sur toute la plage de mouvement** (élévation de −2° à +92°, azimut sur 360°,
+  `python generate_tracker.py --balayage`) :
+  * partie qui bascule (panneau + berceau) face à tout le reste : 5 mm au plus près,
+    c'est le jeu axial prévu entre le moyeu du berceau et le bras de l'étrier ;
+    le point bas du panneau passe 21 mm au-dessus de la couronne, en butée à −2° ;
+  * denture roue / pignon d'élévation : 0,1 mm (jeu de denture, sans contact) ;
+  * étrier et moteur d'élévation face à la partie fixe : 15 mm.
+* **Stabilité** : basculement sans ancrage à 25,0° dans la pire orientation du panneau
+  (`optimisation_angle.py`).
 * **Relecture** des fichiers STEP produits : 131 solides, géométrie valide.
 
 ## 10. Limites
@@ -197,7 +234,7 @@ sol ont une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 ## 11. Régénérer ou modifier la CAO
 
 Tous les paramètres (dimensions du panneau, hauteur d'axe, décalage du panneau, position
-des moteurs, trépied, poses…) sont regroupés en tête de `generate_tracker.py`, dans le
+des moteurs, angle et exigences du trépied, poses…) sont regroupés en tête de `generate_tracker.py`, dans le
 dictionnaire `P`, dans `POSES` et dans les constantes d'engrenages (`Z_COURONNE`,
 `Z_PIGNON_AZ`, `M_AZ`, `Z_ROUE_EL`, `Z_PIGNON_EL`, `M_EL`).
 
@@ -205,5 +242,6 @@ dictionnaire `P`, dans `POSES` et dans les constantes d'engrenages (`Z_COURONNE`
 pip install -r requirements.txt
 python generate_tracker.py              # STEP + bilan de masse + contrôle d'interférences
 python generate_tracker.py --balayage   # + garde sur toute la plage az/él
+python optimisation_angle.py            # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 xvfb-run -a python render_apercu.py     # rendus PNG (xvfb-run seulement sans écran)
 ```

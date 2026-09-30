@@ -2,7 +2,7 @@ Piece;Quantite;Materiau;Masse totale (kg);Description
 Unite_Controle_Corps;1;masse forfaitaire;17.000;Unité de contrôle / stockage sous MLI
 Unite_Controle_Radiateur;1;Al 6061-T6;1.212;Radiateur zénithal (peinture blanche / OSR)
 Ancrage_Helicoidal;3;Ti-6Al-4V;1.020;Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe
-Patin;3;Al 7075-T73;0.935;Patin Ø120 à crampons + logement de rotule
+Patin;3;Al 7075-T73;0.933;Patin Ø120 à crampons + logement de rotule
 Embase_Tete;1;Al 6061-T6;0.741;Embase fixe de la tête (sur la colonne)
 Couronne_Azimut;1;Al 7075-T73;0.711;Couronne d'azimut m1.5 Z120, anodisée dur + MoS2
 Lamine_PV;1;Verre 3,2 mm + EVA + backsheet (eq);0.701;Verre + EVA + face arrière
@@ -14,17 +14,17 @@ Ferrure_Jambe;3;Ti-6Al-4V;0.402;Ferrure d'articulation de jambe
 Support_Panneau;1;Al 6061-T6;0.363;Berceau de fixation du panneau
 Moteur_PasAPas_Azimut;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'azimut (axe vertical)
 Moteur_PasAPas_Elevation;1;masse forfaitaire;0.360;Moteur pas à pas NEMA 17 d'élévation (axe horizontal)
-Tube_Jambe_Superieur;3;Al 7075-T73;0.344;Tube Ø25x1,5 anodisé dur
-Colonne_Centrale;1;Al 7075-T73;0.282;Colonne centrale Ø50x2 anodisée dur
+Colonne_Centrale;1;Al 7075-T73;0.269;Colonne centrale Ø50x2 anodisée dur
+Tube_Jambe_Inferieur;3;Al 7075-T73;0.252;Tube coulissant Ø20x1,5
 Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
+Tube_Jambe_Superieur;3;Al 7075-T73;0.234;Tube Ø25x1,5 anodisé dur
 Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
-Tube_Jambe_Inferieur;3;Al 7075-T73;0.148;Tube coulissant Ø20x1,5
 Rail_Fixation_Panneau;2;Al 6061-T6;0.135;Rail 20x5 vissé sur le cadre
 Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
-Entretoise;3;Al 7075-T73;0.089;Entretoise Ø12x1
 Roue_Elevation;1;Al 7075-T73;0.080;Roue d'élévation m1.0 Z72, anodisée noire + MoS2
+Entretoise;3;Al 7075-T73;0.074;Entretoise Ø12x1
 Arbre_Elevation;1;Ti-6Al-4V;0.069;Axe d'élévation Ø12
 Pignon_Azimut;1;Acier inox 17-4PH;0.062;Pignon d'azimut m1.5 Z18
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
@@ -33,4 +33,4 @@ Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
 Axe_Articulation;3;Ti-6Al-4V;0.021;Axe Ø6 revêtu MoS2
 Axe_Entretoise;6;Ti-6Al-4V;0.021;Axe Ø5
 Palier_Elevation;1;Al 6061-T6;0.016;Chapeau de palier d'élévation
-TOTAL;;;28.12;
+TOTAL;;;28.08;

@@ -43,14 +43,21 @@ P = dict(
     el_min=-2.0, el_max=92.0,   # butées mécaniques d'élévation
     phi_motor_az=150.0,    # position du moteur d'azimut sous l'embase (entre deux jambes)
     # Trépied, dimensionné pour le panneau 356 x 253 et la tête à engrenages
-    col_od=50.0, col_t=2.0, z_col_bot=200.0,   # colonne centrale
+    col_od=50.0, col_t=2.0,        # colonne centrale
     r_hinge=70.0,                  # articulation haute des jambes (hauteur : sous l'embase)
-    r_foot=480.0, z_ball=40.0,     # centre de la rotule de pied
-    leg_phis=(90.0, 210.0, 330.0), # orientation des jambes (repère Z-up)
+    z_ball=40.0,                   # hauteur du centre de la rotule de pied
+    leg_phis=(90.0, 210.0, 330.0), # jambes en Y, à 120° (repère Z-up)
+    # Angle φ entre jambe et colonne : valeur optimale calculée par optimisation_angle.py
+    leg_angle=37.0,
     tube_up=(25.0, 1.5), tube_low=(20.0, 1.5),  # tubes de jambe (Ø, épaisseur)
-    s_up_end=400.0, s_low_start=340.0,          # recouvrement télescopique
-    z_lower_collar=250.0, r_lower_pin=52.0,     # collier inférieur des entretoises
-    s_clamp=290.0, lug_off=28.0,   # bride d'entretoise le long de la jambe
+    r_lower_pin=52.0,              # axe d'entretoise sur le collier inférieur
+    lug_off=28.0,                  # excentration de la chape d'entretoise sur la jambe
+    # Exigences du trépied (utilisées par optimisation_angle.py)
+    pente_stabilite=15.0,     # pente maxi sur laquelle le tracker tient sans ancrage (°)
+    obstacle=50.0,            # caillou ou enfoncement sous un pied (mm)
+    marge_basculement=5.0,    # marge de sécurité au basculement (°)
+    pente_nivelage=10.0,      # pente maxi rattrapée par les jambes télescopiques (°)
+    recouvrement_min=45.0,    # recouvrement mini des tubes télescopiques (mm)
     pad_d=120.0,                   # patin
     anchor_x=110.0, anchor_depth=400.0, anchor_helix_d=60.0,   # vis d'ancrage hélicoïdale
     # Unité de contrôle au sol et faisceau
@@ -60,11 +67,41 @@ P = dict(
 Z_EMB = P["z_el"] - 185.0          # dessus de la colonne = dessous de l'embase de la tête
 P["z_hinge"] = Z_EMB - 35.0        # moyeu des jambes juste sous la tête
 
-# Géométrie dérivée du trépied
-_dr = P["r_foot"] - P["r_hinge"]
-_dz = P["z_hinge"] - P["z_ball"]
-LEG_L = math.hypot(_dr, _dz)                    # longueur articulation -> rotule
-LEG_BETA = math.degrees(math.atan2(_dr, _dz))   # écartement / verticale
+# Géométrie dérivée du trépied (fonction de l'angle φ des jambes)
+LEG_L = LEG_BETA = None
+
+
+def set_leg_geometry(phi):
+    """Recalcule la géométrie des jambes pour un angle φ (°, entre jambe et colonne)."""
+    global LEG_L, LEG_BETA
+    b = math.radians(phi)
+    h = P["z_hinge"] - P["z_ball"]
+    LEG_BETA = phi
+    LEG_L = h / math.cos(b)                              # articulation -> centre de rotule
+    P["leg_angle"] = phi
+    P["r_foot"] = P["r_hinge"] + h * math.tan(b)
+    # jambes télescopiques : course ±t autour de la longueur nominale, assez pour
+    # remettre la tête de niveau sur la pente de nivelage
+    t = P["r_foot"] * math.tan(math.radians(P["pente_nivelage"])) / math.cos(b)
+    P["course_telescopique"] = t
+    P["s_low_start"] = 60.0 + t                          # rentré de t : butée à 60 mm de l'axe
+    P["s_up_end"] = P["s_low_start"] + t + P["recouvrement_min"]
+    # bride d'entretoise au plus bas du tube supérieur, juste au-dessus de la bague de
+    # blocage (meilleur bras de levier) ; le collier inférieur se place à sa hauteur
+    # pour que l'entretoise soit horizontale
+    P["s_clamp"] = P["s_up_end"] - 36.0
+    P["z_lower_collar"] = P["z_hinge"] - P["s_clamp"] * math.cos(b) - P["lug_off"] * math.sin(b)
+    P["z_col_bot"] = P["z_lower_collar"] - 50.0
+
+
+def course_telescopique_max(phi):
+    """Course ±t maximale d'une jambe à deux tubes de longueur nominale L :
+    rentrée de t, le bas du tube inférieur (L-t-60) doit rester sous la bague (s_up_end+20)."""
+    L = (P["z_hinge"] - P["z_ball"]) / math.cos(math.radians(phi))
+    return (L - 140.0 - P["recouvrement_min"]) / 3.0
+
+
+set_leg_geometry(P["leg_angle"])
 
 
 # ---------------------------------------------------------------------------
@@ -624,6 +661,11 @@ def reg(name, wp, mat, col, desc):
 
 def build_parts():
     PARTS.clear()
+    build_tripod_parts()
+    build_head_parts()
+
+
+def build_tripod_parts():
     reg("Colonne_Centrale", p_colonne(), "Al 7075-T73", COL["alu"], "Colonne centrale Ø50x2 anodisée dur")
     reg("Collier_Superieur", p_collier_sup(), "Ti-6Al-4V", COL["ti"], "Moyeu d'articulation des jambes")
     reg("Collier_Inferieur", p_collier_inf(), "Ti-6Al-4V", COL["ti"], "Collier coulissant des entretoises")
@@ -638,6 +680,9 @@ def build_parts():
     reg("Ancrage_Helicoidal", p_ancrage(), "Ti-6Al-4V", COL["orange"],
         "Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe")
     reg("Axe_Entretoise", p_axe(5, 21, 8), "Ti-6Al-4V", COL["alu_d"], "Axe Ø5")
+
+
+def build_head_parts():
     reg("Embase_Tete", p_embase(), "Al 6061-T6", COL["blue"], "Embase fixe de la tête (sur la colonne)")
     reg("Roulement_Azimut", p_roulement_azimut(), "Acier 440C", COL["steel"],
         "Roulement d'azimut à section mince Ø90/Ø50")
@@ -710,7 +755,8 @@ def build_tripod():
         L = math.hypot(rr, dz)
         gam = math.degrees(math.atan2(-rr, dz))
         name = f"Entretoise_{i}"
-        PARTS.setdefault("Entretoise", (p_entretoise(L), "Al 7075-T73", COL["alu"], "Entretoise Ø12x1"))
+        if i == 1:      # longueur fonction de l'angle des jambes : recréée à chaque montage
+            PARTS["Entretoise"] = (p_entretoise(L), "Al 7075-T73", COL["alu"], "Entretoise Ø12x1")
         wp, mat, col, _ = PARTS["Entretoise"]
         sl = trans(*p_in) * rot((0, 0, 1), phi - 90) * rot((1, 0, 0), gam)
         t.add(wp, name=name, loc=sl, color=col)

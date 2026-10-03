@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Tracker solaire lunaire deux axes (azimut + élévation) sur trépied déployable.
+Tracker solaire lunaire deux axes (azimut + élévation) sur trépied déployable,
+tête rotative à vis sans fin (irréversible : tient moteurs coupés, sans contrepoids).
 
 Génère, à l'échelle 1:1 (unités : mm), des assemblages STEP AP214 que
 SolidWorks ouvre directement comme assemblage (pièces nommées + couleurs),
@@ -36,19 +37,18 @@ P = dict(
     pan_L=356.0,           # longueur, parallèle à l'axe d'élévation
     pan_H=253.0,           # largeur, dans le plan de rotation en élévation
     pan_T=30.0,            # épaisseur (cadre)
-    pan_back=60.0,         # distance axe d'élévation -> dos du cadre
+    pan_back=46.0,         # distance axe d'élévation -> dos du cadre (passe devant la chape à -2°)
     cell_nx=9, cell_ny=8,
     # Axes
     z_el=700.0,            # hauteur de l'axe d'élévation au-dessus du sol
     el_min=-2.0, el_max=92.0,   # butées mécaniques d'élévation
-    phi_motor_az=150.0,    # position du moteur d'azimut sous l'embase (entre deux jambes)
-    # Trépied, dimensionné pour le panneau 356 x 253 et la tête à engrenages
+    # Trépied, dimensionné pour le panneau 356 x 253 et la tête à vis sans fin
     col_od=50.0, col_t=2.0,        # colonne centrale
-    r_hinge=70.0,                  # articulation haute des jambes (hauteur : sous l'embase)
+    r_hinge=70.0,                  # articulation haute des jambes (hauteur : sous le socle de la tête)
     z_ball=40.0,                   # hauteur du centre de la rotule de pied
     leg_phis=(90.0, 210.0, 330.0), # jambes en Y, à 120° (repère Z-up)
     # Angle φ entre jambe et colonne : valeur optimale calculée par optimisation_angle.py
-    leg_angle=37.0,
+    leg_angle=32.0,
     tube_up=(25.0, 1.5), tube_low=(20.0, 1.5),  # tubes de jambe (Ø, épaisseur)
     r_lower_pin=52.0,              # axe d'entretoise sur le collier inférieur
     lug_off=28.0,                  # excentration de la chape d'entretoise sur la jambe
@@ -64,7 +64,8 @@ P = dict(
     phi_box=30.0, r_box=950.0,
 )
 
-Z_EMB = P["z_el"] - 185.0          # dessus de la colonne = dessous de l'embase de la tête
+Z_T = 156.0                        # axe d'élévation au-dessus du sommet de la colonne (tête)
+Z_EMB = P["z_el"] - Z_T            # sommet de la colonne = dessous du socle de la tête
 P["z_hinge"] = Z_EMB - 35.0        # moyeu des jambes juste sous la tête
 
 # Géométrie dérivée du trépied (fonction de l'angle φ des jambes)
@@ -116,6 +117,7 @@ MAT = {
     "Al 6063-T5":          2700.0,
     "Acier inox 17-4PH":   7800.0,
     "Acier 440C":          7700.0,
+    "Bronze CuSn12":       8800.0,
     "Verre 3,2 mm + EVA + backsheet (eq)": 2500.0,
     "Silicium polycristallin": 2330.0,
     "PPO (boîte de jonction)": 1100.0,
@@ -123,8 +125,8 @@ MAT = {
 }
 # masses forfaitaires (kg) imposées pour les ensembles non détaillés
 MASS_TARGET = {
-    "Moteur_PasAPas_Azimut": 0.36,       # NEMA 17, 48 mm
-    "Moteur_PasAPas_Elevation": 0.36,
+    "Moteur_Elevation_NEMA17": 0.22,     # NEMA 17, 34 mm
+    "Moteur_Azimut_NEMA11": 0.14,        # NEMA 11, 45 mm
     "Unite_Controle_Corps": 17.0,        # batteries Li-ion, MPPT, OBC, drivers, chauffage
 }
 
@@ -146,6 +148,11 @@ COL = {
     "pv":     cq.Color(0.10, 0.20, 0.50),
     "pv_bg":  cq.Color(0.88, 0.89, 0.91),
     "nema":   cq.Color(0.12, 0.12, 0.13),
+    "socle":  cq.Color(0.45, 0.33, 0.25),
+    "chape":  cq.Color(0.86, 0.72, 0.30),
+    "u":      cq.Color(0.33, 0.45, 0.80),
+    "brass":  cq.Color(0.80, 0.65, 0.30),
+    "coupler": cq.Color(0.55, 0.60, 0.85),
 }
 
 
@@ -167,6 +174,11 @@ def ring_z(od, idia, h, z=0.0):
 
 def cyl_x(d, L, x=0.0, y=0.0, z=0.0):
     return cq.Workplane("YZ").circle(d / 2).extrude(L).translate((x, y, z))
+
+
+def cyl_y(d, L, x, y0, z):
+    """Cylindre d'axe Y, de y0 à y0+L."""
+    return cq.Workplane("XZ").circle(d / 2).extrude(-L).translate((x, y0, z))
 
 
 def box(a, b, c, x=0.0, y=0.0, z=0.0):
@@ -365,14 +377,9 @@ def p_ancrage():
 
 
 # ---------------------------------------------------------------------------
-# ENGRENAGES (profil en développante de cercle, angle de pression 20°)
+# ENGRENAGES (profil en développante de cercle, angle de pression 20°) :
+# roues des deux vis sans fin
 # ---------------------------------------------------------------------------
-Z_COURONNE, Z_PIGNON_AZ, M_AZ = 120, 18, 1.5      # azimut : rapport 120/18 = 6,67
-Z_ROUE_EL, Z_PIGNON_EL, M_EL = 72, 24, 1.0        # élévation : rapport 72/24 = 3
-ENTRAXE_AZ = M_AZ * (Z_COURONNE + Z_PIGNON_AZ) / 2    # 103,5 mm
-ENTRAXE_EL = M_EL * (Z_ROUE_EL + Z_PIGNON_EL) / 2     # 48 mm
-
-
 def gear_teeth(z, m, backlash=0.06, tip_relief=0.0, n=7):
     """Flancs d'une roue dentée droite : liste par dent de [(rayon, angle)] du pied
     vers la tête (flanc de gauche ; le flanc de droite est symétrique).
@@ -433,138 +440,254 @@ def gear_x(z, m, w, x0=0.0, **kw):
 
 
 # ---------------------------------------------------------------------------
-# PIÈCES — TÊTE MÉCANIQUE CENTRALE (pan-tilt à engrenages)
-#   Z_EMB : dessus de la colonne du trépied. Couronne d'azimut sur roulement,
-#   étrier en U, moteur pas à pas d'azimut (axe vertical = Y SolidWorks)
-#   sous l'embase, moteur pas à pas d'élévation (axe horizontal = X) dans l'étrier.
+# PIÈCES — TÊTE ROTATIVE À VIS SANS FIN
+#   Repère tête : origine au sommet de la colonne (Z_EMB), Z vertical.
+#   - Socle Ø62 fixé sur la colonne : deux roulements 6806 d'azimut et la roue
+#     d'azimut, FIXE.
+#   - Chape en U, qui tourne en azimut et porte les deux moteurs. La vis d'azimut
+#     roule autour de la roue fixe, comme sur une tourelle.
+#   - Chapeau en U renversé, qui pivote en élévation (axes Ø8 sur roulements 608)
+#     et porte le panneau. La roue d'élévation est sur son pivot gauche.
+#   Élévation : NEMA 17 de 34 mm + vis m1 Ø16 / roue bronze Z50 (50:1).
+#   Azimut    : NEMA 11 de 45 mm + vis m0,8 Ø12 / roue bronze Z60 (60:1).
+#   Les deux vis sont irréversibles : la tête tient moteurs coupés, sans contrepoids.
+#   Chaque vis tourne sur son arbre (2 roulements 685), reliée au moteur par un
+#   accouplement flexible : le moteur ne reçoit pas la poussée de la vis.
 # ---------------------------------------------------------------------------
-# Z_EMB (dessus de la colonne) est défini avec les paramètres, à partir de z_el
-Z_ROUL = Z_EMB + 8         # roulement d'azimut
-Z_COUR = Z_ROUL + 12       # couronne d'azimut (épaisseur 15)
-Z_ETR = Z_COUR + 15        # semelle de l'étrier
+COL_ID = P["col_od"] - 2 * P["col_t"]
+SOCLE_OD, SOCLE_ID = 62.0, 56.0
+Z_ROUL1, Z_ROUL2 = 58.0, 45.0        # roulements 6806 d'azimut
+Z_CHAPE = 92.0                       # dessous de la plaque de la chape
+ARM_X = (40.0, 48.0)                 # bras de la chape
+ARM_R = 24.0
+U_X = (50.0, 56.0)                   # flancs du chapeau en U
+U_TOP = (28.0, 33.0)                 # plaque du chapeau (distance à l'axe)
+U_Y = 22.0
+U_BAS = -25.0                        # bas des flancs (sous l'axe)
+RAIL_X = 44.0                        # rails du panneau
+X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
+EL_REF = 40.0                        # élévation de référence du calage des vis
+
+MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, shaft=24.0, hold=0.28,
+              detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
+MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, shaft=20.0, hold=0.095,
+              detent=0.005, amp=0.67, ohm=6.9, masse=0.14, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
+VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0)      # vis m1 Ø16 + roue Z50
+VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0)       # vis m0,8 Ø12 + roue fixe Z60
+# vis d'azimut le long de X, en (y, z) ; roue fixe de z 72 à 80
+AZ_VIS = dict(zr=(72.0, 80.0), y=-30.0, z=76.0, palier=(14.0, 19.0), x_joint=-32.5, x_face=-52.5)
+# vis d'élévation le long de Y, en x = -30, sous la roue
+EL_VIS = dict(palier=(14.0, 19.0), y_joint=-32.5, y_face=-56.5)
+EL_ENTRAXE = VIS_EL["m"] * VIS_EL["z"] / 2 + VIS_EL["dp"] / 2
+B685 = (11.0, 5.0, 5.0)              # roulement 685 : Ø11 / Ø5 x 5
+# calage angulaire des vis (dents en prise sans chevauchement) : recalculé et
+# vérifié par generate_tete_vis_sans_fin.py
+PHASE = {"el": 30.0, "az": -1.9}
 
 
-def p_nema17(shaft):
-    """Moteur pas à pas NEMA 17 (42,3 x 42,3 x 48 mm). Face avant en z = 0, arbre selon +Z."""
-    s, L = 42.3, 48.0
-    body = box(s, s, L, 0, 0, -L / 2).edges("|Z").chamfer(4)
-    body = body.union(cyl_z(22, 2))                                  # centrage Ø22
-    body = body.union(cyl_z(5, shaft, z=2))                          # arbre Ø5
-    body = body.union(box_span(-8, 8, s / 2, s / 2 + 6, -L + 4, -L + 16))   # connecteur
-    return body
+def roulement_x(od, idia, w):
+    return cq.Workplane("YZ").circle(od / 2).circle(idia / 2).extrude(w)
 
 
-def p_embase():
-    a = math.radians(P["phi_motor_az"])
-    mx, my = ENTRAXE_AZ * math.cos(a), ENTRAXE_AZ * math.sin(a)
-    t = 8.0
-    plate = cyl_z(200, t, z=Z_EMB)
-    plate = plate.union(cyl_z(64, t, mx, my, Z_EMB))
-    plate = plate.union(box_span(0, ENTRAXE_AZ, -30, 30, Z_EMB, Z_EMB + t)
-                        .rotate((0, 0, 0), (0, 0, 1), P["phi_motor_az"]))
-    plate = plate.union(ring_z(P["col_od"] - 2 * P["col_t"] - 0.5, 36, 10, Z_EMB - 10))   # centrage dans la colonne
-    ab = math.radians(P["phi_box"])                                  # embase connecteur (vers le bas)
-    plate = plate.union(cyl_z(30, 25, 82 * math.cos(ab), 82 * math.sin(ab), Z_EMB - 25))
-    plate = plate.cut(cyl_z(40, 40, z=Z_EMB - 20))                   # passage central des câbles
-    plate = plate.cut(cyl_z(23, 20, mx, my, Z_EMB - 5))              # centrage moteur
-    for k in range(4):
-        b = a + math.radians(45 + 90 * k)
-        plate = plate.cut(cyl_z(3.4, 20, mx + 21.9 * math.cos(b), my + 21.9 * math.sin(b), Z_EMB - 5))
-    return plate
+def roulement_z(od, idia, w):
+    r = ring_z(od, idia, w)
+    m = (od + idia) / 2
+    return r.cut(ring_z(m + 1.5, m - 1.5, 0.6, w - 0.6))
 
 
-def p_roulement_azimut():
-    r = ring_z(90, 50, 12, Z_ROUL)
-    return r.cut(ring_z(72, 68, 2, Z_ROUL + 11))                     # joint visible bague int./ext.
+def p_nema(m):
+    """Moteur pas à pas : face avant en z = 0, arbre Ø5 selon +Z, corps vers -Z."""
+    c, L = m["c"], m["L"]
+    body = box_span(-c / 2, c / 2, -c / 2, c / 2, -L, 0).edges("|Z").chamfer(c * 0.09)
+    body = body.cut(box_span(-c, c, -c, c, -L + 6, -L + 7).cut(cyl_z(c * 0.95, 3, z=-L + 5)))  # rainure d'aspect
+    body = body.union(cyl_z(m["pilot"], 2)).union(cyl_z(5, m["shaft"]))
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            body = body.cut(cyl_z(m["hole_d"], 4.5, sx * m["holes"] / 2, sy * m["holes"] / 2, -4.5))
+    return body.union(box_span(-6, 6, c / 2 - 1, c / 2 + 5, -L + 2, -L + 12))     # connecteur
 
 
-def p_couronne():
-    g = gear_z(Z_COURONNE, M_AZ, 15, Z_COUR, tip_relief=0.1)
-    g = g.cut(cyl_z(50, 20, z=Z_COUR - 2))                           # passage des câbles
-    g = g.cut(ring_z(152, 76, 7, Z_COUR + 8))                        # allègement (voile de 8 mm)
-    for k in range(6):
-        b = math.radians(30 + 60 * k)
-        g = g.cut(cyl_z(5.5, 20, 31 * math.cos(b), 31 * math.sin(b), Z_COUR - 2))
-    return g
+def p_vis(v):
+    """Vis sans fin à un filet, axe Z centré, alésage Ø5 (montée sur son arbre)."""
+    m, dp, L = v["m"], v["dp"], v["L"]
+    rr, h = dp / 2 - 1.25 * m, 2.25 * m
+    lead = math.pi * m
+    t = lead / 2 - 0.15 * m
+    ta = math.tan(math.radians(20))
+    w_root, w_tip = t + 2 * ta * 1.25 * m, t - 2 * ta * m
+    z0 = -L / 2 - lead
+    helix = cq.Wire.makeHelix(pitch=lead, height=L + 2 * lead, radius=rr, center=Vector(0, 0, z0))
+    prof = cq.Workplane("XZ").polyline([(rr - 0.3, z0 - w_root / 2), (rr + h, z0 - w_tip / 2),
+                                        (rr + h, z0 + w_tip / 2), (rr - 0.3, z0 + w_root / 2)]).close()
+    thread = prof.sweep(cq.Workplane().add(helix), isFrenet=True)
+    # noyau aussi long que le filet (des faces confondues en bout font échouer l'union), puis coupe à L
+    core = cyl_z(2 * rr, L + 2 * lead + 2, z=z0 - 1)
+    w = core.union(thread).intersect(cyl_z(dp + 2 * m + 1, L, z=-L / 2))
+    return w.cut(cyl_z(5, L + 2, z=-L / 2 - 1))
 
 
-def p_pignon_azimut():
-    return gear_z(Z_PIGNON_AZ, M_AZ, 15).cut(cyl_z(5, 20, z=-2))
+def p_accouplement():
+    a = cyl_z(19, 25).cut(cyl_z(5, 27, z=-1))
+    for z0 in (8.0, 15.0):
+        a = a.cut(ring_z(20, 15, 1.2, z0))                  # fentes (accouplement flexible)
+    return a
 
 
-def p_etrier():
-    zt = P["z_el"]
-    e = box_span(-58, 58, -35, 35, Z_ETR, Z_ETR + 8).cut(cyl_z(40, 20, z=Z_ETR - 5))
-    prof = [(-35, Z_ETR), (35, Z_ETR), (35, zt + 12), (22, zt + 35), (-22, zt + 35), (-35, zt + 12)]
-    for x0 in (50.0, -58.0):
-        e = e.union(cq.Workplane("YZ").polyline(prof).close().extrude(8).translate((x0, 0, 0)))
-    e = e.cut(cyl_x(12.2, 140, -70, 0, zt))                          # paliers de l'axe d'élévation
-    zm = zt - ENTRAXE_EL
-    e = e.cut(cyl_x(22.5, 12, 48, 0, zm))                            # centrage moteur d'élévation
-    for dy in (-15.5, 15.5):
-        for dz in (-15.5, 15.5):
-            e = e.cut(cyl_x(3.4, 12, 48, dy, zm + dz))
-    for x0 in (-58.0, 50.0):                                         # fixation sur la couronne
-        for y0 in (-22.0, 22.0):
-            e = e.union(cyl_z(8, 3, (x0 + 4) * 0.8, y0, Z_ETR + 8))
-    return e
-
-
-def p_palier():
-    zt = P["z_el"]
-    c = cyl_x(40, 5, -63, 0, zt).cut(cyl_x(12.2, 8, -65, 0, zt))
-    for k in range(6):
-        b = math.radians(60 * k)
-        c = c.union(cyl_x(5, 1.5, -64.5, 14 * math.cos(b), zt + 14 * math.sin(b)))
-    return c
-
-
-def p_pignon_elevation():
-    g = gear_x(Z_PIGNON_EL, M_EL, 8).cut(cyl_x(5, 12, -2))
+def p_fond_socle():
+    f = cyl_z(SOCLE_OD, 5).union(ring_z(COL_ID - 0.5, 36, 15, -15))      # centrage dans la colonne
     for k in range(3):
-        b = math.radians(120 * k)
-        g = g.cut(cyl_x(3, 12, -2, 7 * math.cos(b), 7 * math.sin(b)))
-    return g
+        a = math.radians(120 * k)
+        f = f.cut(cyl_z(3.4, 8, 25 * math.cos(a), 25 * math.sin(a), -1))
+    return f
 
 
-# ---------------------------------------------------------------------------
-# PIÈCES — PANNEAU ET SUPPORT (repère : origine sur l'axe d'élévation,
-#   X = axe d'élévation, Z = normale au panneau, cellules côté +Z)
-# ---------------------------------------------------------------------------
-def p_arbre_elevation():
-    return cyl_x(12, 138, -66)
-
-
-def p_roue_elevation():
-    g = gear_x(Z_ROUE_EL, M_EL, 8, 60).cut(cyl_x(12, 12, 58))
-    for k in range(6):
-        b = math.radians(30 + 60 * k)
-        g = g.cut(cyl_x(9, 12, 58, 22 * math.cos(b), 22 * math.sin(b)))
-    return g
-
-
-def p_support_panneau():
-    d = P["pan_back"]
-    s = cyl_x(30, 90, -45)
-    web = [(-12, 0), (12, 0), (30, d - 10), (-30, d - 10)]
-    for x0 in (35.0, -41.0):
-        s = s.union(cq.Workplane("YZ").polyline(web).close().extrude(6).translate((x0, 0, 0)))
-    s = s.union(box_span(-100, 100, -30, 30, d - 10, d - 5))
-    s = s.cut(cyl_x(12, 100, -50))
-    for x0 in (-80, 80):
-        for y0 in (-18, 18):
-            s = s.cut(cyl_z(4.5, 10, x0, y0, d - 12))
+def p_socle():
+    s = ring_z(SOCLE_OD, SOCLE_ID, 54, 5).union(cyl_z(SOCLE_OD, 6, z=59))
+    s = s.union(ring_z(50, 42, 14, 45)).union(ring_z(42, 36, 6, 52))
+    s = s.cut(cyl_z(42, 8, z=58)).cut(cyl_z(36, 20, z=50))
+    a = math.radians(P["phi_box"])                          # passe-câble, vers l'unité au sol
+    s = s.cut(cyl_dir(13, 10, ((SOCLE_ID / 2 - 2) * math.cos(a), (SOCLE_ID / 2 - 2) * math.sin(a), 14),
+                      (math.cos(a), math.sin(a), 0)))
+    for k in range(3):
+        a = math.radians(120 * k)
+        x, y = 25 * math.cos(a), 25 * math.sin(a)
+        s = s.union(cyl_z(7, 8, x, y, 5)).cut(cyl_z(2.6, 9, x, y, 4))
+    for k in range(6):                                      # fixation de la roue d'azimut
+        a = math.radians(30 + 60 * k)
+        s = s.cut(cyl_z(2.6, 8, 23.5 * math.cos(a), 23.5 * math.sin(a), 59))
     return s
 
 
-def p_rail_fixation():
-    d = P["pan_back"]
-    r = box_span(-10, 10, -P["pan_H"] / 2, P["pan_H"] / 2, d - 5, d)
-    for y0 in (-18, 18, -P["pan_H"] / 2 + 6, P["pan_H"] / 2 - 6):
-        r = r.cut(cyl_z(4.5, 10, 0, y0, d - 7))
+def p_roue_azimut():
+    """Roue d'azimut Z60, fixée sur le socle : la vis d'azimut roule autour."""
+    r = gear_z(VIS_AZ["z"], VIS_AZ["m"], 8, AZ_VIS["zr"][0], backlash=0.15)
+    r = r.union(ring_z(50, 36, AZ_VIS["zr"][0] - 65, 65))
+    r = r.cut(cyl_z(36, 30, z=60))
+    for k in range(6):
+        ang = math.radians(30 + 60 * k)
+        r = r.cut(cyl_z(2.9, 20, 23.5 * math.cos(ang), 23.5 * math.sin(ang), 60))
     return r
 
 
+def p_chape():
+    xi, xo = ARM_X
+    zc, zt = Z_CHAPE, Z_T
+    plate = box_span(-xo, xo, -ARM_R, ARM_R, zc, zc + 8)
+    plate = plate.union(box_span(-60, -2, -60, -ARM_R + 1, zc, zc + 8))         # queue : les deux moteurs
+    c = plate.edges("|Z").fillet(5)
+    arm = (cq.Workplane("YZ").moveTo(-ARM_R, zc).lineTo(ARM_R, zc).lineTo(ARM_R, zt)
+           .threePointArc((0, zt + ARM_R), (-ARM_R, zt)).close().extrude(xo - xi))
+    c = c.union(arm.translate((xi, 0, 0))).union(arm.translate((-xo, 0, 0)))
+    c = c.union(cyl_z(30, zc - 42, z=42)).union(cyl_z(34, 2, z=65))              # moyeu d'azimut
+    c = c.cut(cyl_z(20, zc + 10 - 40, z=40))                                     # passage des câbles
+    c = c.cut(cyl_x(10, 2 * xo + 2, -xo - 1, 0, zt))
+    return c.cut(cyl_x(22, 7, xo - 7, 0, zt)).cut(cyl_x(22, 7, -xo, 0, zt))       # logements des 608
+
+
+def p_bague_arret():
+    return ring_z(34, 30, 3, 42)
+
+
+def p_arbre_vis_az():
+    x1 = AZ_VIS["palier"][1] + 1
+    return cyl_x(5, x1 - AZ_VIS["x_joint"], AZ_VIS["x_joint"], AZ_VIS["y"], AZ_VIS["z"])
+
+
+def p_palier_vis_az():
+    p0, p1 = AZ_VIS["palier"]
+    y, z, zc = AZ_VIS["y"], AZ_VIS["z"], Z_CHAPE
+    b = None
+    for x0, x1 in ((p0, p1), (-p1, -p0)):
+        pl = box_span(x0, x1, y - 8, y + 7, z - 7, zc).cut(cyl_x(B685[0], x1 - x0 + 2, x0 - 1, y, z))
+        b = pl if b is None else b.union(pl)
+    b = b.union(box_span(-p1, p1, y - 8, y + 7, zc - 5, zc))
+    for x in (-16.5, 16.5):
+        b = b.cut(cyl_z(3.4, 8, x, y, zc - 6))
+    return b
+
+
+def p_support_moteur_az():
+    m = MOT_AZ
+    y, z, zc, xf = AZ_VIS["y"], AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
+    s = box_span(xf, xf + 4, y - 16, y + 16, z - 16, zc)
+    s = s.union(box_span(xf, xf + 15, y - 16, y + 7, zc - 5, zc))
+    s = s.cut(cyl_x(m["pilot"] + 0.5, 10, xf - 1, y, z))
+    for sy in (-1, 1):
+        for sz in (-1, 1):
+            s = s.cut(cyl_x(m["hole_d"] + 0.4, 10, xf - 1, y + sy * m["holes"] / 2, z + sz * m["holes"] / 2))
+    return s
+
+
+def p_arbre_vis_el():
+    y1 = EL_VIS["palier"][1] + 1
+    return cyl_y(5, y1 - EL_VIS["y_joint"], -30, EL_VIS["y_joint"], Z_T - EL_ENTRAXE)
+
+
+def p_palier_vis_el():
+    p0, p1 = EL_VIS["palier"]
+    zv, zb = Z_T - EL_ENTRAXE, Z_CHAPE + 8
+    b = None
+    for y0, y1 in ((p0, p1), (-p1, -p0)):
+        pl = box_span(-37, -23, y0, y1, zb, Z_T - 26).cut(cyl_y(B685[0], y1 - y0 + 2, -30, y0 - 1, zv))
+        b = pl if b is None else b.union(pl)
+    b = b.union(box_span(-37, -23, -p1, p1, zb, zb + 5))
+    return b.cut(cyl_z(3.4, 8, -30, 0, zb - 1))
+
+
+def p_support_moteur_el():
+    m = MOT_EL
+    zv, zb, yf = Z_T - EL_ENTRAXE, Z_CHAPE + 8, EL_VIS["y_face"]
+    s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
+    s = s.union(box_span(-54, -6, yf, yf + 22, zb, zb + 5))
+    s = s.cut(cyl_y(m["pilot"] + 0.5, 6, -30, yf - 1, zv))
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            s = s.cut(cyl_y(m["hole_d"] + 0.4, 6, -30 + sx * m["holes"] / 2, yf - 1, zv + sz * m["holes"] / 2))
+    return s
+
+
+# --- partie basculante (repère : origine sur l'axe d'élévation, X = axe, Z = normale au panneau)
+def p_chapeau_u():
+    xi, xo = U_X
+    u = box_span(-xo, xo, -ARM_R, ARM_R, U_TOP[0], U_TOP[1])
+    for x0, x1 in ((xi, xo), (-xo, -xi)):
+        u = u.union(box_span(x0, x1, -U_Y, U_Y, U_BAS, U_TOP[1]).edges("|X and <Z").fillet(8))
+    u = u.cut(cyl_x(8, 2 * xo + 2, -xo - 1))
+    for x in (-RAIL_X, RAIL_X):
+        for y in (-14, 14):
+            u = u.cut(cyl_z(3.4, 10, x, y, U_TOP[0] - 1))
+    return u
+
+
+def p_pivot_entraine():
+    """Pivot gauche : serré dans le chapeau, tourne dans un 608, porte la roue d'élévation."""
+    return cyl_x(8, U_X[1] + X_ROUE[1] + 2, -U_X[1]).union(cyl_x(12, 2, -U_X[1] - 2))
+
+
+def p_pivot_libre():
+    return cyl_x(8, U_X[1] - ARM_X[0] + 1, ARM_X[0] - 1).union(cyl_x(12, 2, U_X[1]))
+
+
+def p_roue_elevation():
+    g = gear_x(VIS_EL["z"], VIS_EL["m"], X_ROUE[1] - X_ROUE[0], X_ROUE[0], backlash=0.1)
+    g = g.union(cyl_x(16, 4, X_ROUE[1])).cut(cyl_x(8, 20, X_ROUE[0] - 2))
+    for k in range(5):
+        a = math.radians(72 * k)
+        g = g.cut(cyl_x(7, 12, X_ROUE[0] - 2, 15 * math.cos(a), 15 * math.sin(a)))
+    return g
+
+
+def p_rail():
+    r = box_span(-6, 6, -P["pan_H"] / 2, P["pan_H"] / 2, U_TOP[1], P["pan_back"])
+    for y in (-14, 14, -P["pan_H"] / 2 + 6, P["pan_H"] / 2 - 6):
+        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1))
+    return r
+
+
+# ---------------------------------------------------------------------------
+# PIÈCES — PANNEAU (repère : origine sur l'axe d'élévation,
+#   X = axe d'élévation, Z = normale au panneau, cellules côté +Z)
+# ---------------------------------------------------------------------------
 def p_cadre_pv():
     """Cadre aluminium en C (paroi 1,5 mm, rebord avant et aile arrière de 12 mm)."""
     L, H, T, z0 = P["pan_L"], P["pan_H"], P["pan_T"], P["pan_back"]
@@ -599,11 +722,7 @@ def p_cellules():
 def p_boite_jonction():
     z0, _z1 = _z_laminate()
     b = box_span(-30, 30, 40, 85, z0 - 14.2, z0 - 0.2).edges("|Z").fillet(4)
-    return b.union(cyl_y_(12, 10, 0, 85, z0 - 7.2))
-
-
-def cyl_y_(d, L, x, y0, z):
-    return cq.Workplane("XZ").circle(d / 2).extrude(-L).translate((x, y0, z))
+    return b.union(cyl_y(12, 10, 0, 85, z0 - 7.2))
 
 
 # ---------------------------------------------------------------------------
@@ -635,16 +754,18 @@ def p_unite_radiateur():
 
 
 def p_faisceau():
+    """Faisceau : sort du passe-câble du socle (vers l'unité au sol), descend entre deux
+    jambes et rejoint les connecteurs de l'unité de contrôle."""
     a = math.radians(P["phi_box"])
     c, s = math.cos(a), math.sin(a)
     r_end = P["r_box"] - BOX_L / 2 - 25
-    z0 = Z_EMB - 25
-    rz = [(82, z0), (92, z0 - 70), (150, z0 - 190), (260, z0 - 330), (380, 35), (500, 10),
-          (r_end - 120, 10), (r_end - 50, 50), (r_end, 70)]
+    z0 = Z_EMB + 14
+    rz = [(SOCLE_ID / 2 + 0.5, z0), (55, z0 - 6), (85, z0 - 48), (110, z0 - 118), (160, z0 - 238),
+          (260, z0 - 388), (380, 35), (500, 10), (r_end - 120, 10), (r_end - 50, 50), (r_end, 70)]
     pts = [Vector(r * c, r * s, z) for r, z in rz]
-    tans = [Vector(0, 0, -1), Vector(c, s, 0)]
+    tans = [Vector(c, s, 0), Vector(c, s, 0)]
     path = cq.Wire.assembleEdges([cq.Edge.makeSpline(pts, tangents=tans)])
-    prof = cq.Workplane(cq.Plane(origin=pts[0], xDir=(c, s, 0), normal=(0, 0, -1))).circle(9)
+    prof = cq.Workplane(cq.Plane(origin=pts[0], xDir=(0, 0, 1), normal=(c, s, 0))).circle(6)
     return prof.sweep(cq.Workplane().add(path), transition="round")
 
 
@@ -683,26 +804,39 @@ def build_tripod_parts():
 
 
 def build_head_parts():
-    reg("Embase_Tete", p_embase(), "Al 6061-T6", COL["blue"], "Embase fixe de la tête (sur la colonne)")
-    reg("Roulement_Azimut", p_roulement_azimut(), "Acier 440C", COL["steel"],
-        "Roulement d'azimut à section mince Ø90/Ø50")
-    reg("Moteur_PasAPas_Azimut", p_nema17(36), "Acier 440C", COL["nema"],
-        "Moteur pas à pas NEMA 17 d'azimut (axe vertical)")
-    reg("Pignon_Azimut", p_pignon_azimut(), "Acier inox 17-4PH", COL["steel"],
-        f"Pignon d'azimut m{M_AZ} Z{Z_PIGNON_AZ}")
-    reg("Couronne_Azimut", p_couronne(), "Al 7075-T73", COL["orange"],
-        f"Couronne d'azimut m{M_AZ} Z{Z_COURONNE}, anodisée dur + MoS2")
-    reg("Etrier_Tete", p_etrier(), "Al 6061-T6", COL["grey"], "Étrier en U de la tête")
-    reg("Palier_Elevation", p_palier(), "Al 6061-T6", COL["grey"], "Chapeau de palier d'élévation")
-    reg("Moteur_PasAPas_Elevation", p_nema17(22), "Acier 440C", COL["nema"],
-        "Moteur pas à pas NEMA 17 d'élévation (axe horizontal)")
-    reg("Pignon_Elevation", p_pignon_elevation(), "Acier inox 17-4PH", COL["grey"],
-        f"Pignon d'élévation m{M_EL} Z{Z_PIGNON_EL}")
-    reg("Arbre_Elevation", p_arbre_elevation(), "Ti-6Al-4V", COL["steel"], "Axe d'élévation Ø12")
-    reg("Roue_Elevation", p_roue_elevation(), "Al 7075-T73", COL["black"],
-        f"Roue d'élévation m{M_EL} Z{Z_ROUE_EL}, anodisée noire + MoS2")
-    reg("Support_Panneau", p_support_panneau(), "Al 6061-T6", COL["alu_d"], "Berceau de fixation du panneau")
-    reg("Rail_Fixation_Panneau", p_rail_fixation(), "Al 6061-T6", COL["alu_d"], "Rail 20x5 vissé sur le cadre")
+    # tête rotative à vis sans fin (repère tête)
+    reg("Fond_Socle", p_fond_socle(), "Al 6061-T6", COL["socle"], "Fond du socle, centrage dans la colonne")
+    reg("Socle", p_socle(), "Al 6061-T6", COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
+    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["steel"], "Roulement d'azimut 6806-ZZ")
+    reg("Roue_Azimut_Fixe", p_roue_azimut(), "Bronze CuSn12", COL["brass"],
+        f"Roue d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Z{VIS_AZ['z']}, fixée sur le socle")
+    reg("Chape", p_chape(), "Al 6061-T6", COL["chape"], "Chape en U (tourne en azimut, porte les moteurs)")
+    reg("Bague_Arret_Moyeu", p_bague_arret(), "Acier inox 17-4PH", COL["steel"], "Bague d'arrêt du moyeu")
+    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["steel"], "Roulement d'élévation 608-ZZ")
+    reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["steel"],
+        "Roulement 685-ZZ (arbres des vis)")
+    reg("Vis_Azimut", p_vis(VIS_AZ), "Acier inox 17-4PH", COL["steel"],
+        f"Vis sans fin d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Ø{VIS_AZ['dp']:.0f}, un filet")
+    reg("Arbre_Vis_Azimut", p_arbre_vis_az(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'azimut")
+    reg("Palier_Vis_Azimut", p_palier_vis_az(), "Al 6061-T6", COL["chape"], "Palier de la vis d'azimut")
+    reg("Support_Moteur_Azimut", p_support_moteur_az(), "Al 6061-T6", COL["chape"], "Support du moteur d'azimut")
+    reg("Moteur_Azimut_NEMA11", p_nema(MOT_AZ), "moteur", COL["nema"], f"Moteur pas à pas d'azimut : {MOT_AZ['nom']}")
+    reg("Vis_Elevation", p_vis(VIS_EL), "Acier inox 17-4PH", COL["steel"],
+        f"Vis sans fin d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Ø{VIS_EL['dp']:.0f}, un filet")
+    reg("Arbre_Vis_Elevation", p_arbre_vis_el(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'élévation")
+    reg("Palier_Vis_Elevation", p_palier_vis_el(), "Al 6061-T6", COL["chape"], "Palier de la vis d'élévation")
+    reg("Support_Moteur_Elevation", p_support_moteur_el(), "Al 6061-T6", COL["chape"],
+        "Support du moteur d'élévation")
+    reg("Moteur_Elevation_NEMA17", p_nema(MOT_EL), "moteur", COL["nema"],
+        f"Moteur pas à pas d'élévation : {MOT_EL['nom']}")
+    reg("Accouplement", p_accouplement(), "Al 7075-T73", COL["coupler"], "Accouplement flexible 5/5")
+    reg("Chapeau_U", p_chapeau_u(), "Al 6061-T6", COL["u"], "Chapeau en U renversé porte-panneau")
+    reg("Pivot_Entraine", p_pivot_entraine(), "Acier inox 17-4PH", COL["steel"], "Pivot Ø8 portant la roue d'élévation")
+    reg("Pivot_Libre", p_pivot_libre(), "Acier inox 17-4PH", COL["steel"], "Pivot Ø8 libre")
+    reg("Roue_Elevation", p_roue_elevation(), "Bronze CuSn12", COL["brass"],
+        f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
+    reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
+    # panneau
     reg("Cadre_Panneau", p_cadre_pv(), "Al 6063-T5", COL["alu"], "Cadre alu du panneau 356x253x30")
     reg("Lamine_PV", p_lamine(), "Verre 3,2 mm + EVA + backsheet (eq)", COL["pv_bg"],
         "Verre + EVA + face arrière")
@@ -711,11 +845,12 @@ def build_head_parts():
         f"{P['cell_nx']*P['cell_ny']} cellules {cw:.1f}x{ch:.1f}")
     reg("Boite_Jonction", p_boite_jonction(), "PPO (boîte de jonction)", COL["black"],
         "Boîte de jonction + presse-étoupe")
+    # sol
     reg("Unite_Controle_Corps", p_unite_corps(), "Al 6061-T6", COL["gold"],
-        "Unité de contrôle / stockage sous MLI")
+        "Unité de contrôle / stockage sous MLI (batterie, ESP32, drivers TMC2209)")
     reg("Unite_Controle_Radiateur", p_unite_radiateur(), "Al 6061-T6", COL["white"],
         "Radiateur zénithal (peinture blanche / OSR)")
-    reg("Faisceau_Cables", p_faisceau(), "PTFE/cuivre (eq)", COL["black"], "Faisceau puissance + données Ø18")
+    reg("Faisceau_Cables", p_faisceau(), "PTFE/cuivre (eq)", COL["black"], "Faisceau puissance + données Ø12")
 
 
 def add(assy, name, loc=None, inst=None):
@@ -765,46 +900,65 @@ def build_tripod():
     return t
 
 
-def build_panel(el):
-    """Partie qui tourne en élévation (repère panneau)."""
+PANEL_PARTS = ("Cadre_Panneau", "Lamine_PV", "Cellules_PV", "Boite_Jonction")
+
+
+def build_panel(with_panel=True):
+    """Partie qui tourne en élévation (repère : origine sur l'axe d'élévation)."""
     p = cq.Assembly(name="SA_Panneau")
-    add(p, "Arbre_Elevation")
-    add(p, "Roue_Elevation", rot((1, 0, 0), -90))          # une dent face au pignon (el = 90°)
-    add(p, "Support_Panneau")
-    add(p, "Rail_Fixation_Panneau", trans(80, 0, 0), "Rail_Fixation_1")
-    add(p, "Rail_Fixation_Panneau", trans(-80, 0, 0), "Rail_Fixation_2")
-    add(p, "Cadre_Panneau")
-    add(p, "Lamine_PV")
-    add(p, "Cellules_PV")
-    add(p, "Boite_Jonction")
+    add(p, "Chapeau_U")
+    add(p, "Pivot_Entraine")
+    add(p, "Pivot_Libre")
+    add(p, "Roue_Elevation")
+    add(p, "Rail_Panneau", trans(RAIL_X, 0, 0), "Rail_Panneau_1")
+    add(p, "Rail_Panneau", trans(-RAIL_X, 0, 0), "Rail_Panneau_2")
+    if with_panel:
+        for n in PANEL_PARTS:
+            add(p, n)
     return p
 
 
-def build_head(az, el):
-    """Partie qui tourne en azimut : couronne, étrier, moteur et pignon d'élévation."""
+def build_head(az, el, with_panel=True):
+    """Partie qui tourne en azimut (repère tête) : chape, vis, moteurs, chapeau et panneau."""
     h = cq.Assembly(name="SA_Tete_Orientable")
-    add(h, "Couronne_Azimut", rot((0, 0, 1), P["phi_motor_az"]))
-    add(h, "Etrier_Tete")
-    add(h, "Palier_Elevation")
-    zm = P["z_el"] - ENTRAXE_EL
-    add(h, "Moteur_PasAPas_Elevation", trans(50, 0, zm) * rot((0, 1, 0), 90))
-    psi = el - 90.0
-    th = 90.0 - 180.0 / Z_PIGNON_EL - psi * Z_ROUE_EL / Z_PIGNON_EL
-    add(h, "Pignon_Elevation", trans(60, 0, zm) * rot((1, 0, 0), th))
-    h.add(build_panel(el), name="SA_Panneau", loc=trans(0, 0, P["z_el"]) * rot((1, 0, 0), psi))
+    add(h, "Chape")
+    add(h, "Bague_Arret_Moyeu")
+    add(h, "Roulement_608", trans(ARM_X[1] - 7, 0, Z_T), "Roulement_608_1")
+    add(h, "Roulement_608", trans(-ARM_X[1], 0, Z_T), "Roulement_608_2")
+    # azimut : vis le long de X qui roule autour de la roue fixe, NEMA 11 en bout côté -X
+    a = AZ_VIS
+    add(h, "Palier_Vis_Azimut")
+    add(h, "Arbre_Vis_Azimut")
+    for i, x0 in enumerate((a["palier"][0], -a["palier"][1]), 1):
+        add(h, "Roulement_685", trans(x0, a["y"], a["z"]), f"Roulement_685_Az_{i}")
+    add(h, "Vis_Azimut", trans(0, a["y"], a["z"]) * rot((0, 1, 0), 90)
+        * rot((0, 0, 1), PHASE["az"] + VIS_AZ["z"] * az))
+    add(h, "Accouplement", trans(a["x_joint"] - 12.5, a["y"], a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
+    add(h, "Support_Moteur_Azimut")
+    add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], a["y"], a["z"]) * rot((0, 1, 0), 90))
+    # élévation : vis le long de Y sous la roue, NEMA 17 court à l'arrière (côté opposé au panneau)
+    zv = Z_T - EL_ENTRAXE
+    add(h, "Palier_Vis_Elevation")
+    add(h, "Arbre_Vis_Elevation")
+    for i, y0 in enumerate((EL_VIS["palier"][0], -EL_VIS["palier"][1]), 1):
+        add(h, "Roulement_685", trans(-30, y0, zv) * rot((0, 0, 1), 90), f"Roulement_685_El_{i}")
+    add(h, "Vis_Elevation", trans(-30, 0, zv) * rot((1, 0, 0), -90)
+        * rot((0, 0, 1), PHASE["el"] - VIS_EL["z"] * (el - EL_REF)))
+    add(h, "Accouplement", trans(-30, EL_VIS["y_joint"] - 12.5, zv) * rot((1, 0, 0), -90), "Accouplement_El")
+    add(h, "Support_Moteur_Elevation")
+    add(h, "Moteur_Elevation_NEMA17", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))
+    h.add(build_panel(with_panel), name="SA_Panneau", loc=trans(0, 0, Z_T) * rot((1, 0, 0), el - 90.0))
     return h
 
 
-def build_head_fixed(az):
-    """Partie fixe de la tête : embase, roulement, moteur et pignon d'azimut."""
+def build_head_fixed():
+    """Partie fixe de la tête (repère tête) : socle, roulements d'azimut, roue d'azimut."""
     f = cq.Assembly(name="SA_Tete_Fixe")
-    add(f, "Embase_Tete")
-    add(f, "Roulement_Azimut")
-    a = math.radians(P["phi_motor_az"])
-    mx, my = ENTRAXE_AZ * math.cos(a), ENTRAXE_AZ * math.sin(a)
-    add(f, "Moteur_PasAPas_Azimut", trans(mx, my, Z_EMB) * rot((0, 0, 1), P["phi_motor_az"]))
-    th = P["phi_motor_az"] + 180.0 - 180.0 / Z_PIGNON_AZ - az * Z_COURONNE / Z_PIGNON_AZ
-    add(f, "Pignon_Azimut", trans(mx, my, Z_COUR) * rot((0, 0, 1), th))
+    add(f, "Fond_Socle")
+    add(f, "Socle")
+    add(f, "Roulement_6806", trans(0, 0, Z_ROUL1), "Roulement_6806_1")
+    add(f, "Roulement_6806", trans(0, 0, Z_ROUL2), "Roulement_6806_2")
+    add(f, "Roue_Azimut_Fixe")
     return f
 
 
@@ -822,8 +976,9 @@ TO_YUP = rot((1, 0, 0), -90)
 def build_assembly(az, el, name):
     root = cq.Assembly(name=name)
     root.add(build_tripod(), name="SA_Trepied", loc=TO_YUP)
-    root.add(build_head_fixed(az), name="SA_Tete_Fixe", loc=TO_YUP)
-    root.add(build_head(az, el), name="SA_Tete_Orientable", loc=TO_YUP * rot((0, 0, 1), az))
+    head = TO_YUP * trans(0, 0, Z_EMB)
+    root.add(build_head_fixed(), name="SA_Tete_Fixe", loc=head)
+    root.add(build_head(az, el), name="SA_Tete_Orientable", loc=head * rot((0, 0, 1), az))
     ab = math.radians(P["phi_box"])
     root.add(build_ground(), name="SA_Unite_Sol",
              loc=TO_YUP * trans(P["r_box"] * math.cos(ab), P["r_box"] * math.sin(ab), 0)
@@ -859,8 +1014,7 @@ def part_key(inst):
     for k in sorted(PARTS, key=len, reverse=True):
         if base.startswith(k):
             return k
-    aliases = {"Patin_": "Patin", "Ancrage_": "Ancrage_Helicoidal", "Axe_Entretoise_": "Axe_Entretoise",
-               "Rail_Fixation_": "Rail_Fixation_Panneau"}
+    aliases = {"Patin_": "Patin", "Ancrage_": "Ancrage_Helicoidal", "Axe_Entretoise_": "Axe_Entretoise"}
     for a, k in aliases.items():
         if base.startswith(a):
             return k
@@ -1056,8 +1210,9 @@ def main():
 
     print("\nContrôle de garde sur toute la plage de mouvement :")
     fixed_names = ("SA_Trepied", "SA_Tete_Fixe", "SA_Unite_Sol", "SA_Faisceau")
-    tilt_itf = ("Arbre_Elevation", "Roue_Elevation")     # axe dans ses paliers, roue en prise
-    az_itf = ("Couronne_Azimut",)                          # couronne en prise avec le pignon d'azimut
+    tilt_itf = ("Pivot_", "Roue_Elevation")       # pivots dans leurs roulements, roue en prise avec la vis
+    contacts = {"Chape": ("Roulement_6806",), "Bague_Arret_Moyeu": ("Roulement_6806",),
+                "Vis_Azimut": ("Roue_Azimut_Fixe",)}     # moyeu dans ses roulements, vis en prise
     worst = {"panneau": (1e9,), "interface": (1e9,), "tete": (1e9,)}
 
     def keep(tag, res, *pose):
@@ -1074,14 +1229,15 @@ def main():
             body = [(n, s) for n, s in panel if not n.split("/")[-1].startswith(tilt_itf)]
             roue = [(n, s) for n, s in panel if n.split("/")[-1].startswith("Roue_Elevation")]
             keep("panneau", min_clearance(body, fixed + head), az, el)
-            keep("interface", min_clearance(roue, [x for x in head if "Pignon" in x[0]]), az, el)
+            keep("interface", min_clearance(roue, [x for x in head if "Vis_Elevation" in x[0]]), az, el)
             if el == 0.0:
-                h = [(n, s) for n, s in head if not n.split("/")[-1].startswith(az_itf)]
-                keep("tete", min_clearance(h, fixed), az, el)
+                for n, s in head:
+                    fx = [x for x in fixed if part_key(x[0]) not in contacts.get(part_key(n), ())]
+                    keep("tete", min_clearance([(n, s)], fx), az, el)
 
-    labels = {"panneau": "Panneau + berceau <-> toute structure",
-              "interface": "Engrènement roue d'élévation / pignon (jeu de denture)",
-              "tete": "Étrier + moteur d'élévation <-> partie fixe"}
+    labels = {"panneau": "Panneau + chapeau <-> toute structure",
+              "interface": "Engrènement roue d'élévation / vis (jeu de denture)",
+              "tete": "Chape, moteurs, vis <-> partie fixe (socle, trépied, faisceau)"}
     for tag, w in worst.items():
         print(f"  {labels[tag]} : garde mini {w[0]:.1f} mm "
               f"({w[1].split('/')[-1]} / {w[2].split('/')[-1]}, az={w[3]}°, él={w[4]}°)")

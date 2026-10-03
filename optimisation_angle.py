@@ -102,7 +102,7 @@ def main():
     w("Générée par `optimisation_angle.py` à partir des masses et centres de gravité de la CAO.\n")
     w("## Données fixées par la tête et le panneau\n")
     w(f"- Jambes en Y, à 120°. Articulation haute à r = {P['r_hinge']:.0f} mm, "
-      f"z = {P['z_hinge']:.0f} mm : juste sous l'embase de la tête. Le panneau vertical descend "
+      f"z = {P['z_hinge']:.0f} mm : juste sous le socle de la tête. Le panneau vertical descend "
       f"jusqu'à {P['z_el'] - 129:.0f} mm et tout le trépied doit rester en dessous.")
     w(f"- Centre de la rotule de pied à z = {P['z_ball']:.0f} mm, soit une hauteur de jambe h = {h:.0f} mm.")
     w(f"- Tête + panneau : {head[0][0][0] + head[0][1][0]:.2f} kg. Le centre de gravité est pris dans la "

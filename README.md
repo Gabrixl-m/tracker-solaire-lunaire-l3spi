@@ -1,14 +1,19 @@
 # Tracker solaire lunaire deux axes — maquette 3D à l'échelle 1:1
 
-Maquette CAO d'un tracker solaire destiné à la surface de la Lune. Elle comprend un
-trépied déployable, une **tête mécanique centrale à engrenages** (azimut + élévation,
-deux moteurs pas à pas), **le panneau photovoltaïque de 356 × 253 × 30 mm**, un faisceau
-de câbles et une unité de contrôle posée au sol.
+Maquette CAO d'un tracker solaire destiné à la surface de la Lune. Elle comprend :
+* un trépied déployable ;
+* une **tête rotative à vis sans fin** (azimut + élévation, deux petits moteurs pas à pas
+  pilotés par un ESP32) ;
+* **le panneau photovoltaïque de 356 × 253 × 30 mm** ;
+* un faisceau de câbles et une unité de contrôle posée au sol.
+
+Les deux vis sans fin sont **irréversibles** : la tête tient le panneau dans toutes les
+positions **moteurs coupés**, sans contrepoids, sur Terre comme sur la Lune.
 Toutes les cotes sont en **millimètres, à taille réelle**.
 
-| Vue d'ensemble (panneau à 40°) | Tête mécanique, côté engrenages |
+| Vue d'ensemble (panneau à 40°) | Tête rotative à vis sans fin |
 |---|---|
-| ![Vue d'ensemble](docs/apercu_latitudemoyenne_iso.png) | ![Tête côté engrenages](docs/apercu_latitudemoyenne_detail_tete.png) |
+| ![Vue d'ensemble](docs/apercu_latitudemoyenne_iso.png) | ![Tête à vis sans fin](docs/apercu_latitudemoyenne_detail_tete.png) |
 | ![Pôle Sud](docs/apercu_polesud_detail_tete_avant.png) | ![Pied et vis d'ancrage](docs/apercu_latitudemoyenne_detail_pied.png) |
 
 ---
@@ -19,17 +24,16 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 |---|---|
 | `CAO/Tracker_Lunaire_PoleSud.step` | **Assemblage principal** : pose de fonctionnement au pôle Sud (site Artemis), Soleil à +1,5°, panneau quasi vertical |
 | `CAO/Tracker_Lunaire_LatitudeMoyenne.step` | Même assemblage, pose « sites Apollo » : Soleil à 50°, panneau incliné à 40° |
-| `CAO/pieces/*.step` | Les 34 pièces seules, chacune dans son repère de construction |
+| `CAO/pieces/*.step` | Les pièces seules, chacune dans son repère de construction |
+| `CAO/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
+| `CAO/pieces_tete_vissansfin/*.step` | Les pièces de la tête seules |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png` | Rendus (iso, face, profil, arrière, détails de la tête et du pied) |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
+| `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
 | `optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
-| `render_apercu.py` | Génère les rendus PNG |
-| `CAO/Tete_Rotative_VisSansFin.step` | **Étude à part** : tête rotative motorisée, **version vis sans fin**, avec le panneau monté à 40° (voir § 12) |
-| `CAO/Tete_Rotative_Engrenages.step` | La même tête, **version engrenages droits** (pignon et roue), avec le panneau à 40° |
-| `CAO/pieces_tete_vissansfin/*.step`, `CAO/pieces_tete_engrenages/*.step` | Les pièces de chaque version, seules |
-| `generate_tete_motorisee.py`, `render_tete_motorisee.py` | Génération des deux têtes (CAO, calcul des couples, contrôles) et de leurs rendus |
+| `render_apercu.py`, `render_tete_vis_sans_fin.py` | Génèrent les rendus PNG |
 
 ### Ouvrir dans SolidWorks
 
@@ -47,64 +51,181 @@ avec les noms des pièces, les sous-assemblages et les couleurs.
 Repère : **Y vertical**, c'est-à-dire que le plan de dessus de SolidWorks correspond au sol.
 * L'origine est au sol, sur l'axe d'azimut (**axe Y**).
 * L'axe d'élévation est horizontal (**axe X** dans la pose de référence), à Y = 700 mm.
+  Le sommet de la colonne, sur lequel repose la tête, est à Y = 544 mm.
 * Les pièces arrivent fixes, sans contraintes. Pour animer le tracker :
-  * libérer `SA_Tete_Orientable` et ajouter une contrainte coaxiale entre `Couronne_Azimut` et `Roulement_Azimut` ;
-  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre `Arbre_Elevation` et les alésages de l'`Etrier_Tete` ;
-  * ajouter des contraintes d'engrenage entre `Couronne_Azimut` et `Pignon_Azimut` (rapport 120:18), puis entre `Roue_Elevation` et `Pignon_Elevation` (72:24).
+  * libérer `SA_Tete_Orientable` et ajouter une contrainte coaxiale entre le moyeu de la `Chape` et les `Roulement_6806` ;
+  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre les pivots (`Pivot_Entraine`, `Pivot_Libre`) et les `Roulement_608` ;
+  * ajouter des contraintes d'engrenage entre `Vis_Azimut` et `Roue_Azimut_Fixe` (rapport 1:60), puis entre `Vis_Elevation` et `Roue_Elevation` (1:50).
 
 Arborescence :
 
 ```
 Tracker_Lunaire_PoleSud
 ├── SA_Trepied            colonne, colliers, 3 × Jambe_n, 3 × entretoises, 3 × patins, 3 × vis d'ancrage
-├── SA_Tete_Fixe          embase (bleue), roulement d'azimut, moteur pas à pas + pignon d'azimut
-├── SA_Tete_Orientable    couronne (orange), étrier en U, moteur pas à pas + pignon d'élévation   ← tourne en azimut (Y)
-│   └── SA_Panneau        axe, roue d'élévation (noire), berceau, 2 rails,
-│                         cadre, laminé, cellules, boîte de jonction                             ← tourne en élévation (X)
-├── SA_Unite_Sol          unité de contrôle / batteries + radiateur
+├── SA_Tete_Fixe          fond et socle Ø62, 2 roulements 6806, roue d'azimut fixe (bronze)
+├── SA_Tete_Orientable    chape en U (jaune), vis + moteur d'azimut, vis + moteur d'élévation,
+│   │                     paliers, accouplements, roulements                                  ← tourne en azimut (Y)
+│   └── SA_Panneau        chapeau en U renversé (bleu), pivots, roue d'élévation (bronze),
+│                         2 rails, cadre, laminé, cellules, boîte de jonction                 ← tourne en élévation (X)
+├── SA_Unite_Sol          unité de contrôle / batterie + radiateur
 └── SA_Faisceau           faisceau de câbles
 ```
 
 ---
 
-## 2. Tête mécanique centrale
+## 2. Tête rotative à vis sans fin
 
-Conçue sur le principe d'une tourelle à engrenages : une grande couronne pour l'azimut,
-un étrier en U qui porte l'axe d'élévation, un moteur pas à pas par axe.
+| Tête seule | Coupe : vis et roue d'élévation |
+|---|---|
+| ![Tête seule](docs/tete_vis_sans_fin_iso.png) | ![Coupe élévation](docs/tete_vis_sans_fin_coupe_elevation.png) |
+| ![Côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Coupe azimut](docs/tete_vis_sans_fin_coupe_azimut.png) |
+| ![Avec panneau, côté moteurs](docs/tete_vis_sans_fin_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_vis_sans_fin_avec_panneau_face.png) |
+
+### Architecture
 
 | Élément | Choix |
 |---|---|
-| **Embase** (bleue) | Plaque Al Ø200 × 8 posée sur la colonne du trépied, avec un téton de centrage dans la colonne et une oreille qui porte le moteur d'azimut |
-| **Azimut (axe Y)** | Moteur pas à pas **NEMA 17**, arbre vertical, fixé **sous** l'embase entre deux jambes. Son pignon Z18 (module 1,5) entraîne la **couronne Z120** (orange, Ø183), qui tourne sur un roulement à section mince Ø90/Ø50. Rapport **6,67** |
-| **Étrier** (gris) | U en aluminium : semelle vissée sur la couronne, deux bras de 8 mm à sommet chanfreiné, paliers de l'axe d'élévation à 700 mm du sol |
-| **Élévation (axe X)** | Moteur pas à pas **NEMA 17** logé **dans** l'étrier, arbre horizontal traversant le bras droit. Son pignon Z24 (gris, module 1) entraîne la **roue Z72** (noire) calée sur l'axe Ø12. Rapport **3** |
-| **Liaison au panneau** | Berceau calé sur l'axe (moyeu + deux flasques + plaque 200 × 60), puis **deux rails 20 × 5** vissés sur l'aile arrière du cadre du panneau |
-| **Passage des câbles** | Trou central Ø40 dans l'embase, le roulement et la couronne : les câbles du moteur d'élévation descendent par l'axe d'azimut |
+| **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**. Un passe-câble est orienté vers l'unité au sol |
+| **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements 608 de l'axe d'élévation, à 156 mm au-dessus de la colonne (700 mm du sol) |
+| **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux axes Ø8 dans les roulements 608 et porte les deux rails du panneau |
+| **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
+| **Élévation (axe X)** | **NEMA 17 de 34 mm** + vis sans fin m1 Ø16 sur la **roue bronze Z50** calée sur le pivot gauche du chapeau : **50:1**. Le moteur est à l'arrière de la chape, du côté opposé au panneau |
+| **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas la poussée axiale de la vis |
+| **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau et sur l'aile arrière du cadre. Le dos du cadre est à 46 mm de l'axe d'élévation |
+| **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 
-Résolution : moteur de 200 pas/tour (1,8°). Le Soleil se déplace d'environ 0,5°/h.
+**Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
+passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
+d'élévation, jusqu'à 0,8 N·m sur Terre. La vis sans fin est **irréversible** :
+* le moteur fait tourner la roue ;
+* la roue ne peut pas faire tourner la vis, parce que la pente du filet (3,6°) est plus
+  faible que l'angle de frottement (environ 6°). C'est le principe du cric de voiture à vis.
 
-| Axe | Rotation par pas entier | En micro-pas 1/16 |
+Le panneau tient donc seul dans toutes les positions, même dans le vent et même en cas de
+coupure de courant. Les moteurs ne sont alimentés que pendant les mouvements.
+
+### Moteurs
+
+| Axe | Moteur | Caractéristiques |
 |---|---|---|
-| Azimut | 0,27° | 0,017° |
-| Élévation | 0,6° | 0,04° |
+| Élévation | **NEMA 17, 42 × 42 × 34 mm** (type 17HS3401) | 0,28 N·m, 1,3 A, 2,4 Ω, 0,22 kg |
+| Azimut | **NEMA 11, 28 × 28 × 45 mm** (type 11HS18-0674S) | 0,095–0,10 N·m, 0,67 A, 6,9 Ω, 0,14 kg |
 
-C'est largement assez fin pour un suivi à mieux que 0,5°.
+À l'achat, prendre un NEMA 17 de 34 mm annoncé à **0,28 N·m**. Certains vendeurs vendent sous
+la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20 % de marge.
+
+### Couples : besoins et marges dans tous les cas
+
+Les besoins sont calculés par `generate_tete_vis_sans_fin.py` à partir de la CAO :
+* partie basculante (chapeau, roue, rails, panneau) : 1,51 kg, dont 1,01 kg de panneau ;
+* centre de gravité à 53,5 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
+* couple de gravité maximal (panneau vertical) : 0,79 N·m sur Terre et 0,13 N·m sur la Lune ;
+* frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
+* vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
+  environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
+  ce qui donne **+0,35 N·m en élévation et 0,50 N·m en azimut**.
+
+Le couple disponible vaut couple de maintien × 0,7 (couple en marche lente en micro-pas) ×
+rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (élévation) et
+0,30 (azimut), avec un frottement prudent μ = 0,15.
+
+| Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
+|---|---|---|---|
+| Élévation (2,86 N·m disponibles) | ×20 | ×3,5 | **×2,5** |
+| Azimut (1,22 N·m disponibles) | ×61 | ×41 | **×2,3** |
+
+* **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** On y vise une
+  marge d'environ 2, sans surdimensionner. Les grandes marges sur la Lune viennent de
+  l'absence de vent et de la gravité six fois plus faible : le même matériel doit aussi
+  faire la démonstration à 1 g.
+* **Chaque moteur est le plus petit moteur courant qui convient.** Avec le moteur juste en
+  dessous, la marge en vent devient insuffisante :
+  * élévation : NEMA 11 de 45 mm, ×0,85 ;
+  * azimut : NEMA 11 court (32 mm, ≈ 0,05 N·m), ×1,2.
+
+### Tenue moteurs coupés
+
+| Cas | Ce qui tient | Résultat |
+|---|---|---|
+| **Terre**, vis graissées (μ ≈ 0,10) | La vis se bloque : hélice de 3,6° (élévation) et 3,8° (azimut), angle de frottement 5,7° | **Tient dans toutes les positions, même dans le vent** |
+| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,5 en élévation, ×2,4 en azimut |
+| **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,13 N·m et il n'y a pas de vent | **Tient** : ×9 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
+
+Conséquences :
+* **Aucun courant à l'arrêt** : drivers désactivés entre deux mouvements, donc consommation
+  nulle. Le suivi consomme moins de 0,5 Wh par jour, ce qui compte pour la nuit lunaire de
+  14 jours.
+* **Pas de surchauffe dans le vide**, puisque les moteurs sont presque toujours coupés.
+* **La position n'est pas perdue** : au réveil, le moteur bouge au plus d'un pas, soit
+  0,036° au panneau.
+* **Ne jamais forcer le panneau à la main** : on forcerait directement sur les dents de la
+  roue en bronze. Pour le bouger, alimenter le moteur ou tourner l'arbre de la vis.
+
+### Limites de vent (sur Terre)
+
+| | Limite |
+|---|---|
+| Tourner sans perdre de pas | environ 24 m/s en élévation, **environ 15 m/s (55 km/h) en azimut** |
+| Tenir moteurs coupés | environ 30 m/s : au-delà, ce sont les dents de bronze qui limitent |
+| **Trépied non ancré** (pire orientation) | **basculement vers 16 m/s (58 km/h)** |
+
+Au-delà d'environ 15 m/s, c'est le trépied qui limite. Pour une démonstration en extérieur,
+planter les vis d'ancrage ou lester les pieds. Au-dessus de 10 m/s, mettre le panneau à plat
+(élévation 90°), où le vent a le moins de prise, puis couper les moteurs.
+
+### Résolution et vitesses (moteurs à 200 pas/tour, 1/16 de pas)
+
+| | Élévation | Azimut |
+|---|---|---|
+| Pas entier au panneau | 0,036° | 0,030° |
+| Micro-pas (1/16) | 0,0023° | 0,0019° |
+| Vitesse conseillée | 14°/s (moteur à 120 tr/min) | 12°/s |
+
+Le Soleil se déplace d'environ 0,5°/h sur la Lune et 15°/h sur Terre : un retour à plat ou
+une remise en position prend quelques secondes.
 
 **Plages de mouvement** :
-* azimut sur 360°, en continu avec un collecteur tournant dans le passage central, ou limité à ±270° sans collecteur ;
-* élévation de −2° à +92° (butées). Le panneau peut ainsi passer à la verticale au lever et au coucher du Soleil, et en permanence au pôle Sud.
+* élévation de −2° à +92° (butées). Le panneau peut ainsi passer à la verticale au lever et
+  au coucher du Soleil, et en permanence au pôle Sud ;
+* azimut limité à ±180° par la boucle de câble, puis retour en arrière. Au pôle Sud, il faut
+  un tour complet par jour lunaire : on revient en arrière une fois par jour, ou l'on monte
+  un collecteur tournant dans le moyeu.
 
-Les couleurs reprennent celles du prototype (couronne orange, étrier gris, roue noire).
-Pour la Lune, les matières sont adaptées (voir § 4).
+### Commande par ESP32
+
+* **Drivers : 2 × TMC2209**, logique en 3,3 V. Ils sont pilotés par UART, sur un bus commun,
+  avec les adresses 0 et 1 fixées par MS1/MS2.
+* **Câblage** :
+  * élévation : STEP GPIO 25, DIR GPIO 26 ;
+  * azimut : STEP GPIO 32, DIR GPIO 33 ;
+  * EN commun : GPIO 27 ;
+  * UART : TX GPIO 17 vers PDN_UART à travers 1 kΩ, RX GPIO 16 ;
+  * fins de course : GPIO 18 et 19, avec pull-up interne.
+* **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
+  plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
+* **Réglages** :
+  * courant de marche (`rms_current`) : 1,3 A pour le NEMA 17, 0,67 A pour le NEMA 11 ;
+  * 16 micro-pas, StealthChop ;
+  * à l'arrêt : drivers désactivés par EN.
+* **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
+  sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
+  par UART.
+* **Origine** :
+  * un micro-switch en butée basse d'élévation (−2°) ;
+  * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
+
+  La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
+  surtout derrière une vis sans fin.
+* L'électronique (ESP32, drivers, batterie) est dans l'unité de contrôle au sol.
 
 ## 3. Panneau photovoltaïque
 
 * **356 × 253 × 30 mm** : cadre aluminium en C (rebord avant et aile arrière de 12 mm),
   laminé verre 3,2 mm + EVA + face arrière, 72 cellules (9 × 8), boîte de jonction au dos.
 * Monté en **format paysage** : l'axe d'élévation est parallèle au côté de 356 mm.
-* Le dos du cadre est à **60 mm de l'axe d'élévation**. Ce décalage permet au panneau de
-  passer à la verticale en restant devant les bras de l'étrier. Son point le plus bas
-  (≈ 571 mm du sol, à −2°) reste alors 21 mm au-dessus de la couronne d'azimut (550 mm).
+* Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
+  passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
+  passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
 * Les coins en plastique noir visibles sur la photo du panneau sont des protections
   d'emballage. Ils ne sont pas modélisés.
 
@@ -112,12 +233,12 @@ Pour la Lune, les matières sont adaptées (voir § 4).
 
 | Contrainte lunaire | Conséquence sur le tracker |
 |---|---|
-| **Gravité 1,62 m/s² (1/6 g)**, **pas de vent** | Charges très faibles sur la tête et le trépied. Le couple dû au déséquilibre du panneau autour de l'axe d'élévation est six fois plus faible que sur Terre. Les essais au sol à 1 g restent le cas le plus exigeant pour les moteurs. |
-| **Vide** | **Soudage à froid** : chaque engrènement associe deux matériaux différents (couronne et roue en Al 7075 anodisé dur + MoS₂, pignons en inox 17-4PH), avec des roulements en acier 440C lubrifiés à sec. **Pas de convection** : un moteur pas à pas maintenu sous courant chauffe. Il faut réduire le courant de maintien et évacuer la chaleur par conduction vers l'étrier. Il faut aussi des moteurs en version « vide » (graisses et isolants à faible dégazage). |
-| **Températures de −173 °C à +127 °C** | Jeu de denture de 0,06 module par dent, et jeu radial de 0,1 mm dans les paliers de l'axe, pour absorber les dilatations. Pas de plastique ordinaire dans la tête : le PLA d'un prototype imprimé en 3D se ramollit vers 60 °C. |
-| **Régolithe abrasif et électrostatique** | Engrenages exposés à protéger par un capot souple (soufflet), connecteurs orientés vers le bas, câbles passés par l'axe d'azimut. |
+| **Gravité 1,62 m/s² (1/6 g)**, **pas de vent** | Charges très faibles sur la tête et le trépied. Le couple dû au décentrage du panneau autour de l'axe d'élévation est six fois plus faible que sur Terre. Les essais au sol à 1 g, avec du vent, restent le cas le plus exigeant pour les moteurs. |
+| **Vide** | **Soudage à froid** : chaque contact associe deux matériaux différents (vis en inox 17-4PH contre roues en bronze, roulements en acier 440C), avec une lubrification sèche au MoS₂. **Pas de convection** : les moteurs ne sont alimentés que pendant les mouvements, grâce aux vis irréversibles, et leur chaleur part par conduction vers la chape. Il faut des moteurs en version « vide » (graisses et isolants à faible dégazage), de même taille. |
+| **Températures de −173 °C à +127 °C** | Jeu de denture de 0,1 mm, jeu axial de 2 mm entre les flancs du chapeau et les bras de la chape (rondelles PTFE). Pas de plastique ordinaire dans la tête : le PLA d'un prototype imprimé en 3D se ramollit vers 60 °C. |
+| **Régolithe abrasif et électrostatique** | Vis et roues à protéger par un soufflet ou un capot, connecteurs orientés vers le bas, câbles passés par l'axe d'azimut. |
 | **Sol meuble et irrégulier** | Trépied à trois appuis, patins Ø120 à crampons sur rotule, jambes télescopiques, vis d'ancrage hélicoïdales (voir § 6). |
-| **Jour lunaire de 29,5 jours terrestres** | Suivi très lent (≈ 0,5°/h), donc peu de pas moteur et peu d'énergie. |
+| **Jour lunaire de 29,5 jours terrestres, nuit de 14 jours** | Suivi très lent (≈ 0,5°/h), donc peu de pas moteur. Aucune consommation à l'arrêt grâce aux vis irréversibles. |
 
 ## 5. Choix de l'angle
 
@@ -134,32 +255,35 @@ vaut donc presque exactement 90° moins la latitude du site :
 
 ## 6. Trépied
 
-Le trépied a été **redimensionné pour le panneau de 356 × 253 mm et la tête à
-engrenages**. L'architecture ne change pas : trois jambes en Y à 120°, articulées sur un
-moyeu, avec entretoises vers un collier inférieur coulissant, jambes télescopiques,
-patins sur rotule et ancrages.
+Le trépied est **dimensionné pour le panneau de 356 × 253 mm et la tête à vis sans fin**.
+Architecture : trois jambes en Y à 120°, articulées sur un moyeu, avec entretoises vers un
+collier inférieur coulissant, jambes télescopiques, patins sur rotule et ancrages.
 
-### Angle φ des jambes : optimisé, **φ = 37°** (angle entre jambe et colonne)
+### Angle φ des jambes : optimisé, **φ = 32°** (angle entre jambe et colonne)
 
 L'articulation haute est fixée par le panneau : tout le trépied doit rester sous le volume
-qu'il balaie, à 480 mm du sol. φ fixe alors le rayon des pieds, la longueur des jambes et
-leur course télescopique. `optimisation_angle.py` évalue chaque angle de 25° à 60°
-avec les masses et le centre de gravité réels de la CAO, dans la pire orientation du panneau.
+qu'il balaie. Elle est donc à 509 mm du sol, juste sous le socle de la tête. φ fixe alors
+le rayon des pieds, la longueur des jambes et leur course télescopique.
+`optimisation_angle.py` évalue chaque angle de 25° à 60° avec les masses et le centre de
+gravité réels de la CAO, dans la pire orientation du panneau.
 
 | Contrainte | Exigence | Effet de φ |
 |---|---|---|
-| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 37°** |
-| **C2 Mise à niveau** | Les jambes télescopiques (deux tubes) remettent la tête de niveau sur une pente de 10° | Plus φ est grand, plus la course nécessaire croît vite : φ ≤ 50,5° |
-| **C3 Garde au sol** | Pointe de la colonne à au moins 150 mm du sol | φ ≤ 46° |
+| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 32°** |
+| **C2 Mise à niveau** | Les jambes télescopiques (deux tubes) remettent la tête de niveau sur une pente de 10° | Plus φ est grand, plus la course nécessaire croît vite : φ ≤ 52° |
+| **C3 Garde au sol** | Pointe de la colonne à au moins 150 mm du sol | φ ≤ 49,4° |
 
 Tous les autres critères se dégradent quand φ augmente : longueur et masse des jambes,
 poussée reprise par les entretoises (le frottement au sol est six fois plus faible sur la
 Lune), course de nivelage et emprise au sol. **L'optimum est donc le plus petit angle
-admissible, 37°** (plage admissible : 37° à 46°). La rigidité latérale, maximale à 54,7°,
-ne dimensionne pas sur la Lune, où il n'y a pas de vent. L'ancien angle de 43° était
-admissible, mais pas optimal.
+admissible, 32°** (plage admissible : 32° à 49°). La rigidité latérale, maximale à 54,7°,
+ne dimensionne pas sur la Lune, où il n'y a pas de vent.
 
-L'optimum dépend des exigences. Par exemple, il passe à 42,5° pour une pente de 20° ou une marge de 10°. Le détail est dans
+La tête à vis sans fin est légère (tête + panneau : 2,8 kg) : le centre de gravité du
+tracker est bas, ce qui permet cet angle faible.
+
+L'optimum dépend des exigences. Par exemple, il passe à 37,5° pour une pente de 20° ou une
+marge de 10°. Le détail est dans
 [`docs/optimisation_angle_jambes.md`](docs/optimisation_angle_jambes.md). Si la masse
 de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 
@@ -168,25 +292,26 @@ de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 | Dimension | Ce qui l'a fixée |
 |---|---|
 | **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
-| **Moyeu des jambes à 480 mm**, juste sous la tête | Tout le trépied reste sous le volume balayé par le panneau. Le moteur d'azimut pend sous l'embase, entre deux jambes. |
-| **Pieds sur un cercle de Ø803 mm**, jambes de 551 mm | Conséquence de φ = 37°. Basculement sans ancrage à 25,0° dans la pire orientation du panneau (exigé : 24,7°). |
-| **Course télescopique ±89 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
-| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (266 mm). |
+| **Sommet de la colonne à 544 mm**, moyeu des jambes à 509 mm | La tête met l'axe d'élévation 156 mm au-dessus de la colonne. Tout le trépied reste sous le volume balayé par le panneau. |
+| **Pieds sur un cercle de Ø726 mm**, jambes de 553 mm | Conséquence de φ = 32°. Basculement sans ancrage à 25,3° dans la pire orientation du panneau (exigé : 25,2°). |
+| **Course télescopique ±75 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
+| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (308 mm). |
 | **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
-| **Patins Ø120 à crampons, rotule ±20°** | Pression sur le régolithe d'environ 450 Pa sur la Lune ; adaptation aux pentes et aux cailloux. |
-| **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Un piquet lisse tient par frottement, six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. |
+| **Patins Ø120 à crampons, rotule ±20°** | Pression sur le régolithe d'environ 340 Pa sur la Lune ; adaptation aux pentes et aux cailloux. |
+| **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Un piquet lisse tient par frottement, six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. Sur Terre, elles servent aussi contre le vent (voir § 2). |
 
-Le trépied pèse 4,4 kg (13,1 kg pour la première version, conçue pour le panneau de 1,6 × 1,2 m).
+Le trépied pèse 4,3 kg.
 
 ## 7. Matériaux
 
 | Élément | Matériau |
 |---|---|
-| Embase, étrier, berceau, rails | Al 6061-T6 anodisé |
-| Couronne d'azimut, roue d'élévation | Al 7075-T73 anodisé dur + MoS₂ |
-| Pignons | Inox 17-4PH |
-| Axe d'élévation, ferrures et colliers du trépied, axes, vis d'ancrage | Ti-6Al-4V |
-| Roulements | Acier 440C, lubrification sèche |
+| Socle, chape, chapeau en U, paliers et supports de moteurs, rails | Al 6061-T6 anodisé |
+| Roues des vis sans fin (azimut et élévation) | Bronze CuSn12 |
+| Vis sans fin, arbres des vis, pivots d'élévation, bague d'arrêt | Inox 17-4PH |
+| Accouplements | Al 7075-T73 |
+| Ferrures et colliers du trépied, axes, vis d'ancrage | Ti-6Al-4V |
+| Roulements | Acier 440C, lubrification sèche (MoS₂) pour la Lune |
 | Tubes de jambes, colonne, entretoises, patins | Al 7075-T73 anodisé dur |
 | Cadre du panneau | Al 6063-T5 |
 
@@ -195,265 +320,77 @@ Le trépied pèse 4,4 kg (13,1 kg pour la première version, conçue pour le pan
 | Grandeur | Valeur |
 |---|---|
 | Hauteur de l'axe d'élévation | 700 mm |
-| Angle des jambes | φ = 37° par rapport à la colonne (optimisé) |
-| Emprise au sol | Pieds sur Ø803 mm, Ø923 mm hors patins (≈ Ø1100 mm avec les anneaux d'ancrage) |
+| Angle des jambes | φ = 32° par rapport à la colonne (optimisé) |
+| Emprise au sol | Pieds sur Ø726 mm, Ø846 mm hors patins (≈ Ø1030 mm avec les anneaux d'ancrage) |
 | Panneau | 356 × 253 × 30 mm, 72 cellules |
 | Puissance du panneau | ≈ 10 W crête sur Terre (valeur typique de ce format, à confirmer sur sa fiche) |
-| Débattements | Azimut 360°, élévation −2° à +92° |
-| Réductions | Azimut 120:18 (6,67), élévation 72:24 (3) |
-| Masse de la tête (partie fixe + partie tournante) | 3,4 kg, dont 2 × 0,36 kg de moteurs |
-| Masse de la partie qui bascule (panneau + berceau + axe + roue) | 1,7 kg, dont 1,0 kg de panneau |
-| Masse du trépied | 4,4 kg |
-| Masse du tracker complet | 9,4 kg (poids lunaire ≈ 15 N) |
+| Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
+| Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
+| Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
+| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,77 kg, dont 0,36 kg de moteurs |
+| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,51 kg, dont 1,01 kg de panneau |
+| Masse du trépied | 4,3 kg |
+| Masse du tracker complet | 7,1 kg (poids lunaire ≈ 12 N) |
 
-Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs NEMA 17 et l'unité au
-sol ont une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
+Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs et l'unité au sol ont
+une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
-## 9. Vérifications effectuées par le script
+## 9. Vérifications effectuées par les scripts
 
-* **Interférences pièce à pièce** dans les deux poses : **aucune**. Les engrenages sont
-  en prise avec leur jeu de denture, sans chevauchement.
-* **Garde sur toute la plage de mouvement** (élévation de −2° à +92°, azimut sur 360°,
-  `python generate_tracker.py --balayage`) :
-  * partie qui bascule (panneau + berceau) face à tout le reste : 5 mm au plus près,
-    c'est le jeu axial prévu entre le moyeu du berceau et le bras de l'étrier ;
-    le point bas du panneau passe 21 mm au-dessus de la couronne, en butée à −2° ;
-  * denture roue / pignon d'élévation : 0,1 mm (jeu de denture, sans contact) ;
-  * étrier et moteur d'élévation face à la partie fixe : 15 mm.
-* **Stabilité** : basculement sans ancrage à 25,0° dans la pire orientation du panneau
+* **Interférences pièce à pièce** dans les deux poses du tracker et dans la tête seule :
+  **aucune**.
+* **Engrènement** : les vis sont calées sur leurs roues, avec les dents en prise et sans
+  chevauchement :
+  * à −2°, 40° et 92° d'élévation ;
+  * à un azimut quelconque (37°), ce qui valide la loi de rotation de la vis d'azimut.
+
+  Sur la vis d'azimut, il reste un recouvrement de 0,2 mm³. Il vient de la roue modélisée
+  à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
+* **Garde sur la course d'élévation** (−2° à +92°) :
+  * partie qui bascule (panneau + chapeau) face à tout le reste : 2,0 mm, c'est le jeu
+    axial prévu entre les flancs du chapeau et les bras de la chape ;
+  * en butée basse, le cadre du panneau passe à 10,6 mm du socle ;
+  * denture roue / vis d'élévation : jeu de 0,03 mm, sans contact ;
+  * chape face à la partie fixe : 1,0 mm au plus près, entre le moyeu et la roue d'azimut.
+
+  Le balayage complet en azimut et en élévation (`python generate_tracker.py --balayage`)
+  n'a pas été relancé jusqu'au bout pour cette version : il est très long.
+* **Stabilité** : basculement sans ancrage à 25,3° dans la pire orientation du panneau
   (`optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 131 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 148 solides, géométrie valide.
 
 ## 10. Limites
 
 * Il s'agit d'une maquette de conception, pas d'un matériel qualifié pour le vol.
 * Le panneau de 356 × 253 mm est un panneau terrestre (verre, EVA, boîte de jonction en
   plastique). Sur la Lune, les cycles thermiques et le vide le dégraderaient.
-* Les moteurs NEMA 17 standard ne sont pas prévus pour le vide.
-* Un train d'engrenages droits n'est pas irréversible : le panneau est tenu par le couple
-  de maintien des moteurs. Une vis sans fin rendrait l'élévation irréversible.
+* Les moteurs NEMA du commerce ne sont pas prévus pour le vide ni pour −173 °C. Il faut
+  leur équivalent en version vide ou spatiale : même taille, même couple, même pilotage.
+* Les roues des vis sont modélisées à dents droites. Les vraies roues sont taillées pour
+  leur vis (dents inclinées et creusées), ce qui augmente la portée et la durée de vie.
+* Sur Terre, le trépied non ancré bascule vers 16 m/s de vent : l'ancrer pour les
+  démonstrations en extérieur.
 * Le dimensionnement mécanique (efforts, lancement, thermique) reste à faire une fois la
   masse définitive connue.
 
 ## 11. Régénérer ou modifier la CAO
 
-Tous les paramètres (dimensions du panneau, hauteur d'axe, décalage du panneau, position
-des moteurs, angle et exigences du trépied, poses…) sont regroupés en tête de `generate_tracker.py`, dans le
-dictionnaire `P`, dans `POSES` et dans les constantes d'engrenages (`Z_COURONNE`,
-`Z_PIGNON_AZ`, `M_AZ`, `Z_ROUE_EL`, `Z_PIGNON_EL`, `M_EL`).
+Tous les paramètres sont regroupés en tête de `generate_tracker.py` :
+* dans le dictionnaire `P` : dimensions du panneau, hauteur d'axe, décalage du panneau,
+  angle et exigences du trépied ;
+* dans `POSES` : les deux poses exportées ;
+* dans les constantes de la tête : `Z_T`, `VIS_EL`, `VIS_AZ`, `MOT_EL`, `MOT_AZ`, et `PHASE`
+  (calage des vis, donné par `generate_tete_vis_sans_fin.py`).
+
+Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
+`generate_tete_vis_sans_fin.py`.
 
 ```bash
 pip install -r requirements.txt
-python generate_tracker.py              # STEP + bilan de masse + contrôle d'interférences
-python generate_tracker.py --balayage   # + garde sur toute la plage az/él
-python optimisation_angle.py            # angle φ optimal des jambes (à reporter dans P["leg_angle"])
-xvfb-run -a python render_apercu.py     # rendus PNG (xvfb-run seulement sans écran)
+python generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
+python generate_tracker.py --balayage         # + garde sur toute la plage az/él
+python generate_tete_vis_sans_fin.py          # tête seule, calage des vis, couples, tenue moteurs coupés
+python optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
+xvfb-run -a python render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
+xvfb-run -a python render_tete_vis_sans_fin.py   # rendus de la tête seule
 ```
-
-## 12. Tête rotative motorisée : version vis sans fin et version engrenages droits (étude à part)
-
-Deux fichiers à part du tracker complet. Les deux versions gardent **la même structure**,
-**sans contrepoids** :
-* un socle cylindrique Ø62 posé sur la colonne, avec deux roulements 6806 ;
-* une chape en U (jaune) qui tourne en azimut ;
-* un **chapeau en U renversé** (bleu) qui porte le panneau. Il pivote sur deux axes Ø8,
-  montés sur roulements 608 dans les bras de la chape.
-
-Seule la transmission change :
-
-| | **Vis sans fin** : `CAO/Tete_Rotative_VisSansFin.step` | **Engrenages droits** : `CAO/Tete_Rotative_Engrenages.step` |
-|---|---|---|
-| Moteur d'élévation (axe horizontal) | **NEMA 17 court, 42 × 42 × 34 mm** : 0,28 N·m, 1,3 A, 0,22 kg (type 17HS3401) | **NEMA 17, 42 × 42 × 40 mm** : 0,40–0,42 N·m, 1,5–1,7 A, 0,28 kg (type 17HS4401) |
-| Transmission d'élévation | Vis m1 Ø16, un filet + roue bronze Z50 sur le pivot gauche du chapeau : **50:1** | Pignon inox m0,8 Z15 + secteur denté alu m0,8 Z120 sur le pivot gauche : **8:1** |
-| Moteur d'azimut (axe vertical) | **NEMA 11, 28 × 28 × 45 mm** : 0,095 N·m, 0,67 A, 0,14 kg (type 11HS18-0674S) | **NEMA 17 court, 42 × 42 × 34 mm** : 0,28 N·m, 1,3 A, 0,22 kg (type 17HS3401) |
-| Transmission d'azimut | Vis m0,8 Ø12 + roue bronze Z60 **fixée sur le socle** : **60:1** | Pignon inox m0,8 Z18 + couronne alu Z92 **fixée sur le socle** : **5,1:1** |
-| Irréversible (tient sans courant) | **Oui, sur les deux axes** | Non |
-| Axe d'élévation au-dessus de la colonne | 156 mm | 164 mm |
-| Masse de la tête, hors panneau | 1,76 kg | 1,71 kg |
-
-| Vis sans fin | Engrenages droits |
-|---|---|
-| ![Vis sans fin, avec panneau](docs/tete_vis_sans_fin_avec_panneau.png) | ![Engrenages, avec panneau](docs/tete_engrenages_avec_panneau.png) |
-| ![Vis sans fin, tête seule](docs/tete_vis_sans_fin_iso.png) | ![Engrenages, tête seule](docs/tete_engrenages_iso.png) |
-| ![Vis sans fin, côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Engrenages, côté moteurs](docs/tete_engrenages_cote_moteurs.png) |
-| ![Coupe élévation, vis](docs/tete_vis_sans_fin_coupe_elevation.png) | ![Coupe élévation, engrenages](docs/tete_engrenages_coupe_elevation.png) |
-| ![Coupe azimut, vis](docs/tete_vis_sans_fin_coupe_azimut.png) | ![Coupe azimut, engrenages](docs/tete_engrenages_coupe_azimut.png) |
-
-### Principe commun
-
-* **Azimut** : la roue (ou la couronne) est **fixée sur le socle**. Le moteur est porté par
-  la chape, et sa vis (ou son pignon) roule autour de la roue, comme sur une tourelle.
-  Les deux moteurs tournent donc avec le panneau. Aucun ne se trouve sur la trajectoire
-  du panneau, quel que soit l'azimut.
-* **Élévation** : la roue est clavetée sur le pivot gauche du chapeau en U. Le moteur est
-  sur la chape, du côté opposé au panneau. Le panneau passe à la verticale (−2°) devant
-  la chape, et à l'horizontale (+92°) au-dessus.
-* **Vis sans fin** : chaque vis tourne sur son propre arbre Ø5, porté par deux roulements
-  685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas
-  la poussée axiale de la vis.
-* **Engrenages** : la roue d'élévation est un **secteur denté** d'environ 130°. Le pignon
-  n'engrène que sur le quart avant-bas de la roue, et le reste est supprimé pour passer
-  sous la plaque du chapeau. Le moteur d'élévation est couché sous l'axe et le moteur
-  d'azimut est vertical sur la queue de la chape, arbre vers le bas.
-
-### Couples : besoins et marges dans tous les cas
-
-Les besoins sont calculés par le script à partir de la CAO :
-* partie basculante (chapeau, roue, rails, panneau) : 1,51 kg (vis) / 1,44 kg (engrenages) ;
-* centre de gravité à 54–56 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
-* couple de gravité maximal (panneau vertical) : 0,79 N·m sur Terre et 0,13 N·m sur la Lune ;
-* frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
-* vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
-  environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
-  ce qui donne **+0,35 N·m en élévation et 0,50 N·m en azimut**.
-
-Le couple disponible est le couple de maintien × 0,7, qui est le couple en marche lente en
-micro-pas, puis × rapport × rendement. Rendement d'une vis à un filet avec μ = 0,15 :
-0,29 en élévation et 0,30 en azimut. Rendement des engrenages droits : 0,97.
-
-| Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
-|---|---|---|---|
-| **Vis**, élévation (2,86 N·m dispo.) | ×20 | ×3,5 | **×2,5** |
-| **Vis**, azimut (1,22 N·m dispo.) | ×61 | ×41 | **×2,3** |
-| **Engrenages**, élévation (2,28 N·m dispo.) | ×16 | ×2,9 | **×2,0** |
-| **Engrenages**, azimut (0,97 N·m dispo.) | ×49 | ×32 | **×1,9** |
-
-* **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** C'est pour lui
-  qu'on vise une marge d'environ 2, sans surdimensionner. Les grandes marges sur la Lune
-  ne sont pas du surdimensionnement : le même matériel doit aussi faire la démonstration
-  à 1 g.
-* **Chaque moteur est le plus petit moteur courant qui convient.** Un cran en dessous, la
-  marge en vent devient insuffisante :
-  * vis, élévation : NEMA 11 de 45 mm, ×0,85 ;
-  * vis, azimut : NEMA 11 court (32 mm, ≈ 0,05 N·m), ×1,2 ;
-  * engrenages, élévation : NEMA 17 de 34 mm, ×1,3 ;
-  * engrenages, azimut : NEMA 11 de 45 mm, ×0,6.
-* À l'achat, prendre un NEMA 17 de 34 mm annoncé à **0,28 N·m**. Certains vendeurs vendent
-  sous la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20 % de marge.
-* Aucun moteur n'est long ni lourd. Le plus long fait 45 mm (le NEMA 11) et le plus lourd
-  pèse 0,28 kg.
-
-### Tenue des positions, moteurs à l'arrêt
-
-| | Vis sans fin | Engrenages droits |
-|---|---|---|
-| Tenue sans courant, sur Terre | **Oui, dans toutes les positions, même dans le vent** : les vis ont un angle d'hélice de 3,6° (élévation) et 3,8° (azimut), inférieur à l'angle de frottement (≈ 5,7°) | **Non** : en élévation, le panneau redescend vers sa butée basse (−2°). Le couple renvoyé au moteur (0,1 N·m) dépasse son couple résiduel (0,022 N·m) |
-| Tenue sans courant, sur la Lune | **Oui.** Avec le MoS₂ sous vide, le frottement peut descendre sous le seuil d'irréversibilité. Le couple renvoyé à la vis (≈ 0,0014 N·m) reste alors 11 fois plus faible que le couple résiduel du moteur | Limite : 0,016 N·m renvoyés pour 0,022 N·m de couple résiduel. Il faut garder un faible courant de maintien |
-| Courant à l'arrêt | **Aucun** : drivers coupés entre deux mouvements, consommation nulle | Courant de maintien obligatoire. À 50 % du courant nominal, ≈ 3,7 W pour les deux moteurs, soit environ 40 % des ≈ 10 W du panneau. Marge de tenue en vent à 50 % : ×1,4 (élévation) et ×1,3 (azimut). À 100 % : ×2,8 et ×2,7 |
-| Coupure d'alimentation | Rien ne bouge | Le panneau tombe sur la butée basse (prévoir une butée caoutchouc), sauf à monter un moteur à frein, plus long d'environ 30 mm |
-| Rendement, vitesse | Faible (≈ 30 %) et lent, sans conséquence pour un suivi à 0,5°/h (Lune) ou 15°/h (Terre) | ≈ 97 %, rapide |
-| Jeu | Faible, réglable par l'entraxe | Jeu de denture d'environ 0,1 mm, ≈ 0,15° au panneau |
-
-**Recommandation : la version vis sans fin.**
-* C'est la seule qui satisfait « tenir dans toutes les positions » **sans consommer** et
-  **même en cas de coupure**.
-* Sur la Lune, l'énergie est comptée : la nuit lunaire dure 14 jours.
-
-La version engrenages reste valable pour une démonstration en intérieur alimentée sur
-secteur, ou si l'on accepte un courant de maintien permanent.
-
-### Résolution et vitesses (moteurs à 200 pas/tour, 1/16 de pas)
-
-| | Vis, élévation | Vis, azimut | Engr., élévation | Engr., azimut |
-|---|---|---|---|---|
-| Pas entier au panneau | 0,036° | 0,030° | 0,225° | 0,35° |
-| Micro-pas (1/16) | 0,0023° | 0,0019° | 0,014° | 0,022° |
-| Vitesse conseillée | 14°/s (moteur à 120 tr/min) | 12°/s | 10°/s | 10°/s |
-
-Ces vitesses permettent un retour à plat ou une remise en position en quelques secondes.
-
-### Commande par ESP32
-
-* **Drivers : 2 × TMC2209**, alimentés en logique 3,3 V par l'ESP32. Ils sont silencieux
-  et pilotés par UART. Les deux drivers partagent le bus UART, avec les adresses 0 et 1
-  fixées par MS1/MS2.
-* **Câblage** :
-  * élévation : STEP GPIO 25, DIR GPIO 26 ;
-  * azimut : STEP GPIO 32, DIR GPIO 33 ;
-  * EN commun : GPIO 27 ;
-  * UART : TX GPIO 17 vers PDN_UART à travers 1 kΩ, RX GPIO 16 ;
-  * fins de course : GPIO 18 et 19, avec pull-up interne.
-* **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
-  plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
-* **Réglages** :
-  * courant de marche (`rms_current`) : 1,3 A pour les NEMA 17 de 34 mm, 1,5 A pour le
-    NEMA 17 de 40 mm, 0,67 A pour le NEMA 11 ;
-  * 16 micro-pas, StealthChop ;
-  * courant à l'arrêt (IHOLD) :
-    * **vis** : drivers désactivés par EN entre deux mouvements ;
-    * **engrenages** : 50 % à l'intérieur ou par vent faible, 100 % au-delà de 5 m/s,
-      15 % sur la Lune.
-* **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
-  sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
-  par UART.
-* **Origine** :
-  * un micro-switch en butée basse d'élévation (−2°) ;
-  * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
-
-  La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
-  surtout derrière une vis sans fin.
-* **Vent fort**, au-delà de 10 m/s, avec un anémomètre ou une prévision : mettre le panneau
-  **à plat** (élévation 90°), où le vent a le moins de prise. La vis tient seule ; les
-  engrenages ont besoin du courant de maintien à 100 %.
-* **Câbles** : ils descendent par le moyeu creux de la chape. La rotation d'azimut est
-  limitée à ±180° par la boucle de câble, puis le tracker revient en arrière. Au pôle Sud,
-  il faut un tour complet par jour lunaire : on revient en arrière une fois par jour, ou
-  l'on monte un collecteur tournant.
-
-### Points propres à la Lune
-
-* Les moteurs NEMA du commerce **ne sont pas prévus pour le vide**. Il faut une version
-  « vide » : graisse à faible dégazage, isolation classe H, sans plastique ordinaire.
-  Le principe et les tailles restent les mêmes.
-* **Pas de convection** : les moteurs ne sont alimentés que pendant les mouvements, ce qui
-  est naturel avec la vis. Leur chaleur part par conduction vers la chape en aluminium.
-* **Soudage à froid** : chaque contact associe deux matériaux différents.
-  * Vis sans fin : vis en inox contre roue en bronze.
-  * Engrenages : pignons en inox contre roues en alu 7075 anodisé dur.
-  * Roulements en 440C.
-  * Lubrification sèche au MoS₂.
-* **Régolithe** : poser un soufflet ou un capot sur les dentures et les vis.
-* **Températures de −173 à +127 °C** : jeu de denture de 0,1 mm et jeu axial de 2 mm entre
-  les flancs du chapeau et les bras de la chape (rondelles PTFE).
-
-### Vérifications faites par le script
-
-* Aucune interférence entre pièces, dans aucune des deux versions.
-* Dentures **en prise sans chevauchement** :
-  * à −2°, 40° et 92° d'élévation ;
-  * à un azimut quelconque (37°), ce qui valide les lois de rotation des vis et des pignons.
-
-  Sur la vis d'azimut, il reste un recouvrement de 0,2 mm³. Il vient de la roue modélisée
-  à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
-* Garde mini de la partie basculante sur toute la course (−2° à 92°) : **2,0 mm**. C'est le
-  jeu axial voulu entre les flancs du chapeau et les bras. Le panneau et le secteur denté
-  ne touchent rien.
-
-### Dans SolidWorks
-
-* Arborescence :
-  * `SA_Socle` : fixe. Fond, socle, roulements 6806 et roue ou couronne fixe d'azimut.
-  * `SA_Chape` : tourne en azimut, autour de l'axe Y. Chape, moteurs, vis ou pignons,
-    paliers, accouplements, roulements 608.
-  * `SA_Basculant` : tourne en élévation, autour de l'axe X. Chapeau en U, pivots, roue
-    d'élévation, rails et panneau.
-  * `SA_Reference_Trepied` : haut de la colonne, pour le repère.
-* L'origine est en haut de la colonne. L'axe d'élévation est à Y = 156 mm (vis) ou
-  Y = 164 mm (engrenages).
-* Pour animer, libérer `SA_Chape` et `SA_Basculant`, ajouter les contraintes coaxiales,
-  puis une contrainte d'engrenage :
-  * vis : 1:50 en élévation et 1:60 en azimut ;
-  * engrenages : 15:120 et 18:92.
-
-Pour régénérer ou modifier ces têtes :
-
-```bash
-python generate_tete_motorisee.py            # les deux versions (ou : VSF / ENG)
-xvfb-run -a python render_tete_motorisee.py  # rendus PNG
-```
-
-Les moteurs, les rapports et les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`…) sont en tête
-du script. Le calcul des marges se met à jour tout seul.
-
-La première étude, avec deux 28BYJ-48 et des contrepoids, a été abandonnée. Elle reste dans
-l'historique git, commits `b2470b1` (vis sans fin) et `bcab9e9` (prise directe).

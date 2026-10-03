@@ -33,11 +33,13 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
+| **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, axes, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre) et vis sans fin imprimée (filet, moyeux, vis de blocage) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
 | `optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
-| `render_apercu.py`, `render_tete_vis_sans_fin.py` | Génèrent les rendus PNG |
+| `render_apercu.py`, `render_tete_vis_sans_fin.py`, `render_explications.py` | Génèrent les rendus PNG et les images annotées |
 
 ### Ouvrir dans SolidWorks
 
@@ -487,6 +489,10 @@ justes.
 
 ### Pièces non imprimées (à acheter)
 
+La liste complète, avec les noms à chercher sur les sites marchands, les quantités, les prix
+indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
+**[`LISTE_ACHATS.md`](LISTE_ACHATS.md)**. En résumé, pour la mécanique :
+
 | Article | Qté |
 |---|---|
 | Roulement 6806-2RS (ISO 61806-2RS), 30 × 42 × 7 mm | 2 |
@@ -495,7 +501,7 @@ justes.
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) | 2 |
 | Axe acier Ø8 **en D** (méplat à 3,5 mm de l'axe), coupé à 34 mm : pivot entraîné | 1 |
 | Axe acier Ø8, coupé à 19 mm : pivot libre | 1 |
-| Accouplement flexible alu 5 mm / 5 mm (Ø19 × 25) | 2 |
+| Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 4 × M3×14, 3 × M3×25 | 25 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
@@ -536,6 +542,20 @@ Si ton imprimante préfère un autre logement :
 Toutes les pièces sont alors régénérées avec ce jeu.
 
 ### Ordre de montage
+
+| Le palier d'une vis sans fin | La vis sans fin imprimée |
+|---|---|
+| ![Palier : joues, roulements, arbre](docs/explications/palier_joues_roulements.png) | ![Vis sans fin : filet, moyeux](docs/explications/vis_sans_fin_moyeux.png) |
+
+* **Le palier** est la pièce en U qui porte une vis sans fin. Ses deux parois sont les
+  **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse.
+* **La vis sans fin imprimée** a, de chaque côté du filet, un **moyeu Ø12**. Les moyeux
+  viennent en appui sur les bagues intérieures des 685, ce qui cale la vis entre les joues.
+  Une vis sans tête M3×4 dans un moyeu bloque la vis sans fin sur l'arbre.
+* **L'accouplement flexible** relie l'axe du moteur à l'arbre :
+  * 12,5 mm de chaque axe entrent dans l'accouplement, avec environ 1 mm d'écart entre les
+    deux bouts ;
+  * sa vis de serrage se serre sur le méplat de l'axe du moteur.
 
 1. **Socle** : presser le 6806 bas par-dessous, jusqu'à l'épaulement, puis le 6806 haut
    par-dessus.

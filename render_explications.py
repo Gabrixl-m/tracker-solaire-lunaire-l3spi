@@ -4,7 +4,9 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
   - palier_joues_roulements.png : le palier d'une vis sans fin (semelle, joues, roulements,
     arbre, vis) ;
   - vis_sans_fin_moyeux.png : la vis sans fin imprimée seule (filet, moyeux, épaulements,
-    trou de la vis sans tête, alésage).
+    trou de la vis sans tête, alésage) ;
+  - axe_elevation.png : coupe par l'axe d'élévation (pivots imprimés Ø12, roulements 6801,
+    roue d'élévation, chapeau, bras de la chape).
 Sur serveur : xvfb-run -a python render_explications.py
 """
 
@@ -122,6 +124,22 @@ def main():
         ("Trou de la vis sans tête M3\n(bloque la vis sur l'arbre)", (zh, 6.0, 0), (980, 40)),
         ("Épaulement Ø6,5 : appuie sur\nla bague intérieure du roulement", (e, -2.2, 2.2), (880, 900)),
         ("Alésage Ø5,1 :\nl'arbre passe dedans", (e, 0.0, 0.0), (1180, 640)),
+    ])
+    # 3. coupe par l'axe d'élévation, panneau à plat (chapeau droit), moitié avant
+    import generate_tete_vis_sans_fin as T
+    import render_tete_vis_sans_fin as R
+    T.build_parts()
+    cut = R.coupe(T.build_head(0.0, 90.0, "tete", False), z=(-1e3, 0.0), y=(G.Z_CHAPE - 3, 1e3))
+    zt, pv = G.Z_T, G.PV()
+    rendu(cut, "axe_elevation.png", (25, zt + 45, 230), (0, zt - 12, 0), 42, [
+        (f"Roulement {pv['ref']} (rose)\ndans le bras gauche", (-44.5, zt + 7.5, 0), (30, 40)),
+        ("Roue d'élévation Z50\n(imprimée), calée sur\nle pivot par le méplat", (-30, zt + 20, 0), (560, 30)),
+        (f"Pivot libre : PETG\nØ{pv['d']:g} (imprimé)", (49, zt + 2, 0), (1180, 40)),
+        (f"Roulement {pv['ref']} (rose)\ndans le bras droit", (44.5, zt + 7.5, 0), (1180, 300)),
+        (f"Pivot entraîné :\nPETG Ø{pv['d']:g} en D\n(imprimé, porte la roue)", (-37, zt + 2, 0), (30, 420)),
+        ("Chapeau en U (bleu) :\nporte le panneau", (-53, zt - 12, 0), (30, 600)),
+        ("Bras de la chape (jaune) :\nne tourne pas en élévation", (44, zt - 40, 0), (1090, 780)),
+        ("Vis sans fin d'élévation :\nfait tourner la roue", (-30, G.z_vis_el() + 5, 0), (30, 900)),
     ])
     G.set_ajustements("reel")
 

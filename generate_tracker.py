@@ -476,6 +476,7 @@ AJUSTEMENTS = {
         taraud_m3=2.5,          # avant-trou M3 (taraudé)
         passage_m25=2.9,        # trou de passage M2,5 (NEMA 11)
         pilote=22.5,            # centrage Ø22 des moteurs
+        axe_imprime=0.0,        # Ø d'un axe imprimé qui entre dans un roulement acier
         jeu_denture=(0.10, 0.12),   # amincissement des dents des roues, mm (élévation, azimut)
         jeu_filet=0.15,         # amincissement du filet des vis (en modules)
         tete_filet=1.0,         # saillie du filet des vis (en modules)
@@ -484,7 +485,7 @@ AJUSTEMENTS = {
     "petg": dict(
         impression=True,
         roulement=0.15, serrage=0.10, moyeu=-0.05, colonne=45.6,
-        passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4,
+        passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4, axe_imprime=-0.05,
         jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15,
     ),
 }
@@ -511,7 +512,17 @@ U_BAS = -25.0                        # bas des flancs (sous l'axe)
 RAIL_X = 44.0                        # rails du panneau
 X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
 EL_REF = 40.0                        # élévation de référence du calage des vis
-MEPLAT = 3.5                         # méplat des axes Ø8 en D (version imprimée) : à 3,5 mm de l'axe
+# pivots d'élévation : cas réel = axes acier Ø8 sur roulements 608 ; version imprimée = pivots
+# PETG Ø12 sur roulements 6801 (un Ø8 en PETG ne tiendrait pas le couple de la roue d'élévation)
+PIVOTS = {
+    "reel": dict(d=8.0, roul=(22.0, 8.0, 7.0), ref="608", passage=10.0, meplat=3.5, tete=12.0, moyeu=16.0),
+    "petg": dict(d=12.0, roul=(21.0, 12.0, 5.0), ref="6801", passage=15.5, meplat=5.25, tete=18.0, moyeu=20.0),
+}
+
+
+def PV():
+    """Pivots d'élévation du jeu de cotes courant."""
+    return PIVOTS[MODE]
 
 MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, shaft=24.0, hold=0.28,
               detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
@@ -529,6 +540,7 @@ B685 = (11.0, 5.0, 5.0)              # roulement 685 : Ø11 / Ø5 x 5
 # vérifié par generate_tete_vis_sans_fin.py pour chaque jeu de cotes
 PHASES = {"reel": {"el": 30.0, "az": -1.9}, "petg": {"el": 30.0, "az": -1.9}}
 PIECES_IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Chape", "Moyeu_Chape", "Bague_Arret_Moyeu",
+                    "Pivot_Entraine", "Pivot_Libre",
                     "Palier_Vis_Azimut", "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation",
                     "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation")
 
@@ -709,9 +721,10 @@ def p_chape():
     else:
         c = c.union(_moyeu(zc))
     c = c.cut(cyl_z(20, zc + 10 - 40, z=40))                                     # passage des câbles
-    c = c.cut(cyl_x(10, 2 * xo + 2, -xo - 1, 0, zt))
-    d22 = 22 + AJ["roulement"]
-    c = c.cut(cyl_x(d22, 7, xo - 7, 0, zt)).cut(cyl_x(d22, 7, -xo, 0, zt))       # logements des 608
+    od, _id, w = PV()["roul"]
+    c = c.cut(cyl_x(PV()["passage"], 2 * xo + 2, -xo - 1, 0, zt))
+    dr = od + AJ["roulement"]
+    c = c.cut(cyl_x(dr, w, xo - w, 0, zt)).cut(cyl_x(dr, w, -xo, 0, zt))         # logements des roulements de pivots
     for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:          # passages : vis par-dessous
         c = c.cut(trou_z(AJ["passage_m3"], x, y, zc - 1, zc + 9))
     # palier et support d'azimut accrochés sous la plaque, vis par-dessus dans des lumières :
@@ -810,12 +823,12 @@ def p_support_moteur_el():
 
 
 # --- partie basculante (repère : origine sur l'axe d'élévation, X = axe, Z = normale au panneau)
-def alesage_8(x0, L, d_plat=True):
-    """Alésage Ø8 d'axe X ; en version imprimée, avec méplat (axe Ø8 en D) si d_plat."""
-    d = 8 + AJ["serrage"]
+def alesage_pivot(x0, L, d_plat=True):
+    """Alésage de pivot d'axe X ; en version imprimée, avec méplat (pivot en D) si d_plat."""
+    d = PV()["d"] + AJ["serrage"]
     h = cyl_x(d, L, x0)
     if AJ["impression"] and d_plat:
-        h = h.cut(box_span(x0 - 1, x0 + L + 1, -6, 6, MEPLAT + AJ["serrage"] / 2, 6))
+        h = h.cut(box_span(x0 - 1, x0 + L + 1, -d, d, PV()["meplat"] + AJ["serrage"] / 2, d))
     return h
 
 
@@ -824,7 +837,7 @@ def p_chapeau_u():
     u = box_span(-xo, xo, -ARM_R, ARM_R, U_TOP[0], U_TOP[1])
     for x0, x1 in ((xi, xo), (-xo, -xi)):
         u = u.union(box_span(x0, x1, -U_Y, U_Y, U_BAS, U_TOP[1]).edges("|X and <Z").fillet(8))
-    u = u.cut(alesage_8(-xo - 1, xo - xi + 2)).cut(alesage_8(xi - 1, xo - xi + 2, d_plat=False))
+    u = u.cut(alesage_pivot(-xo - 1, xo - xi + 2)).cut(alesage_pivot(xi - 1, xo - xi + 2, d_plat=False))
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
@@ -832,22 +845,25 @@ def p_chapeau_u():
 
 
 def p_pivot_entraine():
-    """Pivot gauche (acier) : serré dans le chapeau, tourne dans un 608, porte la roue d'élévation.
-    Version imprimée : axe Ø8 en D, le méplat transmet le couple de la roue au chapeau."""
-    p = cyl_x(8, U_X[1] + X_ROUE[1] + 2, -U_X[1]).union(cyl_x(12, 2, -U_X[1] - 2))
+    """Pivot gauche : serré dans le chapeau, tourne dans son roulement, porte la roue d'élévation.
+    Cas réel : axe acier Ø8. Version imprimée : pivot PETG Ø12 en D (tête comprise), le méplat
+    transmet le couple de la roue au chapeau ; il s'imprime couché sur le méplat."""
+    d = PV()["d"] + AJ["axe_imprime"]
+    p = cyl_x(d, U_X[1] + X_ROUE[1] + 2, -U_X[1]).union(cyl_x(PV()["tete"], 2, -U_X[1] - 2))
     if AJ["impression"]:
-        p = p.cut(box_span(-U_X[1] - 3, X_ROUE[1] + 3, -6, 6, MEPLAT, 7))
+        p = p.cut(box_span(-U_X[1] - 3, X_ROUE[1] + 3, -PV()["tete"], PV()["tete"], PV()["meplat"], PV()["tete"]))
     return p
 
 
 def p_pivot_libre():
-    return cyl_x(8, U_X[1] - ARM_X[0] + 1, ARM_X[0] - 1).union(cyl_x(12, 2, U_X[1]))
+    d = PV()["d"] + AJ["axe_imprime"]
+    return cyl_x(d, U_X[1] - ARM_X[0] + 1, ARM_X[0] - 1).union(cyl_x(PV()["tete"], 2, U_X[1]))
 
 
 def p_roue_elevation():
     g = gear_x(VIS_EL["z"], VIS_EL["m"], X_ROUE[1] - X_ROUE[0], X_ROUE[0],
                backlash=AJ["jeu_denture"][0] / VIS_EL["m"])
-    g = g.union(cyl_x(16, 4, X_ROUE[1])).cut(alesage_8(X_ROUE[0] - 2, 20))
+    g = g.union(cyl_x(PV()["moyeu"], 4, X_ROUE[1])).cut(alesage_pivot(X_ROUE[0] - 2, 20))
     for k in range(5):
         a = math.radians(72 * k)
         g = g.cut(cyl_x(7, 12, X_ROUE[0] - 2, 15 * math.cos(a), 15 * math.sin(a)))
@@ -1067,8 +1083,9 @@ def build_head_parts():
         reg("Moyeu_Chape", p_moyeu_chape(), "PETG", COL["chape"], "Moyeu d'azimut, vissé sous la chape")
     reg("Bague_Arret_Moyeu", p_bague_arret(), mat("Acier inox 17-4PH"), COL["steel"],
         "Rondelle d'arrêt du moyeu (2 x M3)")
-    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["roulement"],
-        "Roulement d'élévation 608 8 x 22 x 7, 2RS ou ZZ")
+    od, di, w = PV()["roul"]
+    reg(f"Roulement_{PV()['ref']}", roulement_x(od, di, w), "Acier 440C", COL["roulement"],
+        f"Roulement d'élévation {PV()['ref']} {di:g} x {od:g} x {w:g}, 2RS ou ZZ")
     reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["roulement"],
         "Roulement 685ZZ ou 685-2RS 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)")
     reg("Vis_Azimut", p_vis(VIS_AZ), mat("Acier inox 17-4PH"), COL["steel"],
@@ -1088,9 +1105,9 @@ def build_head_parts():
         f"Moteur pas à pas d'élévation : {MOT_EL['nom']}")
     reg("Accouplement", p_accouplement(), "Al 7075-T73", COL["coupler"], "Accouplement flexible 5/5")
     reg("Chapeau_U", p_chapeau_u(), mat("Al 6061-T6"), COL["u"], "Chapeau en U renversé porte-panneau")
-    reg("Pivot_Entraine", p_pivot_entraine(), "Acier inox 17-4PH", COL["steel"],
-        "Pivot Ø8 portant la roue d'élévation" + (" (axe en D)" if imp else ""))
-    reg("Pivot_Libre", p_pivot_libre(), "Acier inox 17-4PH", COL["steel"], "Pivot Ø8 libre")
+    reg("Pivot_Entraine", p_pivot_entraine(), mat("Acier inox 17-4PH"), COL["steel"],
+        f"Pivot Ø{PV()['d']:g} portant la roue d'élévation" + (" (en D)" if imp else ""))
+    reg("Pivot_Libre", p_pivot_libre(), mat("Acier inox 17-4PH"), COL["steel"], f"Pivot Ø{PV()['d']:g} libre")
     reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
@@ -1192,8 +1209,9 @@ def build_head(az, el, with_panel=True):
     if AJ["impression"]:
         add(h, "Moyeu_Chape")
     add(h, "Bague_Arret_Moyeu")
-    add(h, "Roulement_608", trans(ARM_X[1] - 7, 0, Z_T), "Roulement_608_1")
-    add(h, "Roulement_608", trans(-ARM_X[1], 0, Z_T), "Roulement_608_2")
+    rp, wp = f"Roulement_{PV()['ref']}", PV()["roul"][2]
+    add(h, rp, trans(ARM_X[1] - wp, 0, Z_T), f"{rp}_1")
+    add(h, rp, trans(-ARM_X[1], 0, Z_T), f"{rp}_2")
     # azimut : vis le long de X qui roule autour de la roue fixe, NEMA 11 en bout côté -X
     a, ya = AZ_VIS, y_vis_az()
     add(h, "Palier_Vis_Azimut")

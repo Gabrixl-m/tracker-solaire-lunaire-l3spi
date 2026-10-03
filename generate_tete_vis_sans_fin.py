@@ -51,6 +51,8 @@ ORIENTATION = {
     "Support_Moteur_Azimut": [((1, 0, 0), 180)], "Vis_Azimut": [], "Palier_Vis_Elevation": [],
     "Support_Moteur_Elevation": [], "Vis_Elevation": [], "Chapeau_U": [((1, 0, 0), 180)],
     "Roue_Elevation": [((0, 1, 0), -90)],
+    "Pivot_Entraine": [((1, 0, 0), 180)],        # couché sur son méplat
+    "Pivot_Libre": [((0, 1, 0), 90)],            # debout, tête en bas
 }
 
 
@@ -199,19 +201,22 @@ def a_plat(wp, rots):
 
 
 def eprouvette():
-    """Éprouvette de réglage : logements 608 et 685 en trois jeux, alésages Ø8 en D et Ø5,
-    trous M3, et un téton Ø30 pour la bague intérieure d'un 6806."""
+    """Éprouvette de réglage : logements des roulements de pivots (6801) et des 685 en trois jeux,
+    alésages de pivot en D et Ø5, trous M3, téton Ø30 (bague intérieure d'un 6806) et téton de
+    pivot (bague intérieure d'un 6801)."""
     aj = G.AJ
     e = box_span(0, 112, 0, 62, 0, 6).edges("|Z").fillet(3)
-    for i, dj in enumerate((-0.10, 0.0, 0.10)):           # 608 : Ø22 + jeu du réglage ± 0,1
-        e = e.cut(cyl_z(22 + aj["roulement"] + dj, 8, 16 + 26 * i, 16, -1))
+    pv = G.PV()
+    for i, dj in enumerate((-0.10, 0.0, 0.10)):           # roulement de pivot + jeu du réglage ± 0,1
+        e = e.cut(cyl_z(pv["roul"][0] + aj["roulement"] + dj, 8, 16 + 26 * i, 16, -1))
     for i, dj in enumerate((-0.10, 0.0, 0.10)):           # 685 : Ø11
         e = e.cut(cyl_z(11 + aj["roulement"] + dj, 8, 10 + 15 * i, 46, -1))
-    d8 = cyl_z(8 + aj["serrage"], 8, 59, 46, -1).cut(box_span(50, 70, 46 + G.MEPLAT + aj["serrage"] / 2, 60, -2, 8))
-    e = e.cut(d8)
-    e = e.cut(cyl_z(5 + aj["serrage"], 8, 72, 46, -1))
+    dp = pv["d"] + aj["serrage"]
+    e = e.cut(cyl_z(dp, 8, 57, 46, -1).cut(box_span(45, 70, 46 + pv["meplat"] + aj["serrage"] / 2, 60, -2, 8)))
+    e = e.cut(cyl_z(5 + aj["serrage"], 8, 71, 46, -1))
     e = e.cut(cyl_z(aj["passage_m3"], 8, 83, 46, -1)).cut(cyl_z(aj["taraud_m3"], 8, 93, 46, -1))
     e = e.union(cyl_z(30 + aj["moyeu"], 8, 95, 16, 6))   # téton du moyeu dans le 6806
+    e = e.union(cyl_z(pv["d"] + aj["axe_imprime"], 8, 104, 46, 6))   # téton de pivot dans le 6801
     return e
 
 

@@ -2,13 +2,17 @@
 
 Tout ce qu'il faut acheter pour **une tête rotative à vis sans fin** en version PETG, en plus
 des pièces imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, § 12).
+Les deux pivots d'élévation sont **imprimés** : le seul axe en acier à acheter est la tige Ø5
+des arbres des vis sans fin.
 
 * La colonne « À chercher » donne le nom à taper sur les sites marchands (AliExpress,
   Amazon, etc.), où ces pièces sont presque toujours vendues sous leur nom anglais.
 * Les prix sont **indicatifs** (ordre de grandeur, par article).
 * Les roulements sont en **rose** dans les fichiers 3D.
 
-![Palier : joues, roulements, arbre, vis](docs/explications/palier_joues_roulements.png)
+| Palier d'une vis sans fin | Axe d'élévation imprimé |
+|---|---|
+| ![Palier : joues, roulements, arbre, vis](docs/explications/palier_joues_roulements.png) | ![Axe d'élévation : pivots PETG, roulements 6801](docs/explications/axe_elevation.png) |
 
 ---
 
@@ -17,20 +21,20 @@ des pièces imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, § 12)
 | Article | Caractéristiques | Qté | À chercher | Où il va | ≈ Prix |
 |---|---|---|---|---|---|
 | **Roulement 6806-2RS** (ISO 61806) | 30 × 42 × 7 mm | 2 | `6806-2RS bearing 30x42x7` | Azimut : dans le socle, autour du moyeu de la chape | 3 € |
-| **Roulement 608-2RS** (ou 608ZZ) | 8 × 22 × 7 mm | 2 | `608-2RS bearing 8x22x7` | Élévation : dans les bras de la chape, sur les pivots Ø8 | 1 € |
+| **Roulement 6801-2RS** (ISO 61801, ou 6801ZZ) | 12 × 21 × 5 mm | 2 | `6801-2RS bearing 12x21x5` (ou `61801-2RS`) | Élévation : dans les bras de la chape, sur les pivots imprimés Ø12 | 1–2 € |
 | **Roulement 685-2RS** (ou 685ZZ) | 5 × 11 × **5** mm | 4 | `685-2RS bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
 | **Accouplement flexible 5 mm / 5 mm** | Alésages Ø5 des deux côtés, Ø19 × 25 mm, alu | 2 | `flexible shaft coupling 5mm x 5mm D19 L25` | Relie l'axe de chaque moteur à l'arbre de sa vis sans fin (la pièce bleue) | 2–4 € |
 | **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 52,5 mm** : les arbres des deux vis sans fin | 3–5 € |
-| **Axe Ø8 en D** | Ø8 mm avec méplat (épaisseur 7,5 mm), au moins 60 mm | 1 | `8mm D shaft 100mm` (ou `D-cut shaft 8mm`) | À couper en **34 mm** (pivot qui porte la roue d'élévation) et **19 mm** (pivot libre) | 3–6 € |
 
 **Pièges à éviter** :
 * **685** : prendre **2RS ou ZZ**. Le 685 « ouvert » ne fait que 3 mm de large, alors que
   les joues sont prévues pour 5 mm.
 * **Accouplement** : bien **5 mm des deux côtés**. Les modèles 5 mm / 8 mm, très courants,
   sont faits pour les vis trapézoïdales d'imprimante 3D.
-* **Axe en D** : le méplat transmet le couple de la roue d'élévation au chapeau. Une tige
-  ronde de Ø8 convient aussi, à condition d'y limer un méplat de 0,5 mm de profondeur
-  sur toute la longueur.
+* **6801** : c'est un roulement fin (5 mm de large), à ne pas confondre avec le 6001
+  (12 × 28 × 8), plus gros. Vérifier **12 × 21 × 5** dans l'annonce.
+* **Pas d'axe Ø8** : les pivots d'élévation sont les pièces imprimées `Pivot_Entraine`
+  et `Pivot_Libre`, en Ø12. Un pivot PETG de Ø8 casserait sous le couple de la roue.
 
 ## 2. Moteurs et électronique
 
@@ -85,14 +89,13 @@ Compter 10 à 15 € en tout.
 |---|---|---|---|
 | **Filament PETG 1,75 mm** (teinte claire de préférence) | 1 bobine de 1 kg (environ 300 g utilisés) | `PETG filament 1.75mm 1kg` | 20 € |
 | **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG) | 1 tube | `PTFE grease` | 8 € |
-| Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, axes Ø8 dans le chapeau) | 1 | `super glue` | 3 € |
+| Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, pivots imprimés dans le chapeau) | 1 | `super glue` | 3 € |
 
 ## 6. Optionnel
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Rondelles PTFE ou nylon Ø8 / Ø16 × 1 mm | 4 | Jeu axial de 2 mm entre les flancs du chapeau et les bras de la chape |
-| Bague d'arrêt Ø8 (`8mm shaft collar`) | 2 | Remplace la tête Ø12 des pivots du modèle, si tu ne colles pas les axes |
+| Rondelles PTFE ou nylon Ø12 / Ø18 × 1 mm (`12x18x1 PTFE washer`) | 4 | Jeu axial de 2 mm entre les flancs du chapeau et les bras de la chape |
 | Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent |
 
 ---

@@ -28,13 +28,13 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `CAO/Cas_Reel/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
 | `CAO/Cas_Reel/pieces/*.step` | Toutes les pièces seules (trépied, tête, panneau, unité au sol), chacune dans son repère de construction |
 | **`CAO/Demo_Terre_PETG/`** | **Démonstration sur Terre**, tête imprimée en 3D en PETG, avec les jeux d'ajustement (voir § 12) : |
-| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 14 pièces à imprimer, déjà orientées et posées sur le plateau |
-| `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, axes, moteurs et vis), pour vérifier le montage |
+| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 16 pièces à imprimer, déjà orientées et posées sur le plateau |
+| `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
-| **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, axes, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre) et vis sans fin imprimée (filet, moyeux, vis de blocage) |
+| **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) et axe d'élévation imprimé (pivots, roulements 6801, roue) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
@@ -60,7 +60,7 @@ Repère : **Y vertical**, c'est-à-dire que le plan de dessus de SolidWorks corr
   Le sommet de la colonne, sur lequel repose la tête, est à Y = 544 mm.
 * Les pièces arrivent fixes, sans contraintes. Pour animer le tracker :
   * libérer `SA_Tete_Orientable` et ajouter une contrainte coaxiale entre le moyeu de la `Chape` et les `Roulement_6806` ;
-  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre les pivots (`Pivot_Entraine`, `Pivot_Libre`) et les `Roulement_608` ;
+  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre les pivots (`Pivot_Entraine`, `Pivot_Libre`) et les `Roulement_608` (`Roulement_6801` dans la version PETG) ;
   * ajouter des contraintes d'engrenage entre `Vis_Azimut` et `Roue_Azimut_Fixe` (rapport 1:60), puis entre `Vis_Elevation` et `Roue_Elevation` (1:50).
 
 Arborescence :
@@ -87,7 +87,7 @@ Tracker_Lunaire_PoleSud
 | ![Côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Coupe azimut](docs/tete_vis_sans_fin_coupe_azimut.png) |
 | ![Avec panneau, côté moteurs](docs/tete_vis_sans_fin_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_vis_sans_fin_avec_panneau_face.png) |
 
-| Coupe par les axes : roulements en rose (6806 dans le socle, 608 dans les bras) |
+| Coupe par les axes (cas réel) : roulements en rose (6806 dans le socle, 608 dans les bras) |
 |---|
 | ![Coupe des roulements](docs/tete_vis_sans_fin_coupe_roulements.png) |
 
@@ -96,8 +96,8 @@ Tracker_Lunaire_PoleSud
 | Élément | Choix |
 |---|---|
 | **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
-| **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements 608 de l'axe d'élévation, à 156 mm au-dessus de la colonne (700 mm du sol) |
-| **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux axes Ø8 dans les roulements 608 et porte les deux rails du panneau |
+| **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements de l'axe d'élévation (608 ; 6801 en version imprimée), à 156 mm au-dessus de la colonne (700 mm du sol) |
+| **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux pivots dans les roulements des bras et porte les deux rails du panneau. Cas réel : axes inox Ø8 sur 608. Démonstration : pivots **imprimés en PETG, Ø12**, sur 6801 (§ 12) |
 | **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
 | **Élévation (axe X)** | **NEMA 17 de 34 mm** + vis sans fin m1 Ø16 sur la **roue bronze Z50** calée sur le pivot gauche du chapeau : **50:1**. Le moteur est à l'arrière de la chape, du côté opposé au panneau |
 | **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas la poussée axiale de la vis |
@@ -110,7 +110,8 @@ Tracker_Lunaire_PoleSud
 | Réf. | Dimensions (Ø int. × Ø ext. × largeur) | Qté | Emplacement |
 |---|---|---|---|
 | **6806** (ISO 61806) | 30 × 42 × 7 mm | 2 | Azimut : dans le socle, autour du moyeu de la chape |
-| **608** | 8 × 22 × 7 mm | 2 | Élévation : dans les bras de la chape, sur les pivots Ø8 du chapeau |
+| **608** | 8 × 22 × 7 mm | 2 | Élévation, **cas réel** : dans les bras de la chape, sur les axes Ø8 du chapeau |
+| **6801** (ISO 61801) | 12 × 21 × 5 mm | 2 | Élévation, **démonstration PETG** : remplace les 608, sur les pivots imprimés Ø12 |
 | **685ZZ** ou **685-2RS** | 5 × 11 × 5 mm | 4 | Arbres des deux vis sans fin, deux par vis, dans les paliers |
 
 * **685** : prendre une version **protégée, ZZ ou 2RS**. Le 685 ouvert ne fait que 3 mm de
@@ -336,9 +337,10 @@ Le trépied pèse 4,3 kg.
 | Rondelle d'arrêt du moyeu | Inox 17-4PH | **PETG imprimé** |
 | Roues des vis sans fin (azimut et élévation) | Bronze CuSn12 | **PETG imprimé** |
 | Vis sans fin | Inox 17-4PH | **PETG imprimé** |
-| Arbres des vis Ø5, pivots d'élévation Ø8 | Inox 17-4PH | Acier, non imprimés : tige Ø5 rectifiée, axe Ø8 (dont un en D) |
+| Arbres des vis sans fin Ø5 | Inox 17-4PH | Acier, non imprimés : tige Ø5 rectifiée |
+| Pivots d'élévation | Inox 17-4PH, Ø8 (dont un en D), sur 608 | **PETG imprimé**, Ø12 (l'entraîné en D), sur 6801 |
 | Accouplements | Al 7075-T73 | Accouplements flexibles alu 5/5 du commerce |
-| Roulements 6806, 608, 685 | Acier 440C, lubrification sèche (MoS₂) | Roulements acier standard (2RS), graissés |
+| Roulements | 6806, 608, 685 en acier 440C, lubrification sèche (MoS₂) | 6806, **6801**, 685 en acier standard (2RS), graissés |
 | Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE |
 | Visserie | Inox ou titane | Vis CHC acier M3 et M2,5 |
 | Moteurs | Version vide / spatiale (même taille) | NEMA 17 et NEMA 11 du commerce |
@@ -440,12 +442,13 @@ xvfb-run -a python render_tete_vis_sans_fin.py   # rendus de la tête seule
 
 Pour la démonstration, toute la partie rotative est imprimée en PETG, **vis sans fin
 comprises**. Restent en métal : le trépied, les deux rails du panneau, et les pièces du
-commerce qu'on ne peut pas imprimer de façon fiable (roulements, axes, moteurs, vis).
+commerce qu'on ne peut pas imprimer de façon fiable (roulements, arbres Ø5 des vis sans fin,
+moteurs, vis). Les **pivots d'élévation sont imprimés** eux aussi.
 
 Les fichiers sont dans **`CAO/Demo_Terre_PETG/`**. Ce sont les mêmes pièces que le cas réel,
 générées avec le jeu de cotes `"petg"` : les trous et les dentures ont des jeux qui
 compensent l'impression, et quelques formes sont adaptées pour s'imprimer sans support.
-L'assemblage imprimé complet, avec roulements, axes, moteurs et toutes les vis, a été vérifié
+L'assemblage imprimé complet, avec roulements, arbres, moteurs et toutes les vis, a été vérifié
 par le script :
 * **aucune interférence** entre pièces, vis comprises ;
 * chaque tête de vis a sa place, et aucune vis ne dépasse de son trou ;
@@ -465,18 +468,20 @@ par le script :
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
 | `Bague_Arret_Moyeu` | 1 | À plat | |
-| `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø8 en D côté roue |
-| `Roue_Elevation` | 1 | À plat, moyeu en haut | Alésage Ø8 en D |
+| `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø12 en D côté roue |
+| `Roue_Elevation` | 1 | À plat, moyeu en haut | Alésage Ø12 en D |
+| `Pivot_Entraine` | 1 | Couché sur son méplat | Ø12 en D, 34 mm tête comprise ; porte la roue. 100 % de remplissage |
+| `Pivot_Libre` | 1 | Debout, tête en bas | Ø12, 19 mm tête comprise. 100 % de remplissage |
 | `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
 | `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | |
 | `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
 
-Environ 300 g de PETG (411 g si tout était plein).
+Environ 310 g de PETG (414 g si tout était plein).
 
 **Réglages conseillés** :
 * PETG, couches de 0,2 mm ;
 * 4 périmètres, 40 % de remplissage gyroïde ;
-* **100 %** pour les deux vis et les deux roues ;
+* **100 %** pour les deux vis, les deux roues et les deux pivots ;
 * compensation de la patte d'éléphant (≈ 0,2 mm) ;
 * aucun support ;
 * teinte claire de préférence : un PETG noir en plein soleil d'été peut approcher sa
@@ -496,11 +501,9 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Article | Qté |
 |---|---|
 | Roulement 6806-2RS (ISO 61806-2RS), 30 × 42 × 7 mm | 2 |
-| Roulement 608-2RS (ou 608ZZ), 8 × 22 × 7 mm | 2 |
+| Roulement **6801-2RS** (ISO 61801-2RS, ou 6801ZZ), 12 × 21 × 5 mm | 2 |
 | Roulement 685-2RS (ou 685ZZ), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
-| Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) | 2 |
-| Axe acier Ø8 **en D** (méplat à 3,5 mm de l'axe), coupé à 34 mm : pivot entraîné | 1 |
-| Axe acier Ø8, coupé à 19 mm : pivot libre | 1 |
+| Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 4 × M3×14, 3 × M3×25 | 25 |
@@ -509,16 +512,18 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
 
-Les axes Ø8 du modèle ont une tête Ø12 de 2 mm, qui sert d'épaulement. Avec une tige
-du commerce, une goutte de colle ou une bague d'arrêt Ø8 la remplace : les axes sont
-serrés dans le chapeau.
+Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
+plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
+car un pivot PETG de Ø8 ne tiendrait pas le couple de la roue d'élévation (voir « Ce que
+change le PETG »). Leur tête Ø18 de 2 mm sert d'épaulement contre le flanc du chapeau.
 
 ### Jeux d'ajustement de la version imprimée
 
 | Ajustement | Cas réel | PETG | Pourquoi |
 |---|---|---|---|
-| Logements de roulements (608, 685, 6806) | nominal | **+0,15 mm** | Les trous imprimés sortent plus petits ; on obtient un serrage léger du roulement |
-| Alésage d'un axe acier (Ø5 des vis, Ø8 des pivots et de la roue) | nominal | **+0,10 mm**, méplat en D pour le Ø8 | Serré. Le méplat transmet le couple de la roue au chapeau, et une vis de pression bloque chaque vis sans fin |
+| Logements de roulements (608 / 6801, 685, 6806) | nominal | **+0,15 mm** | Les trous imprimés sortent plus petits ; on obtient un serrage léger du roulement |
+| Alésage d'un axe (Ø5 acier des vis ; pivot Ø8 acier ou Ø12 PETG dans le chapeau et la roue) | nominal | **+0,10 mm**, en D côté roue (méplat à 5,25 mm de l'axe pour le Ø12) | Serré. Le méplat transmet le couple de la roue au chapeau, et une vis de pression bloque chaque vis sans fin |
+| Pivots imprimés dans les 6801 | Ø8 acier | **Ø11,95** | Les diamètres extérieurs imprimés sortent un peu plus gros : serrage léger de la bague intérieure |
 | Moyeu de la chape dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
 | Téton du fond dans la colonne (Ø int. 46) | Ø45,5 | **Ø45,6** | Glissant |
 | Trous de passage M3 / M2,5 | 3,4 / 2,9 | **3,5 / 3,0** | |
@@ -531,9 +536,10 @@ serrés dans le chapeau.
 
 **Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages
 que les pièces :
-* trois logements de 608 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
-* un alésage Ø8 en D, un Ø5, un passage et un avant-trou M3 ;
-* un téton Ø29,95 pour le 6806.
+* trois logements de 6801 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
+* un alésage Ø12 en D, un Ø5, un passage et un avant-trou M3 ;
+* un téton Ø29,95 pour le 6806 et un téton Ø11,95 pour le 6801 (essayer un vrai roulement
+  dessus : il doit entrer en forçant légèrement).
 
 Si ton imprimante préfère un autre logement :
 1. change la valeur dans `AJUSTEMENTS["petg"]`, en tête de `generate_tracker.py` ;
@@ -546,6 +552,10 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 | Le palier d'une vis sans fin | La vis sans fin imprimée |
 |---|---|
 | ![Palier : joues, roulements, arbre](docs/explications/palier_joues_roulements.png) | ![Vis sans fin : filet, moyeux](docs/explications/vis_sans_fin_moyeux.png) |
+
+| L'axe d'élévation imprimé : pivots PETG Ø12, roulements 6801, roue |
+|---|
+| ![Axe d'élévation](docs/explications/axe_elevation.png) |
 
 * **Le palier** est la pièce en U qui porte une vis sans fin. Ses deux parois sont les
   **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse.
@@ -566,15 +576,17 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 4. **Fond** : 3 × M3×25 par-dessous, à travers le téton. Poser la tête sur la colonne :
    * percer la colonne Ø3,4 à 8 mm sous son sommet, face au trou du téton ;
    * mettre la vis anti-rotation M3×6.
-5. **Chape** : sur l'établi, presser les deux 608 dans les bras. Monter ensuite la
+5. **Chape** : sur l'établi, presser les deux 6801 dans les bras. Monter ensuite la
    chaîne d'élévation :
    * le palier avec ses deux 685, la vis sur sa tige Ø5 et sa vis de pression ;
    * l'accouplement, le support et le NEMA 17.
 
    Ces pièces sont vissées par-dessous la chape.
 6. **Chapeau** : le présenter sur la chape, mettre la roue d'élévation entre les bras, puis
-   enfiler le pivot en D à travers le flanc, le 608 et la roue. Mettre le pivot libre de
-   l'autre côté.
+   enfiler le pivot imprimé en D à travers le flanc, le 6801 et la roue, méplat aligné avec
+   ceux du flanc et de la roue. Mettre le pivot libre de l'autre côté, à travers le flanc
+   et le 6801. Les deux pivots sont serrés dans le chapeau : une goutte de colle
+   cyanoacrylate sous la tête les empêche de ressortir.
 7. **Chape sur le moyeu** : 3 × M3×12 par-dessus.
 8. **Chaîne d'azimut** : glisser le palier d'azimut (685, vis, tige) sous la chape, la vis
    venant en prise radialement avec la roue fixe. Mettre ensuite le support, le NEMA 11 et
@@ -602,6 +614,16 @@ Toutes les pièces sont alors régénérées avec ce jeu.
     du PETG.
   * La marge au vent de 10 m/s reste de ×1,7, et de ×2,5 en intérieur.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
+* **Pivots imprimés Ø12** : le pivot entraîné transmet le couple de la roue au chapeau.
+  * En marche (poids du panneau et vent de 10 m/s, ≈ 1,2 N·m), il travaille à environ
+    4 MPa en torsion. Moteur calé à 0,9 A (2,8 N·m), environ 9 MPa : le tiers de la
+    résistance au cisaillement du PETG (≈ 30 MPa).
+  * Un pivot PETG de Ø8 monterait à 28 MPa, à la limite de la rupture : d'où le Ø12 et
+    les roulements 6801.
+  * Il s'imprime **couché**, pour que les couches suivent l'axe. Imprimé debout, il
+    casserait en torsion entre deux couches.
+  * Le pivot libre ne porte que la moitié du poids de la partie basculante (≈ 7 N) : il
+    peut s'imprimer debout.
 * **Fluage** : sous une charge permanente, le PETG se déforme lentement. Entre deux
   démonstrations, garer le panneau **à plat (élévation 90°)**, où la pesanteur ne charge
   presque plus la denture.

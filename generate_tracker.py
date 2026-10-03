@@ -25,7 +25,7 @@ import cadquery as cq
 from cadquery import Location, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_CAD = os.path.join(HERE, "CAO")
+OUT_CAD = os.path.join(HERE, "CAO", "Cas_Reel")
 OUT_PARTS = os.path.join(OUT_CAD, "pieces")
 OUT_DOC = os.path.join(HERE, "docs")
 
@@ -48,7 +48,7 @@ P = dict(
     z_ball=40.0,                   # hauteur du centre de la rotule de pied
     leg_phis=(90.0, 210.0, 330.0), # jambes en Y, à 120° (repère Z-up)
     # Angle φ entre jambe et colonne : valeur optimale calculée par optimisation_angle.py
-    leg_angle=32.0,
+    leg_angle=32.5,
     tube_up=(25.0, 1.5), tube_low=(20.0, 1.5),  # tubes de jambe (Ø, épaisseur)
     r_lower_pin=52.0,              # axe d'entretoise sur le collier inférieur
     lug_off=28.0,                  # excentration de la chape d'entretoise sur la jambe
@@ -118,6 +118,8 @@ MAT = {
     "Acier inox 17-4PH":   7800.0,
     "Acier 440C":          7700.0,
     "Bronze CuSn12":       8800.0,
+    "PETG":                1270.0,
+    "Acier (visserie)":    7850.0,
     "Verre 3,2 mm + EVA + backsheet (eq)": 2500.0,
     "Silicium polycristallin": 2330.0,
     "PPO (boîte de jonction)": 1100.0,
@@ -210,6 +212,7 @@ def trans(x, y, z):
 def p_colonne():
     od, t, z0 = P["col_od"], P["col_t"], P["z_col_bot"]
     tb = tube_z(od, t, Z_EMB - z0, z0)
+    tb = tb.cut(cyl_dir(3.4, 8, (0, -od / 2 + 4, Z_EMB - 8), (0, -1, 0)))   # vis anti-rotation de la tête
     # embout inférieur conique creux (évite l'accumulation de régolithe)
     cone = cq.Workplane().add(cq.Solid.makeCone(od / 2, 6, 25, Vector(0, 0, z0), Vector(0, 0, -1)))
     cone = cone.cut(cq.Workplane().add(cq.Solid.makeCone(od / 2 - t, 4.5, 23, Vector(0, 0, z0), Vector(0, 0, -1))))
@@ -448,12 +451,52 @@ def gear_x(z, m, w, x0=0.0, **kw):
 #     roule autour de la roue fixe, comme sur une tourelle.
 #   - Chapeau en U renversé, qui pivote en élévation (axes Ø8 sur roulements 608)
 #     et porte le panneau. La roue d'élévation est sur son pivot gauche.
-#   Élévation : NEMA 17 de 34 mm + vis m1 Ø16 / roue bronze Z50 (50:1).
-#   Azimut    : NEMA 11 de 45 mm + vis m0,8 Ø12 / roue bronze Z60 (60:1).
+#   Élévation : NEMA 17 de 34 mm + vis m1 Ø16 / roue Z50 (50:1).
+#   Azimut    : NEMA 11 de 45 mm + vis m0,8 Ø12 / roue Z60 (60:1).
 #   Les deux vis sont irréversibles : la tête tient moteurs coupés, sans contrepoids.
 #   Chaque vis tourne sur son arbre (2 roulements 685), reliée au moteur par un
 #   accouplement flexible : le moteur ne reçoit pas la poussée de la vis.
 # ---------------------------------------------------------------------------
+# AJUSTEMENTS : deux jeux de cotes pour les mêmes pièces.
+#   "reel" : cas réel (pièces usinées), cotes nominales.
+#   "petg" : démonstration sur Terre, pièces imprimées en 3D en PETG. Les trous
+#            imprimés sortent plus petits et les dents moins précises : jeux
+#            d'ajustement, dentures plus jeu, et quelques formes adaptées à
+#            l'impression (moyeu de chape séparé, vis à moyeux, méplats).
+#   set_ajustements("petg") avant build_head_parts().
+AJUSTEMENTS = {
+    "reel": dict(
+        impression=False,
+        roulement=0.0,          # logement de roulement : + sur le Ø
+        serrage=0.0,            # alésage d'un axe acier fixé dans la pièce (Ø5 des vis, Ø8 des pivots)
+        moyeu=0.0,              # Ø du moyeu de chape dans les bagues intérieures des 6806 (Ø30)
+        colonne=45.5,           # Ø du téton de centrage dans la colonne (Ø intérieur 46)
+        passage_m3=3.4,         # trou de passage M3
+        taraud_m3=2.5,          # avant-trou M3 (taraudé)
+        passage_m25=2.9,        # trou de passage M2,5 (NEMA 11)
+        pilote=22.5,            # centrage Ø22 des moteurs
+        jeu_denture=(0.10, 0.12),   # amincissement des dents des roues, mm (élévation, azimut)
+        jeu_filet=0.15,         # amincissement du filet des vis (en modules)
+        tete_filet=1.0,         # saillie du filet des vis (en modules)
+        entraxe=0.0,            # augmentation des entraxes vis / roue (mm)
+    ),
+    "petg": dict(
+        impression=True,
+        roulement=0.15, serrage=0.10, moyeu=-0.05, colonne=45.6,
+        passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4,
+        jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15,
+    ),
+}
+MODE = "reel"
+AJ = AJUSTEMENTS[MODE]
+
+
+def set_ajustements(mode):
+    """Choisit le jeu de cotes ("reel" ou "petg") ; reconstruire ensuite les pièces."""
+    global MODE, AJ
+    MODE, AJ = mode, AJUSTEMENTS[mode]
+
+
 COL_ID = P["col_od"] - 2 * P["col_t"]
 SOCLE_OD, SOCLE_ID = 62.0, 56.0
 Z_ROUL1, Z_ROUL2 = 58.0, 45.0        # roulements 6806 d'azimut
@@ -467,22 +510,39 @@ U_BAS = -25.0                        # bas des flancs (sous l'axe)
 RAIL_X = 44.0                        # rails du panneau
 X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
 EL_REF = 40.0                        # élévation de référence du calage des vis
+MEPLAT = 3.5                         # méplat des axes Ø8 en D (version imprimée) : à 3,5 mm de l'axe
 
 MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, shaft=24.0, hold=0.28,
               detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
 MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, shaft=20.0, hold=0.095,
               detent=0.005, amp=0.67, ohm=6.9, masse=0.14, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
-VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0)      # vis m1 Ø16 + roue Z50
-VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0)       # vis m0,8 Ø12 + roue fixe Z60
-# vis d'azimut le long de X, en (y, z) ; roue fixe de z 72 à 80
-AZ_VIS = dict(zr=(72.0, 80.0), y=-30.0, z=76.0, palier=(14.0, 19.0), x_joint=-32.5, x_face=-52.5)
+# vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu (version imprimée)
+VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0, moyeu=5.0)       # vis m1 Ø16 + roue Z50
+VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0, moyeu=8.0)        # vis m0,8 Ø12 + roue fixe Z60
+# vis d'azimut le long de X à la hauteur z ; roue fixe de z 72 à 80
+AZ_VIS = dict(zr=(72.0, 80.0), z=76.0, palier=(14.0, 19.0), x_joint=-32.5, x_face=-52.5)
 # vis d'élévation le long de Y, en x = -30, sous la roue
 EL_VIS = dict(palier=(14.0, 19.0), y_joint=-32.5, y_face=-56.5)
-EL_ENTRAXE = VIS_EL["m"] * VIS_EL["z"] / 2 + VIS_EL["dp"] / 2
 B685 = (11.0, 5.0, 5.0)              # roulement 685 : Ø11 / Ø5 x 5
 # calage angulaire des vis (dents en prise sans chevauchement) : recalculé et
-# vérifié par generate_tete_vis_sans_fin.py
-PHASE = {"el": 30.0, "az": -1.9}
+# vérifié par generate_tete_vis_sans_fin.py pour chaque jeu de cotes
+PHASES = {"reel": {"el": 30.0, "az": -1.9}, "petg": {"el": 30.0, "az": -1.9}}
+PIECES_IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Chape", "Moyeu_Chape", "Bague_Arret_Moyeu",
+                    "Palier_Vis_Azimut", "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation",
+                    "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation")
+
+
+def entraxe_el():
+    return VIS_EL["m"] * VIS_EL["z"] / 2 + VIS_EL["dp"] / 2 + AJ["entraxe"]
+
+
+def y_vis_az():
+    """Position Y de l'axe de la vis d'azimut (entraxe avec la roue fixe)."""
+    return -(VIS_AZ["m"] * VIS_AZ["z"] / 2 + VIS_AZ["dp"] / 2 + AJ["entraxe"])
+
+
+def z_vis_el():
+    return Z_T - entraxe_el()
 
 
 def roulement_x(od, idia, w):
@@ -493,6 +553,17 @@ def roulement_z(od, idia, w):
     r = ring_z(od, idia, w)
     m = (od + idia) / 2
     return r.cut(ring_z(m + 1.5, m - 1.5, 0.6, w - 0.6))
+
+
+def trou_z(d, x, y, z0, z1):
+    """Trou d'axe Z de z0 à z1."""
+    return cyl_z(d, z1 - z0, x, y, z0)
+
+
+def lumiere_y(d, x, y, z0, z1, course=0.6):
+    """Trou oblong selon Y (±course) : réglage de l'entraxe de la vis d'azimut."""
+    return (cq.Workplane("XY").center(x, y).slot2D(d + 2 * course, d, 90).extrude(z1 - z0)
+            .translate((0, 0, z0)))
 
 
 def p_nema(m):
@@ -508,13 +579,17 @@ def p_nema(m):
 
 
 def p_vis(v):
-    """Vis sans fin à un filet, axe Z centré, alésage Ø5 (montée sur son arbre)."""
+    """Vis sans fin à un filet, axe Z centré, alésage Ø5 (montée sur son arbre acier).
+    Version imprimée : filet non aminci (tout le jeu est pris sur la roue), tête de filet
+    raccourcie (plus épaisse à imprimer), et deux moyeux qui viennent en appui sur les
+    bagues intérieures des 685 (calage axial), dont un avec une vis de pression M3."""
     m, dp, L = v["m"], v["dp"], v["L"]
-    rr, h = dp / 2 - 1.25 * m, 2.25 * m
+    ha = AJ["tete_filet"] * m
+    rr, h = dp / 2 - 1.25 * m, 1.25 * m + ha
     lead = math.pi * m
-    t = lead / 2 - 0.15 * m
+    t = lead / 2 - AJ["jeu_filet"] * m
     ta = math.tan(math.radians(20))
-    w_root, w_tip = t + 2 * ta * 1.25 * m, t - 2 * ta * m
+    w_root, w_tip = t + 2 * ta * 1.25 * m, t - 2 * ta * ha
     z0 = -L / 2 - lead
     helix = cq.Wire.makeHelix(pitch=lead, height=L + 2 * lead, radius=rr, center=Vector(0, 0, z0))
     prof = cq.Workplane("XZ").polyline([(rr - 0.3, z0 - w_root / 2), (rr + h, z0 - w_tip / 2),
@@ -522,8 +597,19 @@ def p_vis(v):
     thread = prof.sweep(cq.Workplane().add(helix), isFrenet=True)
     # noyau aussi long que le filet (des faces confondues en bout font échouer l'union), puis coupe à L
     core = cyl_z(2 * rr, L + 2 * lead + 2, z=z0 - 1)
-    w = core.union(thread).intersect(cyl_z(dp + 2 * m + 1, L, z=-L / 2))
-    return w.cut(cyl_z(5, L + 2, z=-L / 2 - 1))
+    w = core.union(thread).intersect(cyl_z(dp + 2 * ha + 1, L, z=-L / 2))
+    if AJ["impression"]:
+        e = EL_VIS["palier"][0] - 0.15            # appui à 0,15 mm des bagues intérieures des 685
+        x0 = v["moyeu"]
+        for s in (-1, 1):
+            if x0 > L / 2:                        # col au Ø du noyau jusqu'au moyeu
+                w = w.union(cyl_z(2 * rr, x0 - L / 2 + 0.2, z=(L / 2 - 0.1) if s > 0 else -x0 - 0.1))
+            hub = cyl_z(12, e - 0.5 - x0, z=x0 - 0.1 if s > 0 else -(e - 0.6)).union(
+                cyl_z(6.5, 0.6, z=(e - 0.6) if s > 0 else -e))
+            w = w.union(hub)
+        zh = (x0 + e - 0.6) / 2                   # vis de pression M3 sur le moyeu côté +Z
+        w = w.cut(cyl_dir(AJ["taraud_m3"], 6.5, (0, 6.5, zh), (0, -1, 0)))
+    return w.cut(cyl_z(5 + AJ["serrage"], 40, z=-20))
 
 
 def p_accouplement():
@@ -533,40 +619,78 @@ def p_accouplement():
     return a
 
 
+R_FOND = 20.0                        # vis du fond : par-dessous, à travers le téton (têtes dans la colonne)
+
+
 def p_fond_socle():
-    f = cyl_z(SOCLE_OD, 5).union(ring_z(COL_ID - 0.5, 36, 15, -15))      # centrage dans la colonne
+    f = cyl_z(SOCLE_OD, 5).union(ring_z(AJ["colonne"], 36, 15, -15))     # centrage dans la colonne
     for k in range(3):
         a = math.radians(120 * k)
-        f = f.cut(cyl_z(3.4, 8, 25 * math.cos(a), 25 * math.sin(a), -1))
-    return f
+        f = f.cut(trou_z(AJ["passage_m3"], R_FOND * math.cos(a), R_FOND * math.sin(a), -16, 6))
+    # anti-rotation : vis M3 radiale à travers la colonne, vissée dans le téton
+    return f.cut(cyl_dir(AJ["taraud_m3"], 6, (0, -AJ["colonne"] / 2 - 1, -8), (0, 1, 0)))
 
 
 def p_socle():
+    d42 = 42 + AJ["roulement"]
     s = ring_z(SOCLE_OD, SOCLE_ID, 54, 5).union(cyl_z(SOCLE_OD, 6, z=59))
-    s = s.union(ring_z(50, 42, 14, 45)).union(ring_z(42, 36, 6, 52))
-    s = s.cut(cyl_z(42, 8, z=58)).cut(cyl_z(36, 20, z=50))
-    a = math.radians(P["phi_box"])                          # passe-câble, vers l'unité au sol
+    s = s.union(ring_z(50, d42, 14, 45)).union(ring_z(d42, 36, 6, 52))
+    if AJ["impression"]:            # cône à 45° sous le logement du roulement bas : imprimable sans support
+        cone = cq.Solid.makeCone(SOCLE_ID / 2, 21.0, 7.0, Vector(0, 0, 38), Vector(0, 0, 1))
+        s = s.union(cyl_z(SOCLE_ID + 0.5, 7, z=38).cut(cq.Workplane().add(cone)))
+    s = s.cut(cyl_z(d42, 8, z=58)).cut(cyl_z(36, 20, z=50))
+    a = math.radians(P["phi_box"])                                      # passe-câble, vers l'unité au sol
     s = s.cut(cyl_dir(13, 10, ((SOCLE_ID / 2 - 2) * math.cos(a), (SOCLE_ID / 2 - 2) * math.sin(a), 14),
                       (math.cos(a), math.sin(a), 0)))
-    for k in range(3):
+    for k in range(3):                                                  # fixation du fond : pilier + nervure
         a = math.radians(120 * k)
-        x, y = 25 * math.cos(a), 25 * math.sin(a)
-        s = s.union(cyl_z(7, 8, x, y, 5)).cut(cyl_z(2.6, 9, x, y, 4))
-    for k in range(6):                                      # fixation de la roue d'azimut
-        a = math.radians(30 + 60 * k)
-        s = s.cut(cyl_z(2.6, 8, 23.5 * math.cos(a), 23.5 * math.sin(a), 59))
+        x, y = R_FOND * math.cos(a), R_FOND * math.sin(a)
+        rib = box_span(R_FOND, SOCLE_ID / 2 + 0.5, -2, 2, 5, 13).rotate((0, 0, 0), (0, 0, 1), 120 * k)
+        s = s.union(cyl_z(8, 8, x, y, 5)).union(rib).cut(cyl_z(AJ["taraud_m3"], 9, x, y, 4))
+    for a in ANGLES_ROUE:                                               # fixation de la roue d'azimut
+        c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
+        s = s.cut(trou_z(AJ["taraud_m3"], R_VIS_ROUE * c, R_VIS_ROUE * sn, 58.5, 66))
     return s
 
 
+ANGLES_ROUE = (90.0, 210.0, 330.0)   # vis de la roue d'azimut
+R_VIS_ROUE = 28.0                    # hors de la denture, dans la collerette du socle
+Z_VOILE = 67.5                       # dessus du voile de la roue d'azimut (vis fraisées affleurantes)
+
+
 def p_roue_azimut():
-    """Roue d'azimut Z60, fixée sur le socle : la vis d'azimut roule autour."""
-    r = gear_z(VIS_AZ["z"], VIS_AZ["m"], 8, AZ_VIS["zr"][0], backlash=0.15)
+    """Roue d'azimut Z60, fixe, posée à plat sur le socle (dessous plan : s'imprime sans support)
+    et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut qui roule autour."""
+    r = gear_z(VIS_AZ["z"], VIS_AZ["m"], 8, AZ_VIS["zr"][0], backlash=AJ["jeu_denture"][1] / VIS_AZ["m"])
     r = r.union(ring_z(50, 36, AZ_VIS["zr"][0] - 65, 65))
+    r = r.union(ring_z(SOCLE_OD, 50 - 0.5, Z_VOILE - 65, 65))                     # voile
     r = r.cut(cyl_z(36, 30, z=60))
-    for k in range(6):
-        ang = math.radians(30 + 60 * k)
-        r = r.cut(cyl_z(2.9, 20, 23.5 * math.cos(ang), 23.5 * math.sin(ang), 60))
+    for a in ANGLES_ROUE:
+        x, y = R_VIS_ROUE * math.cos(math.radians(a)), R_VIS_ROUE * math.sin(math.radians(a))
+        r = r.cut(trou_z(AJ["passage_m3"], x, y, 64, Z_VOILE + 1))
+        fr = cq.Solid.makeCone(AJ["passage_m3"] / 2, 3.2, 1.6, Vector(x, y, Z_VOILE - 1.6), Vector(0, 0, 1))
+        r = r.cut(cq.Workplane().add(fr)).cut(cyl_z(6.4, 1, x, y, Z_VOILE))         # fraisure à 90°
     return r
+
+
+# trous de fixation dans la plaque de la chape (x, y)
+TROUS_PALIER_EL = ((-30.0, -9.0), (-30.0, 9.0))          # vis par-dessous, taraudées dans le palier
+TROUS_SUPPORT_EL = ((-46.0, -52.0), (-14.0, -52.0))      # vis par-dessous, taraudées dans le support
+TROUS_SUPPORT_AZ = ((-49.0, -27.0), (-41.0, -27.0))      # vis par-dessus (lumières dans la chape)
+TROUS_MOYEU = tuple((18 * math.cos(math.radians(a)), 18 * math.sin(math.radians(a))) for a in (30, 150, 270))
+TROUS_BAGUE = ((12.5, 0.0), (-12.5, 0.0))                # bague d'arrêt vissée en bout de moyeu
+
+
+def trous_palier_az():
+    return tuple((x, y_vis_az()) for x in (-16.5, 16.5))  # vis par-dessus (lumières dans la chape)
+
+
+def _moyeu(z_top):
+    """Moyeu d'azimut : Ø30 dans les 6806, collerette Ø34 sur la bague intérieure du 6806 haut."""
+    m = cyl_z(30 + AJ["moyeu"], z_top - 45, z=45).union(cyl_z(34, 2, z=65))
+    for x, y in TROUS_BAGUE:
+        m = m.cut(cyl_z(AJ["taraud_m3"], 8, x, y, 44))
+    return m
 
 
 def p_chape():
@@ -578,90 +702,141 @@ def p_chape():
     arm = (cq.Workplane("YZ").moveTo(-ARM_R, zc).lineTo(ARM_R, zc).lineTo(ARM_R, zt)
            .threePointArc((0, zt + ARM_R), (-ARM_R, zt)).close().extrude(xo - xi))
     c = c.union(arm.translate((xi, 0, 0))).union(arm.translate((-xo, 0, 0)))
-    c = c.union(cyl_z(30, zc - 42, z=42)).union(cyl_z(34, 2, z=65))              # moyeu d'azimut
+    if AJ["impression"]:            # moyeu imprimé à part (sinon la chape ne tient pas à plat), vissé dessous
+        for x, y in TROUS_MOYEU:
+            c = c.cut(trou_z(AJ["passage_m3"], x, y, zc - 1, zc + 9))
+    else:
+        c = c.union(_moyeu(zc))
     c = c.cut(cyl_z(20, zc + 10 - 40, z=40))                                     # passage des câbles
     c = c.cut(cyl_x(10, 2 * xo + 2, -xo - 1, 0, zt))
-    return c.cut(cyl_x(22, 7, xo - 7, 0, zt)).cut(cyl_x(22, 7, -xo, 0, zt))       # logements des 608
+    d22 = 22 + AJ["roulement"]
+    c = c.cut(cyl_x(d22, 7, xo - 7, 0, zt)).cut(cyl_x(d22, 7, -xo, 0, zt))       # logements des 608
+    for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:          # passages : vis par-dessous
+        c = c.cut(trou_z(AJ["passage_m3"], x, y, zc - 1, zc + 9))
+    # palier et support d'azimut accrochés sous la plaque, vis par-dessus dans des lumières :
+    # on règle l'entraxe vis / roue d'azimut en les faisant glisser selon Y
+    for x, y in trous_palier_az() + TROUS_SUPPORT_AZ:
+        c = c.cut(lumiere_y(AJ["passage_m3"], x, y, zc - 1, zc + 9))
+    return c
+
+
+def p_moyeu_chape():
+    """Version imprimée : moyeu d'azimut séparé, vissé sous la plaque de la chape (3 x M3)."""
+    zc = Z_CHAPE
+    m = _moyeu(zc - 5).union(cyl_z(42, 5, z=zc - 5))
+    m = m.cut(cyl_z(20, zc + 2 - 40, z=40))
+    for x, y in TROUS_MOYEU:
+        m = m.cut(trou_z(AJ["taraud_m3"], x, y, zc - 6, zc + 1))
+    return m
 
 
 def p_bague_arret():
-    return ring_z(34, 30, 3, 42)
+    """Rondelle d'arrêt sous le 6806 bas, vissée en bout de moyeu (2 x M3)."""
+    b = ring_z(34, 20, 3, 42)
+    for x, y in TROUS_BAGUE:
+        b = b.cut(trou_z(AJ["passage_m3"], x, y, 41, 46))
+    return b
 
 
 def p_arbre_vis_az():
     x1 = AZ_VIS["palier"][1] + 1
-    return cyl_x(5, x1 - AZ_VIS["x_joint"], AZ_VIS["x_joint"], AZ_VIS["y"], AZ_VIS["z"])
+    return cyl_x(5, x1 - AZ_VIS["x_joint"], AZ_VIS["x_joint"], y_vis_az(), AZ_VIS["z"])
 
 
 def p_palier_vis_az():
     p0, p1 = AZ_VIS["palier"]
-    y, z, zc = AZ_VIS["y"], AZ_VIS["z"], Z_CHAPE
+    y, z, zc = y_vis_az(), AZ_VIS["z"], Z_CHAPE
+    d11 = B685[0] + AJ["roulement"]
     b = None
     for x0, x1 in ((p0, p1), (-p1, -p0)):
-        pl = box_span(x0, x1, y - 8, y + 7, z - 7, zc).cut(cyl_x(B685[0], x1 - x0 + 2, x0 - 1, y, z))
+        pl = box_span(x0, x1, y - 9, y + 8, z - 7.5, zc).cut(cyl_x(d11, x1 - x0 + 2, x0 - 1, y, z))
         b = pl if b is None else b.union(pl)
-    b = b.union(box_span(-p1, p1, y - 8, y + 7, zc - 5, zc))
-    for x in (-16.5, 16.5):
-        b = b.cut(cyl_z(3.4, 8, x, y, zc - 6))
+    b = b.union(box_span(-p1, p1, y - 9, y + 8, zc - 5, zc))
+    for x, yy in trous_palier_az():                       # taraudages, vis par-dessus la chape
+        b = b.cut(trou_z(AJ["taraud_m3"], x, yy, zc - 4.5, zc + 1))
     return b
 
 
 def p_support_moteur_az():
     m = MOT_AZ
-    y, z, zc, xf = AZ_VIS["y"], AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
+    y, z, zc, xf = y_vis_az(), AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
     s = box_span(xf, xf + 4, y - 16, y + 16, z - 16, zc)
     s = s.union(box_span(xf, xf + 15, y - 16, y + 7, zc - 5, zc))
-    s = s.cut(cyl_x(m["pilot"] + 0.5, 10, xf - 1, y, z))
+    s = s.cut(cyl_x(AJ["pilote"], 10, xf - 1, y, z))
     for sy in (-1, 1):
         for sz in (-1, 1):
-            s = s.cut(cyl_x(m["hole_d"] + 0.4, 10, xf - 1, y + sy * m["holes"] / 2, z + sz * m["holes"] / 2))
+            s = s.cut(cyl_x(AJ["passage_m25"], 10, xf - 1, y + sy * m["holes"] / 2, z + sz * m["holes"] / 2))
+    for sy in (-1, 1):                                    # lamages des têtes M2,5 sous la patte
+        s = s.cut(cyl_x(6, 4, xf + 4, y + sy * m["holes"] / 2, z + m["holes"] / 2))
+    for x, yy in TROUS_SUPPORT_AZ:                        # taraudages, vis par-dessus la chape
+        s = s.cut(trou_z(AJ["taraud_m3"], x, yy, zc - 4.5, zc + 1))
     return s
 
 
 def p_arbre_vis_el():
     y1 = EL_VIS["palier"][1] + 1
-    return cyl_y(5, y1 - EL_VIS["y_joint"], -30, EL_VIS["y_joint"], Z_T - EL_ENTRAXE)
+    return cyl_y(5, y1 - EL_VIS["y_joint"], -30, EL_VIS["y_joint"], z_vis_el())
 
 
 def p_palier_vis_el():
     p0, p1 = EL_VIS["palier"]
-    zv, zb = Z_T - EL_ENTRAXE, Z_CHAPE + 8
+    zv, zb = z_vis_el(), Z_CHAPE + 8
+    d11 = B685[0] + AJ["roulement"]
     b = None
     for y0, y1 in ((p0, p1), (-p1, -p0)):
-        pl = box_span(-37, -23, y0, y1, zb, Z_T - 26).cut(cyl_y(B685[0], y1 - y0 + 2, -30, y0 - 1, zv))
+        pl = box_span(-38, -22, y0, y1, zb, Z_T - 24.5).cut(cyl_y(d11, y1 - y0 + 2, -30, y0 - 1, zv))
         b = pl if b is None else b.union(pl)
-    b = b.union(box_span(-37, -23, -p1, p1, zb, zb + 5))
-    return b.cut(cyl_z(3.4, 8, -30, 0, zb - 1))
+    b = b.union(box_span(-38, -22, -p1, p1, zb, zb + 5))
+    for x, y in TROUS_PALIER_EL:
+        b = b.cut(trou_z(AJ["taraud_m3"], x, y, zb - 1, zb + 4.5))
+    return b
 
 
 def p_support_moteur_el():
     m = MOT_EL
-    zv, zb, yf = Z_T - EL_ENTRAXE, Z_CHAPE + 8, EL_VIS["y_face"]
+    zv, zb, yf = z_vis_el(), Z_CHAPE + 8, EL_VIS["y_face"]
     s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
     s = s.union(box_span(-54, -6, yf, yf + 22, zb, zb + 5))
-    s = s.cut(cyl_y(m["pilot"] + 0.5, 6, -30, yf - 1, zv))
+    s = s.cut(cyl_y(AJ["pilote"], 6, -30, yf - 1, zv))
     for sx in (-1, 1):
         for sz in (-1, 1):
-            s = s.cut(cyl_y(m["hole_d"] + 0.4, 6, -30 + sx * m["holes"] / 2, yf - 1, zv + sz * m["holes"] / 2))
+            s = s.cut(cyl_y(AJ["passage_m3"], 6, -30 + sx * m["holes"] / 2, yf - 1, zv + sz * m["holes"] / 2))
+    for sx in (-1, 1):                                    # lamages des têtes M3 basses dans la semelle
+        s = s.cut(cyl_y(7, 5, -30 + sx * m["holes"] / 2, yf + 4, zv - m["holes"] / 2))
+    for x, y in TROUS_SUPPORT_EL:
+        s = s.cut(trou_z(AJ["taraud_m3"], x, y, zb - 1, zb + 4.5))
     return s
 
 
 # --- partie basculante (repère : origine sur l'axe d'élévation, X = axe, Z = normale au panneau)
+def alesage_8(x0, L, d_plat=True):
+    """Alésage Ø8 d'axe X ; en version imprimée, avec méplat (axe Ø8 en D) si d_plat."""
+    d = 8 + AJ["serrage"]
+    h = cyl_x(d, L, x0)
+    if AJ["impression"] and d_plat:
+        h = h.cut(box_span(x0 - 1, x0 + L + 1, -6, 6, MEPLAT + AJ["serrage"] / 2, 6))
+    return h
+
+
 def p_chapeau_u():
     xi, xo = U_X
     u = box_span(-xo, xo, -ARM_R, ARM_R, U_TOP[0], U_TOP[1])
     for x0, x1 in ((xi, xo), (-xo, -xi)):
         u = u.union(box_span(x0, x1, -U_Y, U_Y, U_BAS, U_TOP[1]).edges("|X and <Z").fillet(8))
-    u = u.cut(cyl_x(8, 2 * xo + 2, -xo - 1))
+    u = u.cut(alesage_8(-xo - 1, xo - xi + 2)).cut(alesage_8(xi - 1, xo - xi + 2, d_plat=False))
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
-            u = u.cut(cyl_z(3.4, 10, x, y, U_TOP[0] - 1))
+            u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
     return u
 
 
 def p_pivot_entraine():
-    """Pivot gauche : serré dans le chapeau, tourne dans un 608, porte la roue d'élévation."""
-    return cyl_x(8, U_X[1] + X_ROUE[1] + 2, -U_X[1]).union(cyl_x(12, 2, -U_X[1] - 2))
+    """Pivot gauche (acier) : serré dans le chapeau, tourne dans un 608, porte la roue d'élévation.
+    Version imprimée : axe Ø8 en D, le méplat transmet le couple de la roue au chapeau."""
+    p = cyl_x(8, U_X[1] + X_ROUE[1] + 2, -U_X[1]).union(cyl_x(12, 2, -U_X[1] - 2))
+    if AJ["impression"]:
+        p = p.cut(box_span(-U_X[1] - 3, X_ROUE[1] + 3, -6, 6, MEPLAT, 7))
+    return p
 
 
 def p_pivot_libre():
@@ -669,8 +844,9 @@ def p_pivot_libre():
 
 
 def p_roue_elevation():
-    g = gear_x(VIS_EL["z"], VIS_EL["m"], X_ROUE[1] - X_ROUE[0], X_ROUE[0], backlash=0.1)
-    g = g.union(cyl_x(16, 4, X_ROUE[1])).cut(cyl_x(8, 20, X_ROUE[0] - 2))
+    g = gear_x(VIS_EL["z"], VIS_EL["m"], X_ROUE[1] - X_ROUE[0], X_ROUE[0],
+               backlash=AJ["jeu_denture"][0] / VIS_EL["m"])
+    g = g.union(cyl_x(16, 4, X_ROUE[1])).cut(alesage_8(X_ROUE[0] - 2, 20))
     for k in range(5):
         a = math.radians(72 * k)
         g = g.cut(cyl_x(7, 12, X_ROUE[0] - 2, 15 * math.cos(a), 15 * math.sin(a)))
@@ -678,10 +854,80 @@ def p_roue_elevation():
 
 
 def p_rail():
+    """Rail alu (non imprimé) : vissé sur le chapeau par-dessus, têtes noyées sous le panneau ;
+    taraudé M3 à ses extrémités pour le cadre du panneau."""
     r = box_span(-6, 6, -P["pan_H"] / 2, P["pan_H"] / 2, U_TOP[1], P["pan_back"])
-    for y in (-14, 14, -P["pan_H"] / 2 + 6, P["pan_H"] / 2 - 6):
-        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1))
+    for y in (-14, 14):
+        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, 4, 0, y, P["pan_back"] - LAMAGE_RAIL))
+    for y in (-P["pan_H"] / 2 + 6, P["pan_H"] / 2 - 6):
+        r = r.cut(cyl_z(2.5, 10, 0, y, P["pan_back"] - 9))
     return r
+
+
+LAMAGE_RAIL = 3.5                    # profondeur du lamage des têtes de vis dans les rails
+
+
+# --- visserie de la tête : vis CHC modélisées tête + noyau (Ø du fond de filet), pour que le
+#     contrôle d'interférences vérifie aussi l'accès des têtes et la longueur des vis
+def p_vis_chc(d, L):
+    tete_d, tete_h, noyau = (5.5, 3.0, 2.4) if d == 3 else (4.5, 2.5, 2.0)
+    return cyl_z(tete_d, tete_h).union(cyl_z(noyau, L, z=-L))
+
+
+def p_vis_fraisee(d, L):
+    """Vis à tête fraisée (ISO 10642) : dessus de tête en z = 0, longueur hors tout L."""
+    tete = cq.Solid.makeCone(d / 2, 2.9, 1.55, Vector(0, 0, -1.55), Vector(0, 0, 1))
+    return cq.Workplane().add(tete).union(cyl_z(0.8 * d, L, z=-L))
+
+
+def loc_vis(p, d):
+    """Vis posée sous tête au point p, enfoncée selon la direction d."""
+    n = Vector(*d) * -1
+    xd = Vector(1, 0, 0) if abs(n.x) < 0.9 else Vector(0, 1, 0)
+    return Location(cq.Plane(origin=Vector(*p), xDir=xd.cross(n).cross(n) * -1, normal=n))
+
+
+def visserie():
+    """[(repère, type, point d'appui sous tête, direction d'insertion)] ; repères : 'fixe' et
+    'chape' (repère tête), 'bascule' (repère de la partie basculante)."""
+    v = []
+    for k in range(3):                    # fond -> socle, par-dessous (têtes dans la colonne)
+        a = math.radians(120 * k)
+        v.append(("fixe", "M3x25", (R_FOND * math.cos(a), R_FOND * math.sin(a), -15), (0, 0, 1)))
+    for a in ANGLES_ROUE:                 # roue d'azimut -> socle, vis fraisées affleurantes
+        c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
+        v.append(("fixe", "M3x8F", (R_VIS_ROUE * c, R_VIS_ROUE * sn, Z_VOILE), (0, 0, -1)))
+    v.append(("fixe", "M3x6", (0, -P["col_od"] / 2, -8), (0, 1, 0)))     # anti-rotation, à travers la colonne
+    for x, y in TROUS_BAGUE:              # rondelle d'arrêt -> moyeu
+        v.append(("chape", "M3x8", (x, y, 42), (0, 0, 1)))
+    if AJ["impression"]:                  # chape -> moyeu imprimé
+        for x, y in TROUS_MOYEU:
+            v.append(("chape", "M3x12", (x, y, Z_CHAPE + 8), (0, 0, -1)))
+    for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:       # par-dessous la chape
+        v.append(("chape", "M3x12", (x, y, Z_CHAPE), (0, 0, 1)))
+    for x, y in trous_palier_az() + TROUS_SUPPORT_AZ:     # par-dessus la chape
+        v.append(("chape", "M3x10", (x, y, Z_CHAPE + 8), (0, 0, -1)))
+    zv, yf = z_vis_el(), EL_VIS["y_face"]
+    for sx in (-1, 1):                    # moteurs sur leurs supports
+        for sz in (-1, 1):
+            v.append(("chape", "M3x8", (-30 + sx * MOT_EL["holes"] / 2, yf + 4, zv + sz * MOT_EL["holes"] / 2),
+                      (0, -1, 0)))
+            v.append(("chape", "M2.5x8", (AZ_VIS["x_face"] + 4, y_vis_az() + sx * MOT_AZ["holes"] / 2,
+                                          AZ_VIS["z"] + sz * MOT_AZ["holes"] / 2), (-1, 0, 0)))
+    for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
+        for y in (-14, 14):
+            v.append(("bascule", "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL), (0, 0, -1)))
+    return v
+
+
+def nom_vis(t):
+    return f"Vis_FHC_{t[:-1]}" if t.endswith("F") else f"Vis_CHC_{t}"
+
+
+def add_visserie(assy, repere):
+    for i, (rp, t, p, d) in enumerate(visserie()):
+        if rp == repere:
+            add(assy, nom_vis(t), loc_vis(p, d), f"{nom_vis(t)}_{i}")
 
 
 # ---------------------------------------------------------------------------
@@ -804,38 +1050,55 @@ def build_tripod_parts():
 
 
 def build_head_parts():
-    # tête rotative à vis sans fin (repère tête)
-    reg("Fond_Socle", p_fond_socle(), "Al 6061-T6", COL["socle"], "Fond du socle, centrage dans la colonne")
-    reg("Socle", p_socle(), "Al 6061-T6", COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
-    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["steel"], "Roulement d'azimut 6806-ZZ")
-    reg("Roue_Azimut_Fixe", p_roue_azimut(), "Bronze CuSn12", COL["brass"],
+    # tête rotative à vis sans fin (repère tête), en cotes réelles ou imprimées (voir AJUSTEMENTS)
+    imp = AJ["impression"]
+
+    def mat(reel):
+        return "PETG" if imp else reel
+    reg("Fond_Socle", p_fond_socle(), mat("Al 6061-T6"), COL["socle"], "Fond du socle, centrage dans la colonne")
+    reg("Socle", p_socle(), mat("Al 6061-T6"), COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
+    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["steel"], "Roulement d'azimut 6806")
+    reg("Roue_Azimut_Fixe", p_roue_azimut(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Z{VIS_AZ['z']}, fixée sur le socle")
-    reg("Chape", p_chape(), "Al 6061-T6", COL["chape"], "Chape en U (tourne en azimut, porte les moteurs)")
-    reg("Bague_Arret_Moyeu", p_bague_arret(), "Acier inox 17-4PH", COL["steel"], "Bague d'arrêt du moyeu")
-    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["steel"], "Roulement d'élévation 608-ZZ")
+    reg("Chape", p_chape(), mat("Al 6061-T6"), COL["chape"], "Chape en U (tourne en azimut, porte les moteurs)")
+    if imp:
+        reg("Moyeu_Chape", p_moyeu_chape(), "PETG", COL["chape"], "Moyeu d'azimut, vissé sous la chape")
+    reg("Bague_Arret_Moyeu", p_bague_arret(), mat("Acier inox 17-4PH"), COL["steel"],
+        "Rondelle d'arrêt du moyeu (2 x M3)")
+    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["steel"], "Roulement d'élévation 608")
     reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["steel"],
-        "Roulement 685-ZZ (arbres des vis)")
-    reg("Vis_Azimut", p_vis(VIS_AZ), "Acier inox 17-4PH", COL["steel"],
+        "Roulement 685 (arbres des vis)")
+    reg("Vis_Azimut", p_vis(VIS_AZ), mat("Acier inox 17-4PH"), COL["steel"],
         f"Vis sans fin d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Ø{VIS_AZ['dp']:.0f}, un filet")
     reg("Arbre_Vis_Azimut", p_arbre_vis_az(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'azimut")
-    reg("Palier_Vis_Azimut", p_palier_vis_az(), "Al 6061-T6", COL["chape"], "Palier de la vis d'azimut")
-    reg("Support_Moteur_Azimut", p_support_moteur_az(), "Al 6061-T6", COL["chape"], "Support du moteur d'azimut")
+    reg("Palier_Vis_Azimut", p_palier_vis_az(), mat("Al 6061-T6"), COL["chape"], "Palier de la vis d'azimut")
+    reg("Support_Moteur_Azimut", p_support_moteur_az(), mat("Al 6061-T6"), COL["chape"],
+        "Support du moteur d'azimut")
     reg("Moteur_Azimut_NEMA11", p_nema(MOT_AZ), "moteur", COL["nema"], f"Moteur pas à pas d'azimut : {MOT_AZ['nom']}")
-    reg("Vis_Elevation", p_vis(VIS_EL), "Acier inox 17-4PH", COL["steel"],
+    reg("Vis_Elevation", p_vis(VIS_EL), mat("Acier inox 17-4PH"), COL["steel"],
         f"Vis sans fin d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Ø{VIS_EL['dp']:.0f}, un filet")
     reg("Arbre_Vis_Elevation", p_arbre_vis_el(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'élévation")
-    reg("Palier_Vis_Elevation", p_palier_vis_el(), "Al 6061-T6", COL["chape"], "Palier de la vis d'élévation")
-    reg("Support_Moteur_Elevation", p_support_moteur_el(), "Al 6061-T6", COL["chape"],
+    reg("Palier_Vis_Elevation", p_palier_vis_el(), mat("Al 6061-T6"), COL["chape"], "Palier de la vis d'élévation")
+    reg("Support_Moteur_Elevation", p_support_moteur_el(), mat("Al 6061-T6"), COL["chape"],
         "Support du moteur d'élévation")
     reg("Moteur_Elevation_NEMA17", p_nema(MOT_EL), "moteur", COL["nema"],
         f"Moteur pas à pas d'élévation : {MOT_EL['nom']}")
     reg("Accouplement", p_accouplement(), "Al 7075-T73", COL["coupler"], "Accouplement flexible 5/5")
-    reg("Chapeau_U", p_chapeau_u(), "Al 6061-T6", COL["u"], "Chapeau en U renversé porte-panneau")
-    reg("Pivot_Entraine", p_pivot_entraine(), "Acier inox 17-4PH", COL["steel"], "Pivot Ø8 portant la roue d'élévation")
+    reg("Chapeau_U", p_chapeau_u(), mat("Al 6061-T6"), COL["u"], "Chapeau en U renversé porte-panneau")
+    reg("Pivot_Entraine", p_pivot_entraine(), "Acier inox 17-4PH", COL["steel"],
+        "Pivot Ø8 portant la roue d'élévation" + (" (axe en D)" if imp else ""))
     reg("Pivot_Libre", p_pivot_libre(), "Acier inox 17-4PH", COL["steel"], "Pivot Ø8 libre")
-    reg("Roue_Elevation", p_roue_elevation(), "Bronze CuSn12", COL["brass"],
+    reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
+    for t in sorted({v[1] for v in visserie()}):
+        d, L = t[1:].rstrip("F").split("x")
+        if t.endswith("F"):
+            reg(nom_vis(t), p_vis_fraisee(float(d), float(L)), "Acier (visserie)", COL["steel"],
+                f"Vis à tête fraisée {t[:-1].replace('.', ',')} (ISO 10642)")
+        else:
+            reg(nom_vis(t), p_vis_chc(float(d), float(L)), "Acier (visserie)", COL["steel"],
+                f"Vis CHC {t.replace('.', ',')} (ISO 4762)")
     # panneau
     reg("Cadre_Panneau", p_cadre_pv(), "Al 6063-T5", COL["alu"], "Cadre alu du panneau 356x253x30")
     reg("Lamine_PV", p_lamine(), "Verre 3,2 mm + EVA + backsheet (eq)", COL["pv_bg"],
@@ -912,6 +1175,7 @@ def build_panel(with_panel=True):
     add(p, "Roue_Elevation")
     add(p, "Rail_Panneau", trans(RAIL_X, 0, 0), "Rail_Panneau_1")
     add(p, "Rail_Panneau", trans(-RAIL_X, 0, 0), "Rail_Panneau_2")
+    add_visserie(p, "bascule")
     if with_panel:
         for n in PANEL_PARTS:
             add(p, n)
@@ -922,31 +1186,34 @@ def build_head(az, el, with_panel=True):
     """Partie qui tourne en azimut (repère tête) : chape, vis, moteurs, chapeau et panneau."""
     h = cq.Assembly(name="SA_Tete_Orientable")
     add(h, "Chape")
+    if AJ["impression"]:
+        add(h, "Moyeu_Chape")
     add(h, "Bague_Arret_Moyeu")
     add(h, "Roulement_608", trans(ARM_X[1] - 7, 0, Z_T), "Roulement_608_1")
     add(h, "Roulement_608", trans(-ARM_X[1], 0, Z_T), "Roulement_608_2")
     # azimut : vis le long de X qui roule autour de la roue fixe, NEMA 11 en bout côté -X
-    a = AZ_VIS
+    a, ya = AZ_VIS, y_vis_az()
     add(h, "Palier_Vis_Azimut")
     add(h, "Arbre_Vis_Azimut")
     for i, x0 in enumerate((a["palier"][0], -a["palier"][1]), 1):
-        add(h, "Roulement_685", trans(x0, a["y"], a["z"]), f"Roulement_685_Az_{i}")
-    add(h, "Vis_Azimut", trans(0, a["y"], a["z"]) * rot((0, 1, 0), 90)
-        * rot((0, 0, 1), PHASE["az"] + VIS_AZ["z"] * az))
-    add(h, "Accouplement", trans(a["x_joint"] - 12.5, a["y"], a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
+        add(h, "Roulement_685", trans(x0, ya, a["z"]), f"Roulement_685_Az_{i}")
+    add(h, "Vis_Azimut", trans(0, ya, a["z"]) * rot((0, 1, 0), 90)
+        * rot((0, 0, 1), PHASES[MODE]["az"] + VIS_AZ["z"] * az))
+    add(h, "Accouplement", trans(a["x_joint"] - 12.5, ya, a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
     add(h, "Support_Moteur_Azimut")
-    add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], a["y"], a["z"]) * rot((0, 1, 0), 90))
+    add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], ya, a["z"]) * rot((0, 1, 0), 90))
     # élévation : vis le long de Y sous la roue, NEMA 17 court à l'arrière (côté opposé au panneau)
-    zv = Z_T - EL_ENTRAXE
+    zv = z_vis_el()
     add(h, "Palier_Vis_Elevation")
     add(h, "Arbre_Vis_Elevation")
     for i, y0 in enumerate((EL_VIS["palier"][0], -EL_VIS["palier"][1]), 1):
         add(h, "Roulement_685", trans(-30, y0, zv) * rot((0, 0, 1), 90), f"Roulement_685_El_{i}")
     add(h, "Vis_Elevation", trans(-30, 0, zv) * rot((1, 0, 0), -90)
-        * rot((0, 0, 1), PHASE["el"] - VIS_EL["z"] * (el - EL_REF)))
+        * rot((0, 0, 1), PHASES[MODE]["el"] - VIS_EL["z"] * (el - EL_REF)))
     add(h, "Accouplement", trans(-30, EL_VIS["y_joint"] - 12.5, zv) * rot((1, 0, 0), -90), "Accouplement_El")
     add(h, "Support_Moteur_Elevation")
     add(h, "Moteur_Elevation_NEMA17", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))
+    add_visserie(h, "chape")
     h.add(build_panel(with_panel), name="SA_Panneau", loc=trans(0, 0, Z_T) * rot((1, 0, 0), el - 90.0))
     return h
 
@@ -959,6 +1226,7 @@ def build_head_fixed():
     add(f, "Roulement_6806", trans(0, 0, Z_ROUL1), "Roulement_6806_1")
     add(f, "Roulement_6806", trans(0, 0, Z_ROUL2), "Roulement_6806_2")
     add(f, "Roue_Azimut_Fixe")
+    add_visserie(f, "fixe")
     return f
 
 

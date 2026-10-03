@@ -2,46 +2,54 @@ Piece;Quantite;Materiau;Masse totale (kg);Description
 Unite_Controle_Corps;1;masse forfaitaire;17.000;Unité de contrôle / stockage sous MLI (batterie, ESP32, drivers TMC2209)
 Unite_Controle_Radiateur;1;Al 6061-T6;1.212;Radiateur zénithal (peinture blanche / OSR)
 Ancrage_Helicoidal;3;Ti-6Al-4V;1.020;Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe
-Patin;3;Al 7075-T73;0.930;Patin Ø120 à crampons + logement de rotule
+Patin;3;Al 7075-T73;0.931;Patin Ø120 à crampons + logement de rotule
 Lamine_PV;1;Verre 3,2 mm + EVA + backsheet (eq);0.701;Verre + EVA + face arrière
 Collier_Superieur;1;Ti-6Al-4V;0.441;Moyeu d'articulation des jambes
 Ferrure_Jambe;3;Ti-6Al-4V;0.402;Ferrure d'articulation de jambe
-Chape;1;Al 6061-T6;0.333;Chape en U (tourne en azimut, porte les moteurs)
+Chape;1;Al 6061-T6;0.328;Chape en U (tourne en azimut, porte les moteurs)
 Faisceau_Cables;1;PTFE/cuivre (eq);0.275;Faisceau puissance + données Ø12
-Tube_Jambe_Inferieur;3;Al 7075-T73;0.263;Tube coulissant Ø20x1,5
-Colonne_Centrale;1;Al 7075-T73;0.258;Colonne centrale Ø50x2 anodisée dur
+Tube_Jambe_Inferieur;3;Al 7075-T73;0.264;Tube coulissant Ø20x1,5
+Colonne_Centrale;1;Al 7075-T73;0.260;Colonne centrale Ø50x2 anodisée dur
 Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
 Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
 Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévation : NEMA 17 42 x 42 x 34 mm (type 17HS3401)
+Tube_Jambe_Superieur;3;Al 7075-T73;0.212;Tube Ø25x1,5 anodisé dur
 Rail_Panneau;2;Al 6061-T6;0.211;Rail 12 x 13 vissé sur le cadre du panneau
-Tube_Jambe_Superieur;3;Al 7075-T73;0.209;Tube Ø25x1,5 anodisé dur
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
 Chapeau_U;1;Al 6061-T6;0.145;Chapeau en U renversé porte-panneau
 Moteur_Azimut_NEMA11;1;masse forfaitaire;0.140;Moteur pas à pas d'azimut : NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)
-Socle;1;Al 6061-T6;0.136;Socle Ø62 : roulements d'azimut, passe-câble
+Socle;1;Al 6061-T6;0.138;Socle Ø62 : roulements d'azimut, passe-câble
+Roue_Azimut_Fixe;1;Bronze CuSn12;0.135;Roue d'azimut m0,8 Z60, fixée sur le socle
 Roue_Elevation;1;Bronze CuSn12;0.125;Roue d'élévation m1 Z50
 Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
-Roue_Azimut_Fixe;1;Bronze CuSn12;0.108;Roue d'azimut m0,8 Z60, fixée sur le socle
-Roulement_6806;2;Acier 440C;0.072;Roulement d'azimut 6806-ZZ
-Fond_Socle;1;Al 6061-T6;0.065;Fond du socle, centrage dans la colonne
-Entretoise;3;Al 7075-T73;0.064;Entretoise Ø12x1
+Roulement_6806;2;Acier 440C;0.072;Roulement d'azimut 6806
+Entretoise;3;Al 7075-T73;0.065;Entretoise Ø12x1
+Fond_Socle;1;Al 6061-T6;0.064;Fond du socle, centrage dans la colonne
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
 Accouplement;2;Al 7075-T73;0.036;Accouplement flexible 5/5
-Roulement_608;2;Acier 440C;0.036;Roulement d'élévation 608-ZZ
+Roulement_608;2;Acier 440C;0.036;Roulement d'élévation 608
 Support_Moteur_Elevation;1;Al 6061-T6;0.031;Support du moteur d'élévation
 Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
 Axe_Articulation;3;Ti-6Al-4V;0.021;Axe Ø6 revêtu MoS2
 Axe_Entretoise;6;Ti-6Al-4V;0.021;Axe Ø5
+Palier_Vis_Elevation;1;Al 6061-T6;0.017;Palier de la vis d'élévation
+Palier_Vis_Azimut;1;Al 6061-T6;0.015;Palier de la vis d'azimut
 Pivot_Entraine;1;Acier inox 17-4PH;0.014;Pivot Ø8 portant la roue d'élévation
-Palier_Vis_Elevation;1;Al 6061-T6;0.014;Palier de la vis d'élévation
+Bague_Arret_Moyeu;1;Acier inox 17-4PH;0.013;Rondelle d'arrêt du moyeu (2 x M3)
 Vis_Elevation;1;Acier inox 17-4PH;0.013;Vis sans fin d'élévation m1 Ø16, un filet
-Palier_Vis_Azimut;1;Al 6061-T6;0.012;Palier de la vis d'azimut
-Roulement_685;4;Acier 440C;0.012;Roulement 685-ZZ (arbres des vis)
+Roulement_685;4;Acier 440C;0.012;Roulement 685 (arbres des vis)
 Support_Moteur_Azimut;1;Al 6061-T6;0.010;Support du moteur d'azimut
 Pivot_Libre;1;Acier inox 17-4PH;0.008;Pivot Ø8 libre
 Arbre_Vis_Azimut;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'azimut
 Arbre_Vis_Elevation;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'élévation
 Vis_Azimut;1;Acier inox 17-4PH;0.006;Vis sans fin d'azimut m0,8 Ø12, un filet
-Bague_Arret_Moyeu;1;Acier inox 17-4PH;0.005;Bague d'arrêt du moyeu
-TOTAL;;;25.59;
+Vis_CHC_M3x8;6;Acier (visserie);0.005;Vis CHC M3x8 (ISO 4762)
+Vis_CHC_M3x25;3;Acier (visserie);0.004;Vis CHC M3x25 (ISO 4762)
+Vis_CHC_M3x14;4;Acier (visserie);0.004;Vis CHC M3x14 (ISO 4762)
+Vis_CHC_M3x12;4;Acier (visserie);0.004;Vis CHC M3x12 (ISO 4762)
+Vis_CHC_M3x10;4;Acier (visserie);0.004;Vis CHC M3x10 (ISO 4762)
+Vis_CHC_M2.5x8;4;Acier (visserie);0.002;Vis CHC M2,5x8 (ISO 4762)
+Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
+Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
+TOTAL;;;25.66;

@@ -22,11 +22,15 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 
 | Fichier | Contenu |
 |---|---|
-| `CAO/Tracker_Lunaire_PoleSud.step` | **Assemblage principal** : pose de fonctionnement au pôle Sud (site Artemis), Soleil à +1,5°, panneau quasi vertical |
-| `CAO/Tracker_Lunaire_LatitudeMoyenne.step` | Même assemblage, pose « sites Apollo » : Soleil à 50°, panneau incliné à 40° |
-| `CAO/pieces/*.step` | Les pièces seules, chacune dans son repère de construction |
-| `CAO/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
-| `CAO/pieces_tete_vissansfin/*.step` | Les pièces de la tête seules |
+| **`CAO/Cas_Reel/`** | **Cas réel** (Lune), cotes nominales : |
+| `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step` | **Assemblage principal** : pose de fonctionnement au pôle Sud (site Artemis), Soleil à +1,5°, panneau quasi vertical |
+| `CAO/Cas_Reel/Tracker_Lunaire_LatitudeMoyenne.step` | Même assemblage, pose « sites Apollo » : Soleil à 50°, panneau incliné à 40° |
+| `CAO/Cas_Reel/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
+| `CAO/Cas_Reel/pieces/*.step` | Toutes les pièces seules (trépied, tête, panneau, unité au sol), chacune dans son repère de construction |
+| **`CAO/Demo_Terre_PETG/`** | **Démonstration sur Terre**, tête imprimée en 3D en PETG, avec les jeux d'ajustement (voir § 12) : |
+| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 14 pièces à imprimer, déjà orientées et posées sur le plateau |
+| `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, axes, moteurs et vis), pour vérifier le montage |
+| `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
@@ -42,7 +46,7 @@ lui-même. Le format STEP AP214 fourni s'ouvre directement comme un assemblage c
 avec les noms des pièces, les sous-assemblages et les couleurs.
 
 1. **Fichier › Ouvrir**, type *STEP AP203/214/242 (\*.step; \*.stp)*, puis choisir
-   `CAO/Tracker_Lunaire_PoleSud.step`.
+   `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step`.
 2. Si SolidWorks demande un modèle de document, prendre l'assemblage et la pièce **en mm**.
 3. **Fichier › Enregistrer sous › Assemblage (\*.sldasm)**. Au premier enregistrement,
    SolidWorks crée les fichiers `.SLDPRT` de chaque pièce.
@@ -85,7 +89,7 @@ Tracker_Lunaire_PoleSud
 
 | Élément | Choix |
 |---|---|
-| **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**. Un passe-câble est orienté vers l'unité au sol |
+| **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
 | **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements 608 de l'axe d'élévation, à 156 mm au-dessus de la colonne (700 mm du sol) |
 | **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux axes Ø8 dans les roulements 608 et porte les deux rails du panneau |
 | **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
@@ -93,6 +97,7 @@ Tracker_Lunaire_PoleSud
 | **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas la poussée axiale de la vis |
 | **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau et sur l'aile arrière du cadre. Le dos du cadre est à 46 mm de l'axe d'élévation |
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
+| **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
@@ -259,7 +264,7 @@ Le trépied est **dimensionné pour le panneau de 356 × 253 mm et la tête à v
 Architecture : trois jambes en Y à 120°, articulées sur un moyeu, avec entretoises vers un
 collier inférieur coulissant, jambes télescopiques, patins sur rotule et ancrages.
 
-### Angle φ des jambes : optimisé, **φ = 32°** (angle entre jambe et colonne)
+### Angle φ des jambes : optimisé, **φ = 32,5°** (angle entre jambe et colonne)
 
 L'articulation haute est fixée par le panneau : tout le trépied doit rester sous le volume
 qu'il balaie. Elle est donc à 509 mm du sol, juste sous le socle de la tête. φ fixe alors
@@ -269,20 +274,20 @@ gravité réels de la CAO, dans la pire orientation du panneau.
 
 | Contrainte | Exigence | Effet de φ |
 |---|---|---|
-| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 32°** |
+| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 32,5°** |
 | **C2 Mise à niveau** | Les jambes télescopiques (deux tubes) remettent la tête de niveau sur une pente de 10° | Plus φ est grand, plus la course nécessaire croît vite : φ ≤ 52° |
 | **C3 Garde au sol** | Pointe de la colonne à au moins 150 mm du sol | φ ≤ 49,4° |
 
 Tous les autres critères se dégradent quand φ augmente : longueur et masse des jambes,
 poussée reprise par les entretoises (le frottement au sol est six fois plus faible sur la
 Lune), course de nivelage et emprise au sol. **L'optimum est donc le plus petit angle
-admissible, 32°** (plage admissible : 32° à 49°). La rigidité latérale, maximale à 54,7°,
+admissible, 32,5°** (plage admissible : 32,5° à 49°). La rigidité latérale, maximale à 54,7°,
 ne dimensionne pas sur la Lune, où il n'y a pas de vent.
 
 La tête à vis sans fin est légère (tête + panneau : 2,8 kg) : le centre de gravité du
 tracker est bas, ce qui permet cet angle faible.
 
-L'optimum dépend des exigences. Par exemple, il passe à 37,5° pour une pente de 20° ou une
+L'optimum dépend des exigences. Par exemple, il passe à 38° pour une pente de 20° ou une
 marge de 10°. Le détail est dans
 [`docs/optimisation_angle_jambes.md`](docs/optimisation_angle_jambes.md). Si la masse
 de la tête ou du panneau change, relancer `python optimisation_angle.py`.
@@ -293,9 +298,9 @@ de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 |---|---|
 | **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
 | **Sommet de la colonne à 544 mm**, moyeu des jambes à 509 mm | La tête met l'axe d'élévation 156 mm au-dessus de la colonne. Tout le trépied reste sous le volume balayé par le panneau. |
-| **Pieds sur un cercle de Ø726 mm**, jambes de 553 mm | Conséquence de φ = 32°. Basculement sans ancrage à 25,3° dans la pire orientation du panneau (exigé : 25,2°). |
-| **Course télescopique ±75 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
-| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (308 mm). |
+| **Pieds sur un cercle de Ø738 mm**, jambes de 556 mm | Conséquence de φ = 32,5°. Basculement sans ancrage à 25,5° dans la pire orientation du panneau (exigé : 25,2°). |
+| **Course télescopique ±77 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
+| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (306 mm). |
 | **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
 | **Patins Ø120 à crampons, rotule ±20°** | Pression sur le régolithe d'environ 340 Pa sur la Lune ; adaptation aux pentes et aux cailloux. |
 | **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Un piquet lisse tient par frottement, six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. Sur Terre, elles servent aussi contre le vent (voir § 2). |
@@ -304,45 +309,58 @@ Le trépied pèse 4,3 kg.
 
 ## 7. Matériaux
 
-| Élément | Matériau |
-|---|---|
-| Socle, chape, chapeau en U, paliers et supports de moteurs, rails | Al 6061-T6 anodisé |
-| Roues des vis sans fin (azimut et élévation) | Bronze CuSn12 |
-| Vis sans fin, arbres des vis, pivots d'élévation, bague d'arrêt | Inox 17-4PH |
-| Accouplements | Al 7075-T73 |
-| Ferrures et colliers du trépied, axes, vis d'ancrage | Ti-6Al-4V |
-| Roulements | Acier 440C, lubrification sèche (MoS₂) pour la Lune |
-| Tubes de jambes, colonne, entretoises, patins | Al 7075-T73 anodisé dur |
-| Cadre du panneau | Al 6063-T5 |
+| Élément | Cas réel (Lune) | Démonstration sur Terre (§ 12) |
+|---|---|---|
+| Socle, fond, chape, chapeau en U, paliers et supports de moteurs | Al 6061-T6 anodisé | **PETG imprimé** (le moyeu de la chape est imprimé à part) |
+| Rondelle d'arrêt du moyeu | Inox 17-4PH | **PETG imprimé** |
+| Roues des vis sans fin (azimut et élévation) | Bronze CuSn12 | **PETG imprimé** |
+| Vis sans fin | Inox 17-4PH | **PETG imprimé** |
+| Arbres des vis Ø5, pivots d'élévation Ø8 | Inox 17-4PH | Acier, non imprimés : tige Ø5 rectifiée, axe Ø8 (dont un en D) |
+| Accouplements | Al 7075-T73 | Accouplements flexibles alu 5/5 du commerce |
+| Roulements 6806, 608, 685 | Acier 440C, lubrification sèche (MoS₂) | Roulements acier standard (2RS), graissés |
+| Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE |
+| Visserie | Inox ou titane | Vis CHC acier M3 et M2,5 |
+| Moteurs | Version vide / spatiale (même taille) | NEMA 17 et NEMA 11 du commerce |
+| Rails du panneau | Al 6061-T6 | Aluminium, non imprimés |
+| Ferrures et colliers du trépied, axes, vis d'ancrage | Ti-6Al-4V | Non imprimés (métal) |
+| Tubes de jambes, colonne, entretoises, patins | Al 7075-T73 anodisé dur | Non imprimés (aluminium) |
+| Cadre du panneau | Al 6063-T5 | Al 6063-T5 (panneau du commerce) |
 
 ## 8. Caractéristiques principales
 
 | Grandeur | Valeur |
 |---|---|
 | Hauteur de l'axe d'élévation | 700 mm |
-| Angle des jambes | φ = 32° par rapport à la colonne (optimisé) |
-| Emprise au sol | Pieds sur Ø726 mm, Ø846 mm hors patins (≈ Ø1030 mm avec les anneaux d'ancrage) |
+| Angle des jambes | φ = 32,5° par rapport à la colonne (optimisé) |
+| Emprise au sol | Pieds sur Ø738 mm, Ø858 mm hors patins (≈ Ø1040 mm avec les anneaux d'ancrage) |
 | Panneau | 356 × 253 × 30 mm, 72 cellules |
 | Puissance du panneau | ≈ 10 W crête sur Terre (valeur typique de ce format, à confirmer sur sa fiche) |
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
-| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,77 kg, dont 0,36 kg de moteurs |
-| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,51 kg, dont 1,01 kg de panneau |
+| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,83 kg, dont 0,36 kg de moteurs (1,20 kg en version PETG) |
+| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,52 kg, dont 1,01 kg de panneau |
 | Masse du trépied | 4,3 kg |
-| Masse du tracker complet | 7,1 kg (poids lunaire ≈ 12 N) |
+| Masse du tracker complet | 7,2 kg (poids lunaire ≈ 12 N) |
 
 Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs et l'unité au sol ont
 une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 ## 9. Vérifications effectuées par les scripts
 
-* **Interférences pièce à pièce** dans les deux poses du tracker et dans la tête seule :
-  **aucune**.
+* **Interférences pièce à pièce** dans les deux poses du tracker et dans la tête seule,
+  en cotes réelles comme en version PETG : **aucune**.
+  * Toutes les vis sont modélisées, avec leur tête et leur noyau : chaque tête est
+    accessible, et aucune vis ne dépasse de son trou ni ne touche une autre pièce.
+  * Ce contrôle a conduit à revoir plusieurs fixations : la roue d'azimut est vissée par en
+    dessous de la vis qui la parcourt, et les vis du fond n'ont plus leur tête sur la colonne.
+    Le palier et le support d'azimut sont vissés par-dessus, et des lamages laissent la place
+    aux têtes des vis des moteurs.
 * **Engrènement** : les vis sont calées sur leurs roues, avec les dents en prise et sans
   chevauchement :
   * à −2°, 40° et 92° d'élévation ;
-  * à un azimut quelconque (37°), ce qui valide la loi de rotation de la vis d'azimut.
+  * à des azimuts quelconques (37° et 113°), ce qui valide la loi de rotation de la vis
+    d'azimut.
 
   Sur la vis d'azimut, il reste un recouvrement de 0,2 mm³. Il vient de la roue modélisée
   à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
@@ -354,10 +372,11 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
   * denture roue / vis d'élévation : contact flanc contre flanc, sans aucun chevauchement
     de −2° à 92° (vérifié tous les 15°) ;
   * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
-    près, entre le moyeu de la chape et la roue d'azimut.
-* **Stabilité** : basculement sans ancrage à 25,3° dans la pire orientation du panneau
+    près, entre l'accouplement d'azimut et le voile de la roue fixe, et entre le moyeu de
+    la chape et la roue.
+* **Stabilité** : basculement sans ancrage à 25,5° dans la pire orientation du panneau
   (`optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 148 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 177 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -379,8 +398,9 @@ Tous les paramètres sont regroupés en tête de `generate_tracker.py` :
 * dans le dictionnaire `P` : dimensions du panneau, hauteur d'axe, décalage du panneau,
   angle et exigences du trépied ;
 * dans `POSES` : les deux poses exportées ;
-* dans les constantes de la tête : `Z_T`, `VIS_EL`, `VIS_AZ`, `MOT_EL`, `MOT_AZ`, et `PHASE`
-  (calage des vis, donné par `generate_tete_vis_sans_fin.py`).
+* dans les constantes de la tête : `Z_T`, `VIS_EL`, `VIS_AZ`, `MOT_EL`, `MOT_AZ`, et `PHASES`
+  (calage des vis, donné par `generate_tete_vis_sans_fin.py`) ;
+* dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (§ 12).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
 `generate_tete_vis_sans_fin.py`.
@@ -389,8 +409,160 @@ Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête d
 pip install -r requirements.txt
 python generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python generate_tracker.py --balayage         # + garde sur toute la plage az/él
-python generate_tete_vis_sans_fin.py          # tête seule, calage des vis, couples, tenue moteurs coupés
+python generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
 python optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 xvfb-run -a python render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python render_tete_vis_sans_fin.py   # rendus de la tête seule
 ```
+
+## 12. Démonstration sur Terre : tête imprimée en 3D en PETG
+
+Pour la démonstration, toute la partie rotative est imprimée en PETG, **vis sans fin
+comprises**. Restent en métal : le trépied, les deux rails du panneau, et les pièces du
+commerce qu'on ne peut pas imprimer de façon fiable (roulements, axes, moteurs, vis).
+
+Les fichiers sont dans **`CAO/Demo_Terre_PETG/`**. Ce sont les mêmes pièces que le cas réel,
+générées avec le jeu de cotes `"petg"` : les trous et les dentures ont des jeux qui
+compensent l'impression, et quelques formes sont adaptées pour s'imprimer sans support.
+L'assemblage imprimé complet, avec roulements, axes, moteurs et toutes les vis, a été vérifié
+par le script :
+* **aucune interférence** entre pièces, vis comprises ;
+* chaque tête de vis a sa place, et aucune vis ne dépasse de son trou ;
+* les vis et les roues **engrènent sans chevauchement** à −2°, 30° et 92° d'élévation et à
+  plusieurs azimuts ;
+* garde de 2 mm de la partie basculante sur toute la course.
+
+![Pièces à imprimer](docs/demo_petg_pieces_a_imprimer.png)
+
+### Pièces à imprimer (`a_imprimer/`, déjà orientées sur le plateau)
+
+| Pièce | Qté | Orientation (déjà appliquée) | Remarque |
+|---|---|---|---|
+| `Socle` | 1 | Debout, ouverture en bas | Cône à 45° sous le logement du 6806 bas : pas de support |
+| `Fond_Socle` | 1 | Téton vers le haut | |
+| `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
+| `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
+| `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
+| `Bague_Arret_Moyeu` | 1 | À plat | |
+| `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø8 en D côté roue |
+| `Roue_Elevation` | 1 | À plat, moyeu en haut | Alésage Ø8 en D |
+| `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
+| `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | |
+| `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
+
+Environ 300 g de PETG (411 g si tout était plein).
+
+**Réglages conseillés** :
+* PETG, couches de 0,2 mm ;
+* 4 périmètres, 40 % de remplissage gyroïde ;
+* **100 %** pour les deux vis et les deux roues ;
+* compensation de la patte d'éléphant (≈ 0,2 mm) ;
+* aucun support ;
+* teinte claire de préférence : un PETG noir en plein soleil d'été peut approcher sa
+  température de ramollissement (≈ 80 °C).
+
+**Pour les quatre pièces dentées** : filet des vis de 0,95 mm (élévation) et 0,76 mm
+(azimut) en tête, denture m0,8 de la roue d'azimut. Ça s'imprime avec une buse de 0,4 mm,
+mais une **buse de 0,25 mm et des couches de 0,1 mm** donnent des dents nettement plus
+justes.
+
+### Pièces non imprimées (à acheter)
+
+| Article | Qté |
+|---|---|
+| Roulement 6806-2RS (30 × 42 × 7) | 2 |
+| Roulement 608-2RS (8 × 22 × 7) | 2 |
+| Roulement 685-2RS (5 × 11 × 5) | 4 |
+| Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) | 2 |
+| Axe acier Ø8 **en D** (méplat à 3,5 mm de l'axe), coupé à 34 mm : pivot entraîné | 1 |
+| Axe acier Ø8, coupé à 19 mm : pivot libre | 1 |
+| Accouplement flexible alu 5 mm / 5 mm (Ø19 × 25) | 2 |
+| NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
+| Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 4 × M3×14, 3 × M3×25 | 25 |
+| Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
+| Vis CHC M2,5×8 (NEMA 11) | 4 |
+| Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
+| Graisse PTFE (vis, roues) | 1 |
+
+Les axes Ø8 du modèle ont une tête Ø12 de 2 mm, qui sert d'épaulement. Avec une tige
+du commerce, une goutte de colle ou une bague d'arrêt Ø8 la remplace : les axes sont
+serrés dans le chapeau.
+
+### Jeux d'ajustement de la version imprimée
+
+| Ajustement | Cas réel | PETG | Pourquoi |
+|---|---|---|---|
+| Logements de roulements (608, 685, 6806) | nominal | **+0,15 mm** | Les trous imprimés sortent plus petits ; on obtient un serrage léger du roulement |
+| Alésage d'un axe acier (Ø5 des vis, Ø8 des pivots et de la roue) | nominal | **+0,10 mm**, méplat en D pour le Ø8 | Serré. Le méplat transmet le couple de la roue au chapeau, et une vis de pression bloque chaque vis sans fin |
+| Moyeu de la chape dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
+| Téton du fond dans la colonne (Ø int. 46) | Ø45,5 | **Ø45,6** | Glissant |
+| Trous de passage M3 / M2,5 | 3,4 / 2,9 | **3,5 / 3,0** | |
+| Avant-trous M3 | 2,5 (taraudés) | **2,8** | Vis auto-taraudées dans le PETG, 4,5 mm de prise au moins |
+| Centrage Ø22 des moteurs | 22,5 | **22,4** | |
+| Jeu de denture des roues | 0,10 / 0,12 mm | **0,30 mm** | Imprécision des dents imprimées |
+| Filet des vis | aminci de 0,15 m | **non aminci, tête raccourcie (0,85 m)** | Tout le jeu est pris sur la roue, et le filet reste assez épais pour l'impression |
+| Entraxe vis / roue | nominal | **+0,15 mm**, puis réglé au montage | Lumières en azimut, cales en élévation |
+| Jeu axial chapeau / chape | 2 mm | 2 mm | Rondelles PTFE |
+
+**Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages
+que les pièces :
+* trois logements de 608 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
+* un alésage Ø8 en D, un Ø5, un passage et un avant-trou M3 ;
+* un téton Ø29,95 pour le 6806.
+
+Si ton imprimante préfère un autre logement :
+1. change la valeur dans `AJUSTEMENTS["petg"]`, en tête de `generate_tracker.py` ;
+2. relance `python generate_tete_vis_sans_fin.py`.
+
+Toutes les pièces sont alors régénérées avec ce jeu.
+
+### Ordre de montage
+
+1. **Socle** : presser le 6806 bas par-dessous, jusqu'à l'épaulement, puis le 6806 haut
+   par-dessus.
+2. **Roue d'azimut** : la poser à plat sur le socle et la fixer par 3 vis fraisées M3×8, qui
+   doivent affleurer : la vis d'azimut passe juste au-dessus.
+3. **Moyeu** : l'enfiler par le haut, à travers la roue et les deux roulements. Visser la
+   rondelle d'arrêt par-dessous (2 × M3×8).
+4. **Fond** : 3 × M3×25 par-dessous, à travers le téton. Poser la tête sur la colonne :
+   * percer la colonne Ø3,4 à 8 mm sous son sommet, face au trou du téton ;
+   * mettre la vis anti-rotation M3×6.
+5. **Chape** : sur l'établi, presser les deux 608 dans les bras. Monter ensuite la
+   chaîne d'élévation :
+   * le palier avec ses deux 685, la vis sur sa tige Ø5 et sa vis de pression ;
+   * l'accouplement, le support et le NEMA 17.
+
+   Ces pièces sont vissées par-dessous la chape.
+6. **Chapeau** : le présenter sur la chape, mettre la roue d'élévation entre les bras, puis
+   enfiler le pivot en D à travers le flanc, le 608 et la roue. Mettre le pivot libre de
+   l'autre côté.
+7. **Chape sur le moyeu** : 3 × M3×12 par-dessus.
+8. **Chaîne d'azimut** : glisser le palier d'azimut (685, vis, tige) sous la chape, la vis
+   venant en prise radialement avec la roue fixe. Mettre ensuite le support, le NEMA 11 et
+   l'accouplement. Toutes ces vis se mettent par-dessus la chape, dans les lumières.
+9. **Réglage des engrènements** (vis et roues graissées) :
+   * en azimut, rapprocher le palier dans ses lumières jusqu'à supprimer le jeu, sans
+     point dur sur un tour complet ;
+   * en élévation, caler le palier par des rondelles ou du clinquant de 0,1 à 0,3 mm
+     s'il y a trop de jeu.
+10. **Rails et panneau** : les rails se vissent par-dessus le chapeau (4 × M3×14, têtes
+    noyées dans les rails), puis le panneau se visse sur les rails.
+
+### Ce que change le PETG en fonctionnement
+
+* **Couples** : les vis et roues en PETG doivent être **graissées**.
+  * Graissées (μ ≈ 0,15), les marges restent celles du cas réel : ×2,5 en élévation et ×2,3
+    en azimut avec un vent de 10 m/s.
+  * À sec (μ ≈ 0,30), elles tombent à ×1,4.
+* **Tenue moteurs coupés** : encore plus sûre qu'avec acier et bronze, car le frottement du
+  PETG est plus élevé. Les deux vis sont irréversibles, même avec des vibrations.
+* **Dents en PETG** : limiter le courant du moteur d'élévation à **0,9 A** (au lieu de
+  1,3 A).
+  * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
+    2,8 N·m à la roue. Cela fait environ 35 MPa en pied de dent, soit 70 % de la résistance
+    du PETG.
+  * La marge au vent de 10 m/s reste de ×1,7, et de ×2,5 en intérieur.
+  * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
+* **Fluage** : sous une charge permanente, le PETG se déforme lentement. Entre deux
+  démonstrations, garer le panneau **à plat (élévation 90°)**, où la pesanteur ne charge
+  presque plus la denture.

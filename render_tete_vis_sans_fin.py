@@ -31,6 +31,7 @@ def coupe(assy, x=(-1e3, 1e3), y=(-1e3, 1e3), z=(-1e3, 1e3)):
 
 
 def main():
+    G.set_ajustements("reel")
     T.build_parts()
     fy = (G.Z_CHAPE + G.Z_T) / 2                      # hauteur du centre de la tête (Y-up)
     with_pan = T.build_head(0.0, G.EL_REF, "avec_panneau", True)
@@ -52,5 +53,30 @@ def main():
     shoot(r, "tete_vis_sans_fin_coupe_azimut.png", (110, 260, 210), focal=(-25, z_az - 10, 25), angle=30)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--plateau" not in __import__("sys").argv:
     main()
+
+
+def plateau():
+    """Pièces PETG à imprimer, dans leur orientation d'impression, rangées sur un plateau."""
+    G.set_ajustements("petg")
+    T.build_parts()
+    assy = cq.Assembly(name="plateau")
+    x = y = 0.0
+    rang = 0.0
+    for i, name in enumerate(G.PIECES_IMPRIMEES):
+        wp = T.a_plat(G.PARTS[name][0], T.ORIENTATION[name])
+        bb = wp.val().BoundingBox()
+        if x + bb.xlen > 480:
+            x, y, rang = 0.0, y + rang + 25, 0.0
+        assy.add(wp, name=name, loc=G.TO_YUP * G.trans(x + bb.xlen / 2, -(y + bb.ylen / 2), 0),
+                 color=cq.Color(0.95, 0.45, 0.10))
+        x += bb.xlen + 25
+        rang = max(rang, bb.ylen)
+    r = build_renderer(assy, SUN, ground=False)
+    shoot(r, "demo_petg_pieces_a_imprimer.png", (240, 520, 420), focal=(240, 0, 120), angle=40)
+    G.set_ajustements("reel")
+
+
+if __name__ == "__main__" and "--plateau" in __import__("sys").argv:
+    plateau()

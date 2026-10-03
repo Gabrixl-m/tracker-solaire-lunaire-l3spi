@@ -26,7 +26,7 @@ import os
 import cadquery as cq
 
 import generate_tracker as G
-from generate_tracker import box_span, cyl_z, ring_z, rot
+from generate_tracker import box_span, cyl_y, cyl_z, ring_z, rot
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_REEL = os.path.join(HERE, "CAO", "Cas_Reel", "Tete_Rotative_VisSansFin.step")
@@ -286,7 +286,8 @@ def a_plat(wp, rots):
 def eprouvette():
     """Éprouvette de réglage : logements des roulements de pivots (6801) et des 685 en trois jeux,
     alésages de pivot en D et Ø5, trous M3, téton Ø30 (bague intérieure d'un 6806) et téton de
-    pivot (bague intérieure d'un 6801)."""
+    pivot (bague intérieure d'un 6801) ; sur une paroi debout, les trous d'axe horizontal en
+    goutte, imprimés comme sur les pièces."""
     aj = G.AJ
     e = box_span(0, 112, 0, 62, 0, 6).edges("|Z").fillet(3)
     pv = G.PV()
@@ -300,6 +301,16 @@ def eprouvette():
     e = e.cut(cyl_z(aj["passage_m3"], 8, 83, 46, -1)).cut(cyl_z(aj["taraud_m3"], 8, 93, 46, -1))
     e = e.union(cyl_z(30 + aj["moyeu"], 8, 95, 16, 6))   # téton du moyeu dans le 6806
     e = e.union(cyl_z(pv["d"] + aj["axe_imprime"], 8, 104, 46, 6))   # téton de pivot dans le 6801
+    # paroi debout : trous d'axe horizontal, en goutte comme sur les pièces (centrage moteur Ø22,
+    # logement de 6801, logement de 685, alésage de pivot en D avec son méplat en bas)
+    e = e.union(box_span(0, 112, 62, 70, 0, 30).edges("|Y").fillet(2))
+    Y, Z, zc = (0, 1, 0), (0, 0, 1), 14.0
+    e = e.cut(G.goutte(aj["pilote"], 10, (16, 61, zc), Y, Z))
+    e = e.cut(G.goutte(G.RP()["D"] + aj["roulement"], 10, (44, 61, zc), Y, Z))
+    e = e.cut(G.goutte(11 + aj["roulement"], 10, (68, 61, zc), Y, Z))
+    dp = pv["d"] + aj["serrage"]
+    e = e.cut(cyl_y(dp, 10, 92, 61, zc).cut(box_span(80, 104, 60, 72, zc - dp, zc - pv["meplat"] - aj["serrage"] / 2)))
+    e = e.cut(G.goutte(dp, 10, (92, 61, zc), Y, Z, cercle=False))
     return e
 
 

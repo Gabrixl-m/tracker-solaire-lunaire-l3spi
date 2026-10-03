@@ -6,7 +6,8 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
   - vis_sans_fin_moyeux.png : la vis sans fin imprimée seule (filet, moyeux, épaulements,
     trou de la vis sans tête, alésage) ;
   - axe_elevation.png : coupe par l'axe d'élévation (pivots imprimés Ø12, roulements 6801,
-    bossages du chapeau, roue d'élévation, chapeau, bras de la chape).
+    bossages du chapeau, roue d'élévation, chapeau, bras de la chape) ;
+  - eprouvette_ajustements.png : l'éprouvette de réglage, avec ce qu'on essaie dans chaque trou.
 Sur serveur : xvfb-run -a python render_explications.py
 """
 
@@ -142,6 +143,25 @@ def main():
         ("Chapeau en U (bleu) :\nporte le panneau", (-53, zt - 12, 0), (30, 600)),
         ("Bras de la chape (jaune) :\nne tourne pas en élévation", (44, zt - 40, 0), (1090, 780)),
         ("Vis sans fin d'élévation :\nfait tourner la roue", (-30, G.z_vis_el() + 5, 0), (30, 900)),
+    ])
+    # 4. éprouvette de réglage des ajustements, paroi des trous horizontaux en goutte face à nous
+    G.set_ajustements("petg")
+    ep = T.eprouvette()
+    c = cq.Assembly(name="eprouvette")
+    c.add(ep, name="eprouvette_petg", loc=G.TO_YUP, color=cq.Color(0.93, 0.55, 0.20))
+    aj, pv, rp = G.AJ, G.PV(), G.RP()
+    def fr(v):
+        return format(v, "g").replace(".", ",")
+    rendu(c, "eprouvette_ajustements.png", (56, 150, 150), (56, 8, -36), 40, [
+        (f"Trous horizontaux en goutte :\ncentrage moteur Ø{fr(aj['pilote'])}", (16, 25, -61.5), (30, 40)),
+        (f"Logement de {pv['ref']}\n(horizontal)", (44, 24, -61.5), (480, 150)),
+        ("Logement de 685\n(horizontal)", (68, 19, -61.5), (860, 40)),
+        ("Pivot en D, méplat\nen bas (horizontal)", (92, 20, -61.5), (1180, 150)),
+        (f"Téton de pivot Ø{fr(pv['d'] + aj['axe_imprime'])}\n(dans un {pv['ref']})", (104, 14, -46), (1180, 330)),
+        ("3 logements de 685\n(jeu retenu, -0,1, +0,1)", (25, 6, -46), (30, 430)),
+        (f"3 logements de {pv['ref']}\n(jeu retenu, -0,1, +0,1)", (42, 6, -16), (30, 860)),
+        (f"Pivot en D Ø{fr(pv['d'] + aj['serrage'])}\n(trou vertical)", (57, 6, -46), (560, 960)),
+        ("Téton du moyeu Ø29,95\n(dans un 6806)", (95, 14, -16), (1150, 880)),
     ])
     G.set_ajustements("reel")
 

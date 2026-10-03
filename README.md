@@ -34,7 +34,7 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) et axe d'élévation imprimé (pivots, roulements 6801, roue) |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue) et éprouvette de réglage des ajustements |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
@@ -570,19 +570,45 @@ change le PETG »). Leur tête Ø18 de 2 mm sert d'épaulement contre le flanc d
 | Filet des vis | aminci de 0,15 m | **non aminci, tête raccourcie (0,85 m)** | Tout le jeu est pris sur la roue, et le filet reste assez épais pour l'impression |
 | Entraxe vis / roue | nominal | **+0,15 mm**, puis réglé au montage | Lumières en azimut, cales en élévation |
 | Bossages du chapeau sur les bagues intérieures des roulements de pivots | 0,10 mm par côté | **0,25 mm** par côté | Règlent le jeu axial du chapeau (0,5 mm en tout en PETG). Si le chapeau serre, poncer un bossage |
+| Épaulements des moyeux des vis sur les 685 | 0,15 mm par côté | 0,15 mm par côté | Calage axial de la vis entre ses roulements |
+| **Trous d'axe horizontal à l'impression** : logements des 6801 (bras de la chape) et des 685 (joues des paliers), alésages des pivots dans le chapeau, centrages des moteurs | cylindriques | **en goutte** | Le haut d'un trou horizontal imprimé s'affaisse : il sortirait ovale et trop petit. La goutte ajoute deux pans à 45° vers le haut, tronqués 0,6 mm au-dessus du cercle. Elle s'imprime sans support, et le roulement ou l'axe porte sur le reste du cercle. Les trous verticaux (6806, roues, vis) restent ronds |
 
 **Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages
 que les pièces :
+
+![Éprouvette de réglage](docs/explications/eprouvette_ajustements.png)
+
 * trois logements de 6801 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
 * un alésage Ø12 en D, un Ø5, un passage et un avant-trou M3 ;
 * un téton Ø29,95 pour le 6806 et un téton Ø11,95 pour le 6801 (essayer un vrai roulement
-  dessus : il doit entrer en forçant légèrement).
+  dessus : il doit entrer en forçant légèrement) ;
+* sur la paroi debout, les **trous horizontaux en goutte**, imprimés comme sur les pièces :
+  centrage moteur Ø22,4, logement de 6801, logement de 685, alésage de pivot en D (méplat
+  en bas).
+
+Ce qu'on doit obtenir :
+* les roulements entrent **en forçant légèrement**, à la main ou avec un serre-joint, et ne
+  ressortent pas tout seuls ;
+* le centrage du moteur se pose sans forcer ;
+* le pivot entre dans son alésage en D sans jeu, en poussant fort.
+
+Un roulement qui tombe tout seul : le jeu est trop grand. Un roulement qui ne rentre pas même
+au serre-joint : le jeu est trop petit.
 
 Si ton imprimante préfère un autre logement :
 1. change la valeur dans `AJUSTEMENTS["petg"]`, en tête de `generate_tracker.py` ;
 2. relance `python generate_tete_vis_sans_fin.py`.
 
 Toutes les pièces sont alors régénérées avec ce jeu.
+
+**Retouches possibles au montage**, car une imprimante n'est jamais exacte au dixième près :
+* la vis sans fin serre entre ses deux 685 : poncer légèrement l'épaulement Ø6,5 d'un moyeu ;
+* le chapeau serre entre les bras de la chape : poncer un bossage ;
+* un pivot entre trop dur dans le chapeau : passer un foret Ø12 à la main, sans perceuse ;
+* engrènements : réglés au montage (lumières en azimut, cales en élévation), voir l'étape 9.
+
+Le téton Ø45,6 du fond n'est utile que sur la colonne Ø50 × 2 du trépied du projet. Sur un
+trépied photo, il faut une pièce d'adaptation.
 
 ### Ordre de montage
 

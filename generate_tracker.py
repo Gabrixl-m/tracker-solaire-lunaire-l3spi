@@ -199,6 +199,20 @@ def cyl_dir(d, h, base, direction):
     return cq.Workplane().add(s)
 
 
+def goutte(d, L, p0, axe, haut, tronque=0.6, cercle=True):
+    """Trou Ø d de longueur L depuis p0 selon axe, en goutte vers le haut de l'impression (haut) :
+    deux pans à 45° tangents au cercle, tronqués à tronque mm au-dessus. Le haut d'un trou
+    horizontal imprimé s'affaisse ; la goutte s'imprime sans support, et le roulement ou l'axe
+    porte sur le reste du cercle. cercle=False : seulement la pointe (à ajouter à un alésage)."""
+    a, w = Vector(*axe).normalized(), Vector(*haut).normalized()
+    pl = cq.Plane(origin=Vector(*p0), xDir=w.cross(a), normal=a)
+    r = d / 2
+    sc, h = r * math.sqrt(0.5), r + tronque
+    e = max(r * math.sqrt(2) - h, 0.0)
+    t = cq.Workplane(pl).polyline([(0, 0), (sc, sc), (e, h), (-e, h), (-sc, sc)]).close().extrude(L)
+    return t.union(cq.Workplane(pl).circle(r).extrude(L)) if cercle else t
+
+
 def rot(axis, ang):
     return Location(Vector(0, 0, 0), Vector(*axis), ang)
 
@@ -749,9 +763,14 @@ def p_chape():
     c = c.cut(cyl_z(20, zc + 10 - 40, z=40))                                     # passage des câbles
     r = RP()
     w = r["B"]
-    c = c.cut(cyl_x(r["be"], 2 * xo + 2, -xo - 1, 0, zt))         # épaulement sur la bague extérieure
     dr = r["D"] + AJ["roulement"]
-    c = c.cut(cyl_x(dr, w, xo - w, 0, zt)).cut(cyl_x(dr, w, -xo, 0, zt))         # logements des roulements de pivots
+    if AJ["impression"]:            # bras debout à l'impression : trous horizontaux en goutte
+        X, Z = (1, 0, 0), (0, 0, 1)
+        c = c.cut(goutte(r["be"], 2 * xo + 2, (-xo - 1, 0, zt), X, Z))
+        c = c.cut(goutte(dr, w, (xo - w, 0, zt), X, Z)).cut(goutte(dr, w, (-xo, 0, zt), X, Z))
+    else:
+        c = c.cut(cyl_x(r["be"], 2 * xo + 2, -xo - 1, 0, zt))     # épaulement sur la bague extérieure
+        c = c.cut(cyl_x(dr, w, xo - w, 0, zt)).cut(cyl_x(dr, w, -xo, 0, zt))     # logements des roulements de pivots
     for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:          # passages : vis par-dessous
         c = c.cut(trou_z(AJ["passage_m3"], x, y, zc - 1, zc + 9))
     # palier et support d'azimut accrochés sous la plaque, vis par-dessus dans des lumières :
@@ -807,7 +826,8 @@ def p_palier_vis_az():
     b = None
     for x0, x1 in ((p0, p1), (-p1, -p0)):
         pl = box_span(x0, x1, y - 9, y + 8, z - 7.5, zc).cut(
-            logement_685(x0, x1, lambda d, u, L: cyl_x(d, L, u, y, z)))
+            logement_685(x0, x1, (lambda d, u, L: goutte(d, L, (u, y, z), (1, 0, 0), (0, 0, -1)))
+                         if AJ["impression"] else (lambda d, u, L: cyl_x(d, L, u, y, z))))   # imprimé à l'envers
         b = pl if b is None else b.union(pl)
     b = b.union(box_span(-p1, p1, y - 9, y + 8, zc - 5, zc))
     for x, yy in trous_palier_az():                       # taraudages, vis par-dessus la chape
@@ -820,7 +840,10 @@ def p_support_moteur_az():
     y, z, zc, xf = y_vis_az(), AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
     s = box_span(xf, xf + 4, y - 16, y + 16, z - 16, zc)
     s = s.union(box_span(xf, xf + 15, y - 16, y + 7, zc - 5, zc))
-    s = s.cut(cyl_x(AJ["pilote"], 10, xf - 1, y, z))
+    if AJ["impression"]:            # imprimé à l'envers : goutte vers -Z
+        s = s.cut(goutte(AJ["pilote"], 10, (xf - 1, y, z), (1, 0, 0), (0, 0, -1)))
+    else:
+        s = s.cut(cyl_x(AJ["pilote"], 10, xf - 1, y, z))
     for sy in (-1, 1):
         for sz in (-1, 1):
             s = s.cut(cyl_x(AJ["passage_m25"], 10, xf - 1, y + sy * m["holes"] / 2, z + sz * m["holes"] / 2))
@@ -842,7 +865,8 @@ def p_palier_vis_el():
     b = None
     for y0, y1 in ((p0, p1), (-p1, -p0)):
         pl = box_span(-38, -22, y0, y1, zb, Z_T - 24.5).cut(
-            logement_685(y0, y1, lambda d, u, L: cyl_y(d, L, -30, u, zv)))
+            logement_685(y0, y1, (lambda d, u, L: goutte(d, L, (-30, u, zv), (0, 1, 0), (0, 0, 1)))
+                         if AJ["impression"] else (lambda d, u, L: cyl_y(d, L, -30, u, zv))))
         b = pl if b is None else b.union(pl)
     b = b.union(box_span(-38, -22, -p1, p1, zb, zb + 5))
     for x, y in TROUS_PALIER_EL:
@@ -855,7 +879,10 @@ def p_support_moteur_el():
     zv, zb, yf = z_vis_el(), Z_CHAPE + 8, EL_VIS["y_face"]
     s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
     s = s.union(box_span(-54, -6, yf, yf + 22, zb, zb + 5))
-    s = s.cut(cyl_y(AJ["pilote"], 6, -30, yf - 1, zv))
+    if AJ["impression"]:
+        s = s.cut(goutte(AJ["pilote"], 6, (-30, yf - 1, zv), (0, 1, 0), (0, 0, 1)))
+    else:
+        s = s.cut(cyl_y(AJ["pilote"], 6, -30, yf - 1, zv))
     for sx in (-1, 1):
         for sz in (-1, 1):
             s = s.cut(cyl_y(AJ["passage_m3"], 6, -30 + sx * m["holes"] / 2, yf - 1, zv + sz * m["holes"] / 2))
@@ -887,6 +914,10 @@ def p_chapeau_u():
     u = u.union(cyl_x(RP()["bi"], hb + 0.5, -xi - 0.5)).union(cyl_x(RP()["bi"], hb + 0.5, xi - hb))
     xa = ARM_X[1] - 0.5                                        # alésages à travers flanc et bossage
     u = u.cut(alesage_pivot(-xo - 1, xo - xa + 1)).cut(alesage_pivot(xa, xo - xa + 1, d_plat=False))
+    if AJ["impression"]:            # flancs debout, chapeau imprimé à l'envers : pointe vers -Z,
+        dp = PV()["d"] + AJ["serrage"]   # le méplat reste en bas
+        for x0 in (-xo - 1, xa):
+            u = u.cut(goutte(dp, xo - xa + 1, (x0, 0, 0), (1, 0, 0), (0, 0, -1), cercle=False))
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))

@@ -99,6 +99,21 @@ Tracker_Lunaire_PoleSud
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
+### Roulements (en gris dans les fichiers 3D)
+
+| Réf. | Dimensions (Ø int. × Ø ext. × largeur) | Qté | Emplacement |
+|---|---|---|---|
+| **6806** (ISO 61806) | 30 × 42 × 7 mm | 2 | Azimut : dans le socle, autour du moyeu de la chape |
+| **608** | 8 × 22 × 7 mm | 2 | Élévation : dans les bras de la chape, sur les pivots Ø8 du chapeau |
+| **685ZZ** ou **685-2RS** | 5 × 11 × 5 mm | 4 | Arbres des deux vis sans fin, deux par vis, dans les paliers |
+
+* **685** : prendre une version **protégée, ZZ ou 2RS**. Le 685 ouvert ne fait que 3 mm de
+  large, alors que les paliers sont prévus pour 5 mm.
+* **Démonstration sur Terre** : roulements acier standard 2RS (joints caoutchouc, contre la
+  poussière) ou ZZ (flasques métalliques), graissés.
+* **Cas réel (Lune)** : mêmes dimensions, en acier 440C, avec une lubrification sèche (MoS₂)
+  et sans joint caoutchouc ni graisse, qui dégazeraient dans le vide.
+
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
 d'élévation, jusqu'à 0,8 N·m sur Terre. La vis sans fin est **irréversible** :
@@ -470,9 +485,9 @@ justes.
 
 | Article | Qté |
 |---|---|
-| Roulement 6806-2RS (30 × 42 × 7) | 2 |
-| Roulement 608-2RS (8 × 22 × 7) | 2 |
-| Roulement 685-2RS (5 × 11 × 5) | 4 |
+| Roulement 6806-2RS (ISO 61806-2RS), 30 × 42 × 7 mm | 2 |
+| Roulement 608-2RS (ou 608ZZ), 8 × 22 × 7 mm | 2 |
+| Roulement 685-2RS (ou 685ZZ), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) | 2 |
 | Axe acier Ø8 **en D** (méplat à 3,5 mm de l'axe), coupé à 34 mm : pivot entraîné | 1 |
 | Axe acier Ø8, coupé à 19 mm : pivot libre | 1 |

@@ -155,6 +155,7 @@ COL = {
     "u":      cq.Color(0.33, 0.45, 0.80),
     "brass":  cq.Color(0.80, 0.65, 0.30),
     "coupler": cq.Color(0.55, 0.60, 0.85),
+    "roulement": cq.Color(0.50, 0.50, 0.52),   # roulements du commerce : gris
 }
 
 
@@ -1057,7 +1058,8 @@ def build_head_parts():
         return "PETG" if imp else reel
     reg("Fond_Socle", p_fond_socle(), mat("Al 6061-T6"), COL["socle"], "Fond du socle, centrage dans la colonne")
     reg("Socle", p_socle(), mat("Al 6061-T6"), COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
-    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["steel"], "Roulement d'azimut 6806")
+    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["roulement"],
+        "Roulement d'azimut 6806 (61806) 30 x 42 x 7, 2RS ou ZZ")
     reg("Roue_Azimut_Fixe", p_roue_azimut(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Z{VIS_AZ['z']}, fixée sur le socle")
     reg("Chape", p_chape(), mat("Al 6061-T6"), COL["chape"], "Chape en U (tourne en azimut, porte les moteurs)")
@@ -1065,9 +1067,10 @@ def build_head_parts():
         reg("Moyeu_Chape", p_moyeu_chape(), "PETG", COL["chape"], "Moyeu d'azimut, vissé sous la chape")
     reg("Bague_Arret_Moyeu", p_bague_arret(), mat("Acier inox 17-4PH"), COL["steel"],
         "Rondelle d'arrêt du moyeu (2 x M3)")
-    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["steel"], "Roulement d'élévation 608")
-    reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["steel"],
-        "Roulement 685 (arbres des vis)")
+    reg("Roulement_608", roulement_x(22, 8, 7), "Acier 440C", COL["roulement"],
+        "Roulement d'élévation 608 8 x 22 x 7, 2RS ou ZZ")
+    reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["roulement"],
+        "Roulement 685ZZ ou 685-2RS 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)")
     reg("Vis_Azimut", p_vis(VIS_AZ), mat("Acier inox 17-4PH"), COL["steel"],
         f"Vis sans fin d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Ø{VIS_AZ['dp']:.0f}, un filet")
     reg("Arbre_Vis_Azimut", p_arbre_vis_az(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'azimut")

@@ -23,12 +23,12 @@ Socle;1;Al 6061-T6;0.138;Socle Ø62 : roulements d'azimut, passe-câble
 Roue_Azimut_Fixe;1;Bronze CuSn12;0.135;Roue d'azimut m0,8 Z60, fixée sur le socle
 Roue_Elevation;1;Bronze CuSn12;0.125;Roue d'élévation m1 Z50
 Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
-Roulement_6806;2;Acier 440C;0.072;Roulement d'azimut 6806
+Roulement_6806;2;Acier 440C;0.072;Roulement d'azimut 6806 (61806) 30 x 42 x 7, 2RS ou ZZ
 Entretoise;3;Al 7075-T73;0.065;Entretoise Ø12x1
 Fond_Socle;1;Al 6061-T6;0.064;Fond du socle, centrage dans la colonne
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
 Accouplement;2;Al 7075-T73;0.036;Accouplement flexible 5/5
-Roulement_608;2;Acier 440C;0.036;Roulement d'élévation 608
+Roulement_608;2;Acier 440C;0.036;Roulement d'élévation 608 8 x 22 x 7, 2RS ou ZZ
 Support_Moteur_Elevation;1;Al 6061-T6;0.031;Support du moteur d'élévation
 Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
 Axe_Articulation;3;Ti-6Al-4V;0.021;Axe Ø6 revêtu MoS2
@@ -38,7 +38,7 @@ Palier_Vis_Azimut;1;Al 6061-T6;0.015;Palier de la vis d'azimut
 Pivot_Entraine;1;Acier inox 17-4PH;0.014;Pivot Ø8 portant la roue d'élévation
 Bague_Arret_Moyeu;1;Acier inox 17-4PH;0.013;Rondelle d'arrêt du moyeu (2 x M3)
 Vis_Elevation;1;Acier inox 17-4PH;0.013;Vis sans fin d'élévation m1 Ø16, un filet
-Roulement_685;4;Acier 440C;0.012;Roulement 685 (arbres des vis)
+Roulement_685;4;Acier 440C;0.012;"Roulement 685ZZ ou 685-2RS 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)"
 Support_Moteur_Azimut;1;Al 6061-T6;0.010;Support du moteur d'azimut
 Pivot_Libre;1;Acier inox 17-4PH;0.008;Pivot Ø8 libre
 Arbre_Vis_Azimut;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'azimut

@@ -920,17 +920,19 @@ def p_roue_elevation():
 
 
 def p_rail():
-    """Rail alu (non imprimé) : vissé sur le chapeau par-dessus, têtes noyées sous le panneau ;
-    taraudé M3 à ses extrémités pour le cadre du panneau."""
+    """Rail alu (non imprimé) : vissé sur le chapeau par-dessus, têtes noyées sous le panneau.
+    À ses extrémités, une vis par-dessous (tête noyée) traverse le rail et l'aile arrière du
+    cadre du panneau, avec un écrou M3 dans le cadre."""
     r = box_span(-6, 6, -P["pan_H"] / 2, P["pan_H"] / 2, U_TOP[1], P["pan_back"])
     for y in (-14, 14):
         r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, 4, 0, y, P["pan_back"] - LAMAGE_RAIL))
-    for y in (-P["pan_H"] / 2 + 6, P["pan_H"] / 2 - 6):
-        r = r.cut(cyl_z(2.5, 10, 0, y, P["pan_back"] - 9))
+    for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
+        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, LAMAGE_RAIL + 0.5, 0, y, U_TOP[1] - 0.5))
     return r
 
 
 LAMAGE_RAIL = 3.5                    # profondeur du lamage des têtes de vis dans les rails
+Y_FIX_PANNEAU = P["pan_H"] / 2 - 6   # vis rail -> cadre du panneau : au milieu de l'aile arrière (12 mm)
 
 
 # --- visserie de la tête : vis CHC modélisées tête + noyau (Ø du fond de filet), pour que le
@@ -938,6 +940,11 @@ LAMAGE_RAIL = 3.5                    # profondeur du lamage des têtes de vis da
 def p_vis_chc(d, L):
     tete_d, tete_h, noyau = (5.5, 3.0, 2.4) if d == 3 else (4.5, 2.5, 2.0)
     return cyl_z(tete_d, tete_h).union(cyl_z(noyau, L, z=-L))
+
+
+def p_ecrou_m3():
+    """Écrou M3 (ISO 4032) : 5,5 sur plats, 2,4 de haut, posé sur z = 0."""
+    return cq.Workplane("XY").polygon(6, 5.5 / math.cos(math.radians(30))).extrude(2.4).cut(cyl_z(2.6, 3, z=-0.3))
 
 
 def p_vis_fraisee(d, L):
@@ -983,6 +990,9 @@ def visserie():
     for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
         for y in (-14, 14):
             v.append(("bascule", "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL), (0, 0, -1)))
+    for x in (-RAIL_X, RAIL_X):           # cadre du panneau -> rails : par-dessous, écrou dans le cadre
+        for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
+            v.append(("panneau", "M3x14", (x, y, U_TOP[1] + LAMAGE_RAIL), (0, 0, 1)))
     return v
 
 
@@ -1008,6 +1018,9 @@ def p_cadre_pv():
     f = f.cut(box_span(-L / 2 + w, L / 2 - w, -H / 2 + w, H / 2 - w, z0 + w, z0 + T - w))
     f = f.cut(box_span(-L / 2 + lip, L / 2 - lip, -H / 2 + lip, H / 2 - lip, z0 + T - w - 1, z0 + T + 1))
     f = f.cut(box_span(-L / 2 + lip, L / 2 - lip, -H / 2 + lip, H / 2 - lip, z0 - 1, z0 + w + 1))
+    for x in (-RAIL_X, RAIL_X):           # 4 trous Ø3,4 dans l'aile arrière, au droit des rails
+        for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
+            f = f.cut(cyl_z(3.4, w + 2, x, y, z0 - 1))
     return f
 
 
@@ -1160,6 +1173,7 @@ def build_head_parts():
     reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
+    reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["steel"], "Écrou M3 (ISO 4032)")
     for t in sorted({v[1] for v in visserie()}):
         d, L = t[1:].rstrip("F").split("x")
         if t.endswith("F"):
@@ -1248,6 +1262,9 @@ def build_panel(with_panel=True):
     if with_panel:
         for n in PANEL_PARTS:
             add(p, n)
+        add_visserie(p, "panneau")
+        for i, (x, y) in enumerate((x, y) for x in (-RAIL_X, RAIL_X) for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU)):
+            add(p, "Ecrou_M3", trans(x, y, P["pan_back"] + 1.5), f"Ecrou_M3_{i}")
     return p
 
 
@@ -1571,7 +1588,10 @@ def main():
             head = [(n, s) for n, s in flat if "SA_Tete_Orientable" in n and "/SA_Panneau/" not in n]
             body = [(n, s) for n, s in panel if not n.split("/")[-1].startswith(tilt_itf)]
             roue = [(n, s) for n, s in panel if n.split("/")[-1].startswith("Roue_Elevation")]
-            keep("panneau", min_clearance(body, fixed + head), az, el)
+            # appuis voulus des bossages du chapeau sur les bagues intérieures des roulements de
+            # pivots (jeu 0,1 mm) : contrôlés à part par generate_tete_vis_sans_fin.py
+            head_sans_roul = [x for x in head if not part_key(x[0]).startswith("Roulement")]
+            keep("panneau", min_clearance(body, fixed + head_sans_roul), az, el)
             keep("interface", min_clearance(roue, [x for x in head if "Vis_Elevation" in x[0]]), az, el)
             if el == 0.0:
                 for n, s in head:

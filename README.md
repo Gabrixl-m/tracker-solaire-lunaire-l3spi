@@ -101,7 +101,7 @@ Tracker_Lunaire_PoleSud
 | **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
 | **Élévation (axe X)** | **NEMA 17 de 34 mm** + vis sans fin m1 Ø16 sur la **roue bronze Z50** calée sur le pivot gauche du chapeau : **50:1**. Le moteur est à l'arrière de la chape, du côté opposé au panneau |
 | **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Ses deux moyeux appuient sur les bagues intérieures des 685, et une **lèvre** de chaque joue du palier retient leur bague extérieure : la poussée axiale de la vis va au palier. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas cette poussée |
-| **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau et sur l'aile arrière du cadre. Le dos du cadre est à 46 mm de l'axe d'élévation |
+| **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau (4 × M3, par-dessus) et sur l'aile arrière du cadre (4 × M3 par-dessous, écrous dans le cadre). Le dos du cadre est à 46 mm de l'axe d'élévation |
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
@@ -172,9 +172,9 @@ la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20
 ### Couples : besoins et marges dans tous les cas
 
 Les besoins sont calculés par `generate_tete_vis_sans_fin.py` à partir de la CAO :
-* partie basculante (chapeau, roue, rails, panneau) : 1,51 kg, dont 1,01 kg de panneau ;
-* centre de gravité à 53,5 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
-* couple de gravité maximal (panneau vertical) : 0,79 N·m sur Terre et 0,13 N·m sur la Lune ;
+* partie basculante (chapeau, roue, rails, panneau) : 1,52 kg, dont 1,01 kg de panneau ;
+* centre de gravité à 53,4 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
+* couple de gravité maximal (panneau vertical) : 0,80 N·m sur Terre et 0,13 N·m sur la Lune ;
 * frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
 * vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
   environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
@@ -278,6 +278,14 @@ une remise en position prend quelques secondes.
 * **356 × 253 × 30 mm** : cadre aluminium en C (rebord avant et aile arrière de 12 mm),
   laminé verre 3,2 mm + EVA + face arrière, 72 cellules (9 × 8), boîte de jonction au dos.
 * Monté en **format paysage** : l'axe d'élévation est parallèle au côté de 356 mm.
+* **Masse** : le modèle compte 1,01 kg (verre de 3,2 mm, cadre, boîte de jonction), avec un
+  centre de gravité à 70 mm de l'axe. **Peser le vrai panneau.** Avec la tête PETG et le
+  moteur d'élévation réglé à 0,9 A, la marge reste d'au moins ×1,5 jusqu'à **1,26 kg** en
+  extérieur (vent de 10 m/s) et **1,78 kg** en intérieur.
+* **Fixation** : 4 vis M3×14 par-dessous traversent les bouts des rails (têtes noyées) et
+  l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
+  dans l'aile arrière des grands côtés : à 44 mm de part et d'autre du milieu, à 6 mm du bord
+  extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
   passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
@@ -417,17 +425,17 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
   à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
 * **Garde sur toute la plage de mouvement** (élévation de −2° à +92°, azimut sur 360°,
   `python generate_tracker.py --balayage`, environ 11 min) :
-  * partie qui bascule (panneau + chapeau) face à tout le reste : 2,0 mm, c'est le jeu
-    axial prévu entre les flancs du chapeau et les bras de la chape ; en butée basse, le
-    cadre du panneau passe à 10,6 mm du socle ;
+  * partie qui bascule (panneau + chapeau) face à tout le reste : 2,0 mm, entre les flancs
+    du chapeau et les bras de la chape ; en butée basse, le cadre du panneau passe à
+    10,6 mm du socle. Seuls les bossages des flancs viennent plus près : à 0,1 mm des
+    bagues intérieures des roulements de pivots, ce qui est voulu (voir « Roulements ») ;
   * denture roue / vis d'élévation : contact flanc contre flanc, sans aucun chevauchement
     de −2° à 92° (vérifié tous les 15°) ;
   * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
-    près, entre l'accouplement d'azimut et le voile de la roue fixe, et entre le moyeu de
-    la chape et la roue.
+    près, entre l'accouplement d'azimut et le voile de la roue fixe.
 * **Stabilité** : basculement sans ancrage à 25,5° dans la pire orientation du panneau
   (`optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 177 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 185 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -534,7 +542,8 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 4 × M3×14, 3 × M3×25 | 25 |
+| Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 8 × M3×14, 3 × M3×25 | 29 |
+| Écrou M3 (panneau sur les rails) | 4 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×8 (NEMA 11) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
@@ -633,7 +642,9 @@ Toutes les pièces sont alors régénérées avec ce jeu.
    * en élévation, caler le palier par des rondelles ou du clinquant de 0,1 à 0,3 mm
      s'il y a trop de jeu.
 10. **Rails et panneau** : les rails se vissent par-dessus le chapeau (4 × M3×14, têtes
-    noyées dans les rails), puis le panneau se visse sur les rails.
+    noyées dans les rails). Poser ensuite le panneau sur les rails. Dans chaque bout de rail,
+    passer une vis M3×14 par-dessous à travers le rail et l'aile arrière du cadre, puis
+    serrer un écrou M3 posé dans le cadre. On l'atteint par le dos ouvert du panneau.
 
 ### Ce que change le PETG en fonctionnement
 

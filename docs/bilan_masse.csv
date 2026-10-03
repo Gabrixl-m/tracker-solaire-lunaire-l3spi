@@ -14,7 +14,7 @@ Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
 Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
 Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévation : NEMA 17 42 x 42 x 34 mm (type 17HS3401)
 Tube_Jambe_Superieur;3;Al 7075-T73;0.212;Tube Ø25x1,5 anodisé dur
-Rail_Panneau;2;Al 6061-T6;0.211;Rail 12 x 13 vissé sur le cadre du panneau
+Rail_Panneau;2;Al 6061-T6;0.209;Rail 12 x 13 vissé sur le cadre du panneau
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
 Chapeau_U;1;Al 6061-T6;0.146;Chapeau en U renversé porte-panneau
@@ -41,15 +41,16 @@ Pivot_Entraine;1;Acier inox 17-4PH;0.014;Pivot Ø8 portant la roue d'élévation
 Bague_Arret_Moyeu;1;Acier inox 17-4PH;0.012;Rondelle d'arrêt du moyeu (2 x M3)
 Roulement_685;4;Acier 440C;0.011;"Roulement 685ZZ (ou 685-2RS) 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)"
 Support_Moteur_Azimut;1;Al 6061-T6;0.010;Support du moteur d'azimut
+Vis_CHC_M3x14;8;Acier (visserie);0.008;Vis CHC M3x14 (ISO 4762)
 Pivot_Libre;1;Acier inox 17-4PH;0.008;Pivot Ø8 libre
 Arbre_Vis_Azimut;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'azimut
 Arbre_Vis_Elevation;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'élévation
 Vis_CHC_M3x8;6;Acier (visserie);0.005;Vis CHC M3x8 (ISO 4762)
 Vis_CHC_M3x25;3;Acier (visserie);0.004;Vis CHC M3x25 (ISO 4762)
-Vis_CHC_M3x14;4;Acier (visserie);0.004;Vis CHC M3x14 (ISO 4762)
 Vis_CHC_M3x12;4;Acier (visserie);0.004;Vis CHC M3x12 (ISO 4762)
 Vis_CHC_M3x10;4;Acier (visserie);0.004;Vis CHC M3x10 (ISO 4762)
 Vis_CHC_M2.5x8;4;Acier (visserie);0.002;Vis CHC M2,5x8 (ISO 4762)
+Ecrou_M3;4;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
 TOTAL;;;25.64;

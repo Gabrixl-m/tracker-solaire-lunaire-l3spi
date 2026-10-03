@@ -37,6 +37,7 @@ P = dict(
     pan_L=356.0,           # longueur, parallèle à l'axe d'élévation
     pan_H=253.0,           # largeur, dans le plan de rotation en élévation
     pan_T=30.0,            # épaisseur (cadre)
+    pan_masse=1.16,        # masse mesurée du panneau complet (kg)
     pan_back=46.0,         # distance axe d'élévation -> dos du cadre (passe devant la chape à -2°)
     cell_nx=9, cell_ny=8,
     # Axes
@@ -48,7 +49,7 @@ P = dict(
     z_ball=40.0,                   # hauteur du centre de la rotule de pied
     leg_phis=(90.0, 210.0, 330.0), # jambes en Y, à 120° (repère Z-up)
     # Angle φ entre jambe et colonne : valeur optimale calculée par optimisation_angle.py
-    leg_angle=32.5,
+    leg_angle=33.0,
     tube_up=(25.0, 1.5), tube_low=(20.0, 1.5),  # tubes de jambe (Ø, épaisseur)
     r_lower_pin=52.0,              # axe d'entretoise sur le collier inférieur
     lug_off=28.0,                  # excentration de la chape d'entretoise sur la jambe
@@ -1222,6 +1223,10 @@ def build_head_parts():
         f"{P['cell_nx']*P['cell_ny']} cellules {cw:.1f}x{ch:.1f}")
     reg("Boite_Jonction", p_boite_jonction(), "PPO (boîte de jonction)", COL["black"],
         "Boîte de jonction + presse-étoupe")
+    # masse du laminé recalée pour que le panneau complet pèse sa masse mesurée
+    autres = sum(v.Volume() * MAT[PARTS[k][1]] * 1e-9 for k in ("Cadre_Panneau", "Cellules_PV", "Boite_Jonction")
+                 for v in PARTS[k][0].vals())
+    MASS_TARGET["Lamine_PV"] = P["pan_masse"] - autres
     # sol
     reg("Unite_Controle_Corps", p_unite_corps(), "Al 6061-T6", COL["gold"],
         "Unité de contrôle / stockage sous MLI (batterie, ESP32, drivers TMC2209)")

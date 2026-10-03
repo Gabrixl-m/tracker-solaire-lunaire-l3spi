@@ -141,7 +141,7 @@ chaque bague n'est approchée que par ce qui tourne avec elle.
     l'azimut d'environ 0,15 N·m (estimation), soit le tiers du couple du vent de 10 m/s.
   * Avec des 2RS, la marge de l'azimut au vent passe de ×2,3 à ×1,6 (vis graissée), et
     au-dessous de ×1 si la vis tourne à sec.
-  * L'élévation n'est presque pas touchée : ×2,5 → ×2,3.
+  * L'élévation n'est presque pas touchée : ×2,3 → ×2,1.
 * **Montage** : enfoncer un roulement en poussant sur la bague qu'on emmanche. Dans un
   logement, c'est la bague extérieure : utiliser une douille de son diamètre, jamais un
   outil posé sur la flasque.
@@ -151,7 +151,7 @@ chaque bague n'est approchée que par ce qui tourne avec elle.
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
-d'élévation, jusqu'à 0,8 N·m sur Terre. La vis sans fin est **irréversible** :
+d'élévation, jusqu'à 0,9 N·m sur Terre. La vis sans fin est **irréversible** :
 * le moteur fait tourner la roue ;
 * la roue ne peut pas faire tourner la vis, parce que la pente du filet (3,6°) est plus
   faible que l'angle de frottement (environ 6°). C'est le principe du cric de voiture à vis.
@@ -172,9 +172,9 @@ la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20
 ### Couples : besoins et marges dans tous les cas
 
 Les besoins sont calculés par `generate_tete_vis_sans_fin.py` à partir de la CAO :
-* partie basculante (chapeau, roue, rails, panneau) : 1,52 kg, dont 1,01 kg de panneau ;
-* centre de gravité à 53,4 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
-* couple de gravité maximal (panneau vertical) : 0,80 N·m sur Terre et 0,13 N·m sur la Lune ;
+* partie basculante (chapeau, roue, rails, panneau) : 1,67 kg, dont 1,16 kg de panneau (pesé) ;
+* centre de gravité à 55,1 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
+* couple de gravité maximal (panneau vertical) : 0,90 N·m sur Terre et 0,15 N·m sur la Lune ;
 * frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
 * vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
   environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
@@ -186,7 +186,8 @@ rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (é
 
 | Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
 |---|---|---|---|
-| Élévation (2,86 N·m disponibles) | ×20 | ×3,5 | **×2,5** |
+| Élévation (2,86 N·m disponibles) | ×18 | ×3,1 | **×2,3** |
+| Élévation, version PETG, moteur limité à 0,9 A (1,98 N·m) | — | ×2,2 | **×1,6** |
 | Azimut (1,22 N·m disponibles) | ×61 | ×41 | **×2,3** |
 
 * **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** On y vise une
@@ -195,16 +196,54 @@ rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (é
   faire la démonstration à 1 g.
 * **Chaque moteur est le plus petit moteur courant qui convient.** Avec le moteur juste en
   dessous, la marge en vent devient insuffisante :
-  * élévation : NEMA 11 de 45 mm, ×0,85 ;
+  * élévation : NEMA 11 de 45 mm, ×0,77 ;
   * azimut : NEMA 11 court (32 mm, ≈ 0,05 N·m), ×1,2.
+
+### Bilan de dimensionnement : est-ce surdimensionné ?
+
+Calculé avec le panneau pesé (1,16 kg), les masses des pièces d'après leurs matériaux, le
+rendement des vis, les roulements et les câbles.
+
+| Ce qu'on regarde | Version PETG (démonstration) | Cas réel | Verdict |
+|---|---|---|---|
+| Part du couple moteur utilisée, élévation | 63 % dehors (vent 10 m/s), 46 % dedans, à 0,9 A | 44 % dehors, 6 % sur la Lune | Bien dimensionné dehors ; ×18 de trop sur la Lune |
+| Part du couple moteur utilisée, azimut | 43 % dehors, 2 % dedans | 43 % dehors, 2 % sur la Lune | Dimensionné par le vent ; sans vent, ×40 à ×60 de trop |
+| Dents en PETG, élévation | 16 MPa en marche dehors, 35 MPa moteur calé | — | C'est la vraie limite : d'où le courant limité à 0,9 A |
+| Dents en PETG, azimut | 7 MPa en marche dehors, 22 MPa moteur calé | — | Large |
+| Pivot entraîné Ø12 en PETG | 4 MPa en marche, 9 MPa moteur calé | — | ×3 au calage, ×8 en marche |
+| Roulements | en marche : poussée de la vis ≈ 1/5 de la capacité statique d'un 685 ; charge ≈ 1/100 de celle d'un 6806 | idem | Choisis pour leurs dimensions (câbles, axes), pas pour la charge |
+| Inertie | ≈ 0,012 kg·m² basculants : < 1 % du couple de gravité même en retour rapide | idem | Négligeable |
+
+* **Le cas qui dimensionne est la démonstration dehors, avec 10 m/s de vent.** Les marges y
+  sont de ×1,6 (élévation, PETG à 0,9 A) à ×2,3. Pour un moteur pas à pas, on vise ×1,5
+  à ×2 : au-delà de son couple, il ne ralentit pas, il **saute des pas** et perd sa
+  position. Le couple réel varie aussi de 10 à 20 % selon le vendeur et la température.
+  L'élévation de la version PETG est donc au bas de la plage, pas au-dessus.
+* **Les grandes marges (intérieur, Lune) ne coûtent rien.** Le même matériel doit tenir le
+  pire cas. Un moteur plus petit ne tiendrait pas le vent (voir ci-dessus). Pour une
+  version de vol seulement, sans essais à 1 g, un NEMA 8 long (≈ 0,04 N·m) suffirait en
+  élévation sur la Lune : il n'y faut que 0,011 N·m au moteur.
+* **Vitesse** : le Soleil avance de 15°/h en moyenne sur Terre (jusqu'à ≈ 40°/h en azimut
+  vers midi en été) et de 0,5°/h sur la Lune. Sur Terre, le moteur d'azimut fait donc de
+  2,5 à environ 7 tours par heure, et celui d'élévation au plus 2,1. À cette vitesse, un
+  pas à pas donne tout son couple, et la puissance mécanique à l'axe est de l'ordre de
+  0,1 mW.
+* **Pertes** : chaque vis perd 70 % du couple moteur en frottement (rendement 0,29 à
+  0,30). C'est le prix de l'irréversibilité : la vis sert de frein, sans frein à acheter ni
+  courant de maintien. Les roulements et les câbles ne coûtent que 0,01 à 0,02 N·m, soit 1 à
+  4 % du besoin. Des joints 2RS ajouteraient 0,15 N·m en azimut : prendre des ZZ.
+* **Énergie** : alimentés, les moteurs consomment environ 4 W (NEMA 17 à 0,9 A) et 6 W
+  (NEMA 11). Comme les vis tiennent seules, les drivers sont coupés entre deux corrections.
+  Avec une correction de 0,5° toutes les 2 minutes, les moteurs sont alimentés moins de 1 %
+  du temps, soit quelques dizaines de mW en moyenne au lieu de 10 W.
 
 ### Tenue moteurs coupés
 
 | Cas | Ce qui tient | Résultat |
 |---|---|---|
 | **Terre**, vis graissées (μ ≈ 0,10) | La vis se bloque : hélice de 3,6° (élévation) et 3,8° (azimut), angle de frottement 5,7° | **Tient dans toutes les positions, même dans le vent** |
-| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,5 en élévation, ×2,4 en azimut |
-| **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,13 N·m et il n'y a pas de vent | **Tient** : ×9 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
+| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,2 en élévation, ×2,4 en azimut |
+| **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,15 N·m et il n'y a pas de vent | **Tient** : ×8 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
 
 Conséquences :
 * **Aucun courant à l'arrêt** : drivers désactivés entre deux mouvements, donc consommation
@@ -278,10 +317,8 @@ une remise en position prend quelques secondes.
 * **356 × 253 × 30 mm** : cadre aluminium en C (rebord avant et aile arrière de 12 mm),
   laminé verre 3,2 mm + EVA + face arrière, 72 cellules (9 × 8), boîte de jonction au dos.
 * Monté en **format paysage** : l'axe d'élévation est parallèle au côté de 356 mm.
-* **Masse** : le modèle compte 1,01 kg (verre de 3,2 mm, cadre, boîte de jonction), avec un
-  centre de gravité à 70 mm de l'axe. **Peser le vrai panneau.** Avec la tête PETG et le
-  moteur d'élévation réglé à 0,9 A, la marge reste d'au moins ×1,5 jusqu'à **1,26 kg** en
-  extérieur (vent de 10 m/s) et **1,78 kg** en intérieur.
+* **Masse : 1,16 kg (pesée)**. Le modèle en tient compte (`P["pan_masse"]` dans
+  `generate_tracker.py`) : couples, stabilité et angle des jambes sont calculés avec.
 * **Fixation** : 4 vis M3×14 par-dessous traversent les bouts des rails (têtes noyées) et
   l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
   dans l'aile arrière des grands côtés : à 44 mm de part et d'autre du milieu, à 6 mm du bord
@@ -322,7 +359,7 @@ Le trépied est **dimensionné pour le panneau de 356 × 253 mm et la tête à v
 Architecture : trois jambes en Y à 120°, articulées sur un moyeu, avec entretoises vers un
 collier inférieur coulissant, jambes télescopiques, patins sur rotule et ancrages.
 
-### Angle φ des jambes : optimisé, **φ = 32,5°** (angle entre jambe et colonne)
+### Angle φ des jambes : optimisé, **φ = 33,0°** (angle entre jambe et colonne)
 
 L'articulation haute est fixée par le panneau : tout le trépied doit rester sous le volume
 qu'il balaie. Elle est donc à 509 mm du sol, juste sous le socle de la tête. φ fixe alors
@@ -332,18 +369,20 @@ gravité réels de la CAO, dans la pire orientation du panneau.
 
 | Contrainte | Exigence | Effet de φ |
 |---|---|---|
-| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 32,5°** |
+| **C1 Stabilité sans ancrage** | Tenir sur une pente de 15°, avec un caillou ou un enfoncement de 50 mm sous un pied, et 5° de marge | Plus φ est grand, plus les pieds sont écartés et plus le tracker est stable : **φ ≥ 33,0°** |
 | **C2 Mise à niveau** | Les jambes télescopiques (deux tubes) remettent la tête de niveau sur une pente de 10° | Plus φ est grand, plus la course nécessaire croît vite : φ ≤ 52° |
 | **C3 Garde au sol** | Pointe de la colonne à au moins 150 mm du sol | φ ≤ 49,4° |
 
 Tous les autres critères se dégradent quand φ augmente : longueur et masse des jambes,
 poussée reprise par les entretoises (le frottement au sol est six fois plus faible sur la
 Lune), course de nivelage et emprise au sol. **L'optimum est donc le plus petit angle
-admissible, 32,5°** (plage admissible : 32,5° à 49°). La rigidité latérale, maximale à 54,7°,
+admissible, 33,0°** (plage admissible : 33,0° à 49°). La rigidité latérale, maximale à 54,7°,
 ne dimensionne pas sur la Lune, où il n'y a pas de vent.
 
-La tête à vis sans fin est légère (tête + panneau : 2,8 kg) : le centre de gravité du
-tracker est bas, ce qui permet cet angle faible.
+La tête à vis sans fin est légère (tête + panneau : 3,0 kg, avec le panneau pesé à
+1,16 kg) : le centre de gravité du tracker est bas, ce qui permet cet angle faible. Avec
+le panneau estimé d'abord à 1,01 kg, l'optimum était 32,5° ; les 150 g de plus au sommet
+l'ont fait passer à 33,0°.
 
 L'optimum dépend des exigences. Par exemple, il passe à 38° pour une pente de 20° ou une
 marge de 10°. Le détail est dans
@@ -356,9 +395,9 @@ de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 |---|---|
 | **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
 | **Sommet de la colonne à 544 mm**, moyeu des jambes à 509 mm | La tête met l'axe d'élévation 156 mm au-dessus de la colonne. Tout le trépied reste sous le volume balayé par le panneau. |
-| **Pieds sur un cercle de Ø738 mm**, jambes de 556 mm | Conséquence de φ = 32,5°. Basculement sans ancrage à 25,5° dans la pire orientation du panneau (exigé : 25,2°). |
-| **Course télescopique ±77 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
-| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (306 mm). |
+| **Pieds sur un cercle de Ø749 mm**, jambes de 559 mm | Conséquence de φ = 33,0°. Basculement sans ancrage à 25,4° dans la pire orientation du panneau (exigé : 25,1°). |
+| **Course télescopique ±79 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
+| **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (304 mm). |
 | **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
 | **Patins Ø120 à crampons, rotule ±20°** | Pression sur le régolithe d'environ 340 Pa sur la Lune ; adaptation aux pentes et aux cailloux. |
 | **Vis d'ancrage hélicoïdales Ø60, enfoncées de 400 mm** | Un piquet lisse tient par frottement, six fois plus faible que sur Terre. L'hélice s'appuie au contraire sur la couche compacte du régolithe, sous 30 cm. Les vis se posent avec une visseuse à travers l'anneau du patin. Sur Terre, elles servent aussi contre le vent (voir § 2). |
@@ -390,17 +429,17 @@ Le trépied pèse 4,3 kg.
 | Grandeur | Valeur |
 |---|---|
 | Hauteur de l'axe d'élévation | 700 mm |
-| Angle des jambes | φ = 32,5° par rapport à la colonne (optimisé) |
-| Emprise au sol | Pieds sur Ø738 mm, Ø858 mm hors patins (≈ Ø1040 mm avec les anneaux d'ancrage) |
+| Angle des jambes | φ = 33,0° par rapport à la colonne (optimisé) |
+| Emprise au sol | Pieds sur Ø749 mm, Ø869 mm hors patins (≈ Ø1050 mm avec les anneaux d'ancrage) |
 | Panneau | 356 × 253 × 30 mm, 72 cellules |
 | Puissance du panneau | ≈ 10 W crête sur Terre (valeur typique de ce format, à confirmer sur sa fiche) |
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
 | Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,81 kg, dont 0,36 kg de moteurs (1,19 kg en version PETG) |
-| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,52 kg, dont 1,01 kg de panneau |
+| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,67 kg, dont 1,16 kg de panneau |
 | Masse du trépied | 4,3 kg |
-| Masse du tracker complet | 7,2 kg (poids lunaire ≈ 12 N) |
+| Masse du tracker complet | 7,3 kg (poids lunaire ≈ 12 N) |
 
 Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs et l'unité au sol ont
 une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
@@ -433,7 +472,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     de −2° à 92° (vérifié tous les 15°) ;
   * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
-* **Stabilité** : basculement sans ancrage à 25,5° dans la pire orientation du panneau
+* **Stabilité** : basculement sans ancrage à 25,4° dans la pire orientation du panneau
   (`optimisation_angle.py`).
 * **Relecture** des fichiers STEP produits : 185 solides, géométrie valide.
 
@@ -675,9 +714,10 @@ trépied photo, il faut une pièce d'adaptation.
 ### Ce que change le PETG en fonctionnement
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
-  * Graissées (μ ≈ 0,15), les marges restent celles du cas réel : ×2,5 en élévation et ×2,3
-    en azimut avec un vent de 10 m/s.
-  * À sec (μ ≈ 0,30), elles tombent à ×1,4.
+  * Graissées (μ ≈ 0,15) : ×1,6 en élévation (moteur limité à 0,9 A, voir plus bas) et
+    ×2,3 en azimut avec un vent de 10 m/s ; ×2,2 et ×40 en intérieur.
+  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×0,9) et n'a plus que ×1,3 en
+    intérieur : **graisser**.
   * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : en
     azimut, ×1,6 graissé et moins de ×1 à sec (voir « Roulements », § 2).
 * **Tenue moteurs coupés** : encore plus sûre qu'avec acier et bronze, car le frottement du
@@ -687,7 +727,7 @@ trépied photo, il faut une pièce d'adaptation.
   * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
     2,8 N·m à la roue. Cela fait environ 35 MPa en pied de dent, soit 70 % de la résistance
     du PETG.
-  * La marge au vent de 10 m/s reste de ×1,7, et de ×2,5 en intérieur.
+  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,2 en intérieur.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
 * **Pivots imprimés Ø12** : le pivot entraîné transmet le couple de la roue au chapeau.
   * En marche (poids du panneau et vent de 10 m/s, ≈ 1,2 N·m), il travaille à environ

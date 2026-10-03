@@ -3,17 +3,17 @@ Unite_Controle_Corps;1;masse forfaitaire;17.000;Unité de contrôle / stockage s
 Unite_Controle_Radiateur;1;Al 6061-T6;1.212;Radiateur zénithal (peinture blanche / OSR)
 Ancrage_Helicoidal;3;Ti-6Al-4V;1.020;Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe
 Patin;3;Al 7075-T73;0.931;Patin Ø120 à crampons + logement de rotule
-Lamine_PV;1;Verre 3,2 mm + EVA + backsheet (eq);0.701;Verre + EVA + face arrière
+Lamine_PV;1;masse forfaitaire;0.850;Verre + EVA + face arrière
 Collier_Superieur;1;Ti-6Al-4V;0.441;Moyeu d'articulation des jambes
 Ferrure_Jambe;3;Ti-6Al-4V;0.402;Ferrure d'articulation de jambe
 Chape;1;Al 6061-T6;0.326;Chape en U (tourne en azimut, porte les moteurs)
 Faisceau_Cables;1;PTFE/cuivre (eq);0.275;Faisceau puissance + données Ø12
-Tube_Jambe_Inferieur;3;Al 7075-T73;0.264;Tube coulissant Ø20x1,5
-Colonne_Centrale;1;Al 7075-T73;0.260;Colonne centrale Ø50x2 anodisée dur
+Tube_Jambe_Inferieur;3;Al 7075-T73;0.265;Tube coulissant Ø20x1,5
+Colonne_Centrale;1;Al 7075-T73;0.261;Colonne centrale Ø50x2 anodisée dur
 Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
 Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
 Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévation : NEMA 17 42 x 42 x 34 mm (type 17HS3401)
-Tube_Jambe_Superieur;3;Al 7075-T73;0.212;Tube Ø25x1,5 anodisé dur
+Tube_Jambe_Superieur;3;Al 7075-T73;0.215;Tube Ø25x1,5 anodisé dur
 Rail_Panneau;2;Al 6061-T6;0.209;Rail 12 x 13 vissé sur le cadre du panneau
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
@@ -24,7 +24,7 @@ Roue_Elevation;1;Bronze CuSn12;0.125;Roue d'élévation m1 Z50
 Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
 Roue_Azimut_Fixe;1;Bronze CuSn12;0.103;Roue d'azimut m0,8 Z60, fixée sur le socle
 Roulement_6806;2;Acier 440C;0.071;Roulement d'azimut 6806 (61806) 30 x 42 x 7, protégé ZZ (ou 2RS)
-Entretoise;3;Al 7075-T73;0.065;Entretoise Ø12x1
+Entretoise;3;Al 7075-T73;0.066;Entretoise Ø12x1
 Fond_Socle;1;Al 6061-T6;0.064;Fond du socle, centrage dans la colonne
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
 Accouplement;2;Al 7075-T73;0.036;Accouplement flexible 5/5
@@ -53,4 +53,4 @@ Vis_CHC_M2.5x8;4;Acier (visserie);0.002;Vis CHC M2,5x8 (ISO 4762)
 Ecrou_M3;4;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
-TOTAL;;;25.64;
+TOTAL;;;25.80;

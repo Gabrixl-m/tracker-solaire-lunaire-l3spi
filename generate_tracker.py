@@ -1077,6 +1077,7 @@ def min_clearance(moving, fixed, cutoff=40.0):
     """Distance mini entre deux groupes ; les paires dont les boîtes englobantes sont
     à plus de 'cutoff' mm ne sont pas calculées (résultat alors = cutoff)."""
     from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+    from OCP.Extrema import Extrema_ExtFlag_MIN
     best = (cutoff, "> seuil", "> seuil")
     for na, a in moving:
         ba = a.BoundingBox()
@@ -1086,7 +1087,11 @@ def min_clearance(moving, fixed, cutoff=40.0):
                       bb.ymin - ba.ymax, ba.zmin - bb.zmax, bb.zmin - ba.zmax)
             if gap > best[0]:
                 continue
-            ext = BRepExtrema_DistShapeShape(a.wrapped, b.wrapped)
+            ext = BRepExtrema_DistShapeShape()      # minimum seul : bien plus rapide
+            ext.LoadS1(a.wrapped)
+            ext.LoadS2(b.wrapped)
+            ext.SetFlag(Extrema_ExtFlag_MIN)
+            ext.SetMultiThread(True)
             ext.Perform()
             d = ext.Value()
             if d < best[0]:
@@ -1205,7 +1210,7 @@ def main():
         print(f"  {fname}: {'aucune' if not hits else hits}")
 
     if not sweep:
-        print("\n(contrôle de garde sur toute la plage : relancer avec --balayage, ~10 min)")
+        print("\n(contrôle de garde sur toute la plage : relancer avec --balayage)")
         return
 
     print("\nContrôle de garde sur toute la plage de mouvement :")

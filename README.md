@@ -346,15 +346,15 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
   Sur la vis d'azimut, il reste un recouvrement de 0,2 mm³. Il vient de la roue modélisée
   à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
-* **Garde sur la course d'élévation** (−2° à +92°) :
+* **Garde sur toute la plage de mouvement** (élévation de −2° à +92°, azimut sur 360°,
+  `python generate_tracker.py --balayage`, environ 11 min) :
   * partie qui bascule (panneau + chapeau) face à tout le reste : 2,0 mm, c'est le jeu
-    axial prévu entre les flancs du chapeau et les bras de la chape ;
-  * en butée basse, le cadre du panneau passe à 10,6 mm du socle ;
-  * denture roue / vis d'élévation : jeu de 0,03 mm, sans contact ;
-  * chape face à la partie fixe : 1,0 mm au plus près, entre le moyeu et la roue d'azimut.
-
-  Le balayage complet en azimut et en élévation (`python generate_tracker.py --balayage`)
-  n'a pas été relancé jusqu'au bout pour cette version : il est très long.
+    axial prévu entre les flancs du chapeau et les bras de la chape ; en butée basse, le
+    cadre du panneau passe à 10,6 mm du socle ;
+  * denture roue / vis d'élévation : contact flanc contre flanc, sans aucun chevauchement
+    de −2° à 92° (vérifié tous les 15°) ;
+  * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
+    près, entre le moyeu de la chape et la roue d'azimut.
 * **Stabilité** : basculement sans ancrage à 25,3° dans la pire orientation du panneau
   (`optimisation_angle.py`).
 * **Relecture** des fichiers STEP produits : 148 solides, géométrie valide.

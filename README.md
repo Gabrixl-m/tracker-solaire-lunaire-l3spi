@@ -26,10 +26,10 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `render_apercu.py` | Génère les rendus PNG |
-| `CAO/Tete_Rotative_28BYJ48.step` | **Étude à part** : tête rotative à deux moteurs 28BYJ-48, posée sur le haut de la colonne (voir § 12) |
-| `CAO/Tete_Rotative_28BYJ48_avec_panneau.step` | La même tête avec le panneau 356 × 253 × 30 monté, à 40° d'élévation |
-| `CAO/pieces_tete_28BYJ48/*.step` | Les 17 pièces de cette tête (dont les 4 du panneau), seules |
-| `generate_tete_28byj48.py`, `render_tete_28byj48.py` | Génération de la tête 28BYJ-48 et de ses rendus |
+| `CAO/Tete_Rotative_VisSansFin.step` | **Étude à part** : tête rotative motorisée, **version vis sans fin**, avec le panneau monté à 40° (voir § 12) |
+| `CAO/Tete_Rotative_Engrenages.step` | La même tête, **version engrenages droits** (pignon et roue), avec le panneau à 40° |
+| `CAO/pieces_tete_vissansfin/*.step`, `CAO/pieces_tete_engrenages/*.step` | Les pièces de chaque version, seules |
+| `generate_tete_motorisee.py`, `render_tete_motorisee.py` | Génération des deux têtes (CAO, calcul des couples, contrôles) et de leurs rendus |
 
 ### Ouvrir dans SolidWorks
 
@@ -250,101 +250,210 @@ python optimisation_angle.py            # angle φ optimal des jambes (à report
 xvfb-run -a python render_apercu.py     # rendus PNG (xvfb-run seulement sans écran)
 ```
 
-## 12. Tête rotative à moteurs 28BYJ-48 (étude à part)
+## 12. Tête rotative motorisée : version vis sans fin et version engrenages droits (étude à part)
 
-Fichiers à part du tracker complet : `CAO/Tete_Rotative_28BYJ48.step`, avec ou sans panneau.
-Les deux moteurs sont des **28BYJ-48 5 V unipolaires** (réducteur interne 1:64, 4096
-demi-pas/tour, couple d'entraînement d'environ 0,034 N·m).
+Deux fichiers à part du tracker complet. Les deux versions gardent **la même structure**,
+**sans contrepoids** :
+* un socle cylindrique Ø62 posé sur la colonne, avec deux roulements 6806 ;
+* une chape en U (jaune) qui tourne en azimut ;
+* un **chapeau en U renversé** (bleu) qui porte le panneau. Il pivote sur deux axes Ø8,
+  montés sur roulements 608 dans les bras de la chape.
 
-La tête comprend :
-* un socle cylindrique ;
-* une chape en U (jaune) ;
-* un **U renversé** (bleu) qui coiffe la chape et porte le panneau.
+Seule la transmission change :
 
-L'élévation est **en prise directe** : l'arbre du moteur entraîne directement le U renversé.
-
-| Tête seule | Coupe : moteur d'azimut dans le socle, moteur d'élévation contre le bras |
-|---|---|
-| ![Tête 28BYJ-48](docs/tete_28byj48_iso.png) | ![Coupe](docs/tete_28byj48_coupe.png) |
-| ![Avec panneau, côté moteur](docs/tete_28byj48_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_28byj48_avec_panneau_face.png) |
-
-### Moteur vertical (azimut) : dans le socle, arbre vers le haut
-
-* Le moteur est **fixe, dans le socle Ø62**. Il est vissé par ses deux pattes (entraxe 35 mm)
-  sur deux piliers du fond, en M3.
-* Son arbre est décalé de 8 mm par rapport au corps. Le corps est donc décalé pour que
-  **l'arbre soit exactement sur l'axe d'azimut**.
-* La chape tourne sur **deux roulements 6806 (Ø30/Ø42 × 7)**. L'arbre du moteur entre dans
-  une barrette à méplats au bas du moyeu : il **n'entraîne que la rotation**, sans porter
-  la tête.
-* Avantages de ce sens de montage :
-  * le moteur et son câble ne tournent pas ;
-  * le moteur est à l'abri de la poussière ;
-  * le centre de gravité reste bas ;
-  * le socle se centre dans la colonne Ø50 du trépied.
-* Le câble du moteur d'élévation descend par le moyeu creux. La rotation est limitée à
-  environ ±180° par la boucle de câble.
-
-### Moteur horizontal (élévation) : en prise directe sur le U renversé
-
-* Le U renversé pivote sur **deux axes Ø8** montés sur **roulements 608** dans les bras de
-  la chape. Ce sont eux qui portent le panneau.
-* Le 28BYJ-48 est vissé **à l'intérieur de la chape, contre le bras gauche**, sur deux
-  entretoises. Son arbre est sur l'axe d'élévation et son corps pend dessous.
-* L'arbre entre dans l'**empreinte à méplats** du pivot gauche : il entraîne le U sans
-  porter de charge.
-* Le panneau est vissé sur deux rails fixés sur le dessus du U. Le dos du cadre est à
-  43 mm de l'axe.
-
-### La condition pour que la prise directe fonctionne : l'équilibrage
-
-Le panneau est forcément au-dessus de l'axe, puisqu'il doit passer par-dessus les bras.
-Sans compensation, son poids donnerait un couple de 0,12 N·m sur la Lune et de 0,7 N·m sur
-Terre. C'est 3 à 20 fois plus que ce que donne un 28BYJ-48.
-
-La partie basculante est donc **équilibrée par deux contrepoids** au bas des flancs du U
-renversé, à 90 mm sous l'axe. Le script les calcule pour ramener le centre de gravité sur
-l'axe : **2 × 374 g en alliage de tungstène** (16 × 40 × 33 mm), décalés de 3,6 mm pour
-compenser la boîte de jonction. En acier, il faudrait environ 2,3 fois plus de volume.
-Le moteur n'a plus qu'à vaincre les frottements et le défaut d'équilibrage :
-
-| Élévation, équilibrée à ±1 mm | Lune | Terre |
+| | **Vis sans fin** : `CAO/Tete_Rotative_VisSansFin.step` | **Engrenages droits** : `CAO/Tete_Rotative_Engrenages.step` |
 |---|---|---|
-| Couple nécessaire (défaut d'équilibrage + roulements) | 0,006 N·m | 0,023 N·m |
-| Couple du 28BYJ-48 | 0,034 N·m | 0,034 N·m |
-| Marge | **×6** | ×1,5 : il faut un réglage soigné des contrepoids (cales) |
+| Moteur d'élévation (axe horizontal) | **NEMA 17 court, 42 × 42 × 34 mm** : 0,28 N·m, 1,3 A, 0,22 kg (type 17HS3401) | **NEMA 17, 42 × 42 × 40 mm** : 0,40–0,42 N·m, 1,5–1,7 A, 0,28 kg (type 17HS4401) |
+| Transmission d'élévation | Vis m1 Ø16, un filet + roue bronze Z50 sur le pivot gauche du chapeau : **50:1** | Pignon inox m0,8 Z15 + secteur denté alu m0,8 Z120 sur le pivot gauche : **8:1** |
+| Moteur d'azimut (axe vertical) | **NEMA 11, 28 × 28 × 45 mm** : 0,095 N·m, 0,67 A, 0,14 kg (type 11HS18-0674S) | **NEMA 17 court, 42 × 42 × 34 mm** : 0,28 N·m, 1,3 A, 0,22 kg (type 17HS3401) |
+| Transmission d'azimut | Vis m0,8 Ø12 + roue bronze Z60 **fixée sur le socle** : **60:1** | Pignon inox m0,8 Z18 + couronne alu Z92 **fixée sur le socle** : **5,1:1** |
+| Irréversible (tient sans courant) | **Oui, sur les deux axes** | Non |
+| Axe d'élévation au-dessus de la colonne | 156 mm | 164 mm |
+| Masse de la tête, hors panneau | 1,76 kg | 1,71 kg |
 
-* **Maintien moteur coupé** : le réducteur du 28BYJ-48 offre au moins 0,06 N·m de frottement,
-  plus que le défaut d'équilibrage. Le panneau reste donc en place sans courant.
-* **Mouvements** : la partie basculante pèse 2,2 kg (inertie d'environ 0,011 kg·m²). Il faut
-  démarrer et freiner en rampe, avec une accélération inférieure à environ 90 °/s². Le suivi
-  du Soleil, à 0,5°/h, ne demande qu'un demi-pas (0,088°) toutes les dix minutes.
-* **Jeu** : le jeu du réducteur du 28BYJ-48, de l'ordre de 1 à 2°, se retrouve sur le
-  panneau. L'effet sur la production est négligeable (cos 2° = 0,9994).
-* **Comparé à la version à vis sans fin** (commit `b2470b1` de l'historique) :
-  * plus simple, avec moins de pièces et sans engrenage ;
-  * mais 0,75 kg de contrepoids et un équilibrage à soigner pour les essais sur Terre.
+| Vis sans fin | Engrenages droits |
+|---|---|
+| ![Vis sans fin, avec panneau](docs/tete_vis_sans_fin_avec_panneau.png) | ![Engrenages, avec panneau](docs/tete_engrenages_avec_panneau.png) |
+| ![Vis sans fin, tête seule](docs/tete_vis_sans_fin_iso.png) | ![Engrenages, tête seule](docs/tete_engrenages_iso.png) |
+| ![Vis sans fin, côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Engrenages, côté moteurs](docs/tete_engrenages_cote_moteurs.png) |
+| ![Coupe élévation, vis](docs/tete_vis_sans_fin_coupe_elevation.png) | ![Coupe élévation, engrenages](docs/tete_engrenages_coupe_elevation.png) |
+| ![Coupe azimut, vis](docs/tete_vis_sans_fin_coupe_azimut.png) | ![Coupe azimut, engrenages](docs/tete_engrenages_coupe_azimut.png) |
 
-### Garde et vérifications
+### Principe commun
 
-* Aucune interférence entre pièces.
-* Élévation de −2° à +92° :
-  * environ 3 mm entre la plaque du U et le sommet des bras, en butée basse ;
-  * jeu axial de 2 mm entre les flancs du U et les bras (rondelles PTFE).
-* Les contrepoids passent à l'extérieur de la chape et du socle, dans toute la course.
+* **Azimut** : la roue (ou la couronne) est **fixée sur le socle**. Le moteur est porté par
+  la chape, et sa vis (ou son pignon) roule autour de la roue, comme sur une tourelle.
+  Les deux moteurs tournent donc avec le panneau. Aucun ne se trouve sur la trajectoire
+  du panneau, quel que soit l'azimut.
+* **Élévation** : la roue est clavetée sur le pivot gauche du chapeau en U. Le moteur est
+  sur la chape, du côté opposé au panneau. Le panneau passe à la verticale (−2°) devant
+  la chape, et à l'horizontale (+92°) au-dessus.
+* **Vis sans fin** : chaque vis tourne sur son propre arbre Ø5, porté par deux roulements
+  685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas
+  la poussée axiale de la vis.
+* **Engrenages** : la roue d'élévation est un **secteur denté** d'environ 130°. Le pignon
+  n'engrène que sur le quart avant-bas de la roue, et le reste est supprimé pour passer
+  sous la plaque du chapeau. Le moteur d'élévation est couché sous l'axe et le moteur
+  d'azimut est vertical sur la queue de la chape, arbre vers le bas.
 
-### Dimensions et nomenclature
+### Couples : besoins et marges dans tous les cas
 
-* Socle Ø62 × 65 mm. Axe d'élévation à 130 mm au-dessus de la colonne. Sommet des bras à 154 mm.
-* 2 moteurs 28BYJ-48 5 V et 2 cartes ULN2003 (dans l'unité de contrôle au sol).
-* 2 roulements 6806-ZZ et 2 roulements 608-ZZ.
-* 2 pivots Ø8, dont un avec empreinte à méplats pour l'arbre du moteur.
-* 2 contrepoids, visserie M3 et M4.
+Les besoins sont calculés par le script à partir de la CAO :
+* partie basculante (chapeau, roue, rails, panneau) : 1,51 kg (vis) / 1,44 kg (engrenages) ;
+* centre de gravité à 54–56 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
+* couple de gravité maximal (panneau vertical) : 0,79 N·m sur Terre et 0,13 N·m sur la Lune ;
+* frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
+* vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
+  environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
+  ce qui donne **+0,35 N·m en élévation et 0,50 N·m en azimut**.
 
-Masse de la tête : 1,8 kg dont 0,75 kg de contrepoids, plus 1,0 kg de panneau. Pour un
-prototype terrestre, la chape, le U et le socle peuvent être imprimés en 3D.
+Le couple disponible est le couple de maintien × 0,7, qui est le couple en marche lente en
+micro-pas, puis × rapport × rendement. Rendement d'une vis à un filet avec μ = 0,15 :
+0,29 en élévation et 0,30 en azimut. Rendement des engrenages droits : 0,97.
 
-**À vérifier sur tes moteurs** : les cotes du 28BYJ-48 viennent du plan constructeur
-standard (corps Ø28 × 19, pattes à 35 mm, arbre Ø5 à méplats décalé de 8 mm, capot des
-fils à l'opposé de l'arbre). Si ton modèle diffère, il suffit d'ajuster `BYJ` en tête de
-`generate_tete_28byj48.py`.
+| Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
+|---|---|---|---|
+| **Vis**, élévation (2,86 N·m dispo.) | ×20 | ×3,5 | **×2,5** |
+| **Vis**, azimut (1,22 N·m dispo.) | ×61 | ×41 | **×2,3** |
+| **Engrenages**, élévation (2,28 N·m dispo.) | ×16 | ×2,9 | **×2,0** |
+| **Engrenages**, azimut (0,97 N·m dispo.) | ×49 | ×32 | **×1,9** |
+
+* **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** C'est pour lui
+  qu'on vise une marge d'environ 2, sans surdimensionner. Les grandes marges sur la Lune
+  ne sont pas du surdimensionnement : le même matériel doit aussi faire la démonstration
+  à 1 g.
+* **Chaque moteur est le plus petit moteur courant qui convient.** Un cran en dessous, la
+  marge en vent devient insuffisante :
+  * vis, élévation : NEMA 11 de 45 mm, ×0,85 ;
+  * vis, azimut : NEMA 11 court (32 mm, ≈ 0,05 N·m), ×1,2 ;
+  * engrenages, élévation : NEMA 17 de 34 mm, ×1,3 ;
+  * engrenages, azimut : NEMA 11 de 45 mm, ×0,6.
+* À l'achat, prendre un NEMA 17 de 34 mm annoncé à **0,28 N·m**. Certains vendeurs vendent
+  sous la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20 % de marge.
+* Aucun moteur n'est long ni lourd. Le plus long fait 45 mm (le NEMA 11) et le plus lourd
+  pèse 0,28 kg.
+
+### Tenue des positions, moteurs à l'arrêt
+
+| | Vis sans fin | Engrenages droits |
+|---|---|---|
+| Tenue sans courant, sur Terre | **Oui, dans toutes les positions, même dans le vent** : les vis ont un angle d'hélice de 3,6° (élévation) et 3,8° (azimut), inférieur à l'angle de frottement (≈ 5,7°) | **Non** : en élévation, le panneau redescend vers sa butée basse (−2°). Le couple renvoyé au moteur (0,1 N·m) dépasse son couple résiduel (0,022 N·m) |
+| Tenue sans courant, sur la Lune | **Oui.** Avec le MoS₂ sous vide, le frottement peut descendre sous le seuil d'irréversibilité. Le couple renvoyé à la vis (≈ 0,0014 N·m) reste alors 11 fois plus faible que le couple résiduel du moteur | Limite : 0,016 N·m renvoyés pour 0,022 N·m de couple résiduel. Il faut garder un faible courant de maintien |
+| Courant à l'arrêt | **Aucun** : drivers coupés entre deux mouvements, consommation nulle | Courant de maintien obligatoire. À 50 % du courant nominal, ≈ 3,7 W pour les deux moteurs, soit environ 40 % des ≈ 10 W du panneau. Marge de tenue en vent à 50 % : ×1,4 (élévation) et ×1,3 (azimut). À 100 % : ×2,8 et ×2,7 |
+| Coupure d'alimentation | Rien ne bouge | Le panneau tombe sur la butée basse (prévoir une butée caoutchouc), sauf à monter un moteur à frein, plus long d'environ 30 mm |
+| Rendement, vitesse | Faible (≈ 30 %) et lent, sans conséquence pour un suivi à 0,5°/h (Lune) ou 15°/h (Terre) | ≈ 97 %, rapide |
+| Jeu | Faible, réglable par l'entraxe | Jeu de denture d'environ 0,1 mm, ≈ 0,15° au panneau |
+
+**Recommandation : la version vis sans fin.**
+* C'est la seule qui satisfait « tenir dans toutes les positions » **sans consommer** et
+  **même en cas de coupure**.
+* Sur la Lune, l'énergie est comptée : la nuit lunaire dure 14 jours.
+
+La version engrenages reste valable pour une démonstration en intérieur alimentée sur
+secteur, ou si l'on accepte un courant de maintien permanent.
+
+### Résolution et vitesses (moteurs à 200 pas/tour, 1/16 de pas)
+
+| | Vis, élévation | Vis, azimut | Engr., élévation | Engr., azimut |
+|---|---|---|---|---|
+| Pas entier au panneau | 0,036° | 0,030° | 0,225° | 0,35° |
+| Micro-pas (1/16) | 0,0023° | 0,0019° | 0,014° | 0,022° |
+| Vitesse conseillée | 14°/s (moteur à 120 tr/min) | 12°/s | 10°/s | 10°/s |
+
+Ces vitesses permettent un retour à plat ou une remise en position en quelques secondes.
+
+### Commande par ESP32
+
+* **Drivers : 2 × TMC2209**, alimentés en logique 3,3 V par l'ESP32. Ils sont silencieux
+  et pilotés par UART. Les deux drivers partagent le bus UART, avec les adresses 0 et 1
+  fixées par MS1/MS2.
+* **Câblage** :
+  * élévation : STEP GPIO 25, DIR GPIO 26 ;
+  * azimut : STEP GPIO 32, DIR GPIO 33 ;
+  * EN commun : GPIO 27 ;
+  * UART : TX GPIO 17 vers PDN_UART à travers 1 kΩ, RX GPIO 16 ;
+  * fins de course : GPIO 18 et 19, avec pull-up interne.
+* **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
+  plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
+* **Réglages** :
+  * courant de marche (`rms_current`) : 1,3 A pour les NEMA 17 de 34 mm, 1,5 A pour le
+    NEMA 17 de 40 mm, 0,67 A pour le NEMA 11 ;
+  * 16 micro-pas, StealthChop ;
+  * courant à l'arrêt (IHOLD) :
+    * **vis** : drivers désactivés par EN entre deux mouvements ;
+    * **engrenages** : 50 % à l'intérieur ou par vent faible, 100 % au-delà de 5 m/s,
+      15 % sur la Lune.
+* **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
+  sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
+  par UART.
+* **Origine** :
+  * un micro-switch en butée basse d'élévation (−2°) ;
+  * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
+
+  La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
+  surtout derrière une vis sans fin.
+* **Vent fort**, au-delà de 10 m/s, avec un anémomètre ou une prévision : mettre le panneau
+  **à plat** (élévation 90°), où le vent a le moins de prise. La vis tient seule ; les
+  engrenages ont besoin du courant de maintien à 100 %.
+* **Câbles** : ils descendent par le moyeu creux de la chape. La rotation d'azimut est
+  limitée à ±180° par la boucle de câble, puis le tracker revient en arrière. Au pôle Sud,
+  il faut un tour complet par jour lunaire : on revient en arrière une fois par jour, ou
+  l'on monte un collecteur tournant.
+
+### Points propres à la Lune
+
+* Les moteurs NEMA du commerce **ne sont pas prévus pour le vide**. Il faut une version
+  « vide » : graisse à faible dégazage, isolation classe H, sans plastique ordinaire.
+  Le principe et les tailles restent les mêmes.
+* **Pas de convection** : les moteurs ne sont alimentés que pendant les mouvements, ce qui
+  est naturel avec la vis. Leur chaleur part par conduction vers la chape en aluminium.
+* **Soudage à froid** : chaque contact associe deux matériaux différents.
+  * Vis sans fin : vis en inox contre roue en bronze.
+  * Engrenages : pignons en inox contre roues en alu 7075 anodisé dur.
+  * Roulements en 440C.
+  * Lubrification sèche au MoS₂.
+* **Régolithe** : poser un soufflet ou un capot sur les dentures et les vis.
+* **Températures de −173 à +127 °C** : jeu de denture de 0,1 mm et jeu axial de 2 mm entre
+  les flancs du chapeau et les bras de la chape (rondelles PTFE).
+
+### Vérifications faites par le script
+
+* Aucune interférence entre pièces, dans aucune des deux versions.
+* Dentures **en prise sans chevauchement** :
+  * à −2°, 40° et 92° d'élévation ;
+  * à un azimut quelconque (37°), ce qui valide les lois de rotation des vis et des pignons.
+
+  Sur la vis d'azimut, il reste un recouvrement de 0,2 mm³. Il vient de la roue modélisée
+  à dents droites, alors qu'une vraie roue de vis sans fin est taillée à la fraise-mère.
+* Garde mini de la partie basculante sur toute la course (−2° à 92°) : **2,0 mm**. C'est le
+  jeu axial voulu entre les flancs du chapeau et les bras. Le panneau et le secteur denté
+  ne touchent rien.
+
+### Dans SolidWorks
+
+* Arborescence :
+  * `SA_Socle` : fixe. Fond, socle, roulements 6806 et roue ou couronne fixe d'azimut.
+  * `SA_Chape` : tourne en azimut, autour de l'axe Y. Chape, moteurs, vis ou pignons,
+    paliers, accouplements, roulements 608.
+  * `SA_Basculant` : tourne en élévation, autour de l'axe X. Chapeau en U, pivots, roue
+    d'élévation, rails et panneau.
+  * `SA_Reference_Trepied` : haut de la colonne, pour le repère.
+* L'origine est en haut de la colonne. L'axe d'élévation est à Y = 156 mm (vis) ou
+  Y = 164 mm (engrenages).
+* Pour animer, libérer `SA_Chape` et `SA_Basculant`, ajouter les contraintes coaxiales,
+  puis une contrainte d'engrenage :
+  * vis : 1:50 en élévation et 1:60 en azimut ;
+  * engrenages : 15:120 et 18:92.
+
+Pour régénérer ou modifier ces têtes :
+
+```bash
+python generate_tete_motorisee.py            # les deux versions (ou : VSF / ENG)
+xvfb-run -a python render_tete_motorisee.py  # rendus PNG
+```
+
+Les moteurs, les rapports et les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`…) sont en tête
+du script. Le calcul des marges se met à jour tout seul.
+
+La première étude, avec deux 28BYJ-48 et des contrepoids, a été abandonnée. Elle reste dans
+l'historique git, commits `b2470b1` (vis sans fin) et `bcab9e9` (prise directe).

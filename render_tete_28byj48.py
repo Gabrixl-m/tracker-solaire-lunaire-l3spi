@@ -31,21 +31,21 @@ def coupe(assy, keep_x_below=0.0):
 
 
 def main():
+    T.equilibrer()
     T.build_parts(True)
-    with_pan = T.build_head(0.0, 40.0, "avec_panneau", True)
+    with_pan = T.build_head(0.0, T.EL_REF, "avec_panneau", True)
     r = build_renderer(with_pan, SUN, ground=False)
-    shoot(r, "tete_28byj48_avec_panneau.png", (620, 430, 760), focal=(0, 105, 0), angle=30)
+    shoot(r, "tete_28byj48_avec_panneau.png", (620, 430, 760), focal=(0, 100, 0), angle=30)
     r = build_renderer(with_pan, (-SUN[0], SUN[1], -SUN[2]), ground=False)   # éclairé côté cellules
-    shoot(r, "tete_28byj48_avec_panneau_face.png", (-560, 380, -680), focal=(0, 105, 0), angle=30)
+    shoot(r, "tete_28byj48_avec_panneau_face.png", (-560, 380, -680), focal=(0, 100, 0), angle=30)
 
     T.build_parts(False)
-    head = T.build_head(0.0, 40.0, "tete", False)
+    head = T.build_head(0.0, T.EL_REF, "tete", False)
     r = build_renderer(head, SUN, ground=False)
-    shoot(r, "tete_28byj48_iso.png", (300, 250, 360), focal=(0, 95, 0), angle=32)
-    shoot(r, "tete_28byj48_cote_moteur.png", (260, 200, 380), focal=(0, 105, 0), angle=30)
+    shoot(r, "tete_28byj48_iso.png", (330, 260, 380), focal=(0, 95, 0), angle=34)
+    shoot(r, "tete_28byj48_cote_moteur.png", (-360, 250, 330), focal=(0, 95, 0), angle=34)
     r = build_renderer(coupe(head), SUN, ground=False)
-    shoot(r, "tete_28byj48_coupe.png", (430, 150, 160), focal=(0, 75, 0), angle=34)
-
+    shoot(r, "tete_28byj48_coupe.png", (430, 170, 200), focal=(-10, 95, 0), angle=34)
 
 if __name__ == "__main__":
     main()

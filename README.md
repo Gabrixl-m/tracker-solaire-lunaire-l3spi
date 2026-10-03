@@ -28,7 +28,7 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `render_apercu.py` | Génère les rendus PNG |
 | `CAO/Tete_Rotative_28BYJ48.step` | **Étude à part** : tête rotative à deux moteurs 28BYJ-48, posée sur le haut de la colonne (voir § 12) |
 | `CAO/Tete_Rotative_28BYJ48_avec_panneau.step` | La même tête avec le panneau 356 × 253 × 30 monté, à 40° d'élévation |
-| `CAO/pieces_tete_28BYJ48/*.step` | Les 23 pièces de cette tête (dont les 4 du panneau), seules |
+| `CAO/pieces_tete_28BYJ48/*.step` | Les 17 pièces de cette tête (dont les 4 du panneau), seules |
 | `generate_tete_28byj48.py`, `render_tete_28byj48.py` | Génération de la tête 28BYJ-48 et de ses rendus |
 
 ### Ouvrir dans SolidWorks
@@ -253,11 +253,17 @@ xvfb-run -a python render_apercu.py     # rendus PNG (xvfb-run seulement sans é
 ## 12. Tête rotative à moteurs 28BYJ-48 (étude à part)
 
 Fichiers à part du tracker complet : `CAO/Tete_Rotative_28BYJ48.step`, avec ou sans panneau.
-L'architecture s'inspire de la tourelle « socle cylindrique, chape en U, tambour ». Les deux
-moteurs sont des **28BYJ-48 5 V unipolaires** (réducteur interne 1:64, 4096 demi-pas/tour,
-couple d'entraînement d'environ 0,034 N·m).
+Les deux moteurs sont des **28BYJ-48 5 V unipolaires** (réducteur interne 1:64, 4096
+demi-pas/tour, couple d'entraînement d'environ 0,034 N·m).
 
-| Tête seule | Coupe : les deux moteurs à l'intérieur |
+La tête comprend :
+* un socle cylindrique ;
+* une chape en U (jaune) ;
+* un **U renversé** (bleu) qui coiffe la chape et porte le panneau.
+
+L'élévation est **en prise directe** : l'arbre du moteur entraîne directement le U renversé.
+
+| Tête seule | Coupe : moteur d'azimut dans le socle, moteur d'élévation contre le bras |
 |---|---|
 | ![Tête 28BYJ-48](docs/tete_28byj48_iso.png) | ![Coupe](docs/tete_28byj48_coupe.png) |
 | ![Avec panneau, côté moteur](docs/tete_28byj48_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_28byj48_avec_panneau_face.png) |
@@ -266,67 +272,79 @@ couple d'entraînement d'environ 0,034 N·m).
 
 * Le moteur est **fixe, dans le socle Ø62**. Il est vissé par ses deux pattes (entraxe 35 mm)
   sur deux piliers du fond, en M3.
-* Son arbre est décentré de 8 mm par rapport au corps. Le corps est donc décalé pour que
+* Son arbre est décalé de 8 mm par rapport au corps. Le corps est donc décalé pour que
   **l'arbre soit exactement sur l'axe d'azimut**.
-* La chape tourne sur **deux roulements 6806 (Ø30/Ø42 × 7)** logés en haut du socle. Ce sont
-  eux qui portent la tête et le panneau. L'arbre du moteur entre dans une barrette à
-  méplats au bas du moyeu : il **n'entraîne que la rotation**, sans effort ni porte-à-faux.
-* Ce sens de montage présente plusieurs avantages :
-  * le moteur et son câble ne tournent jamais ;
-  * il est protégé de la poussière dans le socle ;
+* La chape tourne sur **deux roulements 6806 (Ø30/Ø42 × 7)**. L'arbre du moteur entre dans
+  une barrette à méplats au bas du moyeu : il **n'entraîne que la rotation**, sans porter
+  la tête.
+* Avantages de ce sens de montage :
+  * le moteur et son câble ne tournent pas ;
+  * le moteur est à l'abri de la poussière ;
   * le centre de gravité reste bas ;
-  * le socle se centre dans la colonne Ø50 du trépied par un téton Ø45,5.
-* Il n'y a pas de couple dû au poids autour de l'axe vertical : l'entraînement direct suffit
-  (frottement des roulements et du câble d'environ 0,01 N·m, soit une marge d'environ 3).
-  Résolution : 0,088° par demi-pas.
-* Le câble du moteur d'élévation descend par le moyeu creux (Ø20). La rotation est limitée
-  à environ ±180° par la boucle de câble.
+  * le socle se centre dans la colonne Ø50 du trépied.
+* Le câble du moteur d'élévation descend par le moyeu creux. La rotation est limitée à
+  environ ±180° par la boucle de câble.
 
-### Moteur horizontal (élévation) : dans la chape, avec une vis sans fin
+### Moteur horizontal (élévation) : en prise directe sur le U renversé
 
-* Le moteur est **logé dans la chape, sous l'axe**, arbre horizontal. Il est vissé sur un
-  support et une butée reprend la poussée de la vis.
-* Il entraîne l'axe Ø8, monté sur deux roulements 608, par une **vis sans fin module 1
-  (Ø16, un filet) et une roue Z50**, soit un rapport de 50:1.
-* Pourquoi une vis sans fin :
-  * le 28BYJ-48 est trop faible pour incliner le panneau en direct ;
-  * la vis multiplie le couple par 50 ;
-  * elle est **irréversible** (angle d'hélice de 3,6°, inférieur à l'angle de frottement) :
-    le panneau tient **moteur coupé**. On ne consomme rien et on ne chauffe pas en dehors des
-    pas, ce qui est précieux dans le vide lunaire.
-* Résolution : 0,0018° par demi-pas.
-* Le panneau est vissé sur deux rails, sur une platine portée par deux demi-tambours calés
-  sur l'axe. Le dos du cadre est à 41,5 mm de l'axe. La course va de −2° à +92°, avec au
-  moins 4 mm de garde.
+* Le U renversé pivote sur **deux axes Ø8** montés sur **roulements 608** dans les bras de
+  la chape. Ce sont eux qui portent le panneau.
+* Le 28BYJ-48 est vissé **à l'intérieur de la chape, contre le bras gauche**, sur deux
+  entretoises. Son arbre est sur l'axe d'élévation et son corps pend dessous.
+* L'arbre entre dans l'**empreinte à méplats** du pivot gauche : il entraîne le U sans
+  porter de charge.
+* Le panneau est vissé sur deux rails fixés sur le dessus du U. Le dos du cadre est à
+  43 mm de l'axe.
 
-### Couples (calculés sur la CAO)
+### La condition pour que la prise directe fonctionne : l'équilibrage
 
-| | Lune | Terre |
+Le panneau est forcément au-dessus de l'axe, puisqu'il doit passer par-dessus les bras.
+Sans compensation, son poids donnerait un couple de 0,12 N·m sur la Lune et de 0,7 N·m sur
+Terre. C'est 3 à 20 fois plus que ce que donne un 28BYJ-48.
+
+La partie basculante est donc **équilibrée par deux contrepoids** au bas des flancs du U
+renversé, à 90 mm sous l'axe. Le script les calcule pour ramener le centre de gravité sur
+l'axe : **2 × 374 g en alliage de tungstène** (16 × 40 × 33 mm), décalés de 3,6 mm pour
+compenser la boîte de jonction. En acier, il faudrait environ 2,3 fois plus de volume.
+Le moteur n'a plus qu'à vaincre les frottements et le défaut d'équilibrage :
+
+| Élévation, équilibrée à ±1 mm | Lune | Terre |
 |---|---|---|
-| Couple de pesanteur maxi sur l'élévation (partie basculante 1,44 kg, centre de gravité à 51 mm de l'axe) | 0,12 N·m | 0,72 N·m |
-| Couple disponible après la vis sans fin (μ = 0,10 à 0,15) | 0,50 à 0,65 N·m | 0,50 à 0,65 N·m |
-| Marge | **×4 à ×5** | Insuffisant panneau vertical ; correct au-dessus d'environ 45° d'élévation |
+| Couple nécessaire (défaut d'équilibrage + roulements) | 0,006 N·m | 0,023 N·m |
+| Couple du 28BYJ-48 | 0,034 N·m | 0,034 N·m |
+| Marge | **×6** | ×1,5 : il faut un réglage soigné des contrepoids (cales) |
 
-Sur la Lune, la marge est confortable. Pour des essais sur Terre, la vis tient le panneau
-dans toutes les positions. En revanche, pour le soulever depuis la verticale, il faut une
-compensation de pesanteur : un fil et un contrepoids sur poulie, ou un ressort. C'est la
-pratique courante pour les mécanismes spatiaux.
+* **Maintien moteur coupé** : le réducteur du 28BYJ-48 offre au moins 0,06 N·m de frottement,
+  plus que le défaut d'équilibrage. Le panneau reste donc en place sans courant.
+* **Mouvements** : la partie basculante pèse 2,2 kg (inertie d'environ 0,011 kg·m²). Il faut
+  démarrer et freiner en rampe, avec une accélération inférieure à environ 90 °/s². Le suivi
+  du Soleil, à 0,5°/h, ne demande qu'un demi-pas (0,088°) toutes les dix minutes.
+* **Jeu** : le jeu du réducteur du 28BYJ-48, de l'ordre de 1 à 2°, se retrouve sur le
+  panneau. L'effet sur la production est négligeable (cos 2° = 0,9994).
+* **Comparé à la version à vis sans fin** (commit `b2470b1` de l'historique) :
+  * plus simple, avec moins de pièces et sans engrenage ;
+  * mais 0,75 kg de contrepoids et un équilibrage à soigner pour les essais sur Terre.
+
+### Garde et vérifications
+
+* Aucune interférence entre pièces.
+* Élévation de −2° à +92° :
+  * environ 3 mm entre la plaque du U et le sommet des bras, en butée basse ;
+  * jeu axial de 2 mm entre les flancs du U et les bras (rondelles PTFE).
+* Les contrepoids passent à l'extérieur de la chape et du socle, dans toute la course.
 
 ### Dimensions et nomenclature
 
-* Socle Ø62 × 65 mm. Axe d'élévation à 136 mm au-dessus de la colonne. Hauteur totale sans
-  panneau : 168 mm. Chape de 110 mm de large.
+* Socle Ø62 × 65 mm. Axe d'élévation à 130 mm au-dessus de la colonne. Sommet des bras à 154 mm.
 * 2 moteurs 28BYJ-48 5 V et 2 cartes ULN2003 (dans l'unité de contrôle au sol).
-* 2 roulements 6806-ZZ, 2 roulements 608-ZZ, axe inox Ø8 × 124 mm et 2 bagues d'arrêt.
-* Vis sans fin m1 (Ø16, alésage Ø5 à méplats) et roue m1 Z50 (alésage Ø8).
-* Visserie M3.
+* 2 roulements 6806-ZZ et 2 roulements 608-ZZ.
+* 2 pivots Ø8, dont un avec empreinte à méplats pour l'arbre du moteur.
+* 2 contrepoids, visserie M3 et M4.
 
-Masse de la tête en aluminium : 1,2 kg, plus 1,0 kg de panneau. Les pièces de structure
-peuvent être imprimées en 3D (PETG) pour un prototype terrestre ; pour la Lune, elles seraient
-usinées en aluminium.
+Masse de la tête : 1,8 kg dont 0,75 kg de contrepoids, plus 1,0 kg de panneau. Pour un
+prototype terrestre, la chape, le U et le socle peuvent être imprimés en 3D.
 
 **À vérifier sur tes moteurs** : les cotes du 28BYJ-48 viennent du plan constructeur
 standard (corps Ø28 × 19, pattes à 35 mm, arbre Ø5 à méplats décalé de 8 mm, capot des
 fils à l'opposé de l'arbre). Si ton modèle diffère, il suffit d'ajuster `BYJ` en tête de
 `generate_tete_28byj48.py`.
-

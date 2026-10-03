@@ -6,7 +6,7 @@ Générée par `optimisation_angle.py` à partir des masses et centres de gravit
 
 - Jambes en Y, à 120°. Articulation haute à r = 70 mm, z = 509 mm : juste sous le socle de la tête. Le panneau vertical descend jusqu'à 571 mm et tout le trépied doit rester en dessous.
 - Centre de la rotule de pied à z = 40 mm, soit une hauteur de jambe h = 469 mm.
-- Tête + panneau : 2.84 kg. Le centre de gravité est pris dans la pire orientation du panneau (élévation de −2° à +92°, azimut sur 360°).
+- Tête + panneau : 2.82 kg. Le centre de gravité est pris dans la pire orientation du panneau (élévation de −2° à +92°, azimut sur 360°).
 
 ## Exigences
 
@@ -32,9 +32,9 @@ Générée par `optimisation_angle.py` à partir des masses et centres de gravit
 | 42.5° | 1000 mm | 636 mm | 4.51 kg | 33.5° | 23.8° | 120 / 150 mm | 0.92 × charge | 87 % | oui |
 | 45.0° | 1078 mm | 663 mm | 4.56 kg | 35.7° | 23.5° | 134 / 159 mm | 1.00 × charge | 92 % | oui |
 | 47.5° | 1164 mm | 694 mm | 4.63 kg | 38.0° | 23.3° | 152 / 170 mm | 1.09 × charge | 95 % | oui |
-| 50.0° | 1258 mm | 730 mm | 4.70 kg | 40.4° | 23.0° | 173 / 182 mm | 1.19 × charge | 98 % | non (C3) |
+| 50.0° | 1258 mm | 730 mm | 4.70 kg | 40.5° | 23.0° | 173 / 182 mm | 1.19 × charge | 98 % | non (C3) |
 | 52.5° | 1362 mm | 770 mm | 4.79 kg | 43.0° | 22.8° | 197 / 195 mm | 1.30 × charge | 100 % | non (C2, C3) |
-| 55.0° | 1480 mm | 818 mm | 4.89 kg | 45.6° | 22.6° | 227 / 211 mm | 1.43 × charge | 100 % | non (C2, C3) |
+| 55.0° | 1480 mm | 818 mm | 4.89 kg | 45.7° | 22.6° | 227 / 211 mm | 1.43 × charge | 100 % | non (C2, C3) |
 | 57.5° | 1612 mm | 873 mm | 5.02 kg | 48.5° | 22.4° | 265 / 229 mm | 1.57 × charge | 99 % | non (C2, C3) |
 | 60.0° | 1765 mm | 938 mm | 5.17 kg | 51.5° | 22.2° | 311 / 251 mm | 1.73 × charge | 97 % | non (C2, C3) |
 

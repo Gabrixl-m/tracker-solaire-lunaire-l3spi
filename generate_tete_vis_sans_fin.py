@@ -13,7 +13,9 @@ de cotes (generate_tracker.AJUSTEMENTS). Ce script :
   - cale les vis par rapport aux roues pour chaque jeu de cotes ;
   - calcule les couples nécessaires et disponibles (Lune, Terre intérieur, Terre avec
     vent) et la tenue moteurs coupés ;
-  - vérifie interférences, engrènement et garde sur toute la course d'élévation.
+  - vérifie interférences, engrènement et garde sur toute la course d'élévation ;
+  - vérifie les appuis sur les roulements protégés : rien sur la protection, et chaque
+    bague n'est touchée que par ce qui tourne avec elle.
 
 Usage : python generate_tete_vis_sans_fin.py
 """
@@ -34,7 +36,10 @@ OUT_IMPR = os.path.join(OUT_PETG, "a_imprimer")
 # Cas de charge
 G_LUNE, G_TERRE = 1.62, 9.81
 VENT_EL, VENT_AZ = 0.35, 0.50        # couple de vent à 10 m/s (N·m), voir README
-FROT_EL, FROT_AZ = 0.01, 0.02        # roulements, câbles
+FROT_EL, FROT_AZ = 0.01, 0.02        # roulements (hors joints), câbles
+# protection des roulements : ZZ (flasques métal, frottement négligeable) ou 2RS (joints caoutchouc) ;
+# cas réel : ZZ seulement (pas de caoutchouc ni de graisse dans le vide)
+PROTECTIONS = {"reel": ("ZZ",), "petg": ("ZZ", "2RS")}
 K_RUN = 0.70                         # couple en marche lente / couple de maintien (TMC2209, micro-pas)
 # frottement vis / roue en marche (rendement) et au repos (tenue moteurs coupés)
 MU_MARCHE = {"reel": {"acier / bronze graissé": 0.15},
@@ -113,8 +118,15 @@ def caler_dentures():
         print(f"  calage vis {key} : {best[0]:.1f}° (recouvrement {best[1]:.3f} mm3){note}")
 
 
+def joints(ref, prot):
+    """Frottement des joints d'une paire de roulements (N·m) : nul en ZZ."""
+    return 2 * G.ROULEMENTS[ref]["joints"] if prot == "2RS" else 0.0
+
+
 def couples():
-    """Couples nécessaires / disponibles par axe et par cas, tenue moteurs coupés."""
+    """Couples nécessaires / disponibles par axe, par cas et par protection des roulements
+    (les joints des 685 freinent la vis, donc directement le moteur ; ceux des roulements
+    d'axe s'ajoutent au couple à fournir), tenue moteurs coupés."""
     rows, M, cg = G.mass_properties(G.flatten(G.build_panel(True)))
     r = math.hypot(cg.y, cg.z) / 1000                       # bras de levier maxi du CdG (m)
     besoin = {
@@ -126,6 +138,9 @@ def couples():
     if G.MODE == "petg":                    # la démonstration ne va pas sur la Lune
         for key in besoin:
             del besoin[key]["Lune"]
+    axe = {"el": G.PV()["ref"], "az": "6806"}
+    besoin = {k: {c: {p: b + joints(axe[k], p) for p in PROTECTIONS[G.MODE]} for c, b in v.items()}
+              for k, v in besoin.items()}
     # couple extérieur que la vis doit retenir moteurs coupés (sans les frottements)
     charge = {"el": {"Terre": M * G_TERRE * r + VENT_EL, "Lune": M * G_LUNE * r},
               "az": {"Terre": VENT_AZ, "Lune": 0.0}}
@@ -135,7 +150,8 @@ def couples():
         marche = {}
         for cas, mu in MU_MARCHE[G.MODE].items():
             eta = math.tan(lam) / math.tan(lam + math.atan(mu))
-            marche[cas] = (eta, mot["hold"] * K_RUN * v["z"] * eta)
+            marche[cas] = {p: (eta, (mot["hold"] * K_RUN - joints("685", p)) * v["z"] * eta)
+                           for p in PROTECTIONS[G.MODE]}
         tenue = {}
         for cas, mu in MU_REPOS[G.MODE].items():
             phi = math.atan(mu)
@@ -149,11 +165,76 @@ def couples():
     return M, r, besoin, dispo
 
 
+def groupe(n):
+    """Ensemble mobile auquel appartient une pièce de la tête."""
+    k = G.part_key(n)
+    if "/SA_Tete_Fixe/" in n or "/SA_Reference_Trepied/" in n:
+        return "fixe"
+    if "/SA_Panneau/" in n:
+        return "panneau"
+    if k in ("Vis_Elevation", "Arbre_Vis_Elevation") or n.endswith("Accouplement_El"):
+        return "vis_el"
+    if k in ("Vis_Azimut", "Arbre_Vis_Azimut") or n.endswith("Accouplement_Az"):
+        return "vis_az"
+    return "chape"
+
+
+def bagues(n):
+    """(réf., axe local, ensemble de la bague intérieure, ensemble de la bague extérieure)."""
+    b = n.split("/")[-1]
+    if b.startswith("Roulement_6806"):
+        return "6806", "z", "chape", "fixe"
+    if b.startswith("Roulement_685_"):
+        return "685", "x", "vis_az" if "_Az_" in b else "vis_el", "chape"
+    return G.PV()["ref"], "x", "panneau", "chape"
+
+
+def verifier_roulements(flat, t=0.3, eps=0.05):
+    """Roulements protégés : aucune pièce sur la protection (ni à moins de t de son plan), et
+    chaque bague n'est approchée à moins de t que par l'ensemble qui tourne avec elle."""
+    autres = [(n, s, s.BoundingBox()) for n, s in flat if "/Roulement_" not in n]
+    defauts, lignes = [], []
+    for n, s in flat:
+        if "/Roulement_" not in n:
+            continue
+        ref, axe, gi, ge = bagues(n)
+        r, e = G.ROULEMENTS[ref], G.RETRAIT_PROTECTION
+        zones = []
+        for z0, z1 in ((-t, e), (r["B"] - e, r["B"] + t)):
+            zones.append(("protection", None, ring_z(r["be"] - eps, r["bi"] + eps, z1 - z0, z0)))
+        for z0 in (-t, r["B"]):
+            zones.append(("bague int.", gi, ring_z(r["bi"] - eps, r["d"] + eps, t, z0)))
+            zones.append(("bague ext.", ge, ring_z(r["D"] - eps, r["be"] + eps, t, z0)))
+        vus = {}
+        for zone, g_ok, wp in zones:
+            z = wp.val()
+            if axe == "x":
+                z = z.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 1, 0), 90)
+            z = z.moved(s.location())
+            bz = z.BoundingBox()
+            for m, o, bo in autres:
+                if (bz.xmin > bo.xmax or bo.xmin > bz.xmax or bz.ymin > bo.ymax or bo.ymin > bz.ymax
+                        or bz.zmin > bo.zmax or bo.zmin > bz.zmax):
+                    continue
+                if z.intersect(o).Volume() > 1e-4:
+                    piece = m.split("/")[-1]
+                    vus.setdefault(zone, set()).add(piece)
+                    if g_ok is None or groupe(m) != g_ok:
+                        defauts.append((n.split("/")[-1], zone, piece))
+        lignes.append(f"    {n.split('/')[-1]:22s} " + " ; ".join(
+            f"{zone} <- {', '.join(sorted(p))}" for zone, p in sorted(vus.items())))
+    print("  appuis sur les roulements (à moins de %.1f mm) :" % t)
+    print("\n".join(lignes))
+    print(f"  roulements protégés : {'aucun appui sur une protection ni sur la mauvaise bague' if not defauts else defauts}")
+    return defauts
+
+
 def verifier(assy):
     """Interférences, engrènement à plusieurs poses, garde de la partie basculante."""
     flat = G.flatten(assy)
     hits = G.interference(flat)
     print(f"  interférences : {'aucune' if not hits else hits}")
+    verifier_roulements(flat)
     for key, (a, b) in PAIRES.items():
         poses = ((0.0, -2.0), (0.0, 30.0), (0.0, 92.0)) if key == "el" else ((37.0, G.EL_REF), (113.0, G.EL_REF))
         for az, el in poses:
@@ -164,7 +245,8 @@ def verifier(assy):
         fl = G.flatten(build_head(0.0, el, "chk", True))
         mov = [(n, s) for n, s in fl if "/SA_Panneau/" in n
                and not G.part_key(n).startswith(("Pivot", "Cellules"))]
-        fix = [(n, s) for n, s in fl if "/SA_Panneau/" not in n and G.part_key(n) != "Vis_Elevation"]
+        fix = [(n, s) for n, s in fl if "/SA_Panneau/" not in n and G.part_key(n) != "Vis_Elevation"
+               and not G.part_key(n).startswith("Roulement")]    # appuis des bossages : voir verifier_roulements
         dd = G.min_clearance(mov, fix, cutoff=30.0)
         if dd[0] < worst[0]:
             worst = dd + (el,)
@@ -182,9 +264,10 @@ def bilan(flat):
     for key, mot in (("el", G.MOT_EL), ("az", G.MOT_AZ)):
         d = dispo[key]
         print(f"  {key} : {mot['nom']} ({mot['hold']} N·m, {mot['amp']} A), vis {d['ratio']}:1, hélice {d['lam']:.2f}°")
-        for cas_mu, (eta, t) in d["marche"].items():
-            marges = ", ".join(f"{cas} x{t / b:.1f}" for cas, b in besoin[key].items())
-            print(f"      {cas_mu} : rendement {eta:.2f} -> {t:.2f} N·m ; marges : {marges}")
+        for cas_mu, par_prot in d["marche"].items():
+            for prot, (eta, t) in par_prot.items():
+                marges = ", ".join(f"{cas} x{t / b[prot]:.1f}" for cas, b in besoin[key].items())
+                print(f"      {cas_mu}, roulements {prot:3s} : rendement {eta:.2f} -> {t:.2f} N·m ; marges : {marges}")
         for cas, (etat, marge) in d["tenue"].items():
             txt = "tient par la vis" if marge is None else (
                 "aucune charge" if marge == math.inf else f"tient par le couple résiduel du moteur, marge x{marge:.1f}")
@@ -208,7 +291,7 @@ def eprouvette():
     e = box_span(0, 112, 0, 62, 0, 6).edges("|Z").fillet(3)
     pv = G.PV()
     for i, dj in enumerate((-0.10, 0.0, 0.10)):           # roulement de pivot + jeu du réglage ± 0,1
-        e = e.cut(cyl_z(pv["roul"][0] + aj["roulement"] + dj, 8, 16 + 26 * i, 16, -1))
+        e = e.cut(cyl_z(G.RP()["D"] + aj["roulement"] + dj, 8, 16 + 26 * i, 16, -1))
     for i, dj in enumerate((-0.10, 0.0, 0.10)):           # 685 : Ø11
         e = e.cut(cyl_z(11 + aj["roulement"] + dj, 8, 10 + 15 * i, 46, -1))
     dp = pv["d"] + aj["serrage"]

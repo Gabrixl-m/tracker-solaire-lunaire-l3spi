@@ -8,7 +8,8 @@ des arbres des vis sans fin.
 * La colonne « À chercher » donne le nom à taper sur les sites marchands (AliExpress,
   Amazon, etc.), où ces pièces sont presque toujours vendues sous leur nom anglais.
 * Les prix sont **indicatifs** (ordre de grandeur, par article).
-* Les roulements sont en **rose** dans les fichiers 3D.
+* Les roulements sont en **rose** dans les fichiers 3D. Ils sont tous **protégés** : prendre
+  de préférence la version **ZZ** (flasques métalliques), sinon 2RS (joints caoutchouc).
 
 | Palier d'une vis sans fin | Axe d'élévation imprimé |
 |---|---|
@@ -20,15 +21,21 @@ des arbres des vis sans fin.
 
 | Article | Caractéristiques | Qté | À chercher | Où il va | ≈ Prix |
 |---|---|---|---|---|---|
-| **Roulement 6806-2RS** (ISO 61806) | 30 × 42 × 7 mm | 2 | `6806-2RS bearing 30x42x7` | Azimut : dans le socle, autour du moyeu de la chape | 3 € |
-| **Roulement 6801-2RS** (ISO 61801, ou 6801ZZ) | 12 × 21 × 5 mm | 2 | `6801-2RS bearing 12x21x5` (ou `61801-2RS`) | Élévation : dans les bras de la chape, sur les pivots imprimés Ø12 | 1–2 € |
-| **Roulement 685-2RS** (ou 685ZZ) | 5 × 11 × **5** mm | 4 | `685-2RS bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
+| **Roulement 6806ZZ** (ISO 61806-2Z) | 30 × 42 × 7 mm | 2 | `6806ZZ bearing 30x42x7` (ou `61806ZZ`) | Azimut : dans le socle, autour du moyeu de la chape | 3 € |
+| **Roulement 6801ZZ** (ISO 61801-2Z) | 12 × 21 × 5 mm | 2 | `6801ZZ bearing 12x21x5` (ou `61801ZZ`) | Élévation : dans les bras de la chape, sur les pivots imprimés Ø12 | 1–2 € |
+| **Roulement 685ZZ** | 5 × 11 × **5** mm | 4 | `685ZZ bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
 | **Accouplement flexible 5 mm / 5 mm** | Alésages Ø5 des deux côtés, Ø19 × 25 mm, alu | 2 | `flexible shaft coupling 5mm x 5mm D19 L25` | Relie l'axe de chaque moteur à l'arbre de sa vis sans fin (la pièce bleue) | 2–4 € |
 | **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 52,5 mm** : les arbres des deux vis sans fin | 3–5 € |
 
 **Pièges à éviter** :
-* **685** : prendre **2RS ou ZZ**. Le 685 « ouvert » ne fait que 3 mm de large, alors que
-  les joues sont prévues pour 5 mm.
+* **ZZ plutôt que 2RS** : les deux versions ont les mêmes cotes et vont toutes les deux
+  dans les pièces. Mais les joints caoutchouc des 2RS frottent :
+  * les deux 6806-2RS freinent l'azimut d'environ 0,15 N·m ;
+  * la marge du moteur d'azimut au vent de 10 m/s passe alors de ×2,3 à ×1,6.
+
+  Si tu as déjà des 2RS, ça marche, à condition de bien graisser les vis sans fin.
+* **685** : prendre une version protégée, **ZZ** (ou 2RS). Le 685 « ouvert » ne fait que
+  3 mm de large, alors que les joues sont prévues pour 5 mm.
 * **Accouplement** : bien **5 mm des deux côtés**. Les modèles 5 mm / 8 mm, très courants,
   sont faits pour les vis trapézoïdales d'imprimante 3D.
 * **6801** : c'est un roulement fin (5 mm de large), à ne pas confondre avec le 6001
@@ -88,14 +95,13 @@ Compter 10 à 15 € en tout.
 | Article | Qté | À chercher | ≈ Prix |
 |---|---|---|---|
 | **Filament PETG 1,75 mm** (teinte claire de préférence) | 1 bobine de 1 kg (environ 300 g utilisés) | `PETG filament 1.75mm 1kg` | 20 € |
-| **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG) | 1 tube | `PTFE grease` | 8 € |
+| **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG ; pas les roulements, graissés d'origine) | 1 tube | `PTFE grease` | 8 € |
 | Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, pivots imprimés dans le chapeau) | 1 | `super glue` | 3 € |
 
 ## 6. Optionnel
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Rondelles PTFE ou nylon Ø12 / Ø18 × 1 mm (`12x18x1 PTFE washer`) | 4 | Jeu axial de 2 mm entre les flancs du chapeau et les bras de la chape |
 | Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent |
 
 ---

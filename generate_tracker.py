@@ -450,8 +450,11 @@ def gear_x(z, m, w, x0=0.0, **kw):
 #     d'azimut, FIXE.
 #   - Chape en U, qui tourne en azimut et porte les deux moteurs. La vis d'azimut
 #     roule autour de la roue fixe, comme sur une tourelle.
-#   - Chapeau en U renversé, qui pivote en élévation (axes Ø8 sur roulements 608)
-#     et porte le panneau. La roue d'élévation est sur son pivot gauche.
+#   - Chapeau en U renversé, qui pivote en élévation (axes Ø8 sur roulements 608 ; pivots
+#     PETG Ø12 sur 6801 en version imprimée) et porte le panneau. La roue d'élévation est
+#     sur son pivot gauche.
+#   Roulements protégés (ZZ ou 2RS) : chaque pièce n'appuie que sur la bague qui tourne
+#   avec elle, jamais sur la protection (voir ROULEMENTS).
 #   Élévation : NEMA 17 de 34 mm + vis m1 Ø16 / roue Z50 (50:1).
 #   Azimut    : NEMA 11 de 45 mm + vis m0,8 Ø12 / roue Z60 (60:1).
 #   Les deux vis sont irréversibles : la tête tient moteurs coupés, sans contrepoids.
@@ -463,7 +466,7 @@ def gear_x(z, m, w, x0=0.0, **kw):
 #   "petg" : démonstration sur Terre, pièces imprimées en 3D en PETG. Les trous
 #            imprimés sortent plus petits et les dents moins précises : jeux
 #            d'ajustement, dentures plus jeu, et quelques formes adaptées à
-#            l'impression (moyeu de chape séparé, vis à moyeux, méplats).
+#            l'impression (moyeu de chape séparé, méplats).
 #   set_ajustements("petg") avant build_head_parts().
 AJUSTEMENTS = {
     "reel": dict(
@@ -481,12 +484,13 @@ AJUSTEMENTS = {
         jeu_filet=0.15,         # amincissement du filet des vis (en modules)
         tete_filet=1.0,         # saillie du filet des vis (en modules)
         entraxe=0.0,            # augmentation des entraxes vis / roue (mm)
+        jeu_bossage=0.10,       # jeu axial entre un bossage du chapeau et la bague intérieure (par côté)
     ),
     "petg": dict(
         impression=True,
         roulement=0.15, serrage=0.10, moyeu=-0.05, colonne=45.6,
         passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4, axe_imprime=-0.05,
-        jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15,
+        jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15, jeu_bossage=0.25,
     ),
 }
 MODE = "reel"
@@ -512,11 +516,26 @@ U_BAS = -25.0                        # bas des flancs (sous l'axe)
 RAIL_X = 44.0                        # rails du panneau
 X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
 EL_REF = 40.0                        # élévation de référence du calage des vis
+# Roulements protégés (ZZ : flasques métal ; 2RS : joints caoutchouc), mêmes cotes que les ouverts
+# (sauf le 685 : 5 mm protégé, 3 mm ouvert). La protection occupe l'anneau entre bi et be, en
+# retrait des faces : une pièce qui tourne avec l'arbre n'appuie qu'entre d et bi (bague
+# intérieure), une pièce fixe dans le logement qu'entre be et D (bague extérieure).
+#   d, D, B : Ø int., Ø ext., largeur ; bi : Ø maxi d'appui sur la bague intérieure ;
+#   be : Ø mini d'appui sur la bague extérieure ; joints : frottement des deux joints 2RS (N·m,
+#   estimation, joints rodés ; ZZ : négligeable)
+ROULEMENTS = {
+    "685": dict(d=5.0, D=11.0, B=5.0, bi=6.5, be=9.8, joints=0.004),
+    "608": dict(d=8.0, D=22.0, B=7.0, bi=11.5, be=19.8, joints=0.010),
+    "6801": dict(d=12.0, D=21.0, B=5.0, bi=14.2, be=19.5, joints=0.014),
+    "6806": dict(d=30.0, D=42.0, B=7.0, bi=33.0, be=40.0, joints=0.077),
+}
+RETRAIT_PROTECTION = 0.2               # flasque / joint en retrait des faces des bagues
+LEVRE_685 = 1.0                        # lèvre de chaque joue de palier, sur la bague extérieure du 685
 # pivots d'élévation : cas réel = axes acier Ø8 sur roulements 608 ; version imprimée = pivots
 # PETG Ø12 sur roulements 6801 (un Ø8 en PETG ne tiendrait pas le couple de la roue d'élévation)
 PIVOTS = {
-    "reel": dict(d=8.0, roul=(22.0, 8.0, 7.0), ref="608", passage=10.0, meplat=3.5, tete=12.0, moyeu=16.0),
-    "petg": dict(d=12.0, roul=(21.0, 12.0, 5.0), ref="6801", passage=15.5, meplat=5.25, tete=18.0, moyeu=20.0),
+    "reel": dict(d=8.0, ref="608", meplat=3.5, tete=12.0, moyeu=16.0),
+    "petg": dict(d=12.0, ref="6801", meplat=5.25, tete=18.0, moyeu=20.0),
 }
 
 
@@ -524,18 +543,22 @@ def PV():
     """Pivots d'élévation du jeu de cotes courant."""
     return PIVOTS[MODE]
 
+
+def RP():
+    """Roulement des pivots d'élévation du jeu de cotes courant."""
+    return ROULEMENTS[PV()["ref"]]
+
 MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, shaft=24.0, hold=0.28,
               detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
 MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, shaft=20.0, hold=0.095,
               detent=0.005, amp=0.67, ohm=6.9, masse=0.14, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
-# vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu (version imprimée)
+# vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu
 VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0, moyeu=5.0)       # vis m1 Ø16 + roue Z50
 VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0, moyeu=8.0)        # vis m0,8 Ø12 + roue fixe Z60
 # vis d'azimut le long de X à la hauteur z ; roue fixe de z 72 à 80
 AZ_VIS = dict(zr=(72.0, 80.0), z=76.0, palier=(14.0, 19.0), x_joint=-32.5, x_face=-52.5)
 # vis d'élévation le long de Y, en x = -30, sous la roue
 EL_VIS = dict(palier=(14.0, 19.0), y_joint=-32.5, y_face=-56.5)
-B685 = (11.0, 5.0, 5.0)              # roulement 685 : Ø11 / Ø5 x 5
 # calage angulaire des vis (dents en prise sans chevauchement) : recalculé et
 # vérifié par generate_tete_vis_sans_fin.py pour chaque jeu de cotes
 PHASES = {"reel": {"el": 30.0, "az": -1.9}, "petg": {"el": 30.0, "az": -1.9}}
@@ -558,14 +581,16 @@ def z_vis_el():
     return Z_T - entraxe_el()
 
 
-def roulement_x(od, idia, w):
-    return cq.Workplane("YZ").circle(od / 2).circle(idia / 2).extrude(w)
+def roulement_z(ref):
+    """Roulement protégé d'axe Z, de z = 0 à B : bagues, protection en retrait sur les deux faces."""
+    r, e = ROULEMENTS[ref], RETRAIT_PROTECTION
+    b = ring_z(r["D"], r["d"], r["B"])
+    return b.cut(ring_z(r["be"], r["bi"], e, -0.01)).cut(ring_z(r["be"], r["bi"], e, r["B"] - e + 0.01))
 
 
-def roulement_z(od, idia, w):
-    r = ring_z(od, idia, w)
-    m = (od + idia) / 2
-    return r.cut(ring_z(m + 1.5, m - 1.5, 0.6, w - 0.6))
+def roulement_x(ref):
+    """Le même, d'axe X, de x = 0 à B."""
+    return roulement_z(ref).rotate((0, 0, 0), (0, 1, 0), 90)
 
 
 def trou_z(d, x, y, z0, z1):
@@ -592,10 +617,11 @@ def p_nema(m):
 
 
 def p_vis(v):
-    """Vis sans fin à un filet, axe Z centré, alésage Ø5 (montée sur son arbre acier).
-    Version imprimée : filet non aminci (tout le jeu est pris sur la roue), tête de filet
-    raccourcie (plus épaisse à imprimer), et deux moyeux qui viennent en appui sur les
-    bagues intérieures des 685 (calage axial), dont un avec une vis de pression M3."""
+    """Vis sans fin à un filet, axe Z centré, alésage Ø5 (montée sur son arbre acier), avec deux
+    moyeux qui viennent en appui sur les bagues intérieures des 685 par un épaulement Ø bi
+    (calage axial et reprise de la poussée, sans toucher la protection), dont un avec une vis
+    de pression M3. Version imprimée : filet non aminci (tout le jeu est pris sur la roue) et
+    tête de filet raccourcie (plus épaisse à imprimer)."""
     m, dp, L = v["m"], v["dp"], v["L"]
     ha = AJ["tete_filet"] * m
     rr, h = dp / 2 - 1.25 * m, 1.25 * m + ha
@@ -611,17 +637,16 @@ def p_vis(v):
     # noyau aussi long que le filet (des faces confondues en bout font échouer l'union), puis coupe à L
     core = cyl_z(2 * rr, L + 2 * lead + 2, z=z0 - 1)
     w = core.union(thread).intersect(cyl_z(dp + 2 * ha + 1, L, z=-L / 2))
-    if AJ["impression"]:
-        e = EL_VIS["palier"][0] - 0.15            # appui à 0,15 mm des bagues intérieures des 685
-        x0 = v["moyeu"]
-        for s in (-1, 1):
-            if x0 > L / 2:                        # col au Ø du noyau jusqu'au moyeu
-                w = w.union(cyl_z(2 * rr, x0 - L / 2 + 0.2, z=(L / 2 - 0.1) if s > 0 else -x0 - 0.1))
-            hub = cyl_z(12, e - 0.5 - x0, z=x0 - 0.1 if s > 0 else -(e - 0.6)).union(
-                cyl_z(6.5, 0.6, z=(e - 0.6) if s > 0 else -e))
-            w = w.union(hub)
-        zh = (x0 + e - 0.6) / 2                   # vis de pression M3 sur le moyeu côté +Z
-        w = w.cut(cyl_dir(AJ["taraud_m3"], 6.5, (0, 6.5, zh), (0, -1, 0)))
+    e = EL_VIS["palier"][0] - LEVRE_685 - 0.15    # appui à 0,15 mm des bagues intérieures des 685
+    x0 = v["moyeu"]
+    for s in (-1, 1):
+        if x0 > L / 2:                            # col au Ø du noyau jusqu'au moyeu
+            w = w.union(cyl_z(2 * rr, x0 - L / 2 + 0.2, z=(L / 2 - 0.1) if s > 0 else -x0 - 0.1))
+        hub = cyl_z(12, e - 0.5 - x0, z=x0 - 0.1 if s > 0 else -(e - 0.6)).union(
+            cyl_z(ROULEMENTS["685"]["bi"], 0.6, z=(e - 0.6) if s > 0 else -e))
+        w = w.union(hub)
+    zh = (x0 + e - 0.6) / 2                       # vis de pression M3 sur le moyeu côté +Z
+    w = w.cut(cyl_dir(AJ["taraud_m3"], 6.5, (0, 6.5, zh), (0, -1, 0)))
     return w.cut(cyl_z(5 + AJ["serrage"], 40, z=-20))
 
 
@@ -647,7 +672,7 @@ def p_fond_socle():
 def p_socle():
     d42 = 42 + AJ["roulement"]
     s = ring_z(SOCLE_OD, SOCLE_ID, 54, 5).union(cyl_z(SOCLE_OD, 6, z=59))
-    s = s.union(ring_z(50, d42, 14, 45)).union(ring_z(d42, 36, 6, 52))
+    s = s.union(ring_z(50, d42, 14, 45)).union(ring_z(d42, ROULEMENTS["6806"]["be"], 6, 52))   # appui des bagues ext.
     if AJ["impression"]:            # cône à 45° sous le logement du roulement bas : imprimable sans support
         cone = cq.Solid.makeCone(SOCLE_ID / 2, 21.0, 7.0, Vector(0, 0, 38), Vector(0, 0, 1))
         s = s.union(cyl_z(SOCLE_ID + 0.5, 7, z=38).cut(cq.Workplane().add(cone)))
@@ -675,9 +700,10 @@ def p_roue_azimut():
     """Roue d'azimut Z60, fixe, posée à plat sur le socle (dessous plan : s'imprime sans support)
     et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut qui roule autour."""
     r = gear_z(VIS_AZ["z"], VIS_AZ["m"], 8, AZ_VIS["zr"][0], backlash=AJ["jeu_denture"][1] / VIS_AZ["m"])
-    r = r.union(ring_z(50, 36, AZ_VIS["zr"][0] - 65, 65))
+    be = ROULEMENTS["6806"]["be"]                 # alésage : ne touche que la bague extérieure du 6806 haut
+    r = r.union(ring_z(50, be, AZ_VIS["zr"][0] - 65, 65))
     r = r.union(ring_z(SOCLE_OD, 50 - 0.5, Z_VOILE - 65, 65))                     # voile
-    r = r.cut(cyl_z(36, 30, z=60))
+    r = r.cut(cyl_z(be, 30, z=60))
     for a in ANGLES_ROUE:
         x, y = R_VIS_ROUE * math.cos(math.radians(a)), R_VIS_ROUE * math.sin(math.radians(a))
         r = r.cut(trou_z(AJ["passage_m3"], x, y, 64, Z_VOILE + 1))
@@ -699,8 +725,8 @@ def trous_palier_az():
 
 
 def _moyeu(z_top):
-    """Moyeu d'azimut : Ø30 dans les 6806, collerette Ø34 sur la bague intérieure du 6806 haut."""
-    m = cyl_z(30 + AJ["moyeu"], z_top - 45, z=45).union(cyl_z(34, 2, z=65))
+    """Moyeu d'azimut : Ø30 dans les 6806, collerette Ø bi sur la bague intérieure du 6806 haut."""
+    m = cyl_z(30 + AJ["moyeu"], z_top - 45, z=45).union(cyl_z(ROULEMENTS["6806"]["bi"], 2, z=65))
     for x, y in TROUS_BAGUE:
         m = m.cut(cyl_z(AJ["taraud_m3"], 8, x, y, 44))
     return m
@@ -721,9 +747,10 @@ def p_chape():
     else:
         c = c.union(_moyeu(zc))
     c = c.cut(cyl_z(20, zc + 10 - 40, z=40))                                     # passage des câbles
-    od, _id, w = PV()["roul"]
-    c = c.cut(cyl_x(PV()["passage"], 2 * xo + 2, -xo - 1, 0, zt))
-    dr = od + AJ["roulement"]
+    r = RP()
+    w = r["B"]
+    c = c.cut(cyl_x(r["be"], 2 * xo + 2, -xo - 1, 0, zt))         # épaulement sur la bague extérieure
+    dr = r["D"] + AJ["roulement"]
     c = c.cut(cyl_x(dr, w, xo - w, 0, zt)).cut(cyl_x(dr, w, -xo, 0, zt))         # logements des roulements de pivots
     for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:          # passages : vis par-dessous
         c = c.cut(trou_z(AJ["passage_m3"], x, y, zc - 1, zc + 9))
@@ -745,8 +772,8 @@ def p_moyeu_chape():
 
 
 def p_bague_arret():
-    """Rondelle d'arrêt sous le 6806 bas, vissée en bout de moyeu (2 x M3)."""
-    b = ring_z(34, 20, 3, 42)
+    """Rondelle d'arrêt sous le 6806 bas (sur sa bague intérieure), vissée en bout de moyeu (2 x M3)."""
+    b = ring_z(ROULEMENTS["6806"]["bi"], 20, 3, 42)
     for x, y in TROUS_BAGUE:
         b = b.cut(trou_z(AJ["passage_m3"], x, y, 41, 46))
     return b
@@ -757,13 +784,30 @@ def p_arbre_vis_az():
     return cyl_x(5, x1 - AZ_VIS["x_joint"], AZ_VIS["x_joint"], y_vis_az(), AZ_VIS["z"])
 
 
+def logement_685(a0, a1, cyl):
+    """Logement d'un 685 dans une joue qui va de a0 à a1 le long de l'axe de la vis, avec une
+    lèvre côté extérieur (loin de la vis) qui retient la bague extérieure contre la poussée de la
+    vis, sans toucher la protection. Le roulement dépasse de LEVRE_685 côté vis.
+    cyl(d, début, longueur) : cylindre le long de l'axe de la vis."""
+    r, lv = ROULEMENTS["685"], LEVRE_685
+    d = r["D"] + AJ["roulement"]
+    if a0 > 0:
+        return cyl(d, a0 - 1, a1 - lv - a0 + 1).union(cyl(r["be"], a1 - lv - 0.5, lv + 1.5))
+    return cyl(d, a0 + lv, a1 + 1 - a0 - lv).union(cyl(r["be"], a0 - 1, lv + 1.5))
+
+
+def x_685(palier):
+    """Début (le long de l'axe de la vis) des deux 685 d'un palier."""
+    return palier[0] - LEVRE_685, -palier[1] + LEVRE_685
+
+
 def p_palier_vis_az():
     p0, p1 = AZ_VIS["palier"]
     y, z, zc = y_vis_az(), AZ_VIS["z"], Z_CHAPE
-    d11 = B685[0] + AJ["roulement"]
     b = None
     for x0, x1 in ((p0, p1), (-p1, -p0)):
-        pl = box_span(x0, x1, y - 9, y + 8, z - 7.5, zc).cut(cyl_x(d11, x1 - x0 + 2, x0 - 1, y, z))
+        pl = box_span(x0, x1, y - 9, y + 8, z - 7.5, zc).cut(
+            logement_685(x0, x1, lambda d, u, L: cyl_x(d, L, u, y, z)))
         b = pl if b is None else b.union(pl)
     b = b.union(box_span(-p1, p1, y - 9, y + 8, zc - 5, zc))
     for x, yy in trous_palier_az():                       # taraudages, vis par-dessus la chape
@@ -795,10 +839,10 @@ def p_arbre_vis_el():
 def p_palier_vis_el():
     p0, p1 = EL_VIS["palier"]
     zv, zb = z_vis_el(), Z_CHAPE + 8
-    d11 = B685[0] + AJ["roulement"]
     b = None
     for y0, y1 in ((p0, p1), (-p1, -p0)):
-        pl = box_span(-38, -22, y0, y1, zb, Z_T - 24.5).cut(cyl_y(d11, y1 - y0 + 2, -30, y0 - 1, zv))
+        pl = box_span(-38, -22, y0, y1, zb, Z_T - 24.5).cut(
+            logement_685(y0, y1, lambda d, u, L: cyl_y(d, L, -30, u, zv)))
         b = pl if b is None else b.union(pl)
     b = b.union(box_span(-38, -22, -p1, p1, zb, zb + 5))
     for x, y in TROUS_PALIER_EL:
@@ -833,11 +877,16 @@ def alesage_pivot(x0, L, d_plat=True):
 
 
 def p_chapeau_u():
+    """Chapeau en U renversé. Sur la face intérieure de chaque flanc, un bossage Ø bi appuie sur
+    la bague intérieure du roulement de pivot (jamais sur sa protection) et règle le jeu axial."""
     xi, xo = U_X
     u = box_span(-xo, xo, -ARM_R, ARM_R, U_TOP[0], U_TOP[1])
     for x0, x1 in ((xi, xo), (-xo, -xi)):
         u = u.union(box_span(x0, x1, -U_Y, U_Y, U_BAS, U_TOP[1]).edges("|X and <Z").fillet(8))
-    u = u.cut(alesage_pivot(-xo - 1, xo - xi + 2)).cut(alesage_pivot(xi - 1, xo - xi + 2, d_plat=False))
+    hb = xi - ARM_X[1] - AJ["jeu_bossage"]                   # hauteur des bossages
+    u = u.union(cyl_x(RP()["bi"], hb + 0.5, -xi - 0.5)).union(cyl_x(RP()["bi"], hb + 0.5, xi - hb))
+    xa = ARM_X[1] - 0.5                                        # alésages à travers flanc et bossage
+    u = u.cut(alesage_pivot(-xo - 1, xo - xa + 1)).cut(alesage_pivot(xa, xo - xa + 1, d_plat=False))
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
@@ -1074,8 +1123,8 @@ def build_head_parts():
         return "PETG" if imp else reel
     reg("Fond_Socle", p_fond_socle(), mat("Al 6061-T6"), COL["socle"], "Fond du socle, centrage dans la colonne")
     reg("Socle", p_socle(), mat("Al 6061-T6"), COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
-    reg("Roulement_6806", roulement_z(42, 30, 7), "Acier 440C", COL["roulement"],
-        "Roulement d'azimut 6806 (61806) 30 x 42 x 7, 2RS ou ZZ")
+    reg("Roulement_6806", roulement_z("6806"), "Acier 440C", COL["roulement"],
+        "Roulement d'azimut 6806 (61806) 30 x 42 x 7, protégé ZZ (ou 2RS)")
     reg("Roue_Azimut_Fixe", p_roue_azimut(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Z{VIS_AZ['z']}, fixée sur le socle")
     reg("Chape", p_chape(), mat("Al 6061-T6"), COL["chape"], "Chape en U (tourne en azimut, porte les moteurs)")
@@ -1083,11 +1132,11 @@ def build_head_parts():
         reg("Moyeu_Chape", p_moyeu_chape(), "PETG", COL["chape"], "Moyeu d'azimut, vissé sous la chape")
     reg("Bague_Arret_Moyeu", p_bague_arret(), mat("Acier inox 17-4PH"), COL["steel"],
         "Rondelle d'arrêt du moyeu (2 x M3)")
-    od, di, w = PV()["roul"]
-    reg(f"Roulement_{PV()['ref']}", roulement_x(od, di, w), "Acier 440C", COL["roulement"],
-        f"Roulement d'élévation {PV()['ref']} {di:g} x {od:g} x {w:g}, 2RS ou ZZ")
-    reg("Roulement_685", roulement_x(B685[0], B685[1], B685[2]), "Acier 440C", COL["roulement"],
-        "Roulement 685ZZ ou 685-2RS 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)")
+    r = RP()
+    reg(f"Roulement_{PV()['ref']}", roulement_x(PV()["ref"]), "Acier 440C", COL["roulement"],
+        f"Roulement d'élévation {PV()['ref']} {r['d']:g} x {r['D']:g} x {r['B']:g}, protégé ZZ (ou 2RS)")
+    reg("Roulement_685", roulement_x("685"), "Acier 440C", COL["roulement"],
+        "Roulement 685ZZ (ou 685-2RS) 5 x 11 x 5 (arbres des vis ; le 685 ouvert ne fait que 3 mm)")
     reg("Vis_Azimut", p_vis(VIS_AZ), mat("Acier inox 17-4PH"), COL["steel"],
         f"Vis sans fin d'azimut m{format(VIS_AZ['m'], 'g').replace('.', ',')} Ø{VIS_AZ['dp']:.0f}, un filet")
     reg("Arbre_Vis_Azimut", p_arbre_vis_az(), "Acier inox 17-4PH", COL["steel"], "Arbre Ø5 de la vis d'azimut")
@@ -1209,14 +1258,14 @@ def build_head(az, el, with_panel=True):
     if AJ["impression"]:
         add(h, "Moyeu_Chape")
     add(h, "Bague_Arret_Moyeu")
-    rp, wp = f"Roulement_{PV()['ref']}", PV()["roul"][2]
+    rp, wp = f"Roulement_{PV()['ref']}", RP()["B"]
     add(h, rp, trans(ARM_X[1] - wp, 0, Z_T), f"{rp}_1")
     add(h, rp, trans(-ARM_X[1], 0, Z_T), f"{rp}_2")
     # azimut : vis le long de X qui roule autour de la roue fixe, NEMA 11 en bout côté -X
     a, ya = AZ_VIS, y_vis_az()
     add(h, "Palier_Vis_Azimut")
     add(h, "Arbre_Vis_Azimut")
-    for i, x0 in enumerate((a["palier"][0], -a["palier"][1]), 1):
+    for i, x0 in enumerate(x_685(a["palier"]), 1):
         add(h, "Roulement_685", trans(x0, ya, a["z"]), f"Roulement_685_Az_{i}")
     add(h, "Vis_Azimut", trans(0, ya, a["z"]) * rot((0, 1, 0), 90)
         * rot((0, 0, 1), PHASES[MODE]["az"] + VIS_AZ["z"] * az))
@@ -1227,7 +1276,7 @@ def build_head(az, el, with_panel=True):
     zv = z_vis_el()
     add(h, "Palier_Vis_Elevation")
     add(h, "Arbre_Vis_Elevation")
-    for i, y0 in enumerate((EL_VIS["palier"][0], -EL_VIS["palier"][1]), 1):
+    for i, y0 in enumerate(x_685(EL_VIS["palier"]), 1):
         add(h, "Roulement_685", trans(-30, y0, zv) * rot((0, 0, 1), 90), f"Roulement_685_El_{i}")
     add(h, "Vis_Elevation", trans(-30, 0, zv) * rot((1, 0, 0), -90)
         * rot((0, 0, 1), PHASES[MODE]["el"] - VIS_EL["z"] * (el - EL_REF)))

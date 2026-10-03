@@ -97,15 +97,20 @@ Tracker_Lunaire_PoleSud
 |---|---|
 | **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
 | **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements de l'axe d'élévation (608 ; 6801 en version imprimée), à 156 mm au-dessus de la colonne (700 mm du sol) |
-| **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux pivots dans les roulements des bras et porte les deux rails du panneau. Cas réel : axes inox Ø8 sur 608. Démonstration : pivots **imprimés en PETG, Ø12**, sur 6801 (§ 12) |
+| **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux pivots dans les roulements des bras et porte les deux rails du panneau. Cas réel : axes inox Ø8 sur 608. Démonstration : pivots **imprimés en PETG, Ø12**, sur 6801 (§ 12). Un **bossage** sur chaque flanc appuie sur la bague intérieure du roulement et règle le jeu axial |
 | **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
 | **Élévation (axe X)** | **NEMA 17 de 34 mm** + vis sans fin m1 Ø16 sur la **roue bronze Z50** calée sur le pivot gauche du chapeau : **50:1**. Le moteur est à l'arrière de la chape, du côté opposé au panneau |
-| **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas la poussée axiale de la vis |
+| **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Ses deux moyeux appuient sur les bagues intérieures des 685, et une **lèvre** de chaque joue du palier retient leur bague extérieure : la poussée axiale de la vis va au palier. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas cette poussée |
 | **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau et sur l'aile arrière du cadre. Le dos du cadre est à 46 mm de l'axe d'élévation |
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
 ### Roulements (en rose dans les fichiers 3D et les aperçus)
+
+Tous les roulements sont **protégés** des deux côtés : flasques métalliques (**ZZ**,
+conseillé) ou joints caoutchouc (**2RS**). Leurs cotes sont celles des roulements ouverts,
+sauf pour le 685. Dans les fichiers 3D, la protection est l'anneau en retrait de 0,2 mm sur
+chaque face.
 
 | Réf. | Dimensions (Ø int. × Ø ext. × largeur) | Qté | Emplacement |
 |---|---|---|---|
@@ -114,12 +119,35 @@ Tracker_Lunaire_PoleSud
 | **6801** (ISO 61801) | 12 × 21 × 5 mm | 2 | Élévation, **démonstration PETG** : remplace les 608, sur les pivots imprimés Ø12 |
 | **685ZZ** ou **685-2RS** | 5 × 11 × 5 mm | 4 | Arbres des deux vis sans fin, deux par vis, dans les paliers |
 
+**Aucune pièce ne touche la protection.** Une pièce qui tourne avec l'arbre n'appuie que sur la
+bague intérieure, et une pièce fixe que sur la bague extérieure. Sinon, une pièce frotterait
+sur la flasque ou sur le joint, ou bien une pièce fixe freinerait la bague qui tourne.
+
+| Roulement | Appui sur la bague intérieure (Ø maxi) | Appui sur la bague extérieure (Ø mini) |
+|---|---|---|
+| 6806 (azimut) | Collerette du moyeu et rondelle d'arrêt : **Ø33** | Épaulement du socle entre les deux roulements, et dessous de la roue d'azimut : alésage **Ø40** |
+| 608 / 6801 (élévation) | Bossage de chaque flanc du chapeau : **Ø11,5 / Ø14,2**, à 0,1 / 0,25 mm de la bague | Épaulement du bras de la chape : alésage **Ø19,8 / Ø19,5** |
+| 685 (vis) | Épaulement de chaque moyeu de la vis : **Ø6,5**, à 0,15 mm de la bague | Lèvre de 1 mm de chaque joue du palier : alésage **Ø9,8** |
+
+`generate_tete_vis_sans_fin.py` le vérifie à chaque génération, pour les deux versions. Il
+contrôle les deux faces de chaque roulement : rien à moins de 0,3 mm de la protection, et
+chaque bague n'est approchée que par ce qui tourne avec elle.
+
 * **685** : prendre une version **protégée, ZZ ou 2RS**. Le 685 ouvert ne fait que 3 mm de
   large, alors que les paliers sont prévus pour 5 mm.
-* **Démonstration sur Terre** : roulements acier standard 2RS (joints caoutchouc, contre la
-  poussière) ou ZZ (flasques métalliques), graissés.
-* **Cas réel (Lune)** : mêmes dimensions, en acier 440C, avec une lubrification sèche (MoS₂)
-  et sans joint caoutchouc ni graisse, qui dégazeraient dans le vide.
+* **Démonstration sur Terre** : roulements acier standard, de préférence **ZZ**. Ils sont
+  graissés à vie d'origine : ne pas les ouvrir ni les regraisser.
+  * Les joints des 2RS frottent sur la bague intérieure. Les deux 6806-2RS freinent
+    l'azimut d'environ 0,15 N·m (estimation), soit le tiers du couple du vent de 10 m/s.
+  * Avec des 2RS, la marge de l'azimut au vent passe de ×2,3 à ×1,6 (vis graissée), et
+    au-dessous de ×1 si la vis tourne à sec.
+  * L'élévation n'est presque pas touchée : ×2,5 → ×2,3.
+* **Montage** : enfoncer un roulement en poussant sur la bague qu'on emmanche. Dans un
+  logement, c'est la bague extérieure : utiliser une douille de son diamètre, jamais un
+  outil posé sur la flasque.
+* **Cas réel (Lune)** : mêmes dimensions, en acier 440C, version **ZZ**. Les flasques
+  métalliques arrêtent la poussière de régolithe sans frotter. La lubrification est sèche
+  (MoS₂) : ni joint caoutchouc ni graisse, qui dégazeraient dans le vide.
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
@@ -262,7 +290,7 @@ une remise en position prend quelques secondes.
 |---|---|
 | **Gravité 1,62 m/s² (1/6 g)**, **pas de vent** | Charges très faibles sur la tête et le trépied. Le couple dû au décentrage du panneau autour de l'axe d'élévation est six fois plus faible que sur Terre. Les essais au sol à 1 g, avec du vent, restent le cas le plus exigeant pour les moteurs. |
 | **Vide** | **Soudage à froid** : chaque contact associe deux matériaux différents (vis en inox 17-4PH contre roues en bronze, roulements en acier 440C), avec une lubrification sèche au MoS₂. **Pas de convection** : les moteurs ne sont alimentés que pendant les mouvements, grâce aux vis irréversibles, et leur chaleur part par conduction vers la chape. Il faut des moteurs en version « vide » (graisses et isolants à faible dégazage), de même taille. |
-| **Températures de −173 °C à +127 °C** | Jeu de denture de 0,1 mm, jeu axial de 2 mm entre les flancs du chapeau et les bras de la chape (rondelles PTFE). Pas de plastique ordinaire dans la tête : le PLA d'un prototype imprimé en 3D se ramollit vers 60 °C. |
+| **Températures de −173 °C à +127 °C** | Jeu de denture de 0,1 mm. Jeu axial de 0,1 mm par côté entre les bossages du chapeau et les bagues intérieures des 608 : chapeau et chape sont dans le même alliage et se dilatent ensemble. Pas de plastique ordinaire dans la tête : le PLA d'un prototype imprimé en 3D se ramollit vers 60 °C. |
 | **Régolithe abrasif et électrostatique** | Vis et roues à protéger par un soufflet ou un capot, connecteurs orientés vers le bas, câbles passés par l'axe d'azimut. |
 | **Sol meuble et irrégulier** | Trépied à trois appuis, patins Ø120 à crampons sur rotule, jambes télescopiques, vis d'ancrage hélicoïdales (voir § 6). |
 | **Jour lunaire de 29,5 jours terrestres, nuit de 14 jours** | Suivi très lent (≈ 0,5°/h), donc peu de pas moteur. Aucune consommation à l'arrêt grâce aux vis irréversibles. |
@@ -340,7 +368,7 @@ Le trépied pèse 4,3 kg.
 | Arbres des vis sans fin Ø5 | Inox 17-4PH | Acier, non imprimés : tige Ø5 rectifiée |
 | Pivots d'élévation | Inox 17-4PH, Ø8 (dont un en D), sur 608 | **PETG imprimé**, Ø12 (l'entraîné en D), sur 6801 |
 | Accouplements | Al 7075-T73 | Accouplements flexibles alu 5/5 du commerce |
-| Roulements | 6806, 608, 685 en acier 440C, lubrification sèche (MoS₂) | 6806, **6801**, 685 en acier standard (2RS), graissés |
+| Roulements | 6806, 608, 685 **ZZ** en acier 440C, lubrification sèche (MoS₂) | 6806, **6801**, 685 **ZZ** (ou 2RS) en acier standard, graissés à vie d'origine |
 | Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE |
 | Visserie | Inox ou titane | Vis CHC acier M3 et M2,5 |
 | Moteurs | Version vide / spatiale (même taille) | NEMA 17 et NEMA 11 du commerce |
@@ -361,7 +389,7 @@ Le trépied pèse 4,3 kg.
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
-| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,83 kg, dont 0,36 kg de moteurs (1,20 kg en version PETG) |
+| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,81 kg, dont 0,36 kg de moteurs (1,19 kg en version PETG) |
 | Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,52 kg, dont 1,01 kg de panneau |
 | Masse du trépied | 4,3 kg |
 | Masse du tracker complet | 7,2 kg (poids lunaire ≈ 12 N) |
@@ -468,15 +496,15 @@ par le script :
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
 | `Bague_Arret_Moyeu` | 1 | À plat | |
-| `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø12 en D côté roue |
+| `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø12 en D côté roue ; un bossage Ø14,2 sur la face intérieure de chaque flanc |
 | `Roue_Elevation` | 1 | À plat, moyeu en haut | Alésage Ø12 en D |
 | `Pivot_Entraine` | 1 | Couché sur son méplat | Ø12 en D, 34 mm tête comprise ; porte la roue. 100 % de remplissage |
 | `Pivot_Libre` | 1 | Debout, tête en bas | Ø12, 19 mm tête comprise. 100 % de remplissage |
 | `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
-| `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | |
+| `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | Lèvre de 1 mm côté extérieur de chaque joue : le 685 s'enfonce depuis l'intérieur du U |
 | `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
 
-Environ 310 g de PETG (414 g si tout était plein).
+Environ 305 g de PETG (406 g si tout était plein).
 
 **Réglages conseillés** :
 * PETG, couches de 0,2 mm ;
@@ -500,9 +528,9 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 
 | Article | Qté |
 |---|---|
-| Roulement 6806-2RS (ISO 61806-2RS), 30 × 42 × 7 mm | 2 |
-| Roulement **6801-2RS** (ISO 61801-2RS, ou 6801ZZ), 12 × 21 × 5 mm | 2 |
-| Roulement 685-2RS (ou 685ZZ), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
+| Roulement **6806ZZ** (ISO 61806-2Z ; ou 6806-2RS), 30 × 42 × 7 mm | 2 |
+| Roulement **6801ZZ** (ISO 61801-2Z ; ou 6801-2RS), 12 × 21 × 5 mm | 2 |
+| Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
@@ -532,7 +560,7 @@ change le PETG »). Leur tête Ø18 de 2 mm sert d'épaulement contre le flanc d
 | Jeu de denture des roues | 0,10 / 0,12 mm | **0,30 mm** | Imprécision des dents imprimées |
 | Filet des vis | aminci de 0,15 m | **non aminci, tête raccourcie (0,85 m)** | Tout le jeu est pris sur la roue, et le filet reste assez épais pour l'impression |
 | Entraxe vis / roue | nominal | **+0,15 mm**, puis réglé au montage | Lumières en azimut, cales en élévation |
-| Jeu axial chapeau / chape | 2 mm | 2 mm | Rondelles PTFE |
+| Bossages du chapeau sur les bagues intérieures des roulements de pivots | 0,10 mm par côté | **0,25 mm** par côté | Règlent le jeu axial du chapeau (0,5 mm en tout en PETG). Si le chapeau serre, poncer un bossage |
 
 **Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages
 que les pièces :
@@ -558,9 +586,12 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 | ![Axe d'élévation](docs/explications/axe_elevation.png) |
 
 * **Le palier** est la pièce en U qui porte une vis sans fin. Ses deux parois sont les
-  **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse.
+  **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse. Côté
+  extérieur, une **lèvre** de 1 mm retient la bague extérieure du roulement : le 685
+  s'enfonce depuis l'intérieur du U jusqu'à cette lèvre, et dépasse de 1 mm côté vis.
 * **La vis sans fin imprimée** a, de chaque côté du filet, un **moyeu Ø12**. Les moyeux
-  viennent en appui sur les bagues intérieures des 685, ce qui cale la vis entre les joues.
+  viennent en appui sur les bagues intérieures des 685 par un épaulement Ø6,5, qui ne
+  touche pas la flasque. Ils calent la vis entre les joues.
   Une vis sans tête M3×4 dans un moyeu bloque la vis sans fin sur l'arbre.
 * **L'accouplement flexible** relie l'axe du moteur à l'arbre :
   * 12,5 mm de chaque axe entrent dans l'accouplement, avec environ 1 mm d'écart entre les
@@ -568,7 +599,8 @@ Toutes les pièces sont alors régénérées avec ce jeu.
   * sa vis de serrage se serre sur le méplat de l'axe du moteur.
 
 1. **Socle** : presser le 6806 bas par-dessous, jusqu'à l'épaulement, puis le 6806 haut
-   par-dessus.
+   par-dessus. Pousser sur la bague extérieure (douille ou tube de Ø40 à 42), jamais sur la
+   flasque.
 2. **Roue d'azimut** : la poser à plat sur le socle et la fixer par 3 vis fraisées M3×8, qui
    doivent affleurer : la vis d'azimut passe juste au-dessus.
 3. **Moyeu** : l'enfiler par le haut, à travers la roue et les deux roulements. Visser la
@@ -576,9 +608,11 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 4. **Fond** : 3 × M3×25 par-dessous, à travers le téton. Poser la tête sur la colonne :
    * percer la colonne Ø3,4 à 8 mm sous son sommet, face au trou du téton ;
    * mettre la vis anti-rotation M3×6.
-5. **Chape** : sur l'établi, presser les deux 6801 dans les bras. Monter ensuite la
+5. **Chape** : sur l'établi, presser les deux 6801 dans les bras, par l'extérieur, jusqu'à
+   l'épaulement. Monter ensuite la
    chaîne d'élévation :
-   * le palier avec ses deux 685, la vis sur sa tige Ø5 et sa vis de pression ;
+   * le palier avec ses deux 685 (enfoncés depuis l'intérieur du U jusqu'à la lèvre), la vis
+     sur sa tige Ø5 et sa vis de pression ;
    * l'accouplement, le support et le NEMA 17.
 
    Ces pièces sont vissées par-dessous la chape.
@@ -586,7 +620,9 @@ Toutes les pièces sont alors régénérées avec ce jeu.
    enfiler le pivot imprimé en D à travers le flanc, le 6801 et la roue, méplat aligné avec
    ceux du flanc et de la roue. Mettre le pivot libre de l'autre côté, à travers le flanc
    et le 6801. Les deux pivots sont serrés dans le chapeau : une goutte de colle
-   cyanoacrylate sous la tête les empêche de ressortir.
+   cyanoacrylate sous la tête les empêche de ressortir. Les bossages des flancs viennent
+   contre les bagues intérieures des 6801 : le chapeau doit tourner librement, avec un
+   léger jeu axial.
 7. **Chape sur le moyeu** : 3 × M3×12 par-dessus.
 8. **Chaîne d'azimut** : glisser le palier d'azimut (685, vis, tige) sous la chape, la vis
    venant en prise radialement avec la roue fixe. Mettre ensuite le support, le NEMA 11 et
@@ -605,6 +641,8 @@ Toutes les pièces sont alors régénérées avec ce jeu.
   * Graissées (μ ≈ 0,15), les marges restent celles du cas réel : ×2,5 en élévation et ×2,3
     en azimut avec un vent de 10 m/s.
   * À sec (μ ≈ 0,30), elles tombent à ×1,4.
+  * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : en
+    azimut, ×1,6 graissé et moins de ×1 à sec (voir « Roulements », § 2).
 * **Tenue moteurs coupés** : encore plus sûre qu'avec acier et bronze, car le frottement du
   PETG est plus élevé. Les deux vis sont irréversibles, même avec des vibrations.
 * **Dents en PETG** : limiter le courant du moteur d'élévation à **0,9 A** (au lieu de

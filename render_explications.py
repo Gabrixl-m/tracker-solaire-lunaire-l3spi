@@ -6,7 +6,7 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
   - vis_sans_fin_moyeux.png : la vis sans fin imprimée seule (filet, moyeux, épaulements,
     trou de la vis sans tête, alésage) ;
   - axe_elevation.png : coupe par l'axe d'élévation (pivots imprimés Ø12, roulements 6801,
-    roue d'élévation, chapeau, bras de la chape).
+    bossages du chapeau, roue d'élévation, chapeau, bras de la chape).
 Sur serveur : xvfb-run -a python render_explications.py
 """
 
@@ -98,14 +98,15 @@ def main():
     def add(n, loc=None, inst=None):
         a.add(G.PARTS[n][0], name=inst or n, loc=G.TO_YUP * (loc or cq.Location()), color=G.PARTS[n][2])
     add("Palier_Vis_Elevation")
-    for i, y0 in enumerate((G.EL_VIS["palier"][0], -G.EL_VIS["palier"][1])):
+    for i, y0 in enumerate(G.x_685(G.EL_VIS["palier"])):
         add("Roulement_685", G.trans(-30, y0, zv) * G.rot((0, 0, 1), 90), f"Roulement_{i}")
     add("Arbre_Vis_Elevation")
     add("Vis_Elevation", G.trans(-30, 0, zv) * G.rot((1, 0, 0), -90))
     rendu(a, "palier_joues_roulements.png", (130, zv + 60, 90), (-30, zv - 5, 0), 32, [
         ("Joue (paroi) de gauche :\nelle tient un roulement", yup((-30, -16.5, zv + 9)), (40, 60)),
         ("Joue (paroi) de droite :\nelle tient l'autre roulement", yup((-30, 16.5, zv + 9)), (1010, 60)),
-        ("Roulement 685 (rose)\nemmanché dans la joue", yup((-30, -19, zv + 4.5)), (40, 330)),
+        ("Roulement 685 (rose),\nprotégé : il dépasse\nde 1 mm côté vis", yup((-30, 13.0, zv + 5.2)), (1150, 540)),
+        ("Lèvre de la joue : retient\nla bague extérieure seulement", yup((-30, -19, zv + 5.2)), (40, 880)),
         ("Arbre acier Ø5\n(tige achetée)", yup((-30, -30, zv + 2.4)), (40, 640)),
         ("Vis sans fin (imprimée)", yup((-30, 0, zv + 8.5)), (560, 150)),
         ("Semelle : vissée\nsur la chape", yup((-23, 0, G.Z_CHAPE + 10.5)), (1050, 900)),
@@ -115,14 +116,14 @@ def main():
     b = cq.Assembly(name="vis")
     b.add(G.PARTS["Vis_Elevation"][0], name="vis_sans_fin", loc=G.rot((0, 1, 0), 90),
           color=cq.Color(0.75, 0.75, 0.78))
-    e = G.EL_VIS["palier"][0] - 0.15
+    e = G.EL_VIS["palier"][0] - G.LEVRE_685 - 0.15
     zh = (G.VIS_EL["moyeu"] + e - 0.6) / 2
     rendu(b, "vis_sans_fin_moyeux.png", (40, 72, 38), (1, 0, 0), 32, [
         ("Filet : la partie qui\nengrène avec la roue", (0, 9.2, 0), (560, 30)),
         ("Moyeu Ø12 (côté 1)", (-zh, 6, 0), (40, 230)),
         ("Moyeu Ø12 (côté 2)", (zh + 2.5, -1.0, 5.9), (1150, 420)),
         ("Trou de la vis sans tête M3\n(bloque la vis sur l'arbre)", (zh, 6.0, 0), (980, 40)),
-        ("Épaulement Ø6,5 : appuie sur\nla bague intérieure du roulement", (e, -2.2, 2.2), (880, 900)),
+        ("Épaulement Ø6,5 : appuie sur la\nbague intérieure du roulement,\npas sur sa flasque", (e, -2.2, 2.2), (880, 860)),
         ("Alésage Ø5,1 :\nl'arbre passe dedans", (e, 0.0, 0.0), (1180, 640)),
     ])
     # 3. coupe par l'axe d'élévation, panneau à plat (chapeau droit), moitié avant
@@ -137,6 +138,7 @@ def main():
         (f"Pivot libre : PETG\nØ{pv['d']:g} (imprimé)", (49, zt + 2, 0), (1180, 40)),
         (f"Roulement {pv['ref']} (rose)\ndans le bras droit", (44.5, zt + 7.5, 0), (1180, 300)),
         (f"Pivot entraîné :\nPETG Ø{pv['d']:g} en D\n(imprimé, porte la roue)", (-37, zt + 2, 0), (30, 420)),
+        ("Bossage du chapeau :\nappuie sur la bague\nintérieure seulement", (49.1, zt - 6.6, 0), (1180, 560)),
         ("Chapeau en U (bleu) :\nporte le panneau", (-53, zt - 12, 0), (30, 600)),
         ("Bras de la chape (jaune) :\nne tourne pas en élévation", (44, zt - 40, 0), (1090, 780)),
         ("Vis sans fin d'élévation :\nfait tourner la roue", (-30, G.z_vis_el() + 5, 0), (30, 900)),

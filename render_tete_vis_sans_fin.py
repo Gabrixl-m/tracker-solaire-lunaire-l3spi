@@ -47,6 +47,9 @@ def main():
     # coupe dans le plan de la roue d'élévation (x = -30 : axe de la vis)
     r = build_renderer(coupe(head, x=(-1e3, -30.0)), SUN, ground=False)
     shoot(r, "tete_vis_sans_fin_coupe_elevation.png", (420, 190, 160), focal=(-30, G.Z_T - 25, 0), angle=34)
+    # coupe verticale par les axes d'azimut et d'élévation : roulements 6806 et 608 (en rose)
+    r = build_renderer(coupe(head, z=(-1e3, 0.0)), SUN, ground=False)
+    shoot(r, "tete_vis_sans_fin_coupe_roulements.png", (90, 150, 330), focal=(0, 105, 0), angle=40)
     # coupe horizontale dans le plan de la vis d'azimut, vue de dessus
     z_az = G.AZ_VIS["z"]
     r = build_renderer(coupe(head, y=(-1e3, z_az)), SUN, ground=False)

@@ -155,7 +155,7 @@ COL = {
     "u":      cq.Color(0.33, 0.45, 0.80),
     "brass":  cq.Color(0.80, 0.65, 0.30),
     "coupler": cq.Color(0.55, 0.60, 0.85),
-    "roulement": cq.Color(0.50, 0.50, 0.52),   # roulements du commerce : gris
+    "roulement": cq.Color(1.00, 0.41, 0.71),   # roulements du commerce : rose
 }
 
 

@@ -85,6 +85,10 @@ Tracker_Lunaire_PoleSud
 | ![Côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Coupe azimut](docs/tete_vis_sans_fin_coupe_azimut.png) |
 | ![Avec panneau, côté moteurs](docs/tete_vis_sans_fin_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_vis_sans_fin_avec_panneau_face.png) |
 
+| Coupe par les axes : roulements en rose (6806 dans le socle, 608 dans les bras) |
+|---|
+| ![Coupe des roulements](docs/tete_vis_sans_fin_coupe_roulements.png) |
+
 ### Architecture
 
 | Élément | Choix |
@@ -99,7 +103,7 @@ Tracker_Lunaire_PoleSud
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
-### Roulements (en gris dans les fichiers 3D)
+### Roulements (en rose dans les fichiers 3D et les aperçus)
 
 | Réf. | Dimensions (Ø int. × Ø ext. × largeur) | Qté | Emplacement |
 |---|---|---|---|

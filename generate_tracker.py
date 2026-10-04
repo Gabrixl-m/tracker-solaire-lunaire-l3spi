@@ -563,11 +563,15 @@ def RP():
     """Roulement des pivots d'élévation du jeu de cotes courant."""
     return ROULEMENTS[PV()["ref"]]
 
-# prof : profondeur des taraudages de fixation du moteur (les vis doivent être plus courtes)
-MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, prof=4.5, shaft=24.0, hold=0.28,
-              detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
+# prof : profondeur des taraudages de fixation du moteur (les vis doivent être plus courtes) ;
+# conn : connecteur arrière (largeur, longueur depuis l'arrière, saillie), None = fils directs ;
+# amp_petg : courant réglé en version PETG (couple de calage limité pour les dents imprimées)
+MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, prof=4.5, shaft=23.5, hold=0.34,
+              detent=0.016, amp=1.0, amp_petg=0.6, masse=0.22, conn=(16.2, 9.4, 6.0),
+              nom="NEMA 17 42 x 42 x 34 mm (17HS3401 Usongshine, 0,34 N·m, 1,0 A)")
 MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, prof=2.5, shaft=20.0, hold=0.095,
-              detent=0.005, amp=0.67, ohm=6.8, masse=0.18, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
+              detent=0.005, amp=0.67, ohm=6.8, masse=0.18, conn=None,
+              nom="NEMA 11 28 x 28 x 45 mm (11HS18-0674S, 0,10 N·m, 0,67 A)")
 # vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu
 VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0, moyeu=5.0)       # vis m1 Ø16 + roue Z50
 VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0, moyeu=8.0)        # vis m0,8 Ø12 + roue fixe Z60
@@ -629,7 +633,10 @@ def p_nema(m):
     for sx in (-1, 1):
         for sy in (-1, 1):
             body = body.cut(cyl_z(m["hole_d"], m["prof"], sx * m["holes"] / 2, sy * m["holes"] / 2, -m["prof"]))
-    return body.union(box_span(-6, 6, c / 2 - 1, c / 2 + 5, -L + 2, -L + 12))     # connecteur
+    if m["conn"]:                       # connecteur sur un côté, à l'arrière
+        w, lg, sa = m["conn"]
+        body = body.union(box_span(-w / 2, w / 2, c / 2 - 1, c / 2 + sa, -L, -L + lg))
+    return body
 
 
 def p_vis(v):

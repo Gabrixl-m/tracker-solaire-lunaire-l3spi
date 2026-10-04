@@ -12,11 +12,11 @@ Tube_Jambe_Inferieur;3;Al 7075-T73;0.265;Tube coulissant Ø20x1,5
 Colonne_Centrale;1;Al 7075-T73;0.261;Colonne centrale Ø50x2 anodisée dur
 Cadre_Panneau;1;Al 6063-T5;0.246;Cadre alu du panneau 356x253x30
 Embout_Rotule;3;Ti-6Al-4V;0.220;Embout à rotule Ø22
-Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévation : NEMA 17 42 x 42 x 34 mm (type 17HS3401)
+Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévation : NEMA 17 42 x 42 x 34 mm (17HS3401 Usongshine, 0,34 N·m, 1,0 A)
 Tube_Jambe_Superieur;3;Al 7075-T73;0.215;Tube Ø25x1,5 anodisé dur
 Rail_Panneau;2;Al 6061-T6;0.209;Rail 12 x 13 vissé sur le cadre du panneau
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
-Moteur_Azimut_NEMA11;1;masse forfaitaire;0.180;Moteur pas à pas d'azimut : NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)
+Moteur_Azimut_NEMA11;1;masse forfaitaire;0.180;Moteur pas à pas d'azimut : NEMA 11 28 x 28 x 45 mm (11HS18-0674S, 0,10 N·m, 0,67 A)
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
 Chapeau_U;1;Al 6061-T6;0.146;Chapeau en U renversé porte-panneau
 Socle;1;Al 6061-T6;0.134;Socle Ø62 : roulements d'azimut, passe-câble

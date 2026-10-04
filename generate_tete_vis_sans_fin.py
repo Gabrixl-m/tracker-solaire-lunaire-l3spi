@@ -118,6 +118,16 @@ def caler_dentures():
         print(f"  calage vis {key} : {best[0]:.1f}° (recouvrement {best[1]:.3f} mm3){note}")
 
 
+def courant(mot):
+    """Courant réglé du moteur : réduit en version PETG s'il est précisé (dents imprimées)."""
+    return mot.get("amp_petg", mot["amp"]) if G.MODE == "petg" else mot["amp"]
+
+
+def hold(mot):
+    """Couple de maintien au courant réglé (à peu près proportionnel au courant)."""
+    return mot["hold"] * courant(mot) / mot["amp"]
+
+
 def joints(ref, prot):
     """Frottement des joints d'une paire de roulements (N·m) : nul en ZZ."""
     return 2 * G.ROULEMENTS[ref]["joints"] if prot == "2RS" else 0.0
@@ -150,7 +160,7 @@ def couples():
         marche = {}
         for cas, mu in MU_MARCHE[G.MODE].items():
             eta = math.tan(lam) / math.tan(lam + math.atan(mu))
-            marche[cas] = {p: (eta, (mot["hold"] * K_RUN - joints("685", p)) * v["z"] * eta)
+            marche[cas] = {p: (eta, (hold(mot) * K_RUN - joints("685", p)) * v["z"] * eta)
                            for p in PROTECTIONS[G.MODE]}
         tenue = {}
         for cas, mu in MU_REPOS[G.MODE].items():
@@ -263,7 +273,9 @@ def bilan(flat):
     print(f"  partie basculante (chapeau, roue, rails, panneau) : {M:.2f} kg, CdG à {r * 1000:.1f} mm de l'axe")
     for key, mot in (("el", G.MOT_EL), ("az", G.MOT_AZ)):
         d = dispo[key]
-        print(f"  {key} : {mot['nom']} ({mot['hold']} N·m, {mot['amp']} A), vis {d['ratio']}:1, hélice {d['lam']:.2f}°")
+        cal = hold(mot) * d["ratio"] * math.tan(math.radians(d["lam"])) / math.tan(math.radians(d["lam"]) + math.atan(0.15))
+        print(f"  {key} : {mot['nom']}, réglé à {courant(mot)} A ({hold(mot):.3f} N·m), vis {d['ratio']}:1, "
+              f"hélice {d['lam']:.2f}° ; moteur calé : {cal:.2f} N·m à la roue")
         for cas_mu, par_prot in d["marche"].items():
             for prot, (eta, t) in par_prot.items():
                 marges = ", ".join(f"{cas} x{t / b[prot]:.1f}" for cas, b in besoin[key].items())

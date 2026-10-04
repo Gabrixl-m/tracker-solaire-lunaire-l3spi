@@ -141,7 +141,7 @@ chaque bague n'est approchée que par ce qui tourne avec elle.
     l'azimut d'environ 0,15 N·m (estimation), soit le tiers du couple du vent de 10 m/s.
   * Avec des 2RS, la marge de l'azimut au vent passe de ×2,3 à ×1,6 (vis graissée), et
     au-dessous de ×1 si la vis tourne à sec.
-  * L'élévation n'est presque pas touchée : ×2,3 → ×2,1.
+  * L'élévation n'est presque pas touchée : ×2,7 → ×2,6.
 * **Montage** : enfoncer un roulement en poussant sur la bague qu'on emmanche. Dans un
   logement, c'est la bague extérieure : utiliser une douille de son diamètre, jamais un
   outil posé sur la flasque.
@@ -163,11 +163,14 @@ coupure de courant. Les moteurs ne sont alimentés que pendant les mouvements.
 
 | Axe | Moteur | Caractéristiques |
 |---|---|---|
-| Élévation | **NEMA 17, 42 × 42 × 34 mm** (type 17HS3401) | 0,28 N·m, 1,3 A, 2,4 Ω, 0,22 kg |
+| Élévation | **NEMA 17, 42 × 42 × 34 mm** (17HS3401 Usongshine) | 0,34 N·m, 1,0 A (0,6 A en version PETG), axe Ø5 × 23,5 à méplat, connecteur JST PH 6 broches, ≈ 0,22 kg |
 | Azimut | **NEMA 11, 28 × 28 × 45 mm** (type 11HS18-0674S) | 0,10 N·m (0,095 retenu dans les calculs, par prudence), 0,67 A, 6,8 Ω, 0,18 kg, axe Ø5 × 20 à méplat |
 
-À l'achat, prendre un NEMA 17 de 34 mm annoncé à **0,28 N·m**. Certains vendeurs vendent sous
-la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20 % de marge.
+Modèle retenu pour l'élévation : **Usongshine 17HS3401, 0,34 N·m à 1,0 A**. Son plan est
+vérifié : taraudages M3 profonds de 4,5 mm au moins, centrage Ø22 × 2, trous à 31 mm, axe
+Ø5 × 23,5. Un autre 17HS3401 convient s'il est annoncé à **0,28 N·m au moins**. Certains
+vendeurs vendent sous la même référence une version à 0,23 N·m, trop juste. En version
+PETG, régler le courant pour obtenir environ 0,20 N·m de maintien (0,6 A pour ce moteur).
 
 ### Couples : besoins et marges dans tous les cas
 
@@ -186,8 +189,8 @@ rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (é
 
 | Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
 |---|---|---|---|
-| Élévation (2,86 N·m disponibles) | ×18 | ×3,1 | **×2,3** |
-| Élévation, version PETG, moteur limité à 0,9 A (1,98 N·m) | — | ×2,2 | **×1,6** |
+| Élévation (3,47 N·m disponibles, moteur à 1,0 A) | ×22 | ×3,8 | **×2,7** |
+| Élévation, version PETG, moteur limité à 0,6 A (2,08 N·m) | — | ×2,3 | **×1,7** |
 | Azimut (1,22 N·m disponibles) | ×61 | ×41 | **×2,3** |
 
 * **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** On y vise une
@@ -206,16 +209,16 @@ rendement des vis, les roulements et les câbles.
 
 | Ce qu'on regarde | Version PETG (démonstration) | Cas réel | Verdict |
 |---|---|---|---|
-| Part du couple moteur utilisée, élévation | 63 % dehors (vent 10 m/s), 46 % dedans, à 0,9 A | 44 % dehors, 6 % sur la Lune | Bien dimensionné dehors ; ×18 de trop sur la Lune |
+| Part du couple moteur utilisée, élévation | 60 % dehors (vent 10 m/s), 43 % dedans, à 0,6 A | 36 % dehors, 5 % sur la Lune, à 1,0 A | Bien dimensionné dehors ; ×22 de trop sur la Lune |
 | Part du couple moteur utilisée, azimut | 43 % dehors, 2 % dedans | 43 % dehors, 2 % sur la Lune | Dimensionné par le vent ; sans vent, ×40 à ×60 de trop |
-| Dents en PETG, élévation | 16 MPa en marche dehors, 35 MPa moteur calé | — | C'est la vraie limite : d'où le courant limité à 0,9 A |
+| Dents en PETG, élévation | 16 MPa en marche dehors, 37 MPa moteur calé | — | C'est la vraie limite : d'où le courant limité à 0,6 A |
 | Dents en PETG, azimut | 7 MPa en marche dehors, 22 MPa moteur calé | — | Large |
 | Pivot entraîné Ø12 en PETG | 4 MPa en marche, 9 MPa moteur calé | — | ×3 au calage, ×8 en marche |
 | Roulements | en marche : poussée de la vis ≈ 1/5 de la capacité statique d'un 685 ; charge ≈ 1/100 de celle d'un 6806 | idem | Choisis pour leurs dimensions (câbles, axes), pas pour la charge |
 | Inertie | ≈ 0,012 kg·m² basculants : < 1 % du couple de gravité même en retour rapide | idem | Négligeable |
 
 * **Le cas qui dimensionne est la démonstration dehors, avec 10 m/s de vent.** Les marges y
-  sont de ×1,6 (élévation, PETG à 0,9 A) à ×2,3. Pour un moteur pas à pas, on vise ×1,5
+  sont de ×1,7 (élévation, PETG à 0,6 A) à ×2,3. Pour un moteur pas à pas, on vise ×1,5
   à ×2 : au-delà de son couple, il ne ralentit pas, il **saute des pas** et perd sa
   position. Le couple réel varie aussi de 10 à 20 % selon le vendeur et la température.
   L'élévation de la version PETG est donc au bas de la plage, pas au-dessus.
@@ -232,17 +235,17 @@ rendement des vis, les roulements et les câbles.
   0,30). C'est le prix de l'irréversibilité : la vis sert de frein, sans frein à acheter ni
   courant de maintien. Les roulements et les câbles ne coûtent que 0,01 à 0,02 N·m, soit 1 à
   4 % du besoin. Des joints 2RS ajouteraient 0,15 N·m en azimut : prendre des ZZ.
-* **Énergie** : alimentés, les moteurs consomment environ 4 W (NEMA 17 à 0,9 A) et 6 W
+* **Énergie** : alimentés, les moteurs consomment environ 2 W (NEMA 17 à 0,6 A) et 6 W
   (NEMA 11). Comme les vis tiennent seules, les drivers sont coupés entre deux corrections.
   Avec une correction de 0,5° toutes les 2 minutes, les moteurs sont alimentés moins de 1 %
-  du temps, soit quelques dizaines de mW en moyenne au lieu de 10 W.
+  du temps, soit quelques dizaines de mW en moyenne au lieu de 8 W.
 
 ### Tenue moteurs coupés
 
 | Cas | Ce qui tient | Résultat |
 |---|---|---|
 | **Terre**, vis graissées (μ ≈ 0,10) | La vis se bloque : hélice de 3,6° (élévation) et 3,8° (azimut), angle de frottement 5,7° | **Tient dans toutes les positions, même dans le vent** |
-| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,2 en élévation, ×2,4 en azimut |
+| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (valeurs typiques : 0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,2 en élévation, ×2,4 en azimut |
 | **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,15 N·m et il n'y a pas de vent | **Tient** : ×8 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
 
 Conséquences :
@@ -298,12 +301,15 @@ une remise en position prend quelques secondes.
 * **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
   plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
 * **Réglages** :
-  * courant de marche (`rms_current`) : 1,3 A pour le NEMA 17 (**0,9 A en version PETG**,
+  * courant de marche (`rms_current`) : 1,0 A pour le NEMA 17 (**0,6 A en version PETG**,
     pour ne pas casser les dents si l'élévation bute), 0,67 A pour le NEMA 11 ;
   * 16 micro-pas, StealthChop ;
   * à l'arrêt : drivers désactivés par EN. Ne jamais laisser les moteurs alimentés en
-    permanence : le NEMA 11 dissipe alors environ 6 W et le NEMA 17 environ 4 W, assez
+    permanence : le NEMA 11 dissipe alors environ 6 W et le NEMA 17 environ 2 W, assez
     pour ramollir leurs supports en PETG.
+* **Branchement du NEMA 17 (Usongshine 17HS3401)** : connecteur JST PH à 6 broches. Une
+  bobine relie les broches 1 et 4, l'autre les broches 3 et 6 (vérifier au multimètre : faible
+  résistance entre les deux fils d'une même bobine, circuit ouvert entre les deux bobines).
 * **Branchement du NEMA 11 (11HS18-0674S)** : bobine A = noir (A+) et vert (A−), bobine B =
   rouge (B+) et bleu (B−), vers les bornes A et B du TMC2209. Au multimètre, on doit lire
   environ 6,8 Ω entre les deux fils d'une même bobine. Si le moteur tourne à l'envers,
@@ -587,7 +593,7 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
-| NEMA 17 34 mm (type 17HS3401, 0,28 N·m) et NEMA 11 45 mm (type 11HS18-0674S) | 1 + 1 |
+| NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 8 × M3×14, 3 × M3×25 | 29 |
 | Écrou M3 (panneau sur les rails) | 4 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
@@ -721,24 +727,26 @@ trépied photo, il faut une pièce d'adaptation.
 ### Ce que change le PETG en fonctionnement
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
-  * Graissées (μ ≈ 0,15) : ×1,6 en élévation (moteur limité à 0,9 A, voir plus bas) et
-    ×2,3 en azimut avec un vent de 10 m/s ; ×2,2 et ×40 en intérieur.
-  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×0,9) et n'a plus que ×1,3 en
+  * Graissées (μ ≈ 0,15) : ×1,7 en élévation (moteur limité à 0,6 A, voir plus bas) et
+    ×2,3 en azimut avec un vent de 10 m/s ; ×2,3 et ×40 en intérieur.
+  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×1,0) et n'a plus que ×1,3 en
     intérieur : **graisser**.
   * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : en
     azimut, ×1,6 graissé et moins de ×1 à sec (voir « Roulements », § 2).
 * **Tenue moteurs coupés** : encore plus sûre qu'avec acier et bronze, car le frottement du
   PETG est plus élevé. Les deux vis sont irréversibles, même avec des vibrations.
-* **Dents en PETG** : limiter le courant du moteur d'élévation à **0,9 A** (au lieu de
-  1,3 A).
+* **Dents en PETG** : limiter le courant du moteur d'élévation à **0,6 A** (au lieu de
+  1,0 A) avec le moteur Usongshine de 0,34 N·m.
   * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
-    2,8 N·m à la roue. Cela fait environ 35 MPa en pied de dent, soit 70 % de la résistance
+    3,0 N·m à la roue. Cela fait environ 37 MPa en pied de dent, soit 74 % de la résistance
     du PETG.
-  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,2 en intérieur.
+  * La marge au vent de 10 m/s reste de ×1,7, et de ×2,3 en intérieur.
+  * À 1,0 A, ce moteur pousserait jusqu'à 5 N·m sur la roue en cas de blocage : environ
+    60 MPa, les dents casseraient.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
 * **Pivots imprimés Ø12** : le pivot entraîné transmet le couple de la roue au chapeau.
   * En marche (poids du panneau et vent de 10 m/s, ≈ 1,2 N·m), il travaille à environ
-    4 MPa en torsion. Moteur calé à 0,9 A (2,8 N·m), environ 9 MPa : le tiers de la
+    4 MPa en torsion. Moteur calé à 0,6 A (3,0 N·m), environ 9 MPa : le tiers de la
     résistance au cisaillement du PETG (≈ 30 MPa).
   * Un pivot PETG de Ø8 monterait à 28 MPa, à la limite de la rupture : d'où le Ø12 et
     les roulements 6801.

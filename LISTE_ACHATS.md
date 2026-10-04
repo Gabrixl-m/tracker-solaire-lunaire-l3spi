@@ -47,7 +47,7 @@ des arbres des vis sans fin.
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
-| **Moteur pas à pas NEMA 17, 34 mm** | 42 × 42 × 34 mm, **0,28 N·m**, 1,3 A, axe Ø5 à méplat | 1 | `17HS3401 stepper motor 0.28Nm` | Élévation | 10–15 € |
+| **Moteur pas à pas NEMA 17, 34 mm** (Usongshine 17HS3401) | 42 × 42 × 34 mm, **0,34 N·m (34 N·cm)**, 1,0 A, axe Ø5 × 23,5 à méplat, connecteur JST PH 6 broches | 1 | `Usongshine 17HS3401 34N.cm` | Élévation. **À régler à 0,6 A** en version PETG | 10–15 € |
 | **Moteur pas à pas NEMA 11, 45 mm** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, axe Ø5 | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
 | **Driver TMC2209** | Module UART, 3,3 V logique | 2 | `TMC2209 stepper driver UART` | Un par moteur | 4–6 € |
 | **ESP32** | Carte de développement ESP32-WROOM-32 | 1 | `ESP32 DevKitC WROOM-32` | Commande des deux moteurs | 6–10 € |

@@ -26,8 +26,19 @@ des arbres des vis sans fin.
 | **Roulement 685ZZ** | 5 × 11 × **5** mm | 4 | `685ZZ bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
 | **Accouplement flexible 5 mm / 5 mm** | Alésages Ø5 des deux côtés, Ø19 × 25 mm, alu | 2 | `flexible shaft coupling 5mm x 5mm D19 L25` | Relie l'axe de chaque moteur à l'arbre de sa vis sans fin (la pièce bleue) | 2–4 € |
 | **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 52,5 mm** : les arbres des deux vis sans fin | 3–5 € |
+| *ou* **Rond plein acier Ø5** (en magasin) | Acier laminé à chaud, Ø5 mm, 1 m (par exemple STANDERS chez Leroy Merlin) | 1 | `rond plein acier 5 mm` | Moins précis : voir « Pièges à éviter » | 4–5 € |
 
 **Pièges à éviter** :
+* **Arbres des vis** : une tige **lisse et pleine, en acier, Ø5**. Pas de tige filetée : les
+  roulements porteraient sur les sommets du filet. Pas de tube, ni d'aluminium. Avec un rond
+  plein laminé à chaud plutôt qu'une tige rectifiée :
+  * le mesurer au pied à coulisse et garder les deux morceaux les plus réguliers ;
+  * enlever le vernis là où vont les roulements, la vis sans fin et l'accouplement ;
+  * entre 4,90 et 4,98 mm, coller les bagues intérieures des roulements à la colle à
+    roulements ;
+  * au-dessus de 5,00 mm, le poncer en le faisant tourner dans une perceuse (grain 400 à
+    600) ;
+  * limer un petit méplat sous la vis sans tête.
 * **ZZ plutôt que 2RS** : les deux versions ont les mêmes cotes et vont toutes les deux
   dans les pièces. Mais les joints caoutchouc des 2RS frottent :
   * les deux 6806-2RS freinent l'azimut d'environ 0,15 N·m ;
@@ -100,6 +111,7 @@ Compter 10 à 15 € en tout.
 | **Filament PETG 1,75 mm** (teinte claire de préférence) | 1 bobine de 1 kg (environ 300 g utilisés) | `PETG filament 1.75mm 1kg` | 20 € |
 | **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG ; pas les roulements, graissés d'origine) | 1 tube | `PTFE grease` | 8 € |
 | Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, pivots imprimés dans le chapeau) | 1 | `super glue` | 3 € |
+| Colle à roulements, type Loctite 641 (seulement si les arbres font moins de 4,98 mm) | 1 | `Loctite 641` | 8–12 € |
 
 ## 6. Optionnel
 

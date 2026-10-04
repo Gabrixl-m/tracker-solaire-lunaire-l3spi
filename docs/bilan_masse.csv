@@ -16,9 +16,9 @@ Moteur_Elevation_NEMA17;1;masse forfaitaire;0.220;Moteur pas à pas d'élévatio
 Tube_Jambe_Superieur;3;Al 7075-T73;0.215;Tube Ø25x1,5 anodisé dur
 Rail_Panneau;2;Al 6061-T6;0.209;Rail 12 x 13 vissé sur le cadre du panneau
 Bague_Blocage;3;Ti-6Al-4V;0.198;Bague de blocage télescopique
+Moteur_Azimut_NEMA11;1;masse forfaitaire;0.180;Moteur pas à pas d'azimut : NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)
 Collier_Inferieur;1;Ti-6Al-4V;0.161;Collier coulissant des entretoises
 Chapeau_U;1;Al 6061-T6;0.146;Chapeau en U renversé porte-panneau
-Moteur_Azimut_NEMA11;1;masse forfaitaire;0.140;Moteur pas à pas d'azimut : NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)
 Socle;1;Al 6061-T6;0.134;Socle Ø62 : roulements d'azimut, passe-câble
 Roue_Elevation;1;Bronze CuSn12;0.125;Roue d'élévation m1 Z50
 Bride_Entretoise;3;Ti-6Al-4V;0.117;Bride de fixation d'entretoise
@@ -49,8 +49,8 @@ Vis_CHC_M3x8;6;Acier (visserie);0.005;Vis CHC M3x8 (ISO 4762)
 Vis_CHC_M3x25;3;Acier (visserie);0.004;Vis CHC M3x25 (ISO 4762)
 Vis_CHC_M3x12;4;Acier (visserie);0.004;Vis CHC M3x12 (ISO 4762)
 Vis_CHC_M3x10;4;Acier (visserie);0.004;Vis CHC M3x10 (ISO 4762)
-Vis_CHC_M2.5x8;4;Acier (visserie);0.002;Vis CHC M2,5x8 (ISO 4762)
+Vis_CHC_M2.5x6;4;Acier (visserie);0.002;Vis CHC M2,5x6 (ISO 4762)
 Ecrou_M3;4;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
-TOTAL;;;25.80;
+TOTAL;;;25.84;

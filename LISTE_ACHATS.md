@@ -72,7 +72,7 @@ README, § 2, « Commande par ESP32 ».
 | Vis CHC M3 × 14 | 8 | Rails sur le chapeau (4, par-dessus, têtes noyées), cadre du panneau sur les rails (4, par-dessous, têtes noyées) |
 | Vis CHC M3 × 25 | 3 | Fond du socle |
 | **Vis à tête fraisée M3 × 8** (ISO 10642) | 3 | Roue d'azimut sur le socle (doivent affleurer) |
-| Vis CHC M2,5 × 8 | 4 | NEMA 11 sur son support |
+| Vis CHC M2,5 × **6** | 4 | NEMA 11 sur son support. Pas plus longues : ses taraudages ne font qu'environ 2,5 mm de profondeur |
 | **Vis sans tête M3 × 4** (bout plat) | 2 | Blocage de chaque vis sans fin sur son arbre |
 | Écrou M3 (ISO 4032) | 4 | Dans le cadre du panneau, sur l'aile arrière : un par vis des rails |
 

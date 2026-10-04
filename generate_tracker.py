@@ -129,7 +129,7 @@ MAT = {
 # masses forfaitaires (kg) imposées pour les ensembles non détaillés
 MASS_TARGET = {
     "Moteur_Elevation_NEMA17": 0.22,     # NEMA 17, 34 mm
-    "Moteur_Azimut_NEMA11": 0.14,        # NEMA 11, 45 mm
+    "Moteur_Azimut_NEMA11": 0.18,        # NEMA 11, 45 mm (11HS18-0674S : 180 g)
     "Unite_Controle_Corps": 17.0,        # batteries Li-ion, MPPT, OBC, drivers, chauffage
 }
 
@@ -563,10 +563,11 @@ def RP():
     """Roulement des pivots d'élévation du jeu de cotes courant."""
     return ROULEMENTS[PV()["ref"]]
 
-MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, shaft=24.0, hold=0.28,
+# prof : profondeur des taraudages de fixation du moteur (les vis doivent être plus courtes)
+MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, prof=4.5, shaft=24.0, hold=0.28,
               detent=0.016, amp=1.3, ohm=2.4, masse=0.22, nom="NEMA 17 42 x 42 x 34 mm (type 17HS3401)")
-MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, shaft=20.0, hold=0.095,
-              detent=0.005, amp=0.67, ohm=6.9, masse=0.14, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
+MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, prof=2.5, shaft=20.0, hold=0.095,
+              detent=0.005, amp=0.67, ohm=6.8, masse=0.18, nom="NEMA 11 28 x 28 x 45 mm (type 11HS18-0674S)")
 # vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu
 VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0, moyeu=5.0)       # vis m1 Ø16 + roue Z50
 VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0, moyeu=8.0)        # vis m0,8 Ø12 + roue fixe Z60
@@ -627,7 +628,7 @@ def p_nema(m):
     body = body.union(cyl_z(m["pilot"], 2)).union(cyl_z(5, m["shaft"]))
     for sx in (-1, 1):
         for sy in (-1, 1):
-            body = body.cut(cyl_z(m["hole_d"], 4.5, sx * m["holes"] / 2, sy * m["holes"] / 2, -4.5))
+            body = body.cut(cyl_z(m["hole_d"], m["prof"], sx * m["holes"] / 2, sy * m["holes"] / 2, -m["prof"]))
     return body.union(box_span(-6, 6, c / 2 - 1, c / 2 + 5, -L + 2, -L + 12))     # connecteur
 
 
@@ -1017,7 +1018,7 @@ def visserie():
         for sz in (-1, 1):
             v.append(("chape", "M3x8", (-30 + sx * MOT_EL["holes"] / 2, yf + 4, zv + sz * MOT_EL["holes"] / 2),
                       (0, -1, 0)))
-            v.append(("chape", "M2.5x8", (AZ_VIS["x_face"] + 4, y_vis_az() + sx * MOT_AZ["holes"] / 2,
+            v.append(("chape", "M2.5x6", (AZ_VIS["x_face"] + 4, y_vis_az() + sx * MOT_AZ["holes"] / 2,
                                           AZ_VIS["z"] + sz * MOT_AZ["holes"] / 2), (-1, 0, 0)))
     for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
         for y in (-14, 14):

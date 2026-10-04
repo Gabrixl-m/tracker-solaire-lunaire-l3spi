@@ -164,7 +164,7 @@ coupure de courant. Les moteurs ne sont alimentés que pendant les mouvements.
 | Axe | Moteur | Caractéristiques |
 |---|---|---|
 | Élévation | **NEMA 17, 42 × 42 × 34 mm** (type 17HS3401) | 0,28 N·m, 1,3 A, 2,4 Ω, 0,22 kg |
-| Azimut | **NEMA 11, 28 × 28 × 45 mm** (type 11HS18-0674S) | 0,095–0,10 N·m, 0,67 A, 6,9 Ω, 0,14 kg |
+| Azimut | **NEMA 11, 28 × 28 × 45 mm** (type 11HS18-0674S) | 0,10 N·m (0,095 retenu dans les calculs, par prudence), 0,67 A, 6,8 Ω, 0,18 kg, axe Ø5 × 20 à méplat |
 
 À l'achat, prendre un NEMA 17 de 34 mm annoncé à **0,28 N·m**. Certains vendeurs vendent sous
 la même référence une version à 0,23–0,25 N·m, qui ferait perdre 10 à 20 % de marge.
@@ -298,9 +298,16 @@ une remise en position prend quelques secondes.
 * **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
   plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
 * **Réglages** :
-  * courant de marche (`rms_current`) : 1,3 A pour le NEMA 17, 0,67 A pour le NEMA 11 ;
+  * courant de marche (`rms_current`) : 1,3 A pour le NEMA 17 (**0,9 A en version PETG**,
+    pour ne pas casser les dents si l'élévation bute), 0,67 A pour le NEMA 11 ;
   * 16 micro-pas, StealthChop ;
-  * à l'arrêt : drivers désactivés par EN.
+  * à l'arrêt : drivers désactivés par EN. Ne jamais laisser les moteurs alimentés en
+    permanence : le NEMA 11 dissipe alors environ 6 W et le NEMA 17 environ 4 W, assez
+    pour ramollir leurs supports en PETG.
+* **Branchement du NEMA 11 (11HS18-0674S)** : bobine A = noir (A+) et vert (A−), bobine B =
+  rouge (B+) et bleu (B−), vers les bornes A et B du TMC2209. Au multimètre, on doit lire
+  environ 6,8 Ω entre les deux fils d'une même bobine. Si le moteur tourne à l'envers,
+  inverser le sens dans le programme.
 * **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
   sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
   par UART.
@@ -395,7 +402,7 @@ de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 |---|---|
 | **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
 | **Sommet de la colonne à 544 mm**, moyeu des jambes à 509 mm | La tête met l'axe d'élévation 156 mm au-dessus de la colonne. Tout le trépied reste sous le volume balayé par le panneau. |
-| **Pieds sur un cercle de Ø749 mm**, jambes de 559 mm | Conséquence de φ = 33,0°. Basculement sans ancrage à 25,4° dans la pire orientation du panneau (exigé : 25,1°). |
+| **Pieds sur un cercle de Ø749 mm**, jambes de 559 mm | Conséquence de φ = 33,0°. Basculement sans ancrage à 25,3° dans la pire orientation du panneau (exigé : 25,1°). |
 | **Course télescopique ±79 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
 | **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (304 mm). |
 | **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
@@ -436,10 +443,10 @@ Le trépied pèse 4,3 kg.
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
-| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,81 kg, dont 0,36 kg de moteurs (1,19 kg en version PETG) |
+| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,85 kg, dont 0,40 kg de moteurs (1,20 kg en version PETG) |
 | Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,67 kg, dont 1,16 kg de panneau |
 | Masse du trépied | 4,3 kg |
-| Masse du tracker complet | 7,3 kg (poids lunaire ≈ 12 N) |
+| Masse du tracker complet | 7,4 kg (poids lunaire ≈ 12 N) |
 
 Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs et l'unité au sol ont
 une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
@@ -472,7 +479,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     de −2° à 92° (vérifié tous les 15°) ;
   * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
-* **Stabilité** : basculement sans ancrage à 25,4° dans la pire orientation du panneau
+* **Stabilité** : basculement sans ancrage à 25,3° dans la pire orientation du panneau
   (`optimisation_angle.py`).
 * **Relecture** des fichiers STEP produits : 185 solides, géométrie valide.
 
@@ -584,7 +591,7 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 8 × M3×14, 3 × M3×25 | 29 |
 | Écrou M3 (panneau sur les rails) | 4 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
-| Vis CHC M2,5×8 (NEMA 11) | 4 |
+| Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
 

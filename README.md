@@ -34,7 +34,7 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue) et éprouvette de réglage des ajustements |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements et fond sur trépied photo |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
@@ -95,7 +95,7 @@ Tracker_Lunaire_PoleSud
 
 | Élément | Choix |
 |---|---|
-| **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne. Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
+| **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne (version PETG : fond vissé sur la vis 1/4" d'un trépied photo, § 12). Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
 | **Chape en U** (jaune) | Tourne en azimut sur les deux 6806. Sa plaque porte les **deux moteurs** et les deux vis. Ses bras portent les roulements de l'axe d'élévation (608 ; 6801 en version imprimée), à 156 mm au-dessus de la colonne (700 mm du sol) |
 | **Chapeau en U renversé** (bleu) | Coiffe la chape. Il pivote sur deux pivots dans les roulements des bras et porte les deux rails du panneau. Cas réel : axes inox Ø8 sur 608. Démonstration : pivots **imprimés en PETG, Ø12**, sur 6801 (§ 12). Un **bossage** sur chaque flanc appuie sur la bague intérieure du roulement et règle le jeu axial |
 | **Azimut (axe Y)** | **NEMA 11 de 45 mm** + vis sans fin m0,8 Ø12 sur la **roue bronze Z60 fixée sur le socle** : **60:1**. La vis roule autour de la roue, comme sur une tourelle. Le moteur tourne donc avec le panneau et ne se trouve jamais sur son chemin |
@@ -551,7 +551,7 @@ par le script :
 | Pièce | Qté | Orientation (déjà appliquée) | Remarque |
 |---|---|---|---|
 | `Socle` | 1 | Debout, ouverture en bas | Cône à 45° sous le logement du 6806 bas : pas de support |
-| `Fond_Socle` | 1 | Téton vers le haut | |
+| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied photo : écrou 1/4" pris dans un logement hexagonal |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
@@ -594,7 +594,8 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 1 × M3×6, 6 × M3×8, 4 × M3×10, 7 × M3×12, 8 × M3×14, 3 × M3×25 | 29 |
+| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 7 × M3×12, 8 × M3×14 | 28 |
+| Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails) | 4 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
@@ -614,7 +615,7 @@ change le PETG »). Leur tête Ø18 de 2 mm sert d'épaulement contre le flanc d
 | Alésage d'un axe (Ø5 acier des vis ; pivot Ø8 acier ou Ø12 PETG dans le chapeau et la roue) | nominal | **+0,10 mm**, en D côté roue (méplat à 5,25 mm de l'axe pour le Ø12) | Serré. Le méplat transmet le couple de la roue au chapeau, et une vis de pression bloque chaque vis sans fin |
 | Pivots imprimés dans les 6801 | Ø8 acier | **Ø11,95** | Les diamètres extérieurs imprimés sortent un peu plus gros : serrage léger de la bague intérieure |
 | Moyeu de la chape dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
-| Téton du fond dans la colonne (Ø int. 46) | Ø45,5 | **Ø45,6** | Glissant |
+| Fixation sur le trépied | Téton Ø45,5 dans la colonne Ø46 | **Écrou 1/4" captif**, logement de 11,4 mm sur plats (écrou de 11,1) | La vis du trépied tire l'écrou sur un plancher de 1,6 mm et serre le fond sur le plateau |
 | Trous de passage M3 / M2,5 | 3,4 / 2,9 | **3,5 / 3,0** | |
 | Avant-trous M3 | 2,5 (taraudés) | **2,8** | Vis auto-taraudées dans le PETG, 4,5 mm de prise au moins |
 | Centrage Ø22 des moteurs | 22,5 | **22,4** | |
@@ -659,8 +660,26 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 * un pivot entre trop dur dans le chapeau : passer un foret Ø12 à la main, sans perceuse ;
 * engrènements : réglés au montage (lumières en azimut, cales en élévation), voir l'étape 9.
 
-Le téton Ø45,6 du fond n'est utile que sur la colonne Ø50 × 2 du trépied du projet. Sur un
-trépied photo, il faut une pièce d'adaptation.
+### Sur un trépied photo
+
+![Fond sur trépied photo](docs/explications/fond_trepied_photo.png)
+
+La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied photo**.
+Le fond contient un écrou 1/4"-20 pris dans un logement hexagonal. Les câbles sortent
+par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas réel garde sa
+colonne Ø50.
+
+* **Serrer fermement** la tête sur la vis. C'est ce serrage qui empêche la tête de tourner
+  sur le trépied quand le moteur d'azimut force : il lui faut environ 0,5 N·m dans le vent,
+  et au plus 1,7 N·m s'il bute. Un serrage à la main, ferme, sur le caoutchouc du plateau,
+  en tient plusieurs N·m.
+* La vis du trépied doit dépasser du plateau d'au moins **4,5 mm**. Au-delà de 7 mm, elle
+  dépasse simplement dans le socle, sans gêner.
+* **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
+  La tête et le panneau pèsent environ 3 kg : vérifier la charge maximale du trépied.
+* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet,
+  vers 8 m/s de vent sans lest selon mon estimation. Le monter bas, jambes écartées au
+  maximum, et suspendre un lest de 2 à 3 kg sous la colonne.
 
 ### Ordre de montage
 
@@ -692,9 +711,9 @@ trépied photo, il faut une pièce d'adaptation.
    doivent affleurer : la vis d'azimut passe juste au-dessus.
 3. **Moyeu** : l'enfiler par le haut, à travers la roue et les deux roulements. Visser la
    rondelle d'arrêt par-dessous (2 × M3×8).
-4. **Fond** : 3 × M3×25 par-dessous, à travers le téton. Poser la tête sur la colonne :
-   * percer la colonne Ø3,4 à 8 mm sous son sommet, face au trou du téton ;
-   * mettre la vis anti-rotation M3×6.
+4. **Fond** : poser l'écrou 1/4" dans son logement hexagonal, par le dessus. Visser ensuite
+   le fond sous le socle avec 3 × M3×10, têtes noyées par-dessous : l'écrou est alors
+   prisonnier. Poser la tête sur le trépied photo et la visser sur la vis 1/4" du plateau.
 5. **Chape** : sur l'établi, presser les deux 6801 dans les bras, par l'extérieur, jusqu'à
    l'épaulement. Monter ensuite la
    chaîne d'élévation :

@@ -500,12 +500,14 @@ AJUSTEMENTS = {
         tete_filet=1.0,         # saillie du filet des vis (en modules)
         entraxe=0.0,            # augmentation des entraxes vis / roue (mm)
         jeu_bossage=0.10,       # jeu axial entre un bossage du chapeau et la bague intérieure (par côté)
+        trepied_photo=False,    # fond : téton dans la colonne Ø50 du trépied du projet
     ),
     "petg": dict(
         impression=True,
         roulement=0.15, serrage=0.10, moyeu=-0.05, colonne=45.6,
         passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4, axe_imprime=-0.05,
         jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15, jeu_bossage=0.25,
+        trepied_photo=True,     # fond vissé sur la vis 1/4"-20 d'un trépied photo (écrou captif)
     ),
 }
 MODE = "reel"
@@ -681,9 +683,44 @@ def p_accouplement():
 
 
 R_FOND = 20.0                        # vis du fond : par-dessous, à travers le téton (têtes dans la colonne)
+# Démonstration : tête vissée sur la vis 1/4"-20 UNC d'un trépied photo. Écrou 1/4" (7/16" = 11,11 sur
+# plats, 5,56 d'épaisseur) captif dans un logement ouvert par-dessus : la vis du trépied le tire sur un
+# plancher de 1,6 mm et serre le fond sur le plateau. Saillie de la vis du trépied : environ 4,5 à 6 mm.
+TREPIED_PHOTO = dict(ecrou_s=11.11, ecrou_e=5.56, jeu=0.3, plancher=1.6, ep=7.4, vis_d=6.35, saillie=5.5,
+                     plateau_d=50.0, plateau_e=10.0)
+
+
+def z_fond_photo():
+    """Dessous du fond de la version trépied photo (le dessus reste en z = 5, sous le socle)."""
+    return 5.0 - TREPIED_PHOTO["ep"]
+
+
+def p_fond_photo():
+    """Fond de la version trépied photo : écrou 1/4" captif au centre, vis du socle par-dessous à
+    têtes noyées. Les câbles sortent par le passe-câble du socle."""
+    t, zb = TREPIED_PHOTO, z_fond_photo()
+    f = cyl_z(SOCLE_OD, t["ep"], z=zb)
+    s = t["ecrou_s"] + t["jeu"]
+    f = f.cut(cq.Workplane("XY").polygon(6, s / math.cos(math.radians(30))).extrude(t["ep"])
+              .translate((0, 0, zb + t["plancher"])))
+    f = f.cut(cyl_z(t["vis_d"] + 0.4, t["ep"] + 2, z=zb - 1))
+    for k in range(3):
+        a = math.radians(120 * k)
+        x, y = R_FOND * math.cos(a), R_FOND * math.sin(a)
+        f = f.cut(trou_z(AJ["passage_m3"], x, y, zb - 1, 6)).cut(cyl_z(6.5, 3.5, x, y, zb - 0.01))   # lamage
+    return f
+
+
+def p_ecrou_1_4():
+    """Écrou 1/4"-20 UNC (pas photo), posé sur z = 0."""
+    t = TREPIED_PHOTO
+    return (cq.Workplane("XY").polygon(6, t["ecrou_s"] / math.cos(math.radians(30))).extrude(t["ecrou_e"])
+            .cut(cyl_z(5.4, t["ecrou_e"] + 1, z=-0.5)))
 
 
 def p_fond_socle():
+    if AJ["trepied_photo"]:
+        return p_fond_photo()
     f = cyl_z(SOCLE_OD, 5).union(ring_z(AJ["colonne"], 36, 15, -15))     # centrage dans la colonne
     for k in range(3):
         a = math.radians(120 * k)
@@ -1004,13 +1041,18 @@ def visserie():
     """[(repère, type, point d'appui sous tête, direction d'insertion)] ; repères : 'fixe' et
     'chape' (repère tête), 'bascule' (repère de la partie basculante)."""
     v = []
-    for k in range(3):                    # fond -> socle, par-dessous (têtes dans la colonne)
+    for k in range(3):                    # fond -> socle, par-dessous
         a = math.radians(120 * k)
-        v.append(("fixe", "M3x25", (R_FOND * math.cos(a), R_FOND * math.sin(a), -15), (0, 0, 1)))
+        if AJ["trepied_photo"]:          # têtes noyées sous le fond
+            v.append(("fixe", "M3x10", (R_FOND * math.cos(a), R_FOND * math.sin(a), z_fond_photo() + 3.5),
+                      (0, 0, 1)))
+        else:                             # têtes dans la colonne
+            v.append(("fixe", "M3x25", (R_FOND * math.cos(a), R_FOND * math.sin(a), -15), (0, 0, 1)))
     for a in ANGLES_ROUE:                 # roue d'azimut -> socle, vis fraisées affleurantes
         c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
         v.append(("fixe", "M3x8F", (R_VIS_ROUE * c, R_VIS_ROUE * sn, Z_VOILE), (0, 0, -1)))
-    v.append(("fixe", "M3x6", (0, -P["col_od"] / 2, -8), (0, 1, 0)))     # anti-rotation, à travers la colonne
+    if not AJ["trepied_photo"]:
+        v.append(("fixe", "M3x6", (0, -P["col_od"] / 2, -8), (0, 1, 0)))     # anti-rotation, à travers la colonne
     for x, y in TROUS_BAGUE:              # rondelle d'arrêt -> moyeu
         v.append(("chape", "M3x8", (x, y, 42), (0, 0, 1)))
     if AJ["impression"]:                  # chape -> moyeu imprimé
@@ -1174,7 +1216,11 @@ def build_head_parts():
 
     def mat(reel):
         return "PETG" if imp else reel
-    reg("Fond_Socle", p_fond_socle(), mat("Al 6061-T6"), COL["socle"], "Fond du socle, centrage dans la colonne")
+    reg("Fond_Socle", p_fond_socle(), mat("Al 6061-T6"), COL["socle"],
+        "Fond du socle, vissé sur la vis 1/4\" d'un trépied photo (écrou captif)" if AJ["trepied_photo"]
+        else "Fond du socle, centrage dans la colonne")
+    if AJ["trepied_photo"]:
+        reg("Ecrou_1_4_UNC", p_ecrou_1_4(), "Acier (visserie)", COL["steel"], "Écrou 1/4\"-20 UNC, 7/16\" sur plats")
     reg("Socle", p_socle(), mat("Al 6061-T6"), COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
     reg("Roulement_6806", roulement_z("6806"), "Acier 440C", COL["roulement"],
         "Roulement d'azimut 6806 (61806) 30 x 42 x 7, protégé ZZ (ou 2RS)")
@@ -1353,6 +1399,8 @@ def build_head_fixed():
     """Partie fixe de la tête (repère tête) : socle, roulements d'azimut, roue d'azimut."""
     f = cq.Assembly(name="SA_Tete_Fixe")
     add(f, "Fond_Socle")
+    if AJ["trepied_photo"]:
+        add(f, "Ecrou_1_4_UNC", trans(0, 0, z_fond_photo() + TREPIED_PHOTO["plancher"]))
     add(f, "Socle")
     add(f, "Roulement_6806", trans(0, 0, Z_ROUL1), "Roulement_6806_1")
     add(f, "Roulement_6806", trans(0, 0, Z_ROUL2), "Roulement_6806_2")

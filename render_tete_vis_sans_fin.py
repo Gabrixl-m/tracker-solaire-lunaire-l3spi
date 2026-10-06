@@ -21,7 +21,7 @@ def coupe(assy, x=(-1e3, 1e3), y=(-1e3, 1e3), z=(-1e3, 1e3)):
     keep = cq.Solid.makeBox(x[1] - x[0], y[1] - y[0], z[1] - z[0], cq.Vector(x[0], y[0], z[0]))
     for i, (n, s) in enumerate(G.flatten(assy)):
         k = G.part_key(n)
-        if k == "Haut_Colonne_Trepied":
+        if k in ("Haut_Colonne_Trepied", "Plateau_Trepied_Photo"):
             continue
         part = s.intersect(keep)
         if part.Volume() < 1e-3:

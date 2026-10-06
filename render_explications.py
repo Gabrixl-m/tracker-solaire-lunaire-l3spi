@@ -7,7 +7,8 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
     trou de la vis sans tête, alésage) ;
   - axe_elevation.png : coupe par l'axe d'élévation (pivots imprimés Ø12, roulements 6801,
     bossages du chapeau, roue d'élévation, chapeau, bras de la chape) ;
-  - eprouvette_ajustements.png : l'éprouvette de réglage, avec ce qu'on essaie dans chaque trou.
+  - eprouvette_ajustements.png : l'éprouvette de réglage, avec ce qu'on essaie dans chaque trou ;
+  - fond_trepied_photo.png : demi-coupe du fond vissé sur un trépied photo (écrou 1/4" captif).
 Sur serveur : xvfb-run -a python render_explications.py
 """
 
@@ -162,6 +163,27 @@ def main():
         (f"3 logements de {pv['ref']}\n(jeu retenu, -0,1, +0,1)", (42, 6, -16), (30, 860)),
         (f"Pivot en D Ø{fr(pv['d'] + aj['serrage'])}\n(trou vertical)", (57, 6, -46), (560, 960)),
         ("Téton du moyeu Ø29,95\n(dans un 6806)", (95, 14, -16), (1150, 880)),
+    ])
+    # 5. fond sur le trépied photo : demi-coupe par l'axe (écrou 1/4" captif, vis du trépied)
+    G.set_ajustements("petg")
+    T.build_parts()
+    zb = G.z_fond_photo()
+    garde = cq.Solid.makeBox(90, 45, 45, cq.Vector(-45, 0, -15))
+    f = cq.Assembly(name="fond_photo")
+    morceaux = [("Plateau_Trepied_Photo", cq.Location()), ("Fond_Socle", cq.Location()), ("Socle", cq.Location()),
+                ("Ecrou_1_4_UNC", G.trans(0, 0, zb + G.TREPIED_PHOTO["plancher"]))]
+    morceaux += [(G.nom_vis(t), G.loc_vis(pt, d)) for rp, t, pt, d in G.visserie() if rp == "fixe" and t == "M3x10"]
+    for i, (n, loc) in enumerate(morceaux):
+        sh = G.PARTS[n][0].val().moved(loc).intersect(garde)
+        if sh.Volume() > 1e-3:
+            f.add(sh, name=f"m{i}", loc=G.TO_YUP, color=G.PARTS[n][2])
+    rendu(f, "fond_trepied_photo.png", (-60, 45, 150), (0, 2, 0), 34, [
+        ("Écrou 1/4\"-20 pris dans son\nlogement hexagonal", (4.5, 3.5, 0), (900, 40)),
+        ("Vis 1/4\" du trépied photo", (0, 1.5, 0), (560, 960)),
+        ("Plateau du trépied", (-15, zb - 6, 0), (40, 760)),
+        ("Fond imprimé : plancher de\n1,6 mm sous l'écrou", (-12, zb + 4, 0), (40, 500)),
+        ("Vis M3×10, tête noyée,\nfond vissé sous le socle", (20, zb + 2, 0), (1050, 600)),
+        ("Socle (imprimé)", (-29.5, 20, 0), (40, 60)),
     ])
     G.set_ajustements("reel")
 

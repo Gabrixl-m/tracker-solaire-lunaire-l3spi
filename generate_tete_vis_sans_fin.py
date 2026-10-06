@@ -64,6 +64,12 @@ ORIENTATION = {
 def build_parts():
     G.PARTS.clear()
     G.build_head_parts()
+    if G.AJ["trepied_photo"]:          # démonstration : plateau d'un trépied photo, vis 1/4" (noyau Ø5)
+        t, zb = G.TREPIED_PHOTO, G.z_fond_photo()
+        ref = cyl_z(t["plateau_d"], t["plateau_e"], z=zb - t["plateau_e"]).union(cyl_z(4.98, t["saillie"], z=zb))
+        G.reg("Plateau_Trepied_Photo", ref, "Al 6061-T6", cq.Color(0.20, 0.20, 0.22),
+              "Référence : plateau d'un trépied photo et sa vis 1/4\"-20")
+        return
     col = ring_z(G.P["col_od"], G.COL_ID, 80, -80)
     col = col.cut(G.cyl_dir(3.4, 8, (0, -G.P["col_od"] / 2 + 4, -8), (0, -1, 0)))    # vis anti-rotation
     G.reg("Haut_Colonne_Trepied", col, "Al 7075-T73", cq.Color(0.70, 0.70, 0.72),
@@ -74,7 +80,7 @@ def build_head(az, el, name, with_panel=True):
     """Tête seule, repère exporté Y-up, origine au sommet de la colonne."""
     root = cq.Assembly(name=name)
     ref = cq.Assembly(name="SA_Reference_Trepied")
-    G.add(ref, "Haut_Colonne_Trepied")
+    G.add(ref, "Plateau_Trepied_Photo" if G.AJ["trepied_photo"] else "Haut_Colonne_Trepied")
     root.add(ref, name="SA_Reference_Trepied", loc=G.TO_YUP)
     root.add(G.build_head_fixed(), name="SA_Tete_Fixe", loc=G.TO_YUP)
     root.add(G.build_head(az, el, with_panel), name="SA_Tete_Orientable", loc=G.TO_YUP * rot((0, 0, 1), az))
@@ -267,7 +273,7 @@ def verifier(assy):
 
 def bilan(flat):
     rows, _M, _cg = G.mass_properties([x for x in flat if G.part_key(x[0]) not in G.PANEL_PARTS
-                                       and G.part_key(x[0]) != "Haut_Colonne_Trepied"])
+                                       and "/SA_Reference_Trepied/" not in x[0]])
     print(f"  masse de la tête (hors panneau) : {sum(r[4] for r in rows):.2f} kg")
     M, r, besoin, dispo = couples()
     print(f"  partie basculante (chapeau, roue, rails, panneau) : {M:.2f} kg, CdG à {r * 1000:.1f} mm de l'axe")

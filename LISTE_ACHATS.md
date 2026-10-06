@@ -76,23 +76,23 @@ README, § 2, « Commande par ESP32 ».
 
 | Article | Qté | Où |
 |---|---|---|
-| Vis CHC M3 × 6 (ISO 4762) | 1 | Vis anti-rotation du socle sur la colonne |
-| Vis CHC M3 × 8 | 6 | Rondelle d'arrêt du moyeu (2), NEMA 17 sur son support (4) |
-| Vis CHC M3 × 10 | 4 | Palier et support du moteur d'azimut, par-dessus la chape |
+| Vis CHC M3 × 8 (ISO 4762) | 6 | Rondelle d'arrêt du moyeu (2), NEMA 17 sur son support (4) |
+| Vis CHC M3 × 10 | 7 | Palier et support du moteur d'azimut, par-dessus la chape (4) ; fond sous le socle, par-dessous, têtes noyées (3) |
 | Vis CHC M3 × 12 | 7 | Chape sur le moyeu (3), palier et support d'élévation (4) |
 | Vis CHC M3 × 14 | 8 | Rails sur le chapeau (4, par-dessus, têtes noyées), cadre du panneau sur les rails (4, par-dessous, têtes noyées) |
-| Vis CHC M3 × 25 | 3 | Fond du socle |
 | **Vis à tête fraisée M3 × 8** (ISO 10642) | 3 | Roue d'azimut sur le socle (doivent affleurer) |
 | Vis CHC M2,5 × **6** | 4 | NEMA 11 sur son support. Pas plus longues : ses taraudages ne font qu'environ 2,5 mm de profondeur |
 | **Vis sans tête M3 × 4** (bout plat) | 2 | Blocage de chaque vis sans fin sur son arbre |
 | Écrou M3 (ISO 4032) | 4 | Dans le cadre du panneau, sur l'aile arrière : un par vis des rails |
+| **Écrou 1/4"-20 UNC** (filetage photo), 7/16" = 11,1 mm sur plats | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied photo |
 
 Le plus simple est d'acheter un coffret :
 * **vis CHC M3** (`M3 socket head screw assortment`) ;
 * **M2,5** ;
 * quelques **vis fraisées M3 × 8** (`M3 countersunk screw 8mm`) ;
 * **vis sans tête M3 × 4** (`M3x4 set screw`) ;
-* **écrous M3** (`M3 hex nut`).
+* **écrous M3** (`M3 hex nut`) ;
+* un **écrou 1/4"-20 UNC** (`1/4-20 UNC hex nut`). Ce n'est pas un écrou M6 : le pas est différent.
 
 Dans le PETG, les vis M3 se vissent directement dans les avant-trous Ø2,8, sans taraudage.
 Compter 10 à 15 € en tout.

@@ -1,6 +1,6 @@
 # Optimisation de l'angle φ des jambes du trépied
 
-Générée par `optimisation_angle.py` à partir des masses et centres de gravité de la CAO.
+Générée par `scripts/optimisation_angle.py` à partir des masses et centres de gravité de la CAO.
 
 ## Données fixées par la tête et le panneau
 

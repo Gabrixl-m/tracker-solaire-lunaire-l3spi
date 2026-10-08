@@ -17,7 +17,7 @@ de cotes (generate_tracker.AJUSTEMENTS). Ce script :
   - vérifie les appuis sur les roulements protégés : rien sur la protection, et chaque
     bague n'est touchée que par ce qui tourne avec elle.
 
-Usage : python generate_tete_vis_sans_fin.py
+Usage : python scripts/generate_tete_vis_sans_fin.py
 """
 
 import math
@@ -28,9 +28,8 @@ import cadquery as cq
 import generate_tracker as G
 from generate_tracker import box_span, cyl_y, cyl_z, ring_z, rot
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_REEL = os.path.join(HERE, "CAO", "Cas_Reel", "Tete_Rotative_VisSansFin.step")
-OUT_PETG = os.path.join(HERE, "CAO", "Demo_Terre_PETG")
+OUT_REEL = os.path.join(G.RACINE, "CAO", "Cas_Reel", "Tete_Rotative_VisSansFin.step")
+OUT_PETG = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG")
 OUT_IMPR = os.path.join(OUT_PETG, "a_imprimer")
 
 # Cas de charge

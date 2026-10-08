@@ -17,7 +17,7 @@ Critère : masse et encombrement minimaux. Longueur, masse, poussée dans les
 entretoises, course de nivelage et emprise au sol augmentent toutes avec φ :
 l'optimum est donc le plus petit φ qui respecte C1, C2 et C3.
 
-Usage : python optimisation_angle.py   -> docs/optimisation_angle_jambes.md
+Usage : python scripts/optimisation_angle.py   -> docs/optimisation_angle_jambes.md
 """
 
 import math
@@ -27,7 +27,7 @@ import cadquery as cq
 
 import generate_tracker as G
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "optimisation_angle_jambes.md")
+OUT = os.path.join(G.RACINE, "docs", "optimisation_angle_jambes.md")
 PHIS = [25.0 + 0.5 * i for i in range(71)]          # 25° à 60°
 
 
@@ -99,7 +99,7 @@ def main():
     L = []
     w = L.append
     w("# Optimisation de l'angle φ des jambes du trépied\n")
-    w("Générée par `optimisation_angle.py` à partir des masses et centres de gravité de la CAO.\n")
+    w("Générée par `scripts/optimisation_angle.py` à partir des masses et centres de gravité de la CAO.\n")
     w("## Données fixées par la tête et le panneau\n")
     w(f"- Jambes en Y, à 120°. Articulation haute à r = {P['r_hinge']:.0f} mm, "
       f"z = {P['z_hinge']:.0f} mm : juste sous le socle de la tête. Le panneau vertical descend "

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Rendus d'aperçu (PNG) du tracker lunaire, éclairé depuis la direction du Soleil.
-Nécessite un affichage OpenGL ; sur serveur : xvfb-run -a python render_apercu.py
+Nécessite un affichage OpenGL ; sur serveur : xvfb-run -a python scripts/render_apercu.py
 """
 
 import math
@@ -19,7 +19,7 @@ from vtkmodules.vtkRenderingOpenGL2 import vtkOpenGLRenderer  # noqa: F401 (char
 
 import generate_tracker as G
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+OUT = os.path.join(G.RACINE, "docs")
 
 
 def sun_vector_yup(az, el):

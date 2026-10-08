@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Rendus de la tête rotative à vis sans fin seule, dont deux vues en coupe.
-Sur serveur : xvfb-run -a python render_tete_vis_sans_fin.py
+Sur serveur : xvfb-run -a python scripts/render_tete_vis_sans_fin.py
 """
 
 import math

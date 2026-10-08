@@ -13,9 +13,9 @@ Ce script :
   - vérifie les interférences et la garde entre la partie qui tourne et le trépied ;
   - calcule la stabilité : angle de basculement et vent de basculement, dans la pire
     orientation du panneau, sans lest et avec un lest suspendu sous le trépied ;
-  - avec --rendus : rendus PNG dans docs/ (sur serveur : xvfb-run -a python ... --rendus).
+  - avec --rendus : rendus PNG dans docs/ (sur serveur : xvfb-run -a python scripts/generate_demo_trepied.py --rendus).
 
-Usage : python generate_demo_trepied.py [--rendus]
+Usage : python scripts/generate_demo_trepied.py [--rendus]
 """
 
 import math
@@ -29,8 +29,7 @@ import generate_tete_vis_sans_fin as T
 import generate_tracker as G
 from generate_tracker import box_span, cyl_dir, cyl_z, rot, trans
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_STEP = os.path.join(HERE, "CAO", "Demo_Terre_PETG", "Demo_Trepied_Dexter.step")
+OUT_STEP = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG", "Demo_Trepied_Dexter.step")
 
 # Trépied (repère Z-up, origine au sol sur l'axe ; jambes vers 90°, 210° et 330°)
 DEXTER = dict(

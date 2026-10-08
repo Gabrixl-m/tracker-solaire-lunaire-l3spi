@@ -11,9 +11,10 @@ collision sur toute la plage de mouvement.
 Repère de construction : Z vertical, origine au sol sur l'axe azimut.
 Repère exporté : Y vertical (convention SolidWorks : plan de dessus = sol).
 
-Usage :  python generate_tracker.py              export + bilan + interférences
-         python generate_tracker.py --no-check   export + bilan seulement
-         python generate_tracker.py --balayage   + garde sur toute la plage az/él
+Usage (depuis la racine du dépôt) :
+         python scripts/generate_tracker.py              export + bilan + interférences
+         python scripts/generate_tracker.py --no-check   export + bilan seulement
+         python scripts/generate_tracker.py --balayage   + garde sur toute la plage az/él
 """
 
 import csv
@@ -24,10 +25,11 @@ import sys
 import cadquery as cq
 from cadquery import Location, Vector
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_CAD = os.path.join(HERE, "CAO", "Cas_Reel")
+# racine du dépôt : les scripts sont dans scripts/, les fichiers produits dans CAO/ et docs/
+RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_CAD = os.path.join(RACINE, "CAO", "Cas_Reel")
 OUT_PARTS = os.path.join(OUT_CAD, "pieces")
-OUT_DOC = os.path.join(HERE, "docs")
+OUT_DOC = os.path.join(RACINE, "docs")
 
 # ---------------------------------------------------------------------------
 # PARAMÈTRES DE CONCEPTION (mm, degrés)

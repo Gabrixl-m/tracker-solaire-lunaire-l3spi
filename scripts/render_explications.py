@@ -11,7 +11,7 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
   - fond_trepied_photo.png : demi-coupe du fond vissé sur un trépied photo (écrou 1/4" captif).
   - capteur_solaire.png et capteur_solaire_coupe.png : le capteur solaire (4 BPW34, croix d'ombre)
     sur son équerre, vissée sur le petit côté du cadre du panneau ; vue d'ensemble et coupe.
-Sur serveur : xvfb-run -a python render_explications.py
+Sur serveur : xvfb-run -a python scripts/render_explications.py
 """
 
 import math
@@ -25,7 +25,7 @@ from vtkmodules.vtkRenderingCore import vtkCoordinate, vtkRenderWindow, vtkWindo
 import generate_tracker as G
 from render_apercu import build_renderer
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "explications")
+OUT = os.path.join(G.RACINE, "docs", "explications")
 SUN = tuple(v / math.sqrt(0.5 ** 2 + 0.8 ** 2 + 0.6 ** 2) for v in (0.5, 0.8, 0.6))
 W, H = 1600, 1100
 ROUGE = (200, 0, 60)

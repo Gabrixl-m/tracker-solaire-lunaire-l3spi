@@ -1,8 +1,8 @@
 # Liste d'achats — démonstration sur Terre (tête imprimée en PETG)
 
 Tout ce qu'il faut acheter pour **une tête rotative à vis sans fin** en version PETG et son
-**capteur solaire** (4 photodiodes sous une croix d'ombre, README § 13), en plus des pièces
-imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, § 12).
+**capteur solaire** (4 photodiodes sous une croix d'ombre, README § 3 et § 17), en plus des
+pièces imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, Partie B, § 12).
 Les deux pivots d'élévation sont **imprimés** : le seul axe en acier à acheter est la tige Ø5
 des arbres des vis sans fin.
 
@@ -75,7 +75,7 @@ des arbres des vis sans fin.
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
 Le câblage (broches de l'ESP32, réglage des TMC2209, bibliothèques) est décrit dans le
-README, § 2, « Commande par ESP32 ». Le branchement du capteur solaire est au § 13.
+README, § 16, « Commande par ESP32 ». Le branchement du capteur solaire est au § 17.
 
 ## 3. Visserie
 

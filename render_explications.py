@@ -9,6 +9,8 @@ Images annotées pour le montage de la version PETG (docs/explications/) :
     bossages du chapeau, roue d'élévation, chapeau, bras de la chape) ;
   - eprouvette_ajustements.png : l'éprouvette de réglage, avec ce qu'on essaie dans chaque trou ;
   - fond_trepied_photo.png : demi-coupe du fond vissé sur un trépied photo (écrou 1/4" captif).
+  - capteur_solaire.png et capteur_solaire_coupe.png : le capteur solaire (4 BPW34, croix d'ombre)
+    sur son équerre, vissée sur le petit côté du cadre du panneau ; vue d'ensemble et coupe.
 Sur serveur : xvfb-run -a python render_explications.py
 """
 
@@ -185,6 +187,47 @@ def main():
         ("Vis M3×10, tête noyée,\nfond vissé sous le socle", (20, zb + 2, 0), (1050, 600)),
         ("Socle (imprimé)", (-29.5, 20, 0), (40, 60)),
     ])
+    # 6. capteur solaire sur le petit côté du cadre : vue d'ensemble, puis coupe par 2 photodiodes
+    G.set_ajustements("petg")
+    G.PARTS.clear()
+    G.build_head_parts()
+    c, xc = G.CAPTEUR, G.X_CAPTEUR
+    zd, xf = c["z"], G.P["pan_L"] / 2
+    yd = G.xy_photodiodes()[0][1]
+
+    def capteur(garde):
+        a = cq.Assembly(name="capteur")
+        for i, (n, s) in enumerate(G.flatten(G.build_panel(True))):
+            sh = s.intersect(garde)
+            k = G.part_key(n)
+            col = cq.Color(0.30, 0.30, 0.32) if k == "Capteur_Solaire_Boitier" else G.PARTS[k][2]   # noir éclairci
+            if sh.Volume() > 1e-3:
+                a.add(sh, name=f"m{i}", loc=G.TO_YUP, color=col)
+        return a
+    w = c["mur"] / 2 + c["fenetre"]
+    rendu(capteur(cq.Solid.makeBox(110, 120, 80, cq.Vector(xf - 53, -60, 30))), "capteur_solaire.png",
+          (330, 200, 150), (192, 72, 0), 30, [
+              (f"Croix d'ombre : {c['h']:g} mm de haut,\nparallèle à la normale du panneau",
+               yup((xc, -8, zd + c["plancher"] + c["h"])), (960, 90)),
+              (f"Fenêtre {fr(c['fenetre'])} × {fr(c['fenetre'])} mm au-dessus\nde chaque photodiode, contre la croix",
+               yup((xc + w - 1.1, -w + 1.1, zd + c["plancher"])), (900, 950)),
+              ("Boîtier imprimé\nen PETG noir", yup((xc + 16, 8, zd - 3)), (1180, 560)),
+              ("Équerre imprimée", yup((xc - 4, -16, zd - c["corps"] - 2)), (560, 980)),
+              ("Petit côté du cadre\n(côté du pivot libre)", yup((xf, -45, 62)), (40, 820)),
+              ("Cellules : le capteur\nne leur fait pas d'ombre", yup((xf - 40, 30, 74.5)), (40, 300)),
+          ])
+
+    rendu(capteur(cq.Solid.makeBox(110, 60, 80, cq.Vector(xf - 38, yd, 30))), "capteur_solaire_coupe.png",
+          (280, 120, 170), (192, 66, -yd), 30, [
+              ("Photodiode BPW34 :\nentrée par en dessous,\npuce sous sa fenêtre",
+               yup((xc + 3.6, yd, zd - 1.6)), (1170, 250)),
+              ("Pattes et fils : par le\npassage de l'équerre",
+               yup((xc - 2, yd, zd - c["corps"] - 3)), (1060, 800)),
+              ("Vis M3×10 dans le cadre,\nécrou M3 à l'intérieur", yup((xf + c["ep"] + 1.5, c["vis_y"], c["z_vis"])),
+               (40, 860)),
+              ("Écrou M3 dans le cadre", yup((xf - 1.5, c["vis_y"] - 2.5, c["z_vis"])), (40, 640)),
+              ("Croix d'ombre", yup((xc, yd, zd + 15)), (1100, 60)),
+          ])
     G.set_ajustements("reel")
 
 

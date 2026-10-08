@@ -125,6 +125,7 @@ MAT = {
     "Silicium polycristallin": 2330.0,
     "PPO (boîte de jonction)": 1100.0,
     "PTFE/cuivre (eq)":    2200.0,
+    "Époxy transparent + silicium": 1300.0,
 }
 # masses forfaitaires (kg) imposées pour les ensembles non détaillés
 MASS_TARGET = {
@@ -587,7 +588,8 @@ PHASES = {"reel": {"el": 30.0, "az": -1.9}, "petg": {"el": 30.0, "az": -1.9}}
 PIECES_IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Chape", "Moyeu_Chape", "Bague_Arret_Moyeu",
                     "Pivot_Entraine", "Pivot_Libre",
                     "Palier_Vis_Azimut", "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation",
-                    "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation")
+                    "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation",
+                    "Capteur_Solaire_Boitier", "Capteur_Solaire_Support")
 
 
 def entraxe_el():
@@ -1011,6 +1013,37 @@ def p_rail():
 LAMAGE_RAIL = 3.5                    # profondeur du lamage des têtes de vis dans les rails
 Y_FIX_PANNEAU = P["pan_H"] / 2 - 6   # vis rail -> cadre du panneau : au milieu de l'aile arrière (12 mm)
 
+# Capteur solaire : 4 photodiodes BPW34 sous une croix d'ombre, dans un boîtier posé sur une équerre
+# vissée sur le petit côté +X du cadre (côté du pivot libre), hors des cellules.
+#   Repère du capteur : origine au centre de la croix, sur le dessus des photodiodes ; X, Y, Z
+#   parallèles au repère du panneau (Z = normale). Chaque photodiode est sous une fenêtre carrée
+#   dont le bord intérieur prolonge la face d'un mur de la croix : dès que le Soleil s'écarte de
+#   l'axe, l'ombre du mur mord sur les fenêtres du côté opposé (pas de zone morte autour de 0°).
+CAPTEUR = dict(
+    bpw=(5.4, 4.3, 3.2),     # boîtier d'une BPW34 (le long de X, de Y, hauteur) ; puce d'environ 2,7 x 2,7
+    pattes=(2.0, 0.5, 10.0), # pattes : à ±2 mm du centre (le long de X), Ø0,5, longueur sous le boîtier
+    jeu=0.15,                # jeu des logements des photodiodes, par côté (puce bien sous sa fenêtre)
+    fenetre=2.2,             # fenêtre carrée au-dessus de chaque photodiode (plus petite que la puce)
+    plancher=1.0,            # plancher percé des fenêtres, sur les photodiodes
+    mur=5.0,                 # épaisseur des murs de la croix
+    h=20.0,                  # hauteur de la croix au-dessus du plancher : 1° -> ombre de 0,37 mm sur les puces
+    cote=32.0,               # côté du boîtier
+    corps=8.0,               # corps sous le plancher : logements traversants des photodiodes
+    vis_x=12.0,              # boîtier -> équerre : 2 vis M3 par-dessous, à ±12 mm du centre selon X
+    ep=4.0,                  # épaisseur de l'équerre (âme contre le cadre et plaque sous le boîtier)
+    passage=16.0,            # passage carré des pattes et des fils dans la plaque
+    vis_y=9.0,               # équerre -> cadre : 2 vis M3 à ±9 mm du milieu du petit côté
+    z_vis=58.0,              # hauteur de ces vis (repère panneau) : entre l'aile arrière et le laminé
+    z=77.0,                  # dessus des photodiodes (repère panneau) : 1 mm au-dessus du cadre
+)
+X_CAPTEUR = P["pan_L"] / 2 + CAPTEUR["ep"] + CAPTEUR["cote"] / 2      # centre de la croix (repère panneau)
+
+
+def xy_photodiodes():
+    """Centres des 4 photodiodes (repère du capteur) : fenêtres contre les murs de la croix."""
+    c = CAPTEUR["mur"] / 2 + CAPTEUR["fenetre"] / 2
+    return [(sx * c, sy * c) for sy in (1, -1) for sx in (1, -1)]
+
 
 # --- visserie de la tête : vis CHC modélisées tête + noyau (Ø du fond de filet), pour que le
 #     contrôle d'interférences vérifie aussi l'accès des têtes et la longueur des vis
@@ -1075,6 +1108,11 @@ def visserie():
     for x in (-RAIL_X, RAIL_X):           # cadre du panneau -> rails : par-dessous, écrou dans le cadre
         for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
             v.append(("panneau", "M3x14", (x, y, U_TOP[1] + LAMAGE_RAIL), (0, 0, 1)))
+    c = CAPTEUR
+    for y in (-c["vis_y"], c["vis_y"]):  # équerre du capteur -> petit côté du cadre, écrou dans le cadre
+        v.append(("panneau", "M3x10", (P["pan_L"] / 2 + c["ep"], y, c["z_vis"]), (-1, 0, 0)))
+    for x in (-c["vis_x"], c["vis_x"]):  # boîtier du capteur -> équerre, par-dessous
+        v.append(("panneau", "M3x10", (X_CAPTEUR + x, 0, c["z"] - c["corps"] - c["ep"]), (0, 0, 1)))
     return v
 
 
@@ -1103,6 +1141,8 @@ def p_cadre_pv():
     for x in (-RAIL_X, RAIL_X):           # 4 trous Ø3,4 dans l'aile arrière, au droit des rails
         for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
             f = f.cut(cyl_z(3.4, w + 2, x, y, z0 - 1))
+    for y in (-CAPTEUR["vis_y"], CAPTEUR["vis_y"]):   # 2 trous Ø3,4 dans le petit côté +X : capteur solaire
+        f = f.cut(cyl_x(3.4, w + 2, L / 2 - w - 1, y, CAPTEUR["z_vis"]))
     return f
 
 
@@ -1130,6 +1170,71 @@ def p_boite_jonction():
     z0, _z1 = _z_laminate()
     b = box_span(-30, 30, 40, 85, z0 - 14.2, z0 - 0.2).edges("|Z").fillet(4)
     return b.union(cyl_y(12, 10, 0, 85, z0 - 7.2))
+
+
+# --- capteur solaire (repère du capteur, voir CAPTEUR)
+def p_capteur_boitier():
+    """Boîtier imprimé en PETG noir (opaque) : 4 logements traversants où les BPW34 entrent par
+    en dessous jusqu'au plancher, plancher percé d'une fenêtre au-dessus de chaque puce, croix
+    d'ombre de 20 mm, 2 avant-trous M3 par-dessous. Il s'imprime croix en haut, sans support."""
+    c = CAPTEUR
+    a, m, e = c["cote"] / 2, c["mur"] / 2, c["plancher"]
+    b = box_span(-a, a, -a, a, -c["corps"], e)
+    b = b.union(box_span(-m, m, -a, a, e - 0.5, e + c["h"])).union(box_span(-a, a, -m, m, e - 0.5, e + c["h"]))
+    lx, ly = c["bpw"][0] / 2 + c["jeu"], c["bpw"][1] / 2 + c["jeu"]
+    f = c["fenetre"] / 2
+    for x, y in xy_photodiodes():
+        b = b.cut(box_span(x - lx, x + lx, y - ly, y + ly, -c["corps"] - 1, 0))
+        b = b.cut(box_span(x - f, x + f, y - f, y + f, -1, e + 0.01))
+    for x in (-c["vis_x"], c["vis_x"]):
+        b = b.cut(trou_z(AJ["taraud_m3"], x, 0, -c["corps"] - 1, -1))
+    return b
+
+
+def p_capteur_support():
+    """Équerre : âme vissée contre le petit côté du cadre (écrous M3 dans le cadre), plaque sous
+    le boîtier avec un passage pour les pattes et les fils, deux goussets. Elle s'imprime à
+    l'envers, la plaque sur le plateau ; les trous de l'âme, horizontaux, sont en goutte."""
+    c = CAPTEUR
+    a, t, xc = c["cote"] / 2, c["ep"], X_CAPTEUR
+    x0 = P["pan_L"] / 2 - xc                       # face du cadre
+    zp = -c["corps"]                               # dessous du boîtier
+    zb = c["z_vis"] - c["z"] - 8.0                 # bas de l'âme
+    s = box_span(x0, x0 + t, -a, a, zb, zp).union(box_span(x0, a, -a, a, zp - t, zp))
+    for y0 in (-a, a - 3.0):                       # goussets, hors des têtes de vis
+        s = s.union(cq.Workplane("XZ").polyline([(x0 + t - 0.5, zb + 2), (x0 + t - 0.5, zp - t + 0.5),
+                                                  (a - 4, zp - t + 0.5)]).close().extrude(-3.0).translate((0, y0, 0)))
+    p = c["passage"] / 2
+    s = s.cut(box_span(-p, p, -p, p, zp - t - 1, zp + 1))
+    for x in (-c["vis_x"], c["vis_x"]):
+        s = s.cut(trou_z(AJ["passage_m3"], x, 0, zp - t - 1, zp + 1))
+    for y in (-c["vis_y"], c["vis_y"]):
+        p0, z = (x0 - 1, y, c["z_vis"] - c["z"]), (0, 0, -1)
+        s = s.cut(goutte(AJ["passage_m3"], t + 2, p0, (1, 0, 0), z) if AJ["impression"]
+                  else cyl_x(AJ["passage_m3"], t + 2, *p0))
+    return s
+
+
+def p_bpw34():
+    """Photodiode BPW34 (boîtier plastique transparent, puce d'environ 2,7 x 2,7 mm), dessus en z = 0,
+    pattes vers le bas."""
+    (lx, ly, h), (px, pd, pl) = CAPTEUR["bpw"], CAPTEUR["pattes"]
+    d = box_span(-lx / 2, lx / 2, -ly / 2, ly / 2, -h, 0)
+    for x in (-px, px):
+        d = d.union(cyl_z(pd, pl + 0.5, x, 0, -h - pl))
+    return d
+
+
+def add_capteur(assy):
+    """Capteur solaire monté sur le cadre (repère panneau)."""
+    lc = trans(X_CAPTEUR, 0, CAPTEUR["z"])
+    add(assy, "Capteur_Solaire_Support", lc)
+    add(assy, "Capteur_Solaire_Boitier", lc)
+    for i, (x, y) in enumerate(xy_photodiodes(), 1):
+        add(assy, "Photodiode_BPW34", lc * trans(x, y, 0), f"Photodiode_BPW34_{i}")
+    for i, y in enumerate((-CAPTEUR["vis_y"], CAPTEUR["vis_y"]), 1):     # écrous contre l'intérieur du cadre
+        add(assy, "Ecrou_M3", trans(P["pan_L"] / 2 - 1.5, y, CAPTEUR["z_vis"]) * rot((0, 1, 0), -90),
+            f"Ecrou_M3_Capteur_{i}")
 
 
 # ---------------------------------------------------------------------------
@@ -1277,6 +1382,14 @@ def build_head_parts():
         f"{P['cell_nx']*P['cell_ny']} cellules {cw:.1f}x{ch:.1f}")
     reg("Boite_Jonction", p_boite_jonction(), "PPO (boîte de jonction)", COL["black"],
         "Boîte de jonction + presse-étoupe")
+    # capteur solaire sur le cadre
+    reg("Capteur_Solaire_Boitier", p_capteur_boitier(), mat("Al 6061-T6"), COL["black"],
+        f"Capteur solaire : boîtier noir, 4 photodiodes BPW34 sous une croix d'ombre de {CAPTEUR['h']:g} mm"
+        + (" (PETG noir)" if imp else " (anodisé noir)"))
+    reg("Capteur_Solaire_Support", p_capteur_support(), mat("Al 6061-T6"), COL["u"],
+        "Équerre du capteur solaire, vissée sur le petit côté du cadre (2 x M3, écrous dans le cadre)")
+    reg("Photodiode_BPW34", p_bpw34(), "Époxy transparent + silicium", COL["cell"],
+        "Photodiode BPW34 (Vishay), surface sensible 7,5 mm²")
     # masse du laminé recalée pour que le panneau complet pèse sa masse mesurée
     autres = sum(v.Volume() * MAT[PARTS[k][1]] * 1e-9 for k in ("Cadre_Panneau", "Cellules_PV", "Boite_Jonction")
                  for v in PARTS[k][0].vals())
@@ -1337,6 +1450,7 @@ def build_tripod():
 
 
 PANEL_PARTS = ("Cadre_Panneau", "Lamine_PV", "Cellules_PV", "Boite_Jonction")
+CAPTEUR_PARTS = ("Capteur_Solaire_Boitier", "Capteur_Solaire_Support", "Photodiode_BPW34")
 
 
 def build_panel(with_panel=True):
@@ -1355,6 +1469,7 @@ def build_panel(with_panel=True):
         add_visserie(p, "panneau")
         for i, (x, y) in enumerate((x, y) for x in (-RAIL_X, RAIL_X) for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU)):
             add(p, "Ecrou_M3", trans(x, y, P["pan_back"] + 1.5), f"Ecrou_M3_{i}")
+        add_capteur(p)
     return p
 
 

@@ -6,7 +6,7 @@ Générée par `optimisation_angle.py` à partir des masses et centres de gravit
 
 - Jambes en Y, à 120°. Articulation haute à r = 70 mm, z = 509 mm : juste sous le socle de la tête. Le panneau vertical descend jusqu'à 571 mm et tout le trépied doit rester en dessous.
 - Centre de la rotule de pied à z = 40 mm, soit une hauteur de jambe h = 469 mm.
-- Tête + panneau : 3.01 kg. Le centre de gravité est pris dans la pire orientation du panneau (élévation de −2° à +92°, azimut sur 360°).
+- Tête + panneau : 3.07 kg. Le centre de gravité est pris dans la pire orientation du panneau (élévation de −2° à +92°, azimut sur 360°).
 
 ## Exigences
 
@@ -22,22 +22,22 @@ Générée par `optimisation_angle.py` à partir des masses et centres de gravit
 
 | φ | Ø des pieds | Jambe | Masse trépied | Basculement | Exigé (C1) | Course ± nécessaire / possible (C2) | Poussée entretoise | Rigidité latérale | Admissible |
 |---|---|---|---|---|---|---|---|---|---|
-| 25.0° | 577 mm | 517 mm | 4.24 kg | 19.6° | 26.6° | 56 / 111 mm | 0.47 × charge | 42 % | non (C1) |
-| 27.5° | 628 mm | 529 mm | 4.27 kg | 21.4° | 26.1° | 62 / 115 mm | 0.52 × charge | 49 % | non (C1) |
-| 30.0° | 682 mm | 542 mm | 4.30 kg | 23.1° | 25.6° | 69 / 119 mm | 0.58 × charge | 56 % | non (C1) |
-| 32.5° | 738 mm | 556 mm | 4.33 kg | 24.9° | 25.2° | 77 / 124 mm | 0.64 × charge | 63 % | non (C1) |
-| **33.0°** | 749 mm | 559 mm | 4.34 kg | 25.3° | 25.1° | 79 / 125 mm | 0.65 × charge | 65 % | oui |
-| 35.0° | 797 mm | 573 mm | 4.37 kg | 26.8° | 24.8° | 86 / 129 mm | 0.70 × charge | 70 % | oui |
+| 25.0° | 577 mm | 517 mm | 4.24 kg | 19.5° | 26.6° | 56 / 111 mm | 0.47 × charge | 42 % | non (C1) |
+| 27.5° | 628 mm | 529 mm | 4.27 kg | 21.2° | 26.1° | 62 / 115 mm | 0.52 × charge | 49 % | non (C1) |
+| 30.0° | 682 mm | 542 mm | 4.30 kg | 23.0° | 25.6° | 69 / 119 mm | 0.58 × charge | 56 % | non (C1) |
+| 32.5° | 738 mm | 556 mm | 4.33 kg | 24.8° | 25.2° | 77 / 124 mm | 0.64 × charge | 63 % | non (C1) |
+| **33.0°** | 749 mm | 559 mm | 4.34 kg | 25.2° | 25.1° | 79 / 125 mm | 0.65 × charge | 65 % | oui |
+| 35.0° | 797 mm | 573 mm | 4.37 kg | 26.7° | 24.8° | 86 / 129 mm | 0.70 × charge | 70 % | oui |
 | 37.5° | 860 mm | 591 mm | 4.41 kg | 28.7° | 24.4° | 96 / 135 mm | 0.77 × charge | 76 % | oui |
-| 40.0° | 927 mm | 612 mm | 4.45 kg | 30.7° | 24.1° | 107 / 142 mm | 0.84 × charge | 82 % | oui |
-| 42.5° | 1000 mm | 636 mm | 4.51 kg | 32.8° | 23.8° | 120 / 150 mm | 0.92 × charge | 87 % | oui |
-| 45.0° | 1078 mm | 663 mm | 4.56 kg | 35.0° | 23.5° | 134 / 159 mm | 1.00 × charge | 92 % | oui |
-| 47.5° | 1164 mm | 694 mm | 4.63 kg | 37.3° | 23.3° | 152 / 170 mm | 1.09 × charge | 95 % | oui |
-| 50.0° | 1258 mm | 730 mm | 4.70 kg | 39.7° | 23.0° | 173 / 182 mm | 1.19 × charge | 98 % | non (C3) |
-| 52.5° | 1362 mm | 770 mm | 4.79 kg | 42.2° | 22.8° | 197 / 195 mm | 1.30 × charge | 100 % | non (C2, C3) |
-| 55.0° | 1480 mm | 818 mm | 4.89 kg | 44.9° | 22.6° | 227 / 211 mm | 1.43 × charge | 100 % | non (C2, C3) |
-| 57.5° | 1612 mm | 873 mm | 5.02 kg | 47.8° | 22.4° | 265 / 229 mm | 1.57 × charge | 99 % | non (C2, C3) |
-| 60.0° | 1765 mm | 938 mm | 5.17 kg | 50.8° | 22.2° | 311 / 251 mm | 1.73 × charge | 97 % | non (C2, C3) |
+| 40.0° | 927 mm | 612 mm | 4.45 kg | 30.6° | 24.1° | 107 / 142 mm | 0.84 × charge | 82 % | oui |
+| 42.5° | 1000 mm | 636 mm | 4.51 kg | 32.7° | 23.8° | 120 / 150 mm | 0.92 × charge | 87 % | oui |
+| 45.0° | 1078 mm | 663 mm | 4.56 kg | 34.9° | 23.5° | 134 / 159 mm | 1.00 × charge | 92 % | oui |
+| 47.5° | 1164 mm | 694 mm | 4.63 kg | 37.2° | 23.3° | 152 / 170 mm | 1.09 × charge | 95 % | oui |
+| 50.0° | 1258 mm | 730 mm | 4.70 kg | 39.6° | 23.0° | 173 / 182 mm | 1.19 × charge | 98 % | non (C3) |
+| 52.5° | 1362 mm | 770 mm | 4.79 kg | 42.1° | 22.8° | 197 / 195 mm | 1.30 × charge | 100 % | non (C2, C3) |
+| 55.0° | 1480 mm | 818 mm | 4.89 kg | 44.8° | 22.6° | 227 / 211 mm | 1.43 × charge | 100 % | non (C2, C3) |
+| 57.5° | 1612 mm | 873 mm | 5.02 kg | 47.6° | 22.4° | 265 / 229 mm | 1.57 × charge | 99 % | non (C2, C3) |
+| 60.0° | 1765 mm | 938 mm | 5.17 kg | 50.6° | 22.2° | 311 / 251 mm | 1.73 × charge | 97 % | non (C2, C3) |
 
 **Plage admissible : φ de 33.0° à 49.0°. Optimum : φ = 33.0°**, le plus petit angle admissible, donc les jambes les plus courtes et les plus légères, la poussée la plus faible dans les entretoises, la plus petite course de nivelage et la plus petite emprise au sol.
 

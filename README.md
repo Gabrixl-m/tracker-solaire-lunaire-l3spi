@@ -4,7 +4,8 @@ Maquette CAO d'un tracker solaire destiné à la surface de la Lune. Elle compre
 * un trépied déployable ;
 * une **tête rotative à vis sans fin** (azimut + élévation, deux petits moteurs pas à pas
   pilotés par un ESP32) ;
-* **le panneau photovoltaïque de 356 × 253 × 30 mm** ;
+* **le panneau photovoltaïque de 356 × 253 × 30 mm**, avec son **capteur solaire** (4
+  photodiodes sous une croix d'ombre, § 13) ;
 * un faisceau de câbles et une unité de contrôle posée au sol.
 
 Les deux vis sans fin sont **irréversibles** : la tête tient le panneau dans toutes les
@@ -28,13 +29,13 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `CAO/Cas_Reel/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
 | `CAO/Cas_Reel/pieces/*.step` | Toutes les pièces seules (trépied, tête, panneau, unité au sol), chacune dans son repère de construction |
 | **`CAO/Demo_Terre_PETG/`** | **Démonstration sur Terre**, tête imprimée en 3D en PETG, avec les jeux d'ajustement (voir § 12) : |
-| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 16 pièces à imprimer, déjà orientées et posées sur le plateau |
+| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements et fond sur trépied photo |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
@@ -95,7 +96,7 @@ Tracker_Lunaire_PoleSud
 
 La tête est un **mécanisme de pointage bi-axe azimut-élévation (AE)** : un axe vertical pour
 tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), et une fourche
-(la chape) qui porte le panneau. Le choix de ce schéma est expliqué au § 13, avec l'article
+(la chape) qui porte le panneau. Le choix de ce schéma est expliqué au § 14, avec l'article
 qui l'a guidé.
 
 | Élément | Choix |
@@ -156,7 +157,7 @@ chaque bague n'est approchée que par ce qui tourne avec elle.
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
-d'élévation, jusqu'à 0,9 N·m sur Terre. La vis sans fin est **irréversible** :
+d'élévation, jusqu'à 0,95 N·m sur Terre. La vis sans fin est **irréversible** :
 * le moteur fait tourner la roue ;
 * la roue ne peut pas faire tourner la vis, parce que la pente du filet (3,6°) est plus
   faible que l'angle de frottement (environ 6°). C'est le principe du cric de voiture à vis.
@@ -180,9 +181,10 @@ PETG, régler le courant pour obtenir environ 0,20 N·m de maintien (0,6 A pour 
 ### Couples : besoins et marges dans tous les cas
 
 Les besoins sont calculés par `generate_tete_vis_sans_fin.py` à partir de la CAO :
-* partie basculante (chapeau, roue, rails, panneau) : 1,67 kg, dont 1,16 kg de panneau (pesé) ;
-* centre de gravité à 55,1 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
-* couple de gravité maximal (panneau vertical) : 0,90 N·m sur Terre et 0,15 N·m sur la Lune ;
+* partie basculante (chapeau, roue, rails, panneau, capteur solaire) : 1,73 kg, dont 1,16 kg
+  de panneau (pesé) et 0,06 kg de capteur solaire ;
+* centre de gravité à 55,7 mm de l'axe, puisqu'il n'y a pas de contrepoids ;
+* couple de gravité maximal (panneau vertical) : 0,95 N·m sur Terre et 0,16 N·m sur la Lune ;
 * frottements : 0,01 N·m en élévation et 0,02 N·m en azimut ;
 * vent de 10 m/s (36 km/h), sur Terre en extérieur. La pression dynamique vaut 60 Pa, soit
   environ 6,5 N sur le panneau. Le centre de poussée est décalé de 5 à 8 cm en vent oblique,
@@ -194,8 +196,8 @@ rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (é
 
 | Marge = disponible / besoin | Lune | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
 |---|---|---|---|
-| Élévation (3,47 N·m disponibles, moteur à 1,0 A) | ×22 | ×3,8 | **×2,7** |
-| Élévation, version PETG, moteur limité à 0,6 A (2,08 N·m) | — | ×2,3 | **×1,7** |
+| Élévation (3,47 N·m disponibles, moteur à 1,0 A) | ×21 | ×3,6 | **×2,7** |
+| Élévation, version PETG, moteur limité à 0,6 A (2,08 N·m) | — | ×2,3 | **×1,6** |
 | Azimut (1,22 N·m disponibles) | ×61 | ×41 | **×2,3** |
 
 * **Le cas qui dimensionne est la démonstration sur Terre en extérieur.** On y vise une
@@ -214,7 +216,7 @@ rendement des vis, les roulements et les câbles.
 
 | Ce qu'on regarde | Version PETG (démonstration) | Cas réel | Verdict |
 |---|---|---|---|
-| Part du couple moteur utilisée, élévation | 60 % dehors (vent 10 m/s), 43 % dedans, à 0,6 A | 36 % dehors, 5 % sur la Lune, à 1,0 A | Bien dimensionné dehors ; ×22 de trop sur la Lune |
+| Part du couple moteur utilisée, élévation | 61 % dehors (vent 10 m/s), 44 % dedans, à 0,6 A | 38 % dehors, 5 % sur la Lune, à 1,0 A | Bien dimensionné dehors ; ×21 de trop sur la Lune |
 | Part du couple moteur utilisée, azimut | 43 % dehors, 2 % dedans | 43 % dehors, 2 % sur la Lune | Dimensionné par le vent ; sans vent, ×40 à ×60 de trop |
 | Dents en PETG, élévation | 16 MPa en marche dehors, 37 MPa moteur calé | — | C'est la vraie limite : d'où le courant limité à 0,6 A |
 | Dents en PETG, azimut | 7 MPa en marche dehors, 22 MPa moteur calé | — | Large |
@@ -223,7 +225,7 @@ rendement des vis, les roulements et les câbles.
 | Inertie | ≈ 0,012 kg·m² basculants : < 1 % du couple de gravité même en retour rapide | idem | Négligeable |
 
 * **Le cas qui dimensionne est la démonstration dehors, avec 10 m/s de vent.** Les marges y
-  sont de ×1,7 (élévation, PETG à 0,6 A) à ×2,3. Pour un moteur pas à pas, on vise ×1,5
+  sont de ×1,6 (élévation, PETG à 0,6 A) à ×2,3. Pour un moteur pas à pas, on vise ×1,5
   à ×2 : au-delà de son couple, il ne ralentit pas, il **saute des pas** et perd sa
   position. Le couple réel varie aussi de 10 à 20 % selon le vendeur et la température.
   L'élévation de la version PETG est donc au bas de la plage, pas au-dessus.
@@ -250,8 +252,8 @@ rendement des vis, les roulements et les câbles.
 | Cas | Ce qui tient | Résultat |
 |---|---|---|
 | **Terre**, vis graissées (μ ≈ 0,10) | La vis se bloque : hélice de 3,6° (élévation) et 3,8° (azimut), angle de frottement 5,7° | **Tient dans toutes les positions, même dans le vent** |
-| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (valeurs typiques : 0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,2 en élévation, ×2,4 en azimut |
-| **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,15 N·m et il n'y a pas de vent | **Tient** : ×8 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
+| Terre, frottement réduit par des vibrations (μ ≈ 0,05) | La vis peut redevenir réversible. Le couple résiduel du moteur coupé (valeurs typiques : 0,016 N·m pour le NEMA 17, 0,005 N·m pour le NEMA 11) prend le relais | Tient : ×3,1 en élévation, ×2,4 en azimut |
+| **Lune**, MoS₂ sous vide (μ ≈ 0,02) | La vis est réversible, mais la gravité ne donne que 0,16 N·m et il n'y a pas de vent | **Tient** : ×7,5 en élévation par le couple résiduel du moteur. En azimut, rien ne pousse |
 
 Conséquences :
 * **Aucun courant à l'arrêt** : drivers désactivés entre deux mouvements, donc consommation
@@ -322,6 +324,8 @@ une remise en position prend quelques secondes.
 * **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
   sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
   par UART.
+* **Capteur solaire** : 4 photodiodes BPW34 sur 4 entrées analogiques de l'ADC1 (GPIO 36,
+  39, 34 et 35), avec une résistance de 1 kΩ chacune. Branchement et programme au § 13.
 * **Origine** :
   * un micro-switch en butée basse d'élévation (−2°) ;
   * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
@@ -341,6 +345,8 @@ une remise en position prend quelques secondes.
   l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
   dans l'aile arrière des grands côtés : à 44 mm de part et d'autre du milieu, à 6 mm du bord
   extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
+* **Capteur solaire** sur le petit côté du pivot libre (§ 13) : percer 2 trous Ø3,4 dans ce
+  petit côté, à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
   passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
@@ -413,7 +419,7 @@ de la tête ou du panneau change, relancer `python optimisation_angle.py`.
 |---|---|
 | **Axe d'élévation à 700 mm** | Le point bas du panneau vertical doit rester nettement au-dessus du sol : il est à 571 mm. Plus haut, le tracker serait plus lourd et moins stable sans raison. |
 | **Sommet de la colonne à 544 mm**, moyeu des jambes à 509 mm | La tête met l'axe d'élévation 156 mm au-dessus de la colonne. Tout le trépied reste sous le volume balayé par le panneau. |
-| **Pieds sur un cercle de Ø749 mm**, jambes de 559 mm | Conséquence de φ = 33,0°. Basculement sans ancrage à 25,3° dans la pire orientation du panneau (exigé : 25,1°). |
+| **Pieds sur un cercle de Ø749 mm**, jambes de 559 mm | Conséquence de φ = 33,0°. Basculement sans ancrage à 25,2° dans la pire orientation du panneau (exigé : 25,1°). |
 | **Course télescopique ±79 mm**, bague de blocage | Remise à niveau sur une pente de 10°. Le tube inférieur Ø20 coulisse dans le tube supérieur Ø25 avec au moins 45 mm de recouvrement. |
 | **Entretoises horizontales** Ø12 × 1, bride juste au-dessus de la bague | Meilleur bras de levier. Le collier inférieur se place à leur hauteur (304 mm). |
 | **Tubes Ø25 × 1,5 et Ø20 × 1,5, colonne Ø50 × 2, axes Ø6 et Ø5** | Minimum pratique à cette échelle (manutention avec des gants de scaphandre, chocs). Ces sections ne sont pas calculées d'après le poids : à vérifier quand la masse sera figée. |
@@ -441,6 +447,7 @@ Le trépied pèse 4,3 kg.
 | Ferrures et colliers du trépied, axes, vis d'ancrage | Ti-6Al-4V | Non imprimés (métal) |
 | Tubes de jambes, colonne, entretoises, patins | Al 7075-T73 anodisé dur | Non imprimés (aluminium) |
 | Cadre du panneau | Al 6063-T5 | Al 6063-T5 (panneau du commerce) |
+| Capteur solaire : boîtier à croix et équerre | Al 6061-T6 anodisé noir, fenêtre en silice fondue, photodiodes qualifiées pour le spatial | **PETG imprimé** (boîtier en PETG noir), photodiodes BPW34 du commerce |
 
 ## 8. Caractéristiques principales
 
@@ -454,8 +461,8 @@ Le trépied pèse 4,3 kg.
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
-| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,85 kg, dont 0,40 kg de moteurs (1,20 kg en version PETG) |
-| Masse de la partie qui bascule (panneau + chapeau + roue + rails) | 1,67 kg, dont 1,16 kg de panneau |
+| Masse de la tête (partie fixe + partie tournante, hors panneau) | 1,86 kg, dont 0,40 kg de moteurs (1,20 kg en version PETG) |
+| Masse de la partie qui bascule (panneau + chapeau + roue + rails + capteur solaire) | 1,73 kg, dont 1,16 kg de panneau |
 | Masse du trépied | 4,3 kg |
 | Masse du tracker complet | 7,4 kg (poids lunaire ≈ 12 N) |
 
@@ -465,7 +472,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 ## 9. Vérifications effectuées par les scripts
 
 * **Interférences pièce à pièce** dans les deux poses du tracker et dans la tête seule,
-  en cotes réelles comme en version PETG : **aucune**.
+  en cotes réelles comme en version PETG, capteur solaire compris : **aucune**.
   * Toutes les vis sont modélisées, avec leur tête et leur noyau : chaque tête est
     accessible, et aucune vis ne dépasse de son trou ni ne touche une autre pièce.
   * Ce contrôle a conduit à revoir plusieurs fixations : la roue d'azimut est vissée par en
@@ -490,9 +497,9 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     de −2° à 92° (vérifié tous les 15°) ;
   * chape, moteurs et vis face à la partie fixe (socle, trépied, faisceau) : 1,0 mm au plus
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
-* **Stabilité** : basculement sans ancrage à 25,3° dans la pire orientation du panneau
+* **Stabilité** : basculement sans ancrage à 25,2° dans la pire orientation du panneau
   (`optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 185 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 197 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -501,6 +508,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
   plastique). Sur la Lune, les cycles thermiques et le vide le dégraderaient.
 * Les moteurs NEMA du commerce ne sont pas prévus pour le vide ni pour −173 °C. Il faut
   leur équivalent en version vide ou spatiale : même taille, même couple, même pilotage.
+  De même, les photodiodes BPW34 du capteur solaire sont des composants du commerce (§ 13).
 * Les roues des vis sont modélisées à dents droites. Les vraies roues sont taillées pour
   leur vis (dents inclinées et creusées), ce qui augmente la portée et la durée de vie.
 * Sur Terre, le trépied non ancré bascule vers 16 m/s de vent : l'ancrer pour les
@@ -576,8 +584,11 @@ par le script :
 | `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
 | `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | Lèvre de 1 mm côté extérieur de chaque joue : le 685 s'enfonce depuis l'intérieur du U |
 | `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
+| `Capteur_Solaire_Boitier` | 1 | Croix en haut | **PETG noir**, 100 % de remplissage : il doit être opaque (§ 13) |
+| `Capteur_Solaire_Support` | 1 | Plaque sur le plateau, âme vers le haut | Équerre du capteur solaire, vissée sur le petit côté du cadre |
 
-Environ 305 g de PETG (406 g si tout était plein).
+Environ 305 g de PETG pour la tête (406 g si tout était plein), plus 26 g pour le capteur
+solaire.
 
 **Réglages conseillés** :
 * PETG, couches de 0,2 mm ;
@@ -607,13 +618,14 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 7 × M3×12, 8 × M3×14 | 28 |
+| Vis CHC M3 : 6 × M3×8, 11 × M3×10, 7 × M3×12, 8 × M3×14 | 32 |
 | Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
-| Écrou M3 (panneau sur les rails) | 4 |
+| Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
+| Photodiodes BPW34 et résistances de 1 kΩ (capteur solaire) | 4 + 4 |
 
 Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
 plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
@@ -755,11 +767,14 @@ colonne Ø50.
     noyées dans les rails). Poser ensuite le panneau sur les rails. Dans chaque bout de rail,
     passer une vis M3×14 par-dessous à travers le rail et l'aile arrière du cadre, puis
     serrer un écrou M3 posé dans le cadre. On l'atteint par le dos ouvert du panneau.
+11. **Capteur solaire** (§ 13) : coller les 4 BPW34 dans le boîtier et les câbler, visser le
+    boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le petit côté du
+    cadre, côté du pivot libre (2 × M3×10, écrous M3 posés dans le cadre).
 
 ### Ce que change le PETG en fonctionnement
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
-  * Graissées (μ ≈ 0,15) : ×1,7 en élévation (moteur limité à 0,6 A, voir plus bas) et
+  * Graissées (μ ≈ 0,15) : ×1,6 en élévation (moteur limité à 0,6 A, voir plus bas) et
     ×2,3 en azimut avec un vent de 10 m/s ; ×2,3 et ×40 en intérieur.
   * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×1,0) et n'a plus que ×1,3 en
     intérieur : **graisser**.
@@ -772,12 +787,12 @@ colonne Ø50.
   * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
     3,0 N·m à la roue. Cela fait environ 37 MPa en pied de dent, soit 74 % de la résistance
     du PETG.
-  * La marge au vent de 10 m/s reste de ×1,7, et de ×2,3 en intérieur.
+  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,3 en intérieur.
   * À 1,0 A, ce moteur pousserait jusqu'à 5 N·m sur la roue en cas de blocage : environ
     60 MPa, les dents casseraient.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
 * **Pivots imprimés Ø12** : le pivot entraîné transmet le couple de la roue au chapeau.
-  * En marche (poids du panneau et vent de 10 m/s, ≈ 1,2 N·m), il travaille à environ
+  * En marche (poids du panneau et vent de 10 m/s, ≈ 1,3 N·m), il travaille à environ
     4 MPa en torsion. Moteur calé à 0,6 A (3,0 N·m), environ 9 MPa : le tiers de la
     résistance au cisaillement du PETG (≈ 30 MPa).
   * Un pivot PETG de Ø8 monterait à 28 MPa, à la limite de la rupture : d'où le Ø12 et
@@ -790,7 +805,153 @@ colonne Ø50.
   démonstrations, garer le panneau **à plat (élévation 90°)**, où la pesanteur ne charge
   presque plus la denture.
 
-## 13. Bibliographie
+## 13. Capteur solaire et suivi du Soleil
+
+| Le capteur sur le petit côté du cadre | Coupe par deux photodiodes |
+|---|---|
+| ![Capteur solaire](docs/explications/capteur_solaire.png) | ![Coupe du capteur solaire](docs/explications/capteur_solaire_coupe.png) |
+
+### Principe : 4 photodiodes et une croix d'ombre
+
+Quatre photodiodes **BPW34** sont placées aux quatre coins d'une **croix opaque de 20 mm de
+haut**, parallèle à la normale du panneau.
+* Quand le panneau vise exactement le Soleil, la croix ne fait d'ombre sur aucune
+  photodiode : les quatre reçoivent la même lumière.
+* Dès qu'il s'en écarte, l'ombre d'un mur de la croix couvre une partie des deux photodiodes
+  du côté opposé au Soleil : 0,37 mm d'ombre pour 1° d'écart.
+* Chaque photodiode voit le ciel par une **fenêtre de 2,2 × 2,2 mm**, un peu plus petite
+  que sa puce (environ 2,7 mm de côté). Le bord intérieur de la fenêtre prolonge la face
+  du mur : l'ombre mord sur la fenêtre dès le moindre écart. Il n'y a **pas de zone
+  morte** autour du pointage parfait.
+* **Réponse** : le rapport des signaux (plus bas) varie d'environ **9 % par degré**, de façon
+  linéaire jusqu'à ±6°. Au-delà, il sature mais garde son signe : tant que le Soleil est
+  devant le panneau, le capteur indique dans quel sens tourner.
+
+Les photodiodes sont repérées **HG, HD, BG, BD** :
+* **haut / bas** (H, B) le long du côté de 253 mm, celui qui bascule en élévation. Le
+  « haut » est le côté du bord supérieur du panneau quand il est incliné ;
+* **gauche / droite** (G, D) le long du côté de 356 mm, parallèle à l'axe d'élévation.
+
+### Montage sur le cadre
+
+* Le capteur est au milieu du **petit côté du cadre, côté du pivot libre**, à l'opposé de la
+  roue d'élévation. Il tourne avec le panneau et mesure donc l'erreur du panneau lui-même.
+* Il est **à côté des cellules**, pas au-dessus. Pour qu'il leur fasse de l'ombre, il faudrait
+  que le Soleil soit à plus de 40° de l'axe du panneau, ce qui n'arrive pas en suivi.
+* Les photodiodes sont 1 mm au-dessus du rebord avant du cadre : le cadre ne leur fait pas
+  d'ombre non plus.
+* L'**équerre** imprimée se visse contre le petit côté avec 2 vis M3×10. Leurs écrous M3 sont
+  posés à l'intérieur du cadre, sous le laminé, et on les atteint par le dos ouvert du panneau,
+  comme ceux des rails. Il faut percer 2 trous Ø3,4 dans le petit côté : à 9 mm de part et
+  d'autre du milieu et à 12 mm du dos du cadre.
+* Le **boîtier** se visse sur l'équerre par-dessous (2 vis M3×10 dans des avant-trous).
+* La croix est alors parallèle à la normale du panneau, à l'impression près. Inutile de
+  régler plus finement : un défaut de 1° ne coûte que 0,015 % de puissance (plus bas).
+
+### Pièces et câblage
+
+| Pièce | Impression |
+|---|---|
+| `Capteur_Solaire_Boitier` | **PETG noir**, croix en haut, **100 %** de remplissage (18 g). Un PETG clair laisse passer la lumière à travers les murs et fausse la mesure. À défaut, le peindre en noir mat, intérieur des logements compris. Il chauffe au soleil comme tout objet noir, mais ne porte aucune charge |
+| `Capteur_Solaire_Support` | N'importe quelle couleur, plaque sur le plateau (8 g). Les trous de l'âme sont en goutte |
+
+1. Repérer la cathode de chaque BPW34 au multimètre, en position diode. Quand l'appareil
+   affiche environ 0,5 V, la pointe rouge est sur l'anode et la noire sur la cathode.
+2. Glisser chaque BPW34 dans son logement **par en dessous**, face transparente vers le
+   haut, jusqu'au plancher. La pousser contre le coin du logement **du côté de la croix**, de
+   la même façon pour les quatre, puis la bloquer par un point de colle chaude par-dessous.
+3. Relier les 4 cathodes au fil du 3,3 V, et souder un fil sur chaque anode. Isoler les
+   soudures (gaine thermorétractable ou colle chaude).
+4. Faire passer le câble (5 fils : 3,3 V et les 4 signaux) par le passage carré de
+   l'équerre, puis le long d'un rail et avec les câbles des moteurs. Laisser une boucle près
+   de l'axe d'élévation.
+
+**Branchement**, identique pour chacune des 4 photodiodes. Les résistances sont à côté de
+l'ESP32, pas dans le capteur :
+
+```
+3,3 V ──────── cathode   BPW34   anode ──┬──────► entrée analogique (ADC1)
+                                         │
+                                       1 kΩ
+                                         │
+GND ─────────────────────────────────────┘
+```
+
+* **1 kΩ** donne environ 1,5 à 2 V en plein soleil : la fenêtre ne laisse passer qu'environ
+  65 % de la lumière qu'aurait reçue la puce entière. Si le signal dépasse 2,5 V en plein
+  soleil d'été, passer à 680 Ω. S'il reste sous 0,5 V, passer à 2,2 kΩ.
+* Utiliser des entrées de l'**ADC1**, car l'ADC2 ne marche pas quand le Wi-Fi est actif :
+  * ESP32 DevKitC (WROOM-32) : **GPIO 36, 39, 34 et 35**. Ce sont des entrées seules, libres
+    avec le câblage du § 2 ;
+  * Heltec WiFi LoRa 32 V4 (ESP32-S3) : l'ADC1 correspond aux GPIO 1 à 10. Prendre 4 broches
+    de ce groupe que la carte n'utilise pas déjà (radio LoRa, mesure de la batterie, GPS) :
+    les vérifier sur le brochage de la carte.
+* Lecture : atténuation 11 dB (`analogSetAttenuation(ADC_11db)`), moyenne de 32 à 64
+  lectures pour lisser le bruit.
+
+### Ce que fait le programme
+
+```
+H = HG + HD    B = BG + BD    G = HG + BG    D = HD + BD    S = H + B
+erreur d'élévation = (H − B) / S      environ 0,087 par degré
+erreur d'azimut    = (G − D) / S
+```
+
+* Les rapports ne dépendent pas de la force du Soleil. Un voile léger ou une poussière
+  uniforme sur le capteur ne déplacent pas leur zéro.
+* **Étalonnage, une seule fois** : poser une feuille de papier calque sur la croix, au soleil.
+  Les 4 photodiodes reçoivent alors la même lumière. Noter les 4 valeurs, et en déduire un
+  coefficient par photodiode (moyenne des 4 / sa valeur), pour corriger leurs petites
+  différences.
+* Si S est trop faible (nuage, nuit), ignorer le capteur et rester sur la position calculée.
+* Si l'erreur est sous 0,026 (≈ 0,3°), ne pas bouger, pour que le panneau n'oscille pas.
+* En azimut, diviser l'erreur par cos(élévation) avant de la convertir en pas : près du
+  zénith, l'azimut doit beaucoup tourner pour corriger une petite erreur (voir § 14).
+* Au premier essai, vérifier le **sens** de chaque correction et l'inverser dans le programme
+  s'il le faut. Le sens dépend du câblage, et du sens dans lequel le boîtier est vissé.
+
+Il n'est pas utile de viser plus juste : une erreur de 1° ne fait perdre que 0,015 % de la
+puissance du panneau, et 5° seulement 0,4 %.
+
+### Stratégie de suivi : sur Terre et sur la Lune
+
+**Démonstration sur Terre** : le calcul et les photodiodes travaillent ensemble.
+1. **Le calcul fait le gros du pointage.** Avec l'heure et la position données par le GPS du
+   Heltec V4 (ou réglées à la main), l'ESP32 calcule l'azimut et la hauteur du Soleil. Le
+   calcul marche le matin, sous les nuages, et permet de revenir vers l'est la nuit. Mais il
+   ne connaît pas l'orientation de la tête : où est le nord, et si le trépied est de niveau.
+2. **Les photodiodes corrigent l'erreur restante** dès que le Soleil est assez fort. L'ESP32
+   **retient l'écart** entre les angles calculés et les angles où le capteur a centré le
+   Soleil. Quand un nuage passe, le calcul seul reste juste.
+
+**Sur la Lune : les photodiodes en principal, le calcul en secours.**
+* **Il n'y a pas de GPS sur la Lune**, et le trépied posé par un astronaute n'est ni orienté
+  ni parfaitement de niveau. Les photodiodes ne dépendent de rien de tout cela : elles mesurent
+  directement l'écart entre le panneau et le Soleil. Ce sont elles qui pilotent.
+* **Le calcul théorique sert de redondance.** Il n'a pas besoin de GPS :
+  * la position du site d'atterrissage est connue de la mission ;
+  * l'heure vient de l'horloge de bord ;
+  * avec les éphémérides de la Lune, l'ESP32 en déduit la direction du Soleil ;
+  * l'inclinaison du trépied se mesure avec un accéléromètre, qui marche aussi en gravité
+    lunaire ;
+  * l'orientation vers le nord est apprise au premier pointage. L'ESP32 fait tourner la tête
+    en azimut jusqu'à ce que les photodiodes voient le Soleil, puis le centre ; l'écart avec
+    l'azimut calculé donne le nord.
+* **À quoi sert ce secours** :
+  * reprendre le Soleil à l'aube, après les 14 jours de la nuit lunaire, ou après le passage
+    d'une ombre. Le calcul pointe le panneau au bon endroit, puis le capteur prend le relais ;
+  * continuer si une photodiode tombe en panne ou se couvre de poussière d'un seul côté.
+    L'ESP32 compare en permanence les deux. S'ils restent en désaccord de plus de 1 à 2°, il
+    suit le calcul et signale le défaut.
+* Comme une erreur de quelques degrés ne coûte presque rien en énergie (plus haut), le
+  calcul seul suffit à alimenter le système le temps d'une panne du capteur.
+
+Pour une version de vol, le capteur serait en aluminium anodisé noir (c'est déjà le
+matériau du cas réel dans la CAO), avec une **fenêtre en silice fondue** contre la poussière
+de régolithe, et des photodiodes qualifiées pour le spatial (rayonnements, −173 à +127 °C).
+La BPW34 est un composant du commerce.
+
+## 14. Bibliographie
 
 ### Choix du mode de rotation : le schéma azimut-élévation (AE)
 
@@ -830,7 +991,7 @@ mécanisme léger, peu coûteux et sobre en énergie.
 | Choix de l'article [1] | Dans ce tracker |
 |---|---|
 | Schéma **azimut-élévation** plutôt que X-Y, pour le débattement | Azimut sur ±180° et élévation de −2° à +92° : tout le ciel est couvert. Au pôle Sud lunaire, le Soleil fait le tour de l'horizon en un jour lunaire : l'azimut le suit naturellement |
-| Un axe par coordonnée de la cible | Les deux coordonnées du Soleil (azimut, hauteur), calculées par l'ESP32, donnent directement les angles des deux moteurs : commande simple |
+| Un axe par coordonnée de la cible | Les deux coordonnées du Soleil (azimut, hauteur), calculées par l'ESP32, donnent directement les angles des deux moteurs : commande simple. Les deux erreurs du capteur solaire (haut / bas, gauche / droite) corrigent chacune un moteur (§ 13) |
 | Boucle de câble plutôt qu'un collecteur tournant | Câbles par le moyeu creux de la chape, boucle dans le socle, azimut limité à ±180° puis retour |
 | Composants du commerce | Moteurs NEMA 17 et 11, roulements standard (6806, 6801, 685), accouplements, ESP32 |
 | Même module d'entraînement sur les deux axes | Chaque axe : moteur, accouplement, vis sans fin sur 2 roulements 685 dans un palier, roue |

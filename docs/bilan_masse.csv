@@ -27,6 +27,7 @@ Roulement_6806;2;Acier 440C;0.071;Roulement d'azimut 6806 (61806) 30 x 42 x 7, p
 Entretoise;3;Al 7075-T73;0.066;Entretoise Ø12x1
 Fond_Socle;1;Al 6061-T6;0.064;Fond du socle, centrage dans la colonne
 Boite_Jonction;1;PPO (boîte de jonction);0.043;Boîte de jonction + presse-étoupe
+Capteur_Solaire_Boitier;1;Al 6061-T6;0.038;Capteur solaire : boîtier noir, 4 photodiodes BPW34 sous une croix d'ombre de 20 mm (anodisé noir)
 Accouplement;2;Al 7075-T73;0.036;Accouplement flexible 5/5
 Roulement_608;2;Acier 440C;0.034;Roulement d'élévation 608 8 x 22 x 7, protégé ZZ (ou 2RS)
 Support_Moteur_Elevation;1;Al 6061-T6;0.031;Support du moteur d'élévation
@@ -34,6 +35,7 @@ Vis_Elevation;1;Acier inox 17-4PH;0.024;Vis sans fin d'élévation m1 Ø16, un f
 Cellules_PV;1;Silicium polycristallin;0.022;72 cellules 33.8x25.4
 Axe_Articulation;3;Ti-6Al-4V;0.021;Axe Ø6 revêtu MoS2
 Axe_Entretoise;6;Ti-6Al-4V;0.021;Axe Ø5
+Capteur_Solaire_Support;1;Al 6061-T6;0.017;Équerre du capteur solaire, vissée sur le petit côté du cadre (2 x M3, écrous dans le cadre)
 Palier_Vis_Elevation;1;Al 6061-T6;0.017;Palier de la vis d'élévation
 Vis_Azimut;1;Acier inox 17-4PH;0.016;Vis sans fin d'azimut m0,8 Ø12, un filet
 Palier_Vis_Azimut;1;Al 6061-T6;0.015;Palier de la vis d'azimut
@@ -45,12 +47,13 @@ Vis_CHC_M3x14;8;Acier (visserie);0.008;Vis CHC M3x14 (ISO 4762)
 Pivot_Libre;1;Acier inox 17-4PH;0.008;Pivot Ø8 libre
 Arbre_Vis_Azimut;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'azimut
 Arbre_Vis_Elevation;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'élévation
+Vis_CHC_M3x10;8;Acier (visserie);0.007;Vis CHC M3x10 (ISO 4762)
 Vis_CHC_M3x8;6;Acier (visserie);0.005;Vis CHC M3x8 (ISO 4762)
 Vis_CHC_M3x25;3;Acier (visserie);0.004;Vis CHC M3x25 (ISO 4762)
 Vis_CHC_M3x12;4;Acier (visserie);0.004;Vis CHC M3x12 (ISO 4762)
-Vis_CHC_M3x10;4;Acier (visserie);0.004;Vis CHC M3x10 (ISO 4762)
+Ecrou_M3;6;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_CHC_M2.5x6;4;Acier (visserie);0.002;Vis CHC M2,5x6 (ISO 4762)
-Ecrou_M3;4;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
-TOTAL;;;25.84;
+Photodiode_BPW34;4;Époxy transparent + silicium;0.000;Photodiode BPW34 (Vishay), surface sensible 7,5 mm²
+TOTAL;;;25.90;

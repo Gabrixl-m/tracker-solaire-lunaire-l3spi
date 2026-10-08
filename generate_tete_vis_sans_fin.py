@@ -58,6 +58,8 @@ ORIENTATION = {
     "Roue_Elevation": [((0, 1, 0), -90)],
     "Pivot_Entraine": [((1, 0, 0), 180)],        # couché sur son méplat
     "Pivot_Libre": [((0, 1, 0), 90)],            # debout, tête en bas
+    "Capteur_Solaire_Boitier": [],               # croix en haut
+    "Capteur_Solaire_Support": [((1, 0, 0), 180)],   # plaque sur le plateau
 }
 
 
@@ -272,11 +274,12 @@ def verifier(assy):
 
 
 def bilan(flat):
-    rows, _M, _cg = G.mass_properties([x for x in flat if G.part_key(x[0]) not in G.PANEL_PARTS
+    rows, _M, _cg = G.mass_properties([x for x in flat if G.part_key(x[0]) not in G.PANEL_PARTS + G.CAPTEUR_PARTS
                                        and "/SA_Reference_Trepied/" not in x[0]])
-    print(f"  masse de la tête (hors panneau) : {sum(r[4] for r in rows):.2f} kg")
+    print(f"  masse de la tête (hors panneau et capteur solaire) : {sum(r[4] for r in rows):.2f} kg")
     M, r, besoin, dispo = couples()
-    print(f"  partie basculante (chapeau, roue, rails, panneau) : {M:.2f} kg, CdG à {r * 1000:.1f} mm de l'axe")
+    print(f"  partie basculante (chapeau, roue, rails, panneau, capteur solaire) : {M:.2f} kg, "
+          f"CdG à {r * 1000:.1f} mm de l'axe")
     for key, mot in (("el", G.MOT_EL), ("az", G.MOT_AZ)):
         d = dispo[key]
         cal = hold(mot) * d["ratio"] * math.tan(math.radians(d["lam"])) / math.tan(math.radians(d["lam"]) + math.atan(0.15))

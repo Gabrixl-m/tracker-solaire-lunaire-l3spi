@@ -1,7 +1,8 @@
 # Liste d'achats — démonstration sur Terre (tête imprimée en PETG)
 
-Tout ce qu'il faut acheter pour **une tête rotative à vis sans fin** en version PETG, en plus
-des pièces imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, § 12).
+Tout ce qu'il faut acheter pour **une tête rotative à vis sans fin** en version PETG et son
+**capteur solaire** (4 photodiodes sous une croix d'ombre, README § 13), en plus des pièces
+imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, § 12).
 Les deux pivots d'élévation sont **imprimés** : le seul axe en acier à acheter est la tige Ø5
 des arbres des vis sans fin.
 
@@ -68,22 +69,26 @@ des arbres des vis sans fin.
 | **Fin de course** | Micro-switch à levier | 1 | `KW12 micro limit switch` (ou `endstop switch`) | Origine de l'élévation, en butée basse | 1 € |
 | **Capteur à effet Hall + aimant** | Capteur A3144 (ou module KY-003) + aimant néodyme 5 × 2 mm | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Câbles** | Câbles moteurs 4 fils (souvent fournis avec les moteurs), fils Dupont, câble souple 4 fils d'environ 1,5 m | — | `stepper motor cable 4 pin`, `dupont wires` | Liaisons | 5 € |
+| **Photodiode BPW34** (Vishay ou Osram) | Photodiode PIN au silicium, boîtier 5,4 × 4,3 × 3,2 mm, surface sensible 7,5 mm² | 4 + 1 de rechange | `BPW34` (Gotronic : réf. 03472) | Capteur solaire, une par coin de la croix | 1 € |
+| **Résistance 1 kΩ**, 1/4 W | Plus 4 de 680 Ω et 4 de 2,2 kΩ pour ajuster le niveau | 4 | `1k ohm resistor 1/4W` | Une par photodiode, de l'anode à la masse, à côté de l'ESP32 | 0,1 € |
+| **Câble 6 à 8 fils** | Environ 1,5 m. Un bout de câble réseau (8 fils) convient | 1 | `câble réseau`, `6 core cable` | Du capteur à l'ESP32 : 3,3 V et les 4 signaux | 2 € |
+| Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
 Le câblage (broches de l'ESP32, réglage des TMC2209, bibliothèques) est décrit dans le
-README, § 2, « Commande par ESP32 ».
+README, § 2, « Commande par ESP32 ». Le branchement du capteur solaire est au § 13.
 
 ## 3. Visserie
 
 | Article | Qté | Où |
 |---|---|---|
 | Vis CHC M3 × 8 (ISO 4762) | 6 | Rondelle d'arrêt du moyeu (2), NEMA 17 sur son support (4) |
-| Vis CHC M3 × 10 | 7 | Palier et support du moteur d'azimut, par-dessus la chape (4) ; fond sous le socle, par-dessous, têtes noyées (3) |
+| Vis CHC M3 × 10 | 11 | Palier et support du moteur d'azimut, par-dessus la chape (4) ; fond sous le socle, par-dessous, têtes noyées (3) ; capteur solaire : équerre sur le petit côté du cadre (2) et boîtier sur l'équerre, par-dessous (2) |
 | Vis CHC M3 × 12 | 7 | Chape sur le moyeu (3), palier et support d'élévation (4) |
 | Vis CHC M3 × 14 | 8 | Rails sur le chapeau (4, par-dessus, têtes noyées), cadre du panneau sur les rails (4, par-dessous, têtes noyées) |
 | **Vis à tête fraisée M3 × 8** (ISO 10642) | 3 | Roue d'azimut sur le socle (doivent affleurer) |
 | Vis CHC M2,5 × **6** | 4 | NEMA 11 sur son support. Pas plus longues : ses taraudages ne font qu'environ 2,5 mm de profondeur |
 | **Vis sans tête M3 × 4** (bout plat) | 2 | Blocage de chaque vis sans fin sur son arbre |
-| Écrou M3 (ISO 4032) | 4 | Dans le cadre du panneau, sur l'aile arrière : un par vis des rails |
+| Écrou M3 (ISO 4032) | 6 | Dans le cadre du panneau : sur l'aile arrière, un par vis des rails (4) ; contre le petit côté, pour l'équerre du capteur solaire (2) |
 | **Écrou 1/4"-20 UNC** (filetage photo), 7/16" = 11,1 mm sur plats | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied photo |
 
 Le plus simple est d'acheter un coffret :
@@ -102,13 +107,15 @@ Compter 10 à 15 € en tout.
 | Article | Caractéristiques | Qté | À chercher | Remarque |
 |---|---|---|---|---|
 | **Rails du panneau** | Barre alu 12 × 12 mm, 2 × 253 mm | 2 | `aluminium square bar 12mm` | Le modèle prévoit 12 × 13 mm : avec une barre de 12 × 12, ajouter une rondelle de 1 mm entre chaque rail et le chapeau. Percer 4 trous Ø3,4 par rail : 2 à 14 mm de part et d'autre du milieu (vis du chapeau, lamage Ø6 × 3,5 dessus) et 1 à 6 mm de chaque bout (vis du panneau, lamage Ø6 × 3,5 dessous) |
-| **Cadre du panneau** (le tien) | — | — | — | Percer 4 trous Ø3,4 dans l'aile arrière des deux grands côtés, au droit des rails : à 44 mm de part et d'autre du milieu, et à 6 mm du bord extérieur. L'aile doit faire au moins 10 mm de large |
+| **Cadre du panneau** (le tien) | — | — | — | Percer 4 trous Ø3,4 dans l'aile arrière des deux grands côtés, au droit des rails : à 44 mm de part et d'autre du milieu, et à 6 mm du bord extérieur. L'aile doit faire au moins 10 mm de large. Pour le capteur solaire, percer aussi 2 trous Ø3,4 dans un **petit côté** (celui du pivot libre, à l'opposé de la roue d'élévation) : à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre, sous le laminé |
 
 ## 5. Consommables
 
 | Article | Qté | À chercher | ≈ Prix |
 |---|---|---|---|
 | **Filament PETG 1,75 mm** (teinte claire de préférence) | 1 bobine de 1 kg (environ 300 g utilisés) | `PETG filament 1.75mm 1kg` | 20 € |
+| **PETG noir** pour le boîtier du capteur solaire, qui doit être opaque | Environ 20 g : un reste de bobine suffit. À défaut, imprimer en clair et peindre en noir mat, intérieur des logements compris | `black PETG filament` | — |
+| Colle chaude ou colle époxy (bloque les photodiodes dans leurs logements) | 1 | `hot glue` | 3 € |
 | **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG ; pas les roulements, graissés d'origine) | 1 tube | `PTFE grease` | 8 € |
 | Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, pivots imprimés dans le chapeau) | 1 | `super glue` | 3 € |
 | Colle à roulements, type Loctite 641 (seulement si les arbres font moins de 4,98 mm) | 1 | `Loctite 641` | 8–12 € |
@@ -121,6 +128,6 @@ Compter 10 à 15 € en tout.
 
 ---
 
-**Ordre de grandeur total** : environ **100 à 150 €** avec une alimentation secteur, sans
-compter le trépied ni le panneau. Il faut ajouter environ 50 € pour une batterie LiFePO4
+**Ordre de grandeur total** : environ **100 à 150 €** avec une alimentation secteur, capteur
+solaire compris (environ 8 €), sans compter le trépied ni le panneau. Il faut ajouter environ 50 € pour une batterie LiFePO4
 destinée à la démonstration en extérieur.

@@ -107,7 +107,7 @@ Compter 10 à 15 € en tout.
 | Article | Caractéristiques | Qté | À chercher | Remarque |
 |---|---|---|---|---|
 | **Rails du panneau** | Barre alu 12 × 12 mm, 2 × 253 mm | 2 | `aluminium square bar 12mm` | Le modèle prévoit 12 × 13 mm : avec une barre de 12 × 12, ajouter une rondelle de 1 mm entre chaque rail et le chapeau. Percer 4 trous Ø3,4 par rail : 2 à 14 mm de part et d'autre du milieu (vis du chapeau, lamage Ø6 × 3,5 dessus) et 1 à 6 mm de chaque bout (vis du panneau, lamage Ø6 × 3,5 dessous) |
-| **Cadre du panneau** (le tien) | — | — | — | Percer 4 trous Ø3,4 dans l'aile arrière des deux grands côtés, au droit des rails : à 44 mm de part et d'autre du milieu, et à 6 mm du bord extérieur. L'aile doit faire au moins 10 mm de large. Pour le capteur solaire, percer aussi 2 trous Ø3,4 dans un **petit côté** (celui du pivot libre, à l'opposé de la roue d'élévation) : à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre, sous le laminé |
+| **Cadre du panneau** (celui du panneau acheté) | — | — | — | Percer 4 trous Ø3,4 dans l'aile arrière des deux grands côtés, au droit des rails : à 44 mm de part et d'autre du milieu, et à 6 mm du bord extérieur. L'aile doit faire au moins 10 mm de large. Pour le capteur solaire, percer aussi 2 trous Ø3,4 dans un **petit côté** (celui du pivot libre, à l'opposé de la roue d'élévation) : à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre, sous le laminé |
 
 ## 5. Consommables
 

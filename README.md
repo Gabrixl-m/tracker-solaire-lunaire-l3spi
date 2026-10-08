@@ -541,13 +541,13 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 # Partie B — La démonstration sur Terre (tête imprimée en PETG)
 
-La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur ton
-trépied photo Dexter (§ 18) :
+La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
+trépied photo grand public (§ 18) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur le trépied Dexter](docs/demo_trepied_dexter_iso.png) | ![Côté moteurs](docs/demo_trepied_dexter_arriere.png) |
-| ![De profil](docs/demo_trepied_dexter_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_dexter_detail.png) |
+| ![Sur un trépied photo](docs/demo_trepied_photo_iso.png) | ![Côté moteurs](docs/demo_trepied_photo_arriere.png) |
+| ![De profil](docs/demo_trepied_photo_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_photo_detail.png) |
 
 ## 11. Du cas réel à la démonstration : ce qui change
 
@@ -598,7 +598,7 @@ l'électronique.
 
 | Grandeur | Cas réel | Démonstration PETG |
 |---|---|---|
-| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied photo (vis 1/4"), axe à 758 mm sur le trépied Dexter (§ 18) |
+| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied photo (vis 1/4"), axe à 758 mm sur le trépied modélisé (§ 18) |
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
 | Masse de la tête (hors panneau) | 1,86 kg | 1,20 kg |
 | Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,50 kg, centre de gravité à 62,0 mm de l'axe |
@@ -919,7 +919,7 @@ GND ─────────────────────────�
    **retient l'écart** entre les angles calculés et les angles où le capteur a centré le
    Soleil. Quand un nuage passe, le calcul seul reste juste.
 
-## 18. Sur un trépied photo : le trépied Dexter
+## 18. Sur un trépied photo grand public
 
 ![Fond sur trépied photo](docs/explications/fond_trepied_photo.png)
 
@@ -937,13 +937,13 @@ colonne Ø50.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
   La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
 * **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet.
-  Le calcul est fait ci-dessous pour le trépied Dexter.
+  Le calcul est fait ci-dessous pour un trépied photo courant.
 
-### Sur le trépied Dexter (le tien)
+### Le trépied modélisé : dimensions et stabilité
 
 Les images de la démonstration montée sur ce trépied sont en tête de la Partie B.
 
-L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step`** : tête
+L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step`** : tête
 PETG, panneau, capteur solaire et trépied, posé sur le sol en y = 0. Il est généré par
 `scripts/generate_demo_trepied.py`.
 
@@ -983,7 +983,7 @@ un vent perpendiculaire au panneau (Cx 1,2, vent sur le trépied négligé) :
 * Au-dessus d'environ 10 m/s de vent, ou en partant, mettre le panneau à plat (élévation 90°).
 * **Rotule** : serrer fermement les deux blocages (panoramique et inclinaison), mettre le
   plateau de niveau avec la bulle, et vérifier que le clip du plateau est bien verrouillé. Si
-  ta rotule se dévisse du trépied et que le filetage dessous est un 1/4", la tête PETG peut s'y
+  la rotule se dévisse du trépied et que le filetage dessous est un 1/4", la tête PETG peut s'y
   visser directement : plus rigide, et 7 cm plus bas.
 
 ## 19. Couples, marges et tenue de la version PETG
@@ -1063,15 +1063,15 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step` | La démonstration complète sur ton trépied photo Dexter : tête PETG, panneau, capteur solaire et trépied (§ 18) |
+| `CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_dexter_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur le trépied Dexter |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
-| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur le trépied Dexter, vérifie les interférences et calcule la stabilité (basculement, vent) |
+| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py` | Génèrent les rendus PNG et les images annotées |
 | `requirements.txt` | Dépendances Python (CadQuery) |
@@ -1124,7 +1124,7 @@ paramètres sont regroupés en tête de `scripts/generate_tracker.py` :
 * dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (Partie B).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
-`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied Dexter (`DEXTER`, lests) sont en tête
+`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied photo (`TREPIED_DEMO`, lests) sont en tête
 de `scripts/generate_demo_trepied.py`.
 
 ```bash
@@ -1132,7 +1132,7 @@ pip install -r requirements.txt
 python scripts/generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python scripts/generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
-python scripts/generate_demo_trepied.py               # démonstration sur le trépied Dexter : STEP, contrôles, stabilité
+python scripts/generate_demo_trepied.py               # démonstration sur trépied photo : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
 Démonstration sur Terre : la tête PETG, le panneau et le capteur solaire vissés sur le trépied
-photo réel (trépied Dexter de chantier, avec rotule et plateau à vis 1/4").
+photo grand public (trépied photo ou de chantier, avec rotule et plateau à vis 1/4").
 
-Le trépied est modélisé simplement, d'après des photos et deux cotes mesurées :
+Le trépied est modélisé simplement, d'après des photos et deux cotes mesurées sur un trépied du commerce :
   - dessus du plateau à 600 mm du sol (sans la vis 1/4" qui dépasse) ;
   - pointes des pieds à 230 mm de l'axe, au sol.
 Les autres cotes du trépied (tubes, corps, rotule) sont estimées sur les photos.
 
 Ce script :
-  - exporte l'assemblage CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step (Y-up, sol en y = 0) ;
+  - exporte l'assemblage CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step (Y-up, sol en y = 0) ;
   - vérifie les interférences et la garde entre la partie qui tourne et le trépied ;
   - calcule la stabilité : angle de basculement et vent de basculement, dans la pire
     orientation du panneau, sans lest et avec un lest suspendu sous le trépied ;
@@ -29,10 +29,10 @@ import generate_tete_vis_sans_fin as T
 import generate_tracker as G
 from generate_tracker import box_span, cyl_dir, cyl_z, rot, trans
 
-OUT_STEP = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG", "Demo_Trepied_Dexter.step")
+OUT_STEP = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG", "Demo_Trepied_Photo.step")
 
 # Trépied (repère Z-up, origine au sol sur l'axe ; jambes vers 90°, 210° et 330°)
-DEXTER = dict(
+TREPIED_DEMO = dict(
     h_plateau=600.0,          # mesuré : sol -> dessus du plateau
     r_pieds=230.0,            # mesuré : axe -> pointe des pieds
     # estimé sur les photos :
@@ -59,7 +59,7 @@ LESTS = (0.0, 2.0, 3.0)             # lest suspendu sous le trépied (kg), à 50
 
 def z_tete():
     """Hauteur (sol) de l'origine du repère tête : le dessous du fond est sur le plateau."""
-    return DEXTER["h_plateau"] - G.z_fond_photo()
+    return TREPIED_DEMO["h_plateau"] - G.z_fond_photo()
 
 
 R_EMBOUT = 10.0                     # embout caoutchouc arrondi : il touche le sol à r_pieds
@@ -67,7 +67,7 @@ R_EMBOUT = 10.0                     # embout caoutchouc arrondi : il touche le s
 
 def geometrie_jambe():
     """Hauteur des charnières, inclinaison des jambes, longueur charnière -> centre de l'embout."""
-    d = DEXTER
+    d = TREPIED_DEMO
     zc = d["h_plateau"] - d["plateau"][2] - d["rotule_h"] - d["corps"][1] / 2   # axe des charnières
     beta = math.atan2(d["r_pieds"] - d["r_charniere"], zc - R_EMBOUT)
     return zc, beta, math.hypot(d["r_pieds"] - d["r_charniere"], zc - R_EMBOUT)
@@ -76,7 +76,7 @@ def geometrie_jambe():
 def le_long(phi, s):
     """Point de l'axe d'une jambe (azimut phi), à la distance s de la charnière."""
     zc, beta, _L = geometrie_jambe()
-    r = DEXTER["r_charniere"] + s * math.sin(beta)
+    r = TREPIED_DEMO["r_charniere"] + s * math.sin(beta)
     a = math.radians(phi)
     return (r * math.cos(a), r * math.sin(a), zc - s * math.cos(beta))
 
@@ -108,7 +108,7 @@ def barre(p0, p1, w, e):
 
 def pieces_trepied():
     """Pièces du trépied, chacune déjà à sa place (repère Z-up, sol en z = 0)."""
-    d = DEXTER
+    d = TREPIED_DEMO
     zc, beta, L = geometrie_jambe()
     z_pl = d["h_plateau"] - d["plateau"][2]                   # dessous du plateau
     z_ct = z_pl - d["rotule_h"]                               # dessus du corps
@@ -178,19 +178,19 @@ def enregistrer_trepied():
         faites.append(n)
     noms = []
     for n, (wp, c) in pieces.items():
-        nom = f"Trepied_Dexter_{n}"
+        nom = f"Trepied_Photo_{n}"
         mat = "Al (trépied)" if c == "alu" else "Plastique (trépied)"
-        G.reg(nom, wp, mat, COULEURS[c], f"Trépied photo Dexter (modèle simplifié) : {n.replace('_', ' ').lower()}")
+        G.reg(nom, wp, mat, COULEURS[c], f"Trépied photo grand public (modèle simplifié) : {n.replace('_', ' ').lower()}")
         noms.append(nom)
     return noms
 
 
-def assemblage(az, el, noms, name="Demo_Trepied_Dexter"):
+def assemblage(az, el, noms, name="Demo_Trepied_Photo"):
     root = cq.Assembly(name=name)
-    tr = cq.Assembly(name="SA_Trepied_Dexter")
+    tr = cq.Assembly(name="SA_Trepied_Photo")
     for n in noms:
         G.add(tr, n)
-    root.add(tr, name="SA_Trepied_Dexter", loc=G.TO_YUP)
+    root.add(tr, name="SA_Trepied_Photo", loc=G.TO_YUP)
     zt = trans(0, 0, z_tete())
     root.add(G.build_head_fixed(), name="SA_Tete_Fixe", loc=G.TO_YUP * zt)
     root.add(G.build_head(az, el), name="SA_Tete_Orientable", loc=G.TO_YUP * zt * rot((0, 0, 1), az))
@@ -207,14 +207,14 @@ def stabilite(noms):
     Trois ensembles : le fixe (trépied + partie fixe de la tête), la partie qui tourne en azimut
     sans le panneau, et la partie qui bascule ; on fait tourner leurs centres de gravité."""
     fl = G.flatten(assemblage(0.0, 90.0, noms, "stab"))
-    trep = [x for x in fl if "/SA_Trepied_Dexter/" in x[0]]
+    trep = [x for x in fl if "/SA_Trepied_Photo/" in x[0]]
     tete_fixe = [x for x in fl if "/SA_Tete_Fixe/" in x[0]]
     tourne = [x for x in fl if "/SA_Tete_Orientable/" in x[0] and "/SA_Panneau/" not in x[0]]
     m0, c0 = masse_cdg(trep)
     m1, c1 = masse_cdg(tete_fixe)
     m2, c2 = masse_cdg(tourne)
     _rows, m3, c3 = G.mass_properties(G.flatten(G.build_panel(True)))     # repère panneau (Z-up)
-    d = DEXTER
+    d = TREPIED_DEMO
     zt = z_tete()
     a_ar = d["r_pieds"] / 2                                       # distance axe -> arête d'appui
     normales = [math.radians(f + 60) for f in d["phis"]]          # normales sortantes des arêtes
@@ -291,7 +291,7 @@ def garde(noms):
         for az in (0.0, 60.0, 120.0, 180.0, 240.0, 300.0):
             fl = G.flatten(assemblage(az, el, noms, "g"))
             mob = [x for x in fl if "/SA_Tete_Orientable/" in x[0]]
-            tr = [x for x in fl if "/SA_Trepied_Dexter/" in x[0]]
+            tr = [x for x in fl if "/SA_Trepied_Photo/" in x[0]]
             dd = G.min_clearance(mob, tr, cutoff=60.0)
             if dd[0] < pire[0]:
                 pire = dd + (az, el)
@@ -305,12 +305,12 @@ def rendus(noms):
     r = build_renderer(assy, sun)
     r.SetBackground(0.80, 0.86, 0.93)                  # ciel de jour : démonstration sur Terre
     f0 = (0, 520, 0)
-    shoot(r, "demo_trepied_dexter_iso.png", (1350, 1050, -1500), focal=f0, angle=34)
-    shoot(r, "demo_trepied_dexter_profil.png", (2300, 560, 0), focal=f0, angle=30)
-    shoot(r, "demo_trepied_dexter_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
+    shoot(r, "demo_trepied_photo_iso.png", (1350, 1050, -1500), focal=f0, angle=34)
+    shoot(r, "demo_trepied_photo_profil.png", (2300, 560, 0), focal=f0, angle=30)
+    shoot(r, "demo_trepied_photo_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
     r = build_renderer(assy, sun, ground=False)
     r.SetBackground(0.80, 0.86, 0.93)
-    shoot(r, "demo_trepied_dexter_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30)
+    shoot(r, "demo_trepied_photo_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30)
 
 
 def main():

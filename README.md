@@ -32,13 +32,15 @@ Toutes les cotes sont en **millimètres, à taille réelle**.
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
+| `CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step` | La démonstration complète sur ton trépied photo Dexter : tête PETG, panneau, capteur solaire et trépied (§ 12) |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png` | Rendus du tracker (iso, face, profil, arrière, détails) et de la tête seule (dont deux coupes) |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_dexter_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur le trépied Dexter |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
+| `generate_demo_trepied.py` | Monte la tête PETG sur le trépied Dexter, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `render_apercu.py`, `render_tete_vis_sans_fin.py`, `render_explications.py` | Génèrent les rendus PNG et les images annotées |
 
@@ -542,6 +544,8 @@ pip install -r requirements.txt
 python generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
+python generate_demo_trepied.py               # démonstration sur le trépied Dexter : STEP, contrôles, stabilité
+xvfb-run -a python generate_demo_trepied.py --rendus   # ses rendus
 python optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 xvfb-run -a python render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python render_tete_vis_sans_fin.py   # rendus de la tête seule
@@ -701,10 +705,59 @@ colonne Ø50.
 * La vis du trépied doit dépasser du plateau d'au moins **4,5 mm**. Au-delà de 7 mm, elle
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
-  La tête et le panneau pèsent environ 3 kg : vérifier la charge maximale du trépied.
-* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet,
-  vers 8 m/s de vent sans lest selon mon estimation. Le monter bas, jambes écartées au
-  maximum, et suspendre un lest de 2 à 3 kg sous la colonne.
+  La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
+* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet.
+  Le calcul est fait ci-dessous pour le trépied Dexter.
+
+### Sur le trépied Dexter (le tien)
+
+| Vue d'ensemble, panneau à 40° | Côté moteurs |
+|---|---|
+| ![Sur le trépied Dexter](docs/demo_trepied_dexter_iso.png) | ![Côté moteurs](docs/demo_trepied_dexter_arriere.png) |
+| ![De profil](docs/demo_trepied_dexter_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_dexter_detail.png) |
+
+L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step`** : tête
+PETG, panneau, capteur solaire et trépied, posé sur le sol en y = 0. Il est généré par
+`generate_demo_trepied.py`.
+
+Le trépied y est modélisé simplement, à partir de deux cotes mesurées :
+* le dessus du plateau est à **600 mm** du sol (sans la vis 1/4" qui dépasse) ;
+* les pointes des pieds sont à **230 mm** de l'axe, au sol.
+
+Le reste (tubes, corps, rotule) est estimé sur les photos.
+
+**Ce que ça donne :**
+* l'axe d'élévation est à **758 mm** du sol. Panneau vertical, son bord haut est à environ
+  0,89 m, et son point le plus bas à environ 0,63 m ;
+* **aucune interférence**. Le panneau passe à 33 mm au plus près du plateau du trépied (panneau
+  vertical) : les molettes de la rotule restent en dessous ;
+* charge sur la rotule : tête et panneau font **2,4 kg**. Leur centre de gravité s'écarte
+  jusqu'à 29 mm de l'axe, ce qui fait 0,7 N·m que les blocages de la rotule doivent tenir ;
+* masse du trépied estimée à 0,9 kg (à peser : plus lourd, il serait un peu plus stable).
+
+**Stabilité.** C'est le point faible : les pieds ne sont qu'à 23 cm de l'axe. Les bords du
+triangle d'appui sont donc à 11,5 cm du centre, alors que l'axe est à 76 cm du sol et que le
+panneau déporte son centre de gravité. Calcul fait dans toutes les orientations du panneau, avec
+un vent perpendiculaire au panneau (Cx 1,2, vent sur le trépied négligé) :
+
+| Lest suspendu sous le trépied | Pire orientation : pente de basculement | Pire orientation : vent de basculement | Panneau tourné vers une jambe |
+|---|---|---|---|
+| Aucun | 8,6° | **7,9 m/s (28 km/h)** | 9,2° ; 9,4 m/s (34 km/h) |
+| 2 kg | 14,0° | 10,4 m/s (37 km/h) | 14,6° ; 11,6 m/s (42 km/h) |
+| 3 kg | 16,5° | **11,4 m/s (41 km/h)** | 17,1° ; 12,6 m/s (45 km/h) |
+
+* **En intérieur, sans lest** : ça tient, sur un sol à peu près plat.
+* **Dehors, un lest de 2 à 3 kg est indispensable** : un sac de sable ou une bouteille d'eau,
+  suspendu sous la colonne, juste au-dessus du sol. Sans lest, une brise de 28 km/h suffit à
+  le renverser.
+* **Orienter une jambe vers le sud**, vers le Soleil de midi. Le panneau regarde alors vers
+  cette jambe la plus grande partie de la journée, et un vent de dos le pousse vers elle :
+  c'est l'orientation la plus favorable (colonne de droite).
+* Au-dessus d'environ 10 m/s de vent, ou en partant, mettre le panneau à plat (élévation 90°).
+* **Rotule** : serrer fermement les deux blocages (panoramique et inclinaison), mettre le
+  plateau de niveau avec la bulle, et vérifier que le clip du plateau est bien verrouillé. Si
+  ta rotule se dévisse du trépied et que le filetage dessous est un 1/4", la tête PETG peut s'y
+  visser directement : plus rigide, et 7 cm plus bas.
 
 ### Ordre de montage
 

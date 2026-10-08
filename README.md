@@ -541,6 +541,14 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 # Partie B — La démonstration sur Terre (tête imprimée en PETG)
 
+La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur ton
+trépied photo Dexter (§ 18) :
+
+| Vue d'ensemble, panneau à 40° | Côté moteurs |
+|---|---|
+| ![Sur le trépied Dexter](docs/demo_trepied_dexter_iso.png) | ![Côté moteurs](docs/demo_trepied_dexter_arriere.png) |
+| ![De profil](docs/demo_trepied_dexter_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_dexter_detail.png) |
+
 ## 11. Du cas réel à la démonstration : ce qui change
 
 Pour la démonstration, toute la partie rotative est imprimée en PETG, **vis sans fin
@@ -933,10 +941,7 @@ colonne Ø50.
 
 ### Sur le trépied Dexter (le tien)
 
-| Vue d'ensemble, panneau à 40° | Côté moteurs |
-|---|---|
-| ![Sur le trépied Dexter](docs/demo_trepied_dexter_iso.png) | ![Côté moteurs](docs/demo_trepied_dexter_arriere.png) |
-| ![De profil](docs/demo_trepied_dexter_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_dexter_detail.png) |
+Les images de la démonstration montée sur ce trépied sont en tête de la Partie B.
 
 L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied_Dexter.step`** : tête
 PETG, panneau, capteur solaire et trépied, posé sur le sol en y = 0. Il est généré par

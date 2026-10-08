@@ -93,6 +93,11 @@ Tracker_Lunaire_PoleSud
 
 ### Architecture
 
+La tête est un **mécanisme de pointage bi-axe azimut-élévation (AE)** : un axe vertical pour
+tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), et une fourche
+(la chape) qui porte le panneau. Le choix de ce schéma est expliqué au § 13, avec l'article
+qui l'a guidé.
+
 | Élément | Choix |
 |---|---|
 | **Socle** (brun) | Cylindre Ø62 posé sur la colonne du trépied, centré dedans par le fond et bloqué en rotation par une vis M3 radiale à travers la colonne (version PETG : fond vissé sur la vis 1/4" d'un trépied photo, § 12). Il porte deux **roulements 6806** (Ø30/Ø42 × 7) et la **roue d'azimut, fixe**, posée à plat sur le socle et tenue par 3 vis M3 fraisées affleurantes, sous le passage de la vis d'azimut. Un passe-câble est orienté vers l'unité au sol |
@@ -501,7 +506,15 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 * Sur Terre, le trépied non ancré bascule vers 16 m/s de vent : l'ancrer pour les
   démonstrations en extérieur.
 * Le dimensionnement mécanique (efforts, lancement, thermique) reste à faire une fois la
-  masse définitive connue.
+  masse définitive connue. Trois points sont déjà identifiés pour une version de vol :
+  * **verrou de lancement** : au lancement (≈ 15 g), le panneau non équilibré ferait
+    environ 13,5 N·m sur l'axe d'élévation, à la limite des dents de bronze. Il faut le
+    brider à plat pendant le voyage, puis le libérer une fois posé ;
+  * **logements de roulements en titane**, ou avec des bagues en acier : entre −173 °C et
+    +127 °C, un logement en aluminium serrerait le 6806 de 0,11 mm de plus à froid et lui
+    laisserait 0,06 mm de jeu à chaud ;
+  * **capots sur les engrenages**, avec des passages en chicane : la poussière de régolithe
+    est très abrasive. Les roulements, eux, sont déjà protégés par leurs flasques.
 
 ## 11. Régénérer ou modifier la CAO
 
@@ -776,3 +789,65 @@ colonne Ø50.
 * **Fluage** : sous une charge permanente, le PETG se déforme lentement. Entre deux
   démonstrations, garer le panneau **à plat (élévation 90°)**, où la pesanteur ne charge
   presque plus la denture.
+
+## 13. Bibliographie
+
+### Choix du mode de rotation : le schéma azimut-élévation (AE)
+
+**[1]** P. Garner, N. Phillips, A. Cawthorne, A. da Silva Curiel, P. Davies, L. Boland
+(Surrey Satellite Technology Ltd, SSTL), *« Follow that Ground Station! And double the data
+throughput using polarization diversity »*, 23rd Annual AIAA/USU Conference on Small
+Satellites, Logan (Utah), 2009, article SSC09-VI-8.
+
+Je me suis appuyé sur cet article pour choisir le mode de rotation du tracker. Il décrit le
+développement par SSTL d'un mécanisme de pointage d'antenne à deux axes (APM) pour le
+satellite d'observation NigeriaSat-2. Ce n'est pas un tracker solaire, mais le problème est
+le même : orienter un objet plat vers une cible qui se déplace dans le ciel, avec un
+mécanisme léger, peu coûteux et sobre en énergie.
+
+**Ce que montre l'article :**
+* **Orientation mécanique plutôt qu'électronique.** SSTL écarte les antennes à balayage
+  électronique (complexes, chères, gourmandes, débattement limité) au profit d'un mécanisme
+  orientable : faible consommation, grand débattement, facile à agrandir. L'article note
+  même qu'un seul axe du mécanisme pourrait servir d'entraînement de panneau solaire (SADM).
+* **Trois architectures à deux axes comparées** : X-Y, azimut-élévation (AE) et plateau
+  oscillant (« swashplate »).
+  * Le schéma **X-Y est rejeté**, car son débattement est insuffisant.
+  * Les deux autres sont construits en modèles d'ingénierie et testés en endurance.
+  * La conception finale retenue est **azimut-élévation**, avec les modules d'entraînement
+    (moteurs, roulements, engrenages) mis au point sur le plateau oscillant.
+* **Le résultat, l'APM AE-90**, est qualifié en vibrations et en vide thermique, et a dépassé
+  100 000 cycles. Il pointe à mieux que 1°, sur ±270° en azimut et ±114,7° en élévation. Il
+  pèse 2,7 kg et consomme environ 3,4 W quand les deux axes bougent.
+* **Autres choix de conception** :
+  * composants du commerce (COTS) pour réduire le coût ;
+  * passage des câbles par l'axe d'azimut grâce à une boucle de câble (jusqu'à 540°),
+    plutôt que par un collecteur tournant ;
+  * axes équilibrés pour éviter un verrou de lancement.
+
+**Ce que j'en ai repris :**
+
+| Choix de l'article [1] | Dans ce tracker |
+|---|---|
+| Schéma **azimut-élévation** plutôt que X-Y, pour le débattement | Azimut sur ±180° et élévation de −2° à +92° : tout le ciel est couvert. Au pôle Sud lunaire, le Soleil fait le tour de l'horizon en un jour lunaire : l'azimut le suit naturellement |
+| Un axe par coordonnée de la cible | Les deux coordonnées du Soleil (azimut, hauteur), calculées par l'ESP32, donnent directement les angles des deux moteurs : commande simple |
+| Boucle de câble plutôt qu'un collecteur tournant | Câbles par le moyeu creux de la chape, boucle dans le socle, azimut limité à ±180° puis retour |
+| Composants du commerce | Moteurs NEMA 17 et 11, roulements standard (6806, 6801, 685), accouplements, ESP32 |
+| Même module d'entraînement sur les deux axes | Chaque axe : moteur, accouplement, vis sans fin sur 2 roulements 685 dans un palier, roue |
+| Orientation mécanique pour la faible consommation | Moteurs coupés entre deux corrections |
+
+**Ce qui diffère, et pourquoi :**
+* **La vitesse.** L'APM suit le passage d'un satellite à plus de 20°/s. Le Soleil avance de
+  15°/h sur Terre et de 0,5°/h sur la Lune. J'ai donc choisi des **vis sans fin
+  irréversibles** (50:1 et 60:1) plutôt que des axes équilibrés : elles tiennent le panneau
+  moteurs coupés, sans contrepoids (voir § 2).
+* **Le verrou de lancement.** SSTL équilibre ses deux axes pour s'en passer. Ici, le
+  panneau n'est pas équilibré : une version lunaire réelle aura besoin d'un verrou de
+  lancement (voir § 10).
+* **La limite connue du schéma AE : le zénith.** Quand la cible passe près de la verticale,
+  l'azimut doit tourner très vite pour la suivre.
+  * Au pôle Sud lunaire, le Soleil reste à quelques degrés de l'horizon : le cas ne se
+    présente jamais.
+  * À La Réunion (21° S, sous les tropiques), le Soleil passe presque au zénith vers midi en
+    été. Mais près du zénith, un retard d'azimut ne compte presque pas : 30° de retard à 88°
+    de hauteur ne font qu'environ 1° d'erreur de pointage, soit moins de 0,02 % de perte.

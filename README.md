@@ -23,7 +23,7 @@ Ce document a trois parties, suivies de la bibliographie :
 * **Partie B — La démonstration sur Terre** : la même tête imprimée en PETG et posée sur un
   trépied photo, avec ce qui change par rapport au cas réel et tout ce qu'il faut pour la
   fabriquer (§ 11 à 19) ;
-* **Partie C — Fichiers, scripts et régénération** (§ 20 à 22) ;
+* **Partie C — Fichiers, scripts, régénération et licence** (§ 20 à 23) ;
 * **Bibliographie**.
 
 Organisation du dépôt :
@@ -35,7 +35,12 @@ docs/                  rendus, images annotées, bilan de masse, optimisation de
 scripts/               scripts Python qui génèrent la CAO, les contrôles et les rendus
 LISTE_ACHATS.md        liste d'achats de la démonstration sur Terre
 requirements.txt       dépendances Python
+LICENSE                licence CC BY-NC-SA 4.0
 ```
+
+**Licence : [CC BY-NC-SA 4.0](LICENSE).** Libre pour un usage personnel, scolaire ou associatif,
+en citant l'auteur ; **usage commercial interdit** ; les versions modifiées restent sous la
+même licence (§ 23).
 
 ---
 
@@ -1048,7 +1053,7 @@ roulements ZZ :
 
 ---
 
-# Partie C — Fichiers, scripts et régénération
+# Partie C — Fichiers, scripts, régénération et licence
 
 ## 20. Fichiers du dépôt
 
@@ -1075,6 +1080,7 @@ roulements ZZ :
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py` | Génèrent les rendus PNG et les images annotées |
 | `requirements.txt` | Dépendances Python (CadQuery) |
+| `LICENSE` | Licence du projet : CC BY-NC-SA 4.0 (§ 23) |
 
 ## 21. Ouvrir dans SolidWorks
 
@@ -1140,6 +1146,28 @@ xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de l
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau
 xvfb-run -a python scripts/render_explications.py                  # images annotées (docs/explications/)
 ```
+
+## 23. Licence
+
+Tout le projet (fichiers CAO STEP et STL, images, documents et scripts) est sous licence
+**Creative Commons Attribution - Pas d'utilisation commerciale - Partage dans les mêmes
+conditions 4.0 International (CC BY-NC-SA 4.0)**. Le texte complet est dans
+[`LICENSE`](LICENSE).
+
+| Autorisé | Interdit |
+|---|---|
+| Consulter, télécharger, imprimer les pièces, construire le tracker pour soi, pour un projet scolaire ou un club | Vendre les fichiers, les pièces imprimées ou un tracker construit d'après le projet |
+| Modifier et améliorer le projet, et partager ces modifications | Utiliser le projet dans un produit ou un service payant |
+| Le présenter (exposé, démonstration, salon) | Republier une version modifiée sous une autre licence, ou sans citer l'auteur |
+
+**Pour réutiliser le projet**, il faut citer l'auteur et la licence, par exemple :
+« Tracker solaire lunaire deux axes, par Gabrixl-m, sous licence CC BY-NC-SA 4.0 », avec un
+lien vers ce dépôt. Pour un usage commercial, il faut une autorisation écrite de l'auteur :
+le contacter par GitHub.
+
+Les marques et références de produits citées (moteurs, roulements, photodiodes, magasins)
+appartiennent à leurs propriétaires. Les logiciels utilisés par les scripts, comme CadQuery
+(licence Apache 2.0), ne sont pas inclus dans ce dépôt et gardent leur propre licence.
 
 ---
 

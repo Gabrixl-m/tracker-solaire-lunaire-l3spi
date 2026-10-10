@@ -47,13 +47,14 @@ Vis_CHC_M3x14;8;Acier (visserie);0.008;Vis CHC M3x14 (ISO 4762)
 Pivot_Libre;1;Acier inox 17-4PH;0.008;Pivot Ø8 libre
 Arbre_Vis_Azimut;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'azimut
 Arbre_Vis_Elevation;1;Acier inox 17-4PH;0.008;Arbre Ø5 de la vis d'élévation
-Vis_CHC_M3x10;8;Acier (visserie);0.007;Vis CHC M3x10 (ISO 4762)
+Vis_CHC_M3x12;8;Acier (visserie);0.008;Vis CHC M3x12 (ISO 4762)
 Vis_CHC_M3x8;6;Acier (visserie);0.005;Vis CHC M3x8 (ISO 4762)
 Vis_CHC_M3x25;3;Acier (visserie);0.004;Vis CHC M3x25 (ISO 4762)
-Vis_CHC_M3x12;4;Acier (visserie);0.004;Vis CHC M3x12 (ISO 4762)
+Vis_CHC_M3x10;4;Acier (visserie);0.004;Vis CHC M3x10 (ISO 4762)
 Ecrou_M3;6;Acier (visserie);0.002;Écrou M3 (ISO 4032)
 Vis_CHC_M2.5x6;4;Acier (visserie);0.002;Vis CHC M2,5x6 (ISO 4762)
 Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
+Rondelle_M3;4;Acier (visserie);0.000;Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5
 Photodiode_BPW34;4;Époxy transparent + silicium;0.000;Photodiode BPW34 (Vishay), surface sensible 7,5 mm²
 TOTAL;;;25.90;

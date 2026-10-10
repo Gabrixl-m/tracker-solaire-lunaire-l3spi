@@ -13,7 +13,7 @@ de cotes (generate_tracker.AJUSTEMENTS). Ce script :
   - cale les vis par rapport aux roues pour chaque jeu de cotes ;
   - calcule les couples nécessaires et disponibles (Lune, Terre intérieur, Terre avec
     vent) et la tenue moteurs coupés ;
-  - vérifie interférences, engrènement et garde sur toute la course d'élévation ;
+  - vérifie interférences, prise des vis, engrènement et garde sur toute la course d'élévation ;
   - vérifie les appuis sur les roulements protégés : rien sur la protection, et chaque
     bague n'est touchée que par ce qui tourne avec elle.
 
@@ -246,11 +246,84 @@ def verifier_roulements(flat, t=0.3, eps=0.05):
     return defauts
 
 
+PRISE_MINI = 3.5                     # prise mini d'une vis M3 dans une pièce (7 filets)
+PRISE_MOTEUR = 2.0                   # dans un moteur : limitée par la profondeur de ses taraudages
+
+
+def verifier_prise(flat, pas=0.2):
+    """Prise de chaque vis : on suit le noyau depuis la tête, à 2 mm de l'axe (hors du trou), et on
+    note les pièces traversées. La prise est la longueur dans la dernière pièce ; un écrou doit être
+    en prise sur toute sa hauteur. Renvoie la liste des défauts."""
+    pieces = [(n.split("/")[-1], so, so.BoundingBox()) for n, s in flat
+              if not G.part_key(n).startswith(("Vis_CHC", "Vis_FHC", "Rondelle"))
+              for so in s.Solids()]
+
+    def dans(pt):
+        return {n for n, so, b in pieces
+                if b.xmin <= pt.x <= b.xmax and b.ymin <= pt.y <= b.ymax and b.zmin <= pt.z <= b.zmax
+                and so.isInside(pt, 1e-4)}
+    mini, defauts = {}, []
+    for n, s in flat:
+        k = G.part_key(n)
+        if not k.startswith(("Vis_CHC", "Vis_FHC")):     # visserie (pas les vis sans fin)
+            continue
+        so = s.Solids()[0]
+        noyau = max((f for f in so.Faces() if f.geomType() == "CYLINDER"
+                     and f._geomAdaptor().Cylinder().Radius() < 1.3), key=lambda f: f.Area())
+        ax = noyau._geomAdaptor().Cylinder().Axis()
+        o = cq.Vector(ax.Location().X(), ax.Location().Y(), ax.Location().Z())
+        u = cq.Vector(ax.Direction().X(), ax.Direction().Y(), ax.Direction().Z())
+        ts = [(cq.Vector(*v.toTuple()) - o).dot(u) for v in noyau.Vertices()]
+        a, b = o + u * min(ts), o + u * max(ts)
+        tete, bout = (a, b) if (so.Center() - a).Length < (so.Center() - b).Length else (b, a)
+        u = (bout - tete).normalized()
+        e1 = u.cross(cq.Vector(0, 0, 1)) if abs(u.z) < 0.9 else u.cross(cq.Vector(1, 0, 0))
+        e1 = e1.normalized()
+        e2 = u.cross(e1).normalized()
+        rr = 2.0 if noyau._geomAdaptor().Cylinder().Radius() > 1.1 else 1.7
+        tranches = []
+        for i in range(int((bout - tete).Length / pas) + 1):
+            c = tete + u * (i * pas)
+            noms = set()
+            for j in range(4):
+                ang = j * math.pi / 2
+                noms |= dans(c + e1 * (rr * math.cos(ang)) + e2 * (rr * math.sin(ang)))
+            tranches.append(noms)
+        while tranches and not tranches[-1]:
+            tranches.pop()                              # bout libre après un écrou
+        if not tranches:
+            continue
+        derniere = sorted(tranches[-1])[-1]
+        prise = 0
+        for t in reversed(tranches):
+            if derniere not in t:
+                break
+            prise += 1
+        prise *= pas
+        if derniere.startswith("Ecrou"):
+            ok, seuil = prise >= 2.3, "écrou complet"
+        elif derniere.startswith("Moteur"):
+            ok, seuil = prise >= PRISE_MOTEUR, f"{PRISE_MOTEUR:g} mm"
+        else:
+            ok, seuil = prise >= PRISE_MINI, f"{PRISE_MINI:g} mm"
+        cle = (k, G.part_key(derniere) if not derniere.startswith("Ecrou") else "Ecrou_M3")
+        if cle not in mini or prise < mini[cle]:
+            mini[cle] = prise
+        if not ok:
+            defauts.append((n.split("/")[-1], derniere, round(prise, 1), seuil))
+    print("  prise des vis (mm, la plus faible par type de vis et pièce de prise) :")
+    for (k, piece), v in sorted(mini.items()):
+        print(f"    {k:16s} dans {piece:26s} {v:4.1f}")
+    print(f"  prise des vis : {'toutes au moins à ' + format(PRISE_MINI, 'g') + ' mm (moteurs : ' + format(PRISE_MOTEUR, 'g') + ' mm), écrous en prise sur toute leur hauteur' if not defauts else defauts}")
+    return defauts
+
+
 def verifier(assy):
-    """Interférences, engrènement à plusieurs poses, garde de la partie basculante."""
+    """Interférences, prise des vis, engrènement à plusieurs poses, garde de la partie basculante."""
     flat = G.flatten(assy)
     hits = G.interference(flat)
     print(f"  interférences : {'aucune' if not hits else hits}")
+    verifier_prise(flat)
     verifier_roulements(flat)
     for key, (a, b) in PAIRES.items():
         poses = ((0.0, -2.0), (0.0, 30.0), (0.0, 92.0)) if key == "el" else ((37.0, G.EL_REF), (113.0, G.EL_REF))

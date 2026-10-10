@@ -75,7 +75,7 @@ tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), 
 | **Vis** | Chaque vis tourne sur son arbre Ø5, porté par deux roulements 685. Ses deux moyeux appuient sur les bagues intérieures des 685, et une **lèvre** de chaque joue du palier retient leur bague extérieure : la poussée axiale de la vis va au palier. Un accouplement flexible la relie au moteur, si bien que le moteur ne reçoit pas cette poussée |
 | **Liaison au panneau** | Deux rails 12 × 13 vissés sur le dessus du chapeau (4 × M3, par-dessus) et sur l'aile arrière du cadre (4 × M3 par-dessous, écrous dans le cadre). Le dos du cadre est à 46 mm de l'axe d'élévation |
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
-| **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape : on règle l'engrènement de la vis d'azimut en les faisant glisser |
+| **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape, avec une rondelle sous chaque tête : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
 ### Roulements (en rose dans les fichiers 3D et les aperçus)
 
@@ -492,6 +492,11 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
   en cotes réelles comme en version PETG, capteur solaire compris : **aucune**.
   * Toutes les vis sont modélisées, avec leur tête et leur noyau : chaque tête est
     accessible, et aucune vis ne dépasse de son trou ni ne touche une autre pièce.
+  * **Prise de chaque vis** : le script suit chaque vis le long de son axe. Toutes mordent d'au
+    moins 3,5 mm dans la dernière pièce (2 mm dans les taraudages du NEMA 11, limités à 2,5 mm),
+    et les écrous sont en prise sur toute leur hauteur. Ce contrôle a fait allonger les 4 vis du
+    palier et du support d'azimut (M3×10 → M3×12, avec une rondelle sur les lumières) : elles ne
+    mordaient que de 2 mm.
   * Ce contrôle a conduit à revoir plusieurs fixations : la roue d'azimut est vissée par en
     dessous de la vis qui la parcourt, et les vis du fond n'ont plus leur tête sur la colonne.
     Le palier et le support d'azimut sont vissés par-dessus, et des lamages laissent la place
@@ -516,7 +521,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
 * **Stabilité** : basculement sans ancrage à 25,2° dans la pire orientation du panneau
   (`scripts/optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 197 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 201 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -664,14 +669,15 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 6 × M3×8, 11 × M3×10, 7 × M3×12, 8 × M3×14 | 32 |
+| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
+| Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
 | Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
-| Photodiodes BPW34 et résistances de 1 kΩ (capteur solaire) | 4 + 4 |
+| Photodiodes BPW34, résistances de 1 kΩ et de 10 kΩ, condensateurs de 100 nF (capteur solaire) | 4 + 4 + 4 + 4 |
 
 Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
 plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
@@ -722,7 +728,7 @@ font qu'environ 2,5 mm de profondeur : vis M2,5×6, pas plus longues.
 | Moyeu de la chape dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
 | Fixation sur le trépied | Téton Ø45,5 dans la colonne Ø46 | **Écrou 1/4" captif**, logement de 11,4 mm sur plats (écrou de 11,1) | La vis du trépied tire l'écrou sur un plancher de 1,6 mm et serre le fond sur le plateau |
 | Trous de passage M3 / M2,5 | 3,4 / 2,9 | **3,5 / 3,0** | |
-| Avant-trous M3 | 2,5 (taraudés) | **2,8** | Vis auto-taraudées dans le PETG, 4,5 mm de prise au moins |
+| Avant-trous M3 | 2,5 (taraudés) | **2,8** | Vis auto-taraudées dans le PETG, 3,5 mm de prise au moins (vérifié par le script) |
 | Centrage Ø22 des moteurs | 22,5 | **22,4** | |
 | Jeu de denture des roues | 0,10 / 0,12 mm | **0,30 mm** | Imprécision des dents imprimées |
 | Filet des vis | aminci de 0,15 m | **non aminci, tête raccourcie (0,85 m)** | Tout le jeu est pris sur la roue, et le filet reste assez épais pour l'impression |
@@ -816,7 +822,8 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 7. **Chape sur le moyeu** : 3 × M3×12 par-dessus.
 8. **Chaîne d'azimut** : glisser le palier d'azimut (685, vis, tige) sous la chape, la vis
    venant en prise radialement avec la roue fixe. Mettre ensuite le support, le NEMA 11 et
-   l'accouplement. Toutes ces vis se mettent par-dessus la chape, dans les lumières.
+   l'accouplement. Ces 4 vis M3×12 se mettent par-dessus la chape, dans les lumières, chacune
+   avec une rondelle M3 sous la tête.
 9. **Réglage des engrènements** (vis et roues graissées) :
    * en azimut, rapprocher le palier dans ses lumières jusqu'à supprimer le jeu, sans
      point dur sur un tour complet ;
@@ -895,16 +902,33 @@ démonstration, le boîtier et son équerre sont imprimés.
 l'ESP32, pas dans le capteur :
 
 ```
-3,3 V ──────── cathode   BPW34   anode ──┬──────► entrée analogique (ADC1)
-                                         │
-                                       1 kΩ
-                                         │
-GND ─────────────────────────────────────┘
+3,3 V ──────── cathode   BPW34   anode ──┬───────┬──────► entrée analogique (ADC1)
+                                         │       │
+                                       1 kΩ    100 nF
+                                         │       │
+GND ─────────────────────────────────────┴───────┘
 ```
 
-* **1 kΩ** donne environ 1,5 à 2 V en plein soleil : la fenêtre ne laisse passer qu'environ
-  65 % de la lumière qu'aurait reçue la puce entière. Si le signal dépasse 2,5 V en plein
-  soleil d'été, passer à 680 Ω. S'il reste sous 0,5 V, passer à 2,2 kΩ.
+**La résistance : 1 kΩ, à couche métallique, ±1 %, 1/4 W.**
+* En plein soleil (≈ 1000 W/m²), la fenêtre de 2,2 × 2,2 mm reçoit environ 4,8 mW. La BPW34
+  en tire environ 0,3 A/W sur le spectre solaire, soit **≈ 1,5 mA**, entre 1,2 et 2 mA selon
+  le ciel et l'exemplaire.
+* Avec 1 kΩ, cela fait **≈ 1,5 V** sur l'entrée, entre 1,2 et 2 V. C'est sous la limite de
+  lecture précise de l'ADC (≈ 2,4 V avec l'atténuation 11 dB), avec une bonne résolution :
+  ≈ 1900 points sur 4096, et une erreur de 0,1° change le signal d'environ 30 points.
+* La photodiode garde au moins 1,3 V de polarisation inverse (3,3 V − 2 V) : sa réponse reste
+  linéaire. La résistance ne dissipe que ≈ 2 mW.
+* ±1 % et couche métallique : les 4 résistances restent égales et varient peu avec la
+  température, ce qui compte puisque le programme compare les 4 signaux. L'étalonnage au
+  papier calque (§ 3) corrige ce qui reste.
+* **En intérieur, sous une lampe**, la lumière est 10 à 50 fois plus faible que le soleil :
+  avec 1 kΩ, le signal ne ferait que quelques dizaines de mV. Mettre alors **10 kΩ** à la
+  place (0,3 à 1,5 V selon la lampe et sa distance).
+* Si le signal dépasse 2,4 V en plein soleil (rare), mettre deux 1 kΩ en parallèle (500 Ω).
+  S'il reste sous 0,3 V sous la lampe, mettre deux 10 kΩ en série (20 kΩ), ou rapprocher la
+  lampe.
+* Le **condensateur de 100 nF** (céramique, 50 V) en parallèle sur chaque résistance filtre le
+  bruit : avec 1 kΩ, il lisse au-delà d'environ 1,6 kHz, bien plus vite que le Soleil ne bouge.
 * Utiliser des entrées de l'**ADC1**, car l'ADC2 ne marche pas quand le Wi-Fi est actif :
   * ESP32 DevKitC (WROOM-32) : **GPIO 36, 39, 34 et 35**. Ce sont des entrées seules, libres
     avec le câblage du § 16 ;
@@ -948,7 +972,7 @@ colonne Ø50.
 
 Les images de la démonstration montée sur ce trépied sont en tête de la Partie B.
 
-L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step`** : tête
+L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied.step`** : tête
 PETG, panneau, capteur solaire et trépied, posé sur le sol en y = 0. Il est généré par
 `scripts/generate_demo_trepied.py`.
 
@@ -1068,7 +1092,7 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
+| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |

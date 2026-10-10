@@ -9,7 +9,7 @@ Le trépied est modélisé simplement, d'après des photos et deux cotes mesuré
 Les autres cotes du trépied (tubes, corps, rotule) sont estimées sur les photos.
 
 Ce script :
-  - exporte l'assemblage CAO/Demo_Terre_PETG/Demo_Trepied_Photo.step (Y-up, sol en y = 0) ;
+  - exporte l'assemblage CAO/Demo_Terre_PETG/Demo_Trepied.step (Y-up, sol en y = 0) ;
   - vérifie les interférences et la garde entre la partie qui tourne et le trépied ;
   - calcule la stabilité : angle de basculement et vent de basculement, dans la pire
     orientation du panneau, sans lest et avec un lest suspendu sous le trépied ;
@@ -29,7 +29,7 @@ import generate_tete_vis_sans_fin as T
 import generate_tracker as G
 from generate_tracker import box_span, cyl_dir, cyl_z, rot, trans
 
-OUT_STEP = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG", "Demo_Trepied_Photo.step")
+OUT_STEP = os.path.join(G.RACINE, "CAO", "Demo_Terre_PETG", "Demo_Trepied.step")
 
 # Trépied (repère Z-up, origine au sol sur l'axe ; jambes vers 90°, 210° et 330°)
 TREPIED_DEMO = dict(
@@ -185,7 +185,7 @@ def enregistrer_trepied():
     return noms
 
 
-def assemblage(az, el, noms, name="Demo_Trepied_Photo"):
+def assemblage(az, el, noms, name="Demo_Trepied"):
     root = cq.Assembly(name=name)
     tr = cq.Assembly(name="SA_Trepied_Photo")
     for n in noms:

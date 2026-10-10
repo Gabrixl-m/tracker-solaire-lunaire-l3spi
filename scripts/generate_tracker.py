@@ -1095,8 +1095,8 @@ def visserie():
             v.append(("chape", "M3x12", (x, y, Z_CHAPE + 8), (0, 0, -1)))
     for x, y in TROUS_PALIER_EL + TROUS_SUPPORT_EL:       # par-dessous la chape
         v.append(("chape", "M3x12", (x, y, Z_CHAPE), (0, 0, 1)))
-    for x, y in trous_palier_az() + TROUS_SUPPORT_AZ:     # par-dessus la chape
-        v.append(("chape", "M3x10", (x, y, Z_CHAPE + 8), (0, 0, -1)))
+    for x, y in trous_palier_az() + TROUS_SUPPORT_AZ:     # par-dessus la chape, rondelle sur la lumière
+        v.append(("chape", "M3x12", (x, y, Z_CHAPE + 8 + E_RONDELLE), (0, 0, -1)))
     zv, yf = z_vis_el(), EL_VIS["y_face"]
     for sx in (-1, 1):                    # moteurs sur leurs supports
         for sz in (-1, 1):
@@ -1118,6 +1118,20 @@ def visserie():
     return v
 
 
+E_RONDELLE = 0.5                     # rondelle M3 ISO 7089 : 3,2 x 7 x 0,5
+
+
+def rondelles():
+    """[(repère, point d'appui, direction)] : rondelles M3 sous les têtes posées sur les lumières de
+    la chape (la tête Ø5,5 ne porterait que sur 0,4 mm aux bouts d'une lumière de 4,7 mm)."""
+    return [("chape", (x, y, Z_CHAPE + 8), (0, 0, -1)) for x, y in trous_palier_az() + TROUS_SUPPORT_AZ]
+
+
+def p_rondelle_m3():
+    """Rondelle M3 (ISO 7089), posée sur z = 0, côté tête vers +Z."""
+    return ring_z(7.0, 3.2, E_RONDELLE)
+
+
 def nom_vis(t):
     return f"Vis_FHC_{t[:-1]}" if t.endswith("F") else f"Vis_CHC_{t}"
 
@@ -1126,6 +1140,9 @@ def add_visserie(assy, repere):
     for i, (rp, t, p, d) in enumerate(visserie()):
         if rp == repere:
             add(assy, nom_vis(t), loc_vis(p, d), f"{nom_vis(t)}_{i}")
+    for i, (rp, p, d) in enumerate(rondelles()):
+        if rp == repere:
+            add(assy, "Rondelle_M3", loc_vis(p, d), f"Rondelle_M3_{i}")
 
 
 # ---------------------------------------------------------------------------
@@ -1367,6 +1384,7 @@ def build_head_parts():
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
     reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["steel"], "Écrou M3 (ISO 4032)")
+    reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["steel"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
     for t in sorted({v[1] for v in visserie()}):
         d, L = t[1:].rstrip("F").split("x")
         if t.endswith("F"):

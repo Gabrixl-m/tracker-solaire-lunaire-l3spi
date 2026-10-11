@@ -66,7 +66,7 @@ des arbres des vis sans fin.
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
 | **Convertisseur ADS1115** (module) | 16 bits, 4 entrées, I²C (adresse 0x48), résistances de tirage I²C sur le module | 1 | `ADS1115 module 16 bit I2C` | Lit les 4 photodiodes du capteur solaire | 2–4 € |
 | **Alimentation 12 V** | En intérieur : bloc secteur 12 V 3 A. En extérieur : batterie LiFePO4 4S 12,8 V | 1 | `12V 3A power supply` / `LiFePO4 12V battery` | Puissance des moteurs | 10 € / 40–80 € |
-| **Fusible 3 A** et porte-fusible en ligne | Fusible 5 × 20 mm rapide, porte-fusible pour fil | 1 + 2 fusibles de rechange | `inline fuse holder 5x20`, `fuse 3A 5x20` | Protège le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 2 € |
+| **Fusible 3 A** et porte-fusible | Fusible 5 × 20 mm rapide ; porte-fusible pour circuit imprimé (2 clips, comme sur l'implantation), ou en ligne sur le fil | 1 + 2 fusibles de rechange | `PCB fuse holder 5x20`, `fuse 3A 5x20` | Protège le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 2 € |
 | **Interrupteur** marche / arrêt | À bascule, 12 V continu, 3 A au moins | 1 | `rocker switch 12V 6A` | Coupe tout | 1 € |
 | **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
@@ -80,6 +80,19 @@ des arbres des vis sans fin.
 | **Condensateur céramique 100 nF**, 50 V, X7R | Filtre le bruit (constante de temps 0,1 ms avec 1 kΩ) | 4 | `100nF ceramic capacitor 50V` | Un par photodiode, en parallèle sur sa résistance | 0,1 € |
 | **Câble 6 à 8 fils** | Environ 1,5 m. Un bout de câble réseau (8 fils) convient | 1 | `câble réseau`, `6 core cable` | Du capteur solaire au boîtier : 3,3 V et les 4 signaux | 2 € |
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
+
+**Montage du boîtier électronique** (implantation au README, § 16, et dans
+`Electronique/Implantation_Boitier.fzz`) :
+
+| Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
+|---|---|---|---|---|---|
+| **Plaque à pastilles 8 × 12 cm** | Pastilles séparées, pas de 2,54 mm, double face de préférence | 1 | `perfboard 8x12cm double sided` | Reçoit toute l'électronique du boîtier | 2 € |
+| **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 4 × 8 (TMC2209), 1 × 10 (ADS1115) | 3 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
+| **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 7 de 2 pôles et 2 de 3 pôles. On les emboîte : 4 pôles = 2 + 2, 5 pôles = 2 + 3 | 7 + 2 | `KF301 2P 5.08mm`, `KF301 3P 5.08mm` | Branchement des câbles (X1 à X6) | 3 € |
+| **Boîtier** | ABS, au moins 150 × 100 × 50 mm à l'intérieur ; par exemple 200 × 120 × 75 mm, étanche IP65 | 1 | `ABS enclosure 200x120x75 IP65` | Protège l'électronique au pied du trépied | 10–15 € |
+| **Presse-étoupes PG7** | Pour câbles de Ø3 à 6,5 mm | 6 | `PG7 cable gland` | Passage des câbles : 12 V, deux moteurs, fin de course, Hall, capteur solaire | 3 € |
+| **Entretoises M3** de 6 mm et vis M3 × 6 | Nylon ou laiton | 4 + 8 | `M3 standoff 6mm` | Fixent la plaque au fond du boîtier | 2 € |
+| Câble IPEX (U.FL) vers SMA femelle de traversée, et antenne 868 MHz à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead`, `868MHz SMA antenna` | Sort l'antenne du boîtier (facultatif, mais elle porte plus loin) | 5 € |
 
 Le câblage complet est sur le **schéma électrique**
 ([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech

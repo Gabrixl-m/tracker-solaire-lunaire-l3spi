@@ -32,7 +32,7 @@ Organisation du dépôt :
 CAO/Cas_Reel/          fichiers STEP du tracker lunaire : assemblages et pièces seules
 CAO/Demo_Terre_PETG/   démonstration sur Terre : pièces à imprimer (STL + STEP) et assemblages
 docs/                  rendus, images annotées, bilan de masse, optimisation des jambes
-Electronique/          schéma électrique (projet QElectroTech et son PDF)
+Electronique/          schéma électrique (QElectroTech, PDF) et implantation du boîtier (Fritzing)
 scripts/               scripts Python qui génèrent la CAO, les contrôles et les rendus
 LISTE_ACHATS.md        liste d'achats de la démonstration sur Terre
 requirements.txt       dépendances Python
@@ -969,6 +969,45 @@ alimentation, ADS1115) se pose au pied du trépied. Les câbles des moteurs, du 
 du capteur Hall et du capteur solaire descendent de la tête par le passe-câble du socle
 (folio 2 du schéma : nombre de conducteurs par câble).
 
+### Implantation du boîtier électronique
+
+Tout ce qui reste au pied du trépied tient sur une **plaque à pastilles de 8 × 12 cm**.
+L'implantation est dessinée à l'échelle dans Fritzing :
+[`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
+Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
+`scripts/generate_implantation_fritzing.py`.
+
+![Implantation du boîtier électronique](docs/electronique/implantation_boitier.png)
+
+* **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
+  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs, la
+  diode et le porte-fusible sont soudés.
+* **USB-C du Heltec au bord de la plaque**, face à une découpe du boîtier : on reprogramme
+  sans rien démonter.
+* **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
+
+  | Bornier | Pôles | Câble |
+  |---|---|---|
+  | X1 | 2 | arrivée 12 V, après l'interrupteur S1 |
+  | X2 | 4 | moteur M1 (élévation) |
+  | X3 | 4 | moteur M2 (azimut) |
+  | X4 | 2 | fin de course S2 |
+  | X5 | 3 | capteur à effet Hall B1 |
+  | X6 | 5 | capteur solaire |
+
+* **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
+  dissipateur, ≈ 14 mm pour le Heltec et le LM2596, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
+  borniers.
+* **Boîtier** : au moins 150 × 100 × 50 mm à l'intérieur, la plaque posée sur 4 entretoises
+  M3 de 6 mm. Un boîtier étanche en ABS de 200 × 120 × 75 mm laisse de la place pour les
+  câbles.
+* **Traversées du boîtier** :
+  * presse-étoupes pour le 12 V, les deux moteurs, le fin de course, le capteur Hall et le
+    capteur solaire ;
+  * l'interrupteur S1 sur la paroi ;
+  * l'antenne LoRa à l'extérieur, par un câble IPEX vers une traversée SMA : une antenne
+    enfermée dans le boîtier porte moins loin, surtout près des moteurs.
+
 ## 17. Capteur solaire de la démonstration
 
 Le capteur est celui du § 3 : même boîtier, même croix, mêmes photodiodes BPW34. Pour la
@@ -1182,6 +1221,7 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
 | **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (2 folios : schéma complet, brochage du Heltec V4 et liaisons) |
 | `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
+| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
@@ -1192,6 +1232,7 @@ roulements ZZ :
 | `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
+| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py` | Génèrent les rendus PNG et les images annotées |
 | `requirements.txt` | Dépendances Python (CadQuery) |
 | `LICENSE` | Licence du projet : CC BY-NC-SA 4.0 (§ 23) |
@@ -1256,6 +1297,7 @@ python scripts/generate_demo_trepied.py               # démonstration sur trép
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
+python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau

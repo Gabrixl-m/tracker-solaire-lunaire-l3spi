@@ -62,22 +62,29 @@ des arbres des vis sans fin.
 | **Moteur pas à pas NEMA 17, 34 mm** (Usongshine 17HS3401) | 42 × 42 × 34 mm, **0,34 N·m (34 N·cm)**, 1,0 A, axe Ø5 × 23,5 à méplat, connecteur JST PH 6 broches | 1 | `Usongshine 17HS3401 34N.cm` | Élévation. **À régler à 0,6 A** en version PETG | 10–15 € |
 | **Moteur pas à pas NEMA 11, 45 mm** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, axe Ø5 | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
 | **Driver TMC2209** | Module UART, 3,3 V logique | 2 | `TMC2209 stepper driver UART` | Un par moteur | 4–6 € |
-| **ESP32** | Carte de développement ESP32-WROOM-32 | 1 | `ESP32 DevKitC WROOM-32` | Commande des deux moteurs | 6–10 € |
+| **Heltec WiFi LoRa 32 V4**, version 863–870 MHz | ESP32-S3R2 + radio LoRa SX1262, écran OLED, USB-C, antenne LoRa 868 MHz fournie (IPEX). Prendre le V4 standard, **pas la variante V4-R8** (brochage différent) | 1 | `Heltec WiFi LoRa 32 V4 868MHz` | Commande des moteurs, lecture des capteurs, envoi des données en LoRa | 20–30 € |
+| Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
+| **Convertisseur ADS1115** (module) | 16 bits, 4 entrées, I²C (adresse 0x48), résistances de tirage I²C sur le module | 1 | `ADS1115 module 16 bit I2C` | Lit les 4 photodiodes du capteur solaire | 2–4 € |
 | **Alimentation 12 V** | En intérieur : bloc secteur 12 V 3 A. En extérieur : batterie LiFePO4 4S 12,8 V | 1 | `12V 3A power supply` / `LiFePO4 12V battery` | Puissance des moteurs | 10 € / 40–80 € |
-| **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente l'ESP32 | 2 € |
+| **Fusible 3 A** et porte-fusible en ligne | Fusible 5 × 20 mm rapide, porte-fusible pour fil | 1 + 2 fusibles de rechange | `inline fuse holder 5x20`, `fuse 3A 5x20` | Protège le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 2 € |
+| **Interrupteur** marche / arrêt | À bascule, 12 V continu, 3 A au moins | 1 | `rocker switch 12V 6A` | Coupe tout | 1 € |
+| **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
+| **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
 | **Condensateur 100 µF 25 V** | Électrolytique | 2 | `100uF 25V capacitor` | Un au plus près de chaque driver | 0,2 € |
-| **Fin de course** | Micro-switch à levier | 1 | `KW12 micro limit switch` (ou `endstop switch`) | Origine de l'élévation, en butée basse | 1 € |
-| **Capteur à effet Hall + aimant** | Capteur A3144 (ou module KY-003) + aimant néodyme 5 × 2 mm | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
+| **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
+| **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
+| **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 3 | `10k ohm resistor 1/4W` | EN des drivers (R5), fin de course (R6), capteur Hall (R7) | 0,1 € |
 | **Câbles** | Câbles moteurs 4 fils (souvent fournis avec les moteurs), fils Dupont, câble souple 4 fils d'environ 1,5 m | — | `stepper motor cable 4 pin`, `dupont wires` | Liaisons | 5 € |
 | **Photodiode BPW34** (Vishay ou Osram) | Photodiode PIN au silicium, boîtier 5,4 × 4,3 × 3,2 mm, surface sensible 7,5 mm² | 4 + 1 de rechange | `BPW34` (Gotronic : réf. 03472) | Capteur solaire, une par coin de la croix | 1 € |
-| **Résistance 1 kΩ**, couche métallique, ±1 %, 1/4 W, 50 ppm/°C | Valeur pour le soleil, dehors : environ 1,5 V en plein soleil | 4 + 2 de rechange | `1k ohm metal film resistor 1% 1/4W` | Une par photodiode, de l'anode à la masse, à côté de l'ESP32 | 0,1 € |
-| **Résistance 10 kΩ**, couche métallique, ±1 %, 1/4 W | Valeur pour les essais en intérieur, sous une lampe (10 à 50 fois moins de lumière que le soleil) | 4 | `10k ohm metal film resistor 1% 1/4W` | À la place des 1 kΩ, en intérieur | 0,1 € |
+| **Résistance 1 kΩ**, couche métallique, ±1 %, 1/4 W, 50 ppm/°C | Environ 1,5 V en plein soleil ; la même valeur sert en intérieur, l'ADS1115 changeant de calibre | 4 + 2 de rechange | `1k ohm metal film resistor 1% 1/4W` | Une par photodiode, de l'anode à la masse, à côté de l'ADS1115 | 0,1 € |
 | **Condensateur céramique 100 nF**, 50 V, X7R | Filtre le bruit (constante de temps 0,1 ms avec 1 kΩ) | 4 | `100nF ceramic capacitor 50V` | Un par photodiode, en parallèle sur sa résistance | 0,1 € |
-| **Câble 6 à 8 fils** | Environ 1,5 m. Un bout de câble réseau (8 fils) convient | 1 | `câble réseau`, `6 core cable` | Du capteur à l'ESP32 : 3,3 V et les 4 signaux | 2 € |
+| **Câble 6 à 8 fils** | Environ 1,5 m. Un bout de câble réseau (8 fils) convient | 1 | `câble réseau`, `6 core cable` | Du capteur solaire au boîtier : 3,3 V et les 4 signaux | 2 € |
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
-Le câblage (broches de l'ESP32, réglage des TMC2209, bibliothèques) est décrit dans le
-README, § 16, « Commande par ESP32 ». Le branchement du capteur solaire est au § 17.
+Le câblage complet est sur le **schéma électrique**
+([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech
+`Electronique/Schema_Electrique.qet`). Le brochage du Heltec V4, le réglage des TMC2209 et les
+bibliothèques sont décrits dans le README, § 16. Le branchement du capteur solaire est au § 17.
 
 ## 3. Visserie
 

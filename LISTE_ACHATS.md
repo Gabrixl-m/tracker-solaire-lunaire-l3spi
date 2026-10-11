@@ -66,7 +66,7 @@ des arbres des vis sans fin.
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
 | **Convertisseur ADS1115** (module) | 16 bits, 4 entrées, I²C (adresse 0x48), résistances de tirage I²C sur le module | 1 | `ADS1115 module 16 bit I2C` | Lit les 4 photodiodes du capteur solaire | 2–4 € |
 | **Alimentation 12 V** | En intérieur : bloc secteur 12 V 3 A. En extérieur : batterie LiFePO4 4S 12,8 V | 1 | `12V 3A power supply` / `LiFePO4 12V battery` | Puissance des moteurs | 10 € / 40–80 € |
-| **Fusible 3 A** et porte-fusible | Fusible 5 × 20 mm rapide ; porte-fusible pour circuit imprimé (2 clips, comme sur l'implantation), ou en ligne sur le fil | 1 + 2 fusibles de rechange | `PCB fuse holder 5x20`, `fuse 3A 5x20` | Protège le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 2 € |
+| **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18, placé **à moins de 10 cm de la batterie** | 1 + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 2 € |
 | **Interrupteur** marche / arrêt | À bascule, 12 V continu, 3 A au moins | 1 | `rocker switch 12V 6A` | Coupe tout | 1 € |
 | **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
@@ -74,11 +74,18 @@ des arbres des vis sans fin.
 | **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
 | **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 3 | `10k ohm resistor 1/4W` | EN des drivers (R5), fin de course (R6), capteur Hall (R7) | 0,1 € |
-| **Câbles** | Câbles moteurs 4 fils (souvent fournis avec les moteurs), fils Dupont, câble souple 4 fils d'environ 1,5 m | — | `stepper motor cable 4 pin`, `dupont wires` | Liaisons | 5 € |
+| **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1 m de chaque | `18AWG silicone wire red black` | Batterie ou bloc 12 V → fusible → interrupteur → X1 | 3 € |
+| **Fil AWG 20** (0,52 mm²), rouge et noir | Pour souder sur la plaque | 0,5 m de chaque | `20AWG hook up wire` | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, LM2596) | 2 € |
+| **Fil AWG 22** (0,33 mm²), orange et noir | Pour souder sur la plaque | 0,5 m de chaque | `22AWG hook up wire` | 5 V : LM2596 → D1 → Heltec | 2 € |
+| **Fil de câblage monobrin AWG 24** (0,20 mm²) | Coffret de plusieurs couleurs | 1 coffret | `24AWG solid hook up wire kit` | Signaux et 3,3 V sur la plaque (STEP, DIR, EN, I²C, filtres) | 6 € |
+| **Câble souple 4 conducteurs AWG 22** | Câble pour moteur pas à pas, multibrin | 2 × 1,5 m | `4 core 22AWG stepper motor cable` | Moteurs M1 et M2, des borniers X2 et X3 aux moteurs | 5 € |
+| **Câble souple 4 conducteurs AWG 26** | Multibrin (on n'utilise que 2 ou 3 conducteurs) | 2 × 1,5 m | `4 core 26AWG flexible cable` | Fin de course (X4, 2 fils) et capteur Hall (X5, 3 fils) | 3 € |
+| Fil à wrapper AWG 28 ou 30 | Fil fin isolé | quelques dizaines de cm | `30AWG wire wrap` | Pattes des photodiodes, dans le boîtier du capteur | 2 € |
+| **Embouts de câblage** et pince à sertir | Coffret 0,25 / 0,5 / 0,75 mm² | 1 | `ferrule kit crimping tool` | Bouts des fils dans les borniers à vis | 10–15 € |
 | **Photodiode BPW34** (Vishay ou Osram) | Photodiode PIN au silicium, boîtier 5,4 × 4,3 × 3,2 mm, surface sensible 7,5 mm² | 4 + 1 de rechange | `BPW34` (Gotronic : réf. 03472) | Capteur solaire, une par coin de la croix | 1 € |
 | **Résistance 1 kΩ**, couche métallique, ±1 %, 1/4 W, 50 ppm/°C | Environ 1,5 V en plein soleil ; la même valeur sert en intérieur, l'ADS1115 changeant de calibre | 4 + 2 de rechange | `1k ohm metal film resistor 1% 1/4W` | Une par photodiode, de l'anode à la masse, à côté de l'ADS1115 | 0,1 € |
 | **Condensateur céramique 100 nF**, 50 V, X7R | Filtre le bruit (constante de temps 0,1 ms avec 1 kΩ) | 4 | `100nF ceramic capacitor 50V` | Un par photodiode, en parallèle sur sa résistance | 0,1 € |
-| **Câble 6 à 8 fils** | Environ 1,5 m. Un bout de câble réseau (8 fils) convient | 1 | `câble réseau`, `6 core cable` | Du capteur solaire au boîtier : 3,3 V et les 4 signaux | 2 € |
+| **Câble souple blindé 6 conducteurs AWG 26** | Multibrin, avec blindage (tresse ou feuillard) relié au 0 V côté boîtier seulement. À défaut : câble réseau blindé F/UTP multibrin | 1,5 m | `6 core 26AWG shielded cable` | Du capteur solaire au bornier X6 : 3,3 V et les 4 signaux | 3 € |
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
 **Montage du boîtier électronique** (implantation au README, § 16, et dans

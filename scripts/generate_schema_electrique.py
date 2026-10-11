@@ -1,10 +1,14 @@
 """Schéma électrique du tracker (démonstration sur Terre), au format QElectroTech.
 
 Écrit Electronique/Schema_Electrique.qet : un projet QElectroTech 0.9 (s'ouvre aussi dans les
-versions suivantes) avec deux folios :
+versions suivantes) avec trois folios :
   1. le schéma complet : alimentation 12 V / 5 V, Heltec WiFi LoRa 32 V4, 2 drivers TMC2209
      et leurs moteurs, capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall ;
-  2. le brochage du Heltec V4, les câbles entre le boîtier et la tête, les données envoyées en LoRa.
+  2. le brochage du Heltec V4, les câbles entre le boîtier et la tête, les données envoyées en LoRa ;
+  3. le câblage : section (AWG) et type de fil de chaque liaison.
+
+Chaque fil porte sa section (texte sur le fil, propriétés « Section du conducteur » et « Câble »),
+et l'épaisseur de son trait suit cette section.
 
 Les symboles (norme IEC) sont dessinés ici et intégrés au projet : le fichier ne dépend d'aucune
 bibliothèque d'éléments installée. Les fils sont tracés à l'équerre, sur la grille de 10 px.
@@ -371,6 +375,20 @@ class Instance:
 
 COULEURS = {"12V": "#c00000", "5V": "#d06000", "3V3": "#a07000", "0V": "#202060"}
 
+# section de chaque catégorie de fil : (AWG, mm², épaisseur du trait, fil à utiliser)
+SECTIONS = {
+    "bat": ("AWG 18", "0,82 mm²", 2.4, "fil souple, de la batterie (ou du bloc 12 V) au bornier X1"),
+    "p12": ("AWG 20", "0,52 mm²", 1.8, "fil de câblage sur la plaque : 12 V et 0 V de puissance"),
+    "p5": ("AWG 22", "0,33 mm²", 1.4, "fil de câblage sur la plaque : 5 V"),
+    "mot": ("AWG 22", "0,33 mm²", 1.4, "câble souple 4 conducteurs, 1,5 m, paires torsadées A+/A-, B+/B-"),
+    "log": ("AWG 24", "0,20 mm²", 1.0, "fil de câblage monobrin sur la plaque : signaux et 3,3 V"),
+    "capt": ("AWG 26", "0,13 mm²", 1.0, "câble souple 2 ou 3 conducteurs, 1,5 m, vers la tête"),
+    "sol": ("AWG 26", "0,13 mm²", 1.0, "câble souple blindé 6 conducteurs, 1,5 m, vers le capteur solaire"),
+    "ant": ("coaxial", "50 Ω", 1.0, "câble coaxial 50 Ω (1,13 mm ou RG178), IPEX vers SMA"),
+    "gnss": ("fourni", "", 1.0, "câble fourni avec le module GNSS"),
+}
+DEFAUT_POT = {"12V": "p12", "5V": "p5", "3V3": "log", "0V": "log", None: "log"}
+
 
 class Folio:
     def __init__(self, num, titre, cols, rows):
@@ -389,7 +407,7 @@ class Folio:
         self.nauto += 1
         return self.el(sym, f"{sym}_{self.nauto}", x, y)
 
-    def fil(self, a, ba, b, bb, via=(), num="", pot=None, aligne="AlignBottom"):
+    def fil(self, a, ba, b, bb, via=(), num="", pot=None, aligne="AlignBottom", cat=None):
         """Fil de a.ba à b.bb, à l'équerre. via : points imposés (x, y), ou ('x', X) pour aller
         horizontalement jusqu'à X, ('y', Y) pour aller verticalement jusqu'à Y."""
         p1, p2 = a.p(ba), b.p(bb)
@@ -424,7 +442,7 @@ class Folio:
                 segs.append(("horizontal", x2 - x1))
             elif y1 != y2:
                 segs.append(("vertical", y2 - y1))
-        self.fils.append((a.ids[ba], b.ids[bb], segs, num, pot, aligne))
+        self.fils.append((a.ids[ba], b.ids[bb], segs, num, pot, aligne, cat or DEFAUT_POT[pot]))
 
     def texte(self, x, y, t, taille=8, gras=False, mono=False):
         self.textes.append((x, y, t, taille, gras, mono))
@@ -437,15 +455,22 @@ class Folio:
     def xml(self, date):
         els = "".join(i.xml() for i in self.inst)
         fils = []
-        for t1, t2, segs, num, pot, aligne in self.fils:
+        for t1, t2, segs, num, pot, aligne, cat in self.fils:
             couleur = f' color="{COULEURS[pot]}"' if pot else ""
             seg = "".join(f'<segment orientation="{o}" length="{q(l)}"/>' for o, l in segs)
+            awg, mm2, epaisseur, genre = SECTIONS[cat]
+            # section écrite sur le fil s'il est assez long pour la porter ; toujours dans ses propriétés
+            texte = f"{num} · {awg}" if num else awg
+            visible = max(abs(l) for _o, l in segs) >= 40 if segs else False
+            style = ' style="line-style: dashed"' if cat == "ant" else ""
             fils.append(f'<conductor x="0" y="0" terminal1="{t1}" terminal2="{t2}" freezeLabel="false" '
-                        f'type="multi"{couleur} bicolor="false" color2="#000000" dash-size="1" '
-                        f'num={quoteattr(num)} text_color="#000000" formula="" cable="" bus="" function="" '
-                        f'tension_protocol="" conductor_color="" conductor_section="" numsize="7" condsize="1" '
-                        f'displaytext="{1 if num else 0}" onetextperfolio="0" vertirotatetext="270" '
-                        f'horizrotatetext="0" horizontal-alignment="AlignHCenter" vertical-alignment="{aligne}">'
+                        f'type="multi"{couleur}{style} bicolor="false" color2="#000000" dash-size="2" '
+                        f'num={quoteattr(texte)} text_color="#000000" formula="" '
+                        f'cable={quoteattr(genre)} bus="" function={quoteattr(num)} tension_protocol="" '
+                        f'conductor_color="" conductor_section={quoteattr((awg + " " + mm2).strip())} '
+                        f'numsize="6" condsize="{epaisseur}" displaytext="{1 if visible else 0}" '
+                        f'onetextperfolio="0" vertirotatetext="270" horizrotatetext="0" '
+                        f'horizontal-alignment="AlignHCenter" vertical-alignment="{aligne}">'
                         f'{seg}<sequentialNumbers/></conductor>')
         textes = []
         for x, y, t, taille, gras, mono in self.textes:
@@ -483,39 +508,48 @@ def folio_schema():
     g1 = f.el("batterie", "G1", 100, 220, ("G1", 20, -20, 8, True),
               ("bloc secteur 12 V 3 A", 20, -6, 6, False),
               ("ou LiFePO4 4S 12,8 V", 20, 4, 6, False))
-    f1 = f.el("fusible", "F1", 180, 120, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False))
-    s1 = f.el("interrupteur", "S1", 280, 120, ("S1", -10, -30, 8, True), ("marche / arrêt", -26, 8, 6, False))
+    f1 = f.el("fusible", "F1", 180, 120, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
+              ("en ligne, à moins de", -26, 8, 6, False), ("10 cm de la batterie", -26, 16, 6, False))
+    s1 = f.el("interrupteur", "S1", 290, 120, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),
+              ("sur le boîtier", -26, 16, 6, False))
     j12 = f.auto("jonction", 360, 120)
-    f.fil(g1, "+", f1, "1", via=[(100, 120)], pot="12V")
-    f.fil(f1, "2", s1, "1", pot="12V")
-    f.fil(s1, "2", j12, "w", pot="12V")
+    f.fil(g1, "+", f1, "1", via=[(100, 120)], pot="12V", cat="bat")
+    f.fil(f1, "2", s1, "1", pot="12V", cat="bat")
+    f.fil(s1, "2", j12, "w", pot="12V", cat="bat")
     f.fil(j12, "n", f.auto(P12, 360, 70), "1", pot="12V")
-    f.fil(g1, "-", f.auto(M, 100, 290), "1", pot="0V")
+    f.fil(g1, "-", f.auto(M, 100, 290), "1", pot="0V", cat="bat")
 
     u1 = f.el("lm2596", "U1", 330, 330, ("U1", -50, -66, 8, True),
               ("sortie réglée à 5,3 V", -50, -54, 6, False))
     f.fil(j12, "s", u1, "IN+", via=[(360, 220), (240, 220), (240, 340)], pot="12V")
-    f.fil(u1, "IN-", f.auto(M, 250, 420), "1", via=[("x", 250)], pot="0V")
-    f.fil(u1, "OUT-", f.auto(M, 410, 420), "1", via=[("x", 410)], pot="0V")
+    f.fil(u1, "IN-", f.auto(M, 250, 420), "1", via=[("x", 250)], pot="0V", cat="p12")
+    f.fil(u1, "OUT-", f.auto(M, 410, 420), "1", via=[("x", 410)], pot="0V", cat="p5")
     d1 = f.el("schottky", "D1", 450, 340, ("D1", -10, -26, 8, True), ("1N5819", -16, 10, 6, False))
     f.fil(u1, "OUT+", d1, "A", pot="5V")
     f.fil(d1, "K", f.auto(P5, 500, 300), "1", via=[("x", 500)], pot="5V")
-    f.texte(60, 470, "D1 empêche le 5 V du port USB-C de remonter dans\n"
+    f.texte(60, 440, "D1 empêche le 5 V du port USB-C de remonter dans\n"
                      "l'abaisseur quand le Heltec est branché à l'ordinateur.\n"
                      "Régler U1 à 5,3 V au multimètre AVANT de brancher\n"
                      "le Heltec : il reçoit alors environ 5,0 V après D1.", 7)
+    f.texte(60, 498, "SECTION DES FILS (écrite sur chaque fil ; détail au folio 3)", 7, True)
+    f.texte(60, 512, "AWG 18 (0,82 mm²) : batterie ou bloc 12 V jusqu'au boîtier\n"
+                     "AWG 20 (0,52 mm²) : 12 V et 0 V de puissance sur la plaque\n"
+                     "AWG 22 (0,33 mm²) : moteurs (câble 4 conducteurs) et 5 V\n"
+                     "AWG 24 (0,20 mm²) : signaux et 3,3 V sur la plaque\n"
+                     "AWG 26 (0,13 mm²) : capteurs de la tête (blindé pour le solaire)\n"
+                     "tirets : câble coaxial 50 Ω de l'antenne LoRa", 7)
 
     # ---- Heltec V4 ----------------------------------------------------------------------
     f.cadre(580, 40, 1040, 600, "COMMANDE ET RADIO LoRa")
     a1 = f.el("heltec", "A1", 820, 320, ("A1", -120, -176, 8, True))
     f.fil(f.auto(P5, 650, 230), "1", a1, "5V", pot="5V")
     f.fil(a1, "3V3", f.auto(P33, 620, 250), "1", pot="3V3")
-    ant = f.el("antenne", "W1", 800, 100, ("W1", -110, -26, 8, True),
-               ("antenne LoRa 868 MHz", -110, -14, 6, False), ("sur le connecteur IPEX", -110, -5, 6, False))
-    f.fil(ant, "1", a1, "ANT")
+    ant = f.el("antenne", "W1", 800, 70, ("W1", 12, -26, 8, True),
+               ("antenne 868 MHz", 12, -14, 6, False), ("connecteur IPEX", 12, -5, 6, False))
+    f.fil(ant, "1", a1, "ANT", cat="ant")
     gn = f.el("gnss", "A3", 960, 70, ("A3", -84, -24, 8, True))
-    f.fil(gn, "1", a1, "GNSS", via=[("y", 125), ("x", 880)])
-    f.fil(a1, "GND", f.auto(M, 720, 530), "1", pot="0V")
+    f.fil(gn, "1", a1, "GNSS", via=[("y", 125), ("x", 880)], cat="gnss")
+    f.fil(a1, "GND", f.auto(M, 720, 530), "1", pot="0V", cat="p5")
 
     # ---- drivers et moteurs -----------------------------------------------------------------
     f.cadre(1060, 40, 1780, 600, "MOTEURS")
@@ -544,12 +578,12 @@ def folio_schema():
                  (f"C{k + 1}", 12, -22, 8, True), ("100 µF 25 V", 12, -10, 6, False),
                  ("au plus près", 12, 0, 6, False))
         f.fil(jvm, "e", c, "+", via=[("x", 1360)], pot="12V")
-        f.fil(c, "-", f.auto(M, 1360, yc - 30), "1", pot="0V")
-        for b, x in (("PDN_UART", 1220), ("GND", 1250), ("GNDM", 1280)):
-            f.fil(u, b, f.auto(M, x, yc + 110), "1", pot="0V")
+        f.fil(c, "-", f.auto(M, 1360, yc - 30), "1", pot="0V", cat="p12")
+        for b, x, cat in (("PDN_UART", 1220, "log"), ("GND", 1250, "log"), ("GNDM", 1280, "p12")):
+            f.fil(u, b, f.auto(M, x, yc + 110), "1", pot="0V", cat=cat)
         m = f.el("moteur_pas", mref, 1600, yc + 20, (mref, 40, -50, 8, True), (mot, -70, 42, 6, False))
         for b_drv, b_mot, t in zip(("1A", "1B", "2A", "2B"), ("A+", "A-", "B+", "B-"), fils_m):
-            f.fil(u, b_drv, m, b_mot, num=t)
+            f.fil(u, b_drv, m, b_mot, num=t, cat="mot")
 
     # signaux de commande : Heltec -> drivers, sans croisement
     u2, u3 = drv["U2"], drv["U3"]
@@ -572,19 +606,19 @@ def folio_schema():
     noms, xs = ("HG", "HD", "BG", "BD"), (120, 220, 320, 420)
     p33c = f.auto(P33, 80, 660)
     jk = [f.auto("jonction", x, 680) for x in xs[:-1]]
-    f.fil(p33c, "1", jk[0], "w", via=[(80, 680)], pot="3V3")
+    f.fil(p33c, "1", jk[0], "w", via=[(80, 680)], pot="3V3", cat="sol")
     for a, b in zip(jk, jk[1:]):
-        f.fil(a, "e", b, "w", pot="3V3")
+        f.fil(a, "e", b, "w", pot="3V3", cat="sol")
     ads = f.el("ads1115", "A2", 610, 920, ("A2", -50, -86, 8, True))
     for i, (x, nom) in enumerate(zip(xs, noms)):
         d = f.el("photodiode", f"D{i + 2}", x, 720, (f"D{i + 2}", 8, -20, 8, True),
                  (f"BPW34 {nom}", 8, 10, 6, False))
         if i < 3:
-            f.fil(jk[i], "s", d, "K", pot="3V3")
+            f.fil(jk[i], "s", d, "K", pot="3V3", cat="sol")
         else:
-            f.fil(jk[2], "e", d, "K", via=[("x", x)], pot="3V3")
+            f.fil(jk[2], "e", d, "K", via=[("x", x)], pot="3V3", cat="sol")
         jn = f.auto("jonction", x, 790)
-        f.fil(d, "A", jn, "n")
+        f.fil(d, "A", jn, "n", cat="sol")
         jr = f.auto("jonction", x + 30, 790)
         f.fil(jn, "e", jr, "w")
         r = f.el("resistance", f"R{i + 1}", x + 30, 830, (f"R{i + 1}", -26, -14, 7, True),
@@ -614,8 +648,8 @@ def folio_schema():
     s2 = f.el("fin_course", "S2", 880, 900, ("S2", 44, -44, 8, True),
               ("micro-rupteur SPS75GCC", 44, -32, 6, False), ("butée basse d'élévation", 44, -23, 6, False),
               ("(-2°), branché sur NC :", 44, -14, 6, False), ("fil coupé = butée", 44, -5, 6, False))
-    f.fil(jf, "s", s2, "NC")
-    f.fil(s2, "C", f.auto(M, 880, 970), "1", pot="0V")
+    f.fil(jf, "s", s2, "NC", cat="capt")
+    f.fil(s2, "C", f.auto(M, 880, 970), "1", pot="0V", cat="capt")
     r6 = f.el("resistance", "R6", 920, 710, ("R6", 8, -14, 8, True), ("10 kΩ", 8, -2, 6, False))
     f.fil(jf, "e", r6, "2", via=[("x", 920)])
     f.fil(f.auto(P33, 920, 660), "1", r6, "1", pot="3V3")
@@ -624,9 +658,9 @@ def folio_schema():
     f.fil(a1, "HALL_AZ", jh, "n", via=[("y", 580), ("x", 1140)], num="HALL_AZ", aligne="AlignTop")
     b1 = f.el("hall", "B1", 1080, 920, ("B1", 36, 34, 8, True), ("A3144 nu, aimant sur", 36, 46, 6, False),
               ("la roue fixe. Pas de module", 36, 55, 6, False), ("KY-003 (tirage au 5 V)", 36, 64, 6, False))
-    f.fil(jh, "s", b1, "OUT", via=[("y", 920)])
-    f.fil(f.auto(P5, 1070, 840), "1", b1, "VCC", pot="5V")
-    f.fil(b1, "GND", f.auto(M, 1090, 990), "1", pot="0V")
+    f.fil(jh, "s", b1, "OUT", via=[("y", 920)], cat="capt")
+    f.fil(f.auto(P5, 1070, 840), "1", b1, "VCC", pot="5V", cat="capt")
+    f.fil(b1, "GND", f.auto(M, 1090, 990), "1", pot="0V", cat="capt")
     r7 = f.el("resistance", "R7", 1200, 710, ("R7", 8, -14, 8, True), ("10 kΩ", 8, -2, 6, False))
     f.fil(jh, "e", r7, "2", via=[("x", 1200)])
     f.fil(f.auto(P33, 1200, 660), "1", r7, "1", pot="3V3")
@@ -685,13 +719,13 @@ def folio_brochage():
             "les TMC2209 sont réglés par leur potentiomètre (pas d'UART) et les photodiodes lues par un ADS1115 (I2C).", 8)
     f.texte(60, 470, "Liaisons entre le boîtier (au pied du trépied) et la tête", 10, True)
     f.texte(60, 496,
-            "Câble                       Conducteurs  Signaux\n"
-            "--------------------------  -----------  -----------------------------------------------\n"
-            "Moteur d'élévation M1       4            A+ / A- (bobine A), B+ / B- (bobine B)\n"
-            "Moteur d'azimut M2          4            noir A+, vert A-, rouge B+, bleu B-\n"
-            "Fin de course S2            2            C (0 V), NC (FDC_EL)\n"
-            "Capteur à effet Hall B1     3            +5 V, 0 V, OUT (HALL_AZ)\n"
-            "Capteur solaire D2 à D5     5            +3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD (anodes)\n"
+            "Câble                    Bornier  Conducteurs       Signaux\n"
+            "-----------------------  -------  ----------------  --------------------------------------------\n"
+            "Moteur d'élévation M1    X2       4 × AWG 22        A+ / A- (bobine A), B+ / B- (bobine B)\n"
+            "Moteur d'azimut M2       X3       4 × AWG 22        noir A+, vert A-, rouge B+, bleu B-\n"
+            "Fin de course S2         X4       2 × AWG 26        C (0 V), NC (FDC_EL)\n"
+            "Capteur à effet Hall B1  X5       3 × AWG 26        +5 V, 0 V, OUT (HALL_AZ)\n"
+            "Capteur solaire          X6       5 × AWG 26 blindé +3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD\n"
             "Laisser une boucle de câble près de l'axe d'élévation ; tout passe par le passe-câble du socle.", 8, mono=True)
     f.texte(60, 650, "Données envoyées en LoRa (exemple)", 10, True)
     f.texte(60, 676,
@@ -699,6 +733,63 @@ def folio_brochage():
             "erreur de pointage, état des origines, heure et position GNSS si le module A3 est branché.\n"
             "Ne pas dépasser le temps d'émission autorisé dans la bande 868 MHz (1 % en général) :\n"
             "un message toutes les 1 à 5 minutes suffit.", 8)
+    return f
+
+
+# ---------------------------------------------------------------------------
+# FOLIO 3 : CÂBLAGE ET SECTIONS DES FILS
+
+def folio_cablage():
+    f = Folio(3, "Câblage et sections des fils", 30, 13)
+    f.texte(60, 46, "Section de chaque fil", 11, True)
+    f.texte(60, 84,
+            "Liaison                      De -> vers                          Courant    Longueur  Section             Fil à utiliser\n"
+            "---------------------------  ----------------------------------  ---------  --------  ------------------  ----------------------------------------------\n"
+            "Batterie ou bloc 12 V, +     G1+ -> F1 -> S1 -> X1               1,5 A      1 m       AWG 18  0,82 mm²    souple, rouge ; F1 à moins de 10 cm de G1\n"
+            "Batterie ou bloc 12 V, 0 V   G1- -> X1                           1,5 A      1 m       AWG 18  0,82 mm²    souple, noir\n"
+            "12 V sur la plaque           X1 -> VM de U2 et U3, C1, C2, U1    1,5 A      < 15 cm   AWG 20  0,52 mm²    rouge\n"
+            "0 V de puissance             X1 -> U2, U3 (GND), C1, C2, U1      1,5 A      < 15 cm   AWG 20  0,52 mm²    noir\n"
+            "5 V                          U1 OUT+ -> D1 -> A1 5V              0,5 A      < 10 cm   AWG 22  0,33 mm²    orange ; 0 V de U1 et de A1 : noir\n"
+            "Moteur M1 (élévation)        U2 1A 1B 2A 2B -> X2 -> M1          1,0 A      1,5 m     AWG 22  0,33 mm²    câble souple 4 conducteurs\n"
+            "Moteur M2 (azimut)           U3 1A 1B 2A 2B -> X3 -> M2          0,67 A     1,5 m     AWG 22  0,33 mm²    câble souple 4 conducteurs\n"
+            "STEP, DIR, EN                A1 -> U2, U3 ; R5                   < 1 mA     < 10 cm   AWG 24  0,20 mm²    monobrin, une couleur par signal\n"
+            "3,3 V, VIO, MS1, MS2, PDN    A1 3V3 -> U2, U3, A2, R5 à R7       < 20 mA    < 10 cm   AWG 24  0,20 mm²    monobrin, jaune ; 0 V : noir\n"
+            "I2C (SDA, SCL)               A1 GPIO3, GPIO4 -> A2               < 1 mA     < 10 cm   AWG 24  0,20 mm²    monobrin\n"
+            "Filtres du capteur solaire   R1 à R4, C3 à C6 -> A2 A0 à A3      2 mA       < 5 cm    AWG 24  0,20 mm²    monobrin\n"
+            "Fin de course S2             X4 -> S2 C et NC                    0,3 mA     1,5 m     AWG 26  0,13 mm²    câble souple 2 conducteurs\n"
+            "Capteur à effet Hall B1      X5 -> B1 VCC, GND, OUT              10 mA      1,5 m     AWG 26  0,13 mm²    câble souple 3 conducteurs\n"
+            "Capteur solaire              X6 -> D2 à D5 (+3,3 V et 4 anodes)  8 mA       1,5 m     AWG 26  0,13 mm²    câble souple blindé, 6 conducteurs\n"
+            "Pattes des photodiodes       dans le boîtier du capteur          2 mA       5 cm      AWG 28  0,08 mm²    fil fin isolé (fil à wrapper)\n"
+            "Antenne LoRa                 A1 IPEX -> W1                       radio      10 cm     coaxial 50 Ω        IPEX vers SMA, 1,13 mm ou RG178\n"
+            "Module GNSS                  A1 -> A3                            -          fourni    -                   câble fourni avec le module", 9, mono=True)
+    f.texte(60, 372, "Pourquoi ces sections", 11, True)
+    f.texte(60, 398,
+            "* Le courant fixe le minimum, la chute de tension le confirme. Résistance du cuivre : AWG 18 = 0,021 Ω/m,\n"
+            "  AWG 20 = 0,033 Ω/m, AWG 22 = 0,053 Ω/m, AWG 24 = 0,084 Ω/m, AWG 26 = 0,134 Ω/m.\n"
+            "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). En AWG 18 sur 2 × 1 m, la chute\n"
+            "  n'est que de 0,06 V. Le fil entre la batterie et F1 n'est pas protégé par le fusible : il reste court (< 10 cm).\n"
+            "* Moteurs : 1,0 A au plus par bobine. En AWG 22 sur 2 × 1,5 m, la boucle fait 0,16 Ω contre plusieurs ohms\n"
+            "  pour la bobine : le driver régule le courant, le moteur ne perd rien. Torsader A+ avec A-, et B+ avec B- :\n"
+            "  moins de parasites rayonnés vers les capteurs.\n"
+            "* Capteurs : quelques milliampères ; en AWG 26 sur 1,5 m, la chute est inférieure à 4 mV. Le câble du capteur\n"
+            "  solaire est blindé (blindage relié au 0 V côté boîtier seulement) et passe à l'écart des câbles moteurs.\n"
+            "* Tout ce qui bouge avec la tête (moteurs, capteurs) est en fil multibrin souple, jamais en monobrin : il casse\n"
+            "  à force de plier. Sur la plaque, le monobrin AWG 24 se soude plus facilement.\n"
+            "* Dans les borniers à vis, sertir un embout de câblage : 0,75 mm² pour l'AWG 18, 0,5 mm² pour l'AWG 20 et 22,\n"
+            "  0,25 mm² pour l'AWG 24 et 26 (deux fils fins dans un embout de 0,5 mm² si besoin).", 9)
+    f.texte(60, 618, "Correspondance AWG et mm²", 11, True)
+    f.texte(60, 644,
+            "AWG   Section    Diamètre du cuivre   Courant conseillé (fil isolé, en faisceau court)\n"
+            "----  ---------  -------------------  -----------------------------------------------\n"
+            "18    0,82 mm²   1,02 mm              5 A\n"
+            "20    0,52 mm²   0,81 mm              3 A\n"
+            "22    0,33 mm²   0,64 mm              2 A\n"
+            "24    0,20 mm²   0,51 mm              1 A\n"
+            "26    0,13 mm²   0,40 mm              0,5 A\n"
+            "28    0,08 mm²   0,32 mm              0,3 A", 9, mono=True)
+    f.texte(60, 790, "Dans QElectroTech, la section est aussi dans les propriétés de chaque fil (double-clic sur le fil :\n"
+                     "« Section du conducteur »), avec le type de fil dans « Câble ». Sur le folio 1, l'épaisseur du trait\n"
+                     "suit la section, et les fils trop courts pour porter le texte gardent la section de leur liaison.", 9)
     return f
 
 
@@ -725,7 +816,7 @@ def projet(folios):
 
 def main():
     faire_symboles()
-    folios = [folio_schema(), folio_brochage()]
+    folios = [folio_schema(), folio_brochage(), folio_cablage()]
     os.makedirs(os.path.dirname(SORTIE), exist_ok=True)
     with open(SORTIE, "w", encoding="utf-8") as fh:
         fh.write(projet(folios))

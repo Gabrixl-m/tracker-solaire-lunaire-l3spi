@@ -846,12 +846,13 @@ capteur solaire et les origines, et envoie les données du tracker en LoRa.
 
 Le **schéma électrique complet** est un projet QElectroTech :
 [`Electronique/Schema_Electrique.qet`](Electronique/Schema_Electrique.qet), avec son export
-[`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf) (2 folios, à
-imprimer en A3). Il est généré par `scripts/generate_schema_electrique.py`.
+[`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf) (3 folios, à
+imprimer en A3). Il est généré par `scripts/generate_schema_electrique.py`. Chaque fil y porte
+sa section (AWG), et l'épaisseur du trait suit cette section.
 
-| Folio 1 : schéma complet | Folio 2 : brochage et liaisons |
-|---|---|
-| ![Schéma électrique](docs/electronique/schema_electrique.png) | ![Brochage du Heltec V4](docs/electronique/brochage_heltec.png) |
+| Folio 1 : schéma complet | Folio 2 : brochage et liaisons | Folio 3 : section des fils |
+|---|---|---|
+| ![Schéma électrique](docs/electronique/schema_electrique.png) | ![Brochage du Heltec V4](docs/electronique/brochage_heltec.png) | ![Section des fils](docs/electronique/cablage_sections.png) |
 
 **Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
 7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
@@ -898,6 +899,9 @@ différent.
 **Alimentation.**
 * 12 V par un bloc secteur 12 V 3 A, ou une batterie LiFePO4 4S de 12,8 V, avec un
   **fusible de 3 A** et un **interrupteur** (F1, S1).
+* **F1 est un porte-fusible en ligne, sur le fil, à moins de 10 cm de la batterie.** Le fil
+  qui le précède n'est protégé par rien, et une batterie LiFePO4 en court-circuit débite
+  des centaines d'ampères : il doit rester le plus court possible.
 * Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et à l'abaisseur
   LM2596 (U1).
 * U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
@@ -964,6 +968,34 @@ Il donne l'heure et la position pour le calcul de la position du Soleil (§ 17).
   V4, l'ampli de sortie se commande par les GPIO 7, 2 et 46 : partir des exemples Heltec.
 * `TinyGPSPlus` pour le GNSS.
 
+**Câbles : section de chaque fil** (détail au folio 3 du schéma). La section dépend du
+courant et de la longueur. Elle est écrite sur chaque fil du schéma, et dans ses propriétés
+QElectroTech (« Section du conducteur »).
+
+| Liaison | Courant | Longueur | Section | Fil |
+|---|---|---|---|---|
+| Batterie ou bloc 12 V → F1 → S1 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
+| 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
+| 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
+| Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |
+| STEP, DIR, EN, 3,3 V, I²C, filtres du capteur | < 20 mA | < 10 cm | **AWG 24** (0,20 mm²) | monobrin |
+| Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
+| Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
+| Pattes des photodiodes, dans le boîtier du capteur | 2 mA | 5 cm | **AWG 28** (0,08 mm²) | fil fin isolé (fil à wrapper) |
+| Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
+
+* En AWG 18, la chute de tension sur l'aller-retour du 12 V (2 × 1 m, 1,5 A) n'est que de
+  0,06 V. En AWG 22, la boucle d'une bobine de moteur (2 × 1,5 m) fait 0,16 Ω, à côté de
+  plusieurs ohms pour la bobine : le driver régule le courant, le moteur ne perd rien.
+* **Tout ce qui va vers la tête est en multibrin souple**, jamais en monobrin, qui casse à
+  force de plier dans la boucle de câble.
+* Torsader les fils de chaque bobine (A+ avec A−, B+ avec B−) : ils rayonnent moins de
+  parasites vers les capteurs.
+* Le câble du capteur solaire passe à l'écart des câbles moteurs. Son blindage est relié au
+  0 V **côté boîtier seulement**.
+* Dans les borniers à vis, sertir un **embout de câblage** : 0,75 mm² pour l'AWG 18,
+  0,5 mm² pour l'AWG 20 et 22, 0,25 mm² pour l'AWG 24 et 26.
+
 **Installation.** Pour la démonstration, le boîtier électronique (Heltec, drivers,
 alimentation, ADS1115) se pose au pied du trépied. Les câbles des moteurs, du fin de course,
 du capteur Hall et du capteur solaire descendent de la tête par le passe-câble du socle
@@ -980,8 +1012,8 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 ![Implantation du boîtier électronique](docs/electronique/implantation_boitier.png)
 
 * **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
-  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs, la
-  diode et le porte-fusible sont soudés.
+  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs et
+  la diode sont soudés.
 * **USB-C du Heltec au bord de la plaque**, face à une découpe du boîtier : on reprogramme
   sans rien démonter.
 * **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
@@ -1219,7 +1251,7 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
-| **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (2 folios : schéma complet, brochage du Heltec V4 et liaisons) |
+| **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil, brochage du Heltec V4 et liaisons, câblage et sections des fils) |
 | `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
 | **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |

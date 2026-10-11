@@ -2,11 +2,10 @@
 
 Écrit Electronique/Implantation_Boitier.fzz : une plaque à pastilles de 8 × 12 cm avec, à
 l'échelle, tout ce qui reste au pied du trépied (Heltec WiFi LoRa 32 V4, 2 TMC2209, ADS1115,
-abaisseur LM2596, fusible, borniers, résistances et condensateurs). Ce qui est sur la tête
+abaisseur LM2596, borniers, résistances et condensateurs). Ce qui est sur la tête
 (moteurs, fin de course, capteur Hall, photodiodes) n'y est pas : on n'en voit que les borniers.
 
-Pièces standard de Fritzing : LM2596, résistances, condensateurs, diode, porte-fusible,
-interrupteur, plaque à pastilles, règle. Le Heltec V4, le TMC2209, l'ADS1115 et les borniers au
+Pièces standard de Fritzing : LM2596, résistances, diode, interrupteur et plaque à pastilles. Le Heltec V4, le TMC2209, l'ADS1115 et les borniers au
 pas de 5,08 mm n'existent pas dans Fritzing (ou pas à l'échelle) : ils sont dessinés ici, à leurs
 dimensions réelles, et intégrés au fichier.
 
@@ -363,10 +362,8 @@ def main():
     k.piece(boitier(bl, bh, plaque), "Boîtier", -(bl - plaque[0]) / 2, -(bh - plaque[1]) / 2, z=1.2)
     k.plaque(0, 0)
 
-    # bord haut : arrivée 12 V et fusible, puis les câbles vers la tête
+    # bord haut : arrivée 12 V (le fusible F1 est en ligne, près de la batterie), câbles vers la tête
     k.piece(b2, "X1 12 V", *sur_trou(b2, 0, 2), etiquette=(1, -3.2))
-    k.standard("SparkFun-Passives-FUSE-X20MM", "sparkfun-passives-fuse-x20mm.fzp", "F1 fusible 3 A",
-               14.5, 2.2, etiquette=(16, -3.2))
     for p, c, titre in ((b4, 15, "X2 moteur M1"), (b4, 24, "X3 moteur M2"), (b2, 33, "X4 FDC"),
                         (b3, 38, "X5 Hall")):
         x, _y = trou(c, 2)
@@ -422,10 +419,12 @@ def main():
         ("Heltec 2 × 18, TMC2209 2 × 8 chacun, ADS1115 1 × 10.", 1.9, False),
         ("", 1.0, False),
         ("Borniers à vis au pas de 5,08 mm", 2.1, True),
-        ("X1 : arrivée 12 V, 2 pôles", 1.9, False),
-        ("X2 et X3 : moteurs M1 et M2, 4 pôles chacun", 1.9, False),
-        ("X4 : fin de course, 2 pôles ; X5 : capteur Hall, 3 pôles", 1.9, False),
-        ("X6 : capteur solaire, 5 pôles", 1.9, False),
+        ("X1 : arrivée 12 V, 2 pôles, fil AWG 18", 1.9, False),
+        ("X2 et X3 : moteurs M1 et M2, 4 pôles, câble AWG 22", 1.9, False),
+        ("X4 : fin de course, 2 pôles ; X5 : Hall, 3 pôles ; AWG 26", 1.9, False),
+        ("X6 : capteur solaire, 5 pôles, câble blindé AWG 26", 1.9, False),
+        ("Sur la plaque : AWG 20 pour le 12 V et son 0 V, AWG 22", 1.9, False),
+        ("pour le 5 V, AWG 24 pour les signaux (folio 3 du schéma).", 1.9, False),
         ("", 1.0, False),
         ("Repères", 2.1, True),
         ("Ceux du schéma électrique, qui donne le câblage :", 1.9, False),
@@ -433,7 +432,8 @@ def main():
         ("Broches du Heltec utilisées par le tracker : en orange.", 1.9, False),
         ("", 1.0, False),
         ("Traversées du boîtier", 2.1, True),
-        ("Gauche : entrée 12 V, interrupteur S1, USB-C.", 1.9, False),
+        ("Gauche : entrée 12 V, interrupteur S1, USB-C. Le fusible F1", 1.9, False),
+        ("est en ligne sur le fil, à moins de 10 cm de la batterie.", 1.9, False),
         ("Haut : câbles des moteurs, du fin de course, du Hall.", 1.9, False),
         ("Bas : câble du capteur solaire. Droite : antenne LoRa", 1.9, False),
         ("(câble IPEX vers une traversée SMA).", 1.9, False),

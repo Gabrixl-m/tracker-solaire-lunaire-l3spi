@@ -187,7 +187,7 @@ rendement des vis, les roulements et les câbles.
   4 % du besoin.
 * **Énergie** : alimentés, les moteurs consomment environ 5,5 W (NEMA 17 à 1,0 A) et 6 W
   (NEMA 11). Comme les vis tiennent seules, les drivers sont coupés entre deux corrections.
-  Avec une correction de 0,5° toutes les 2 minutes, les moteurs sont alimentés moins de 1 %
+  Avec une correction de 0,5° toutes les 2 minutes (cadence au § 17), les moteurs sont alimentés moins de 1 %
   du temps, soit quelques dizaines de mW en moyenne au lieu de 12 W.
 
 ### Tenue moteurs coupés
@@ -227,6 +227,7 @@ planter les vis d'ancrage ou lester les pieds. Au-dessus de 10 m/s, mettre le pa
 | Pas entier au panneau | 0,036° | 0,030° |
 | Micro-pas (1/16) | 0,0023° | 0,0019° |
 | Vitesse conseillée | 14°/s (moteur à 120 tr/min) | 12°/s |
+| Vitesse des corrections de suivi | 0,5°/s | 0,5°/s |
 
 Le Soleil se déplace d'environ 0,5°/h sur la Lune et 15°/h sur Terre : un retour à plat ou
 une remise en position prend quelques secondes.
@@ -333,7 +334,10 @@ erreur d'azimut    = (G − D) / S
   coefficient par photodiode (moyenne des 4 / sa valeur), pour corriger leurs petites
   différences.
 * Si S est trop faible (nuage, nuit), ignorer le capteur et rester sur la position calculée.
-* Si l'erreur est sous 0,026 (≈ 0,3°), ne pas bouger, pour que le panneau n'oscille pas.
+* Si l'erreur est sous 0,022 (≈ 0,25°), ne pas bouger, pour que le panneau n'oscille pas.
+  Au-delà, corriger de 0,5° : le panneau se place 0,25° **en avance** sur le Soleil, qui le
+  rattrape puis le dépasse. Sur Terre, cela fait une correction toutes les 2 minutes environ
+  (cadence détaillée au § 17).
 * En azimut, diviser l'erreur par cos(élévation) avant de la convertir en pas : près du
   zénith, l'azimut doit beaucoup tourner pour corriger une petite erreur (voir la
   bibliographie).
@@ -365,6 +369,9 @@ puissance du panneau, et 5° seulement 0,4 %.
     suit le calcul et signale le défaut.
 * Comme une erreur de quelques degrés ne coûte presque rien en énergie (plus haut), le
   calcul seul suffit à alimenter le système le temps d'une panne du capteur.
+* **Cadence** : le Soleil ne se déplace que de 0,5° par heure dans le ciel lunaire. Avec la
+  même règle que sur Terre (correction de 0,5° dès que l'écart atteint 0,25°), le panneau
+  bouge **une fois par heure** environ, et les moteurs restent coupés le reste du temps.
 
 Pour une version de vol, le capteur serait en aluminium anodisé noir (c'est déjà le
 matériau du cas réel dans la CAO), avec une **fenêtre en silice fondue** contre la poussière
@@ -1105,6 +1112,43 @@ GND ─────────────────────────�
 2. **Les photodiodes corrigent l'erreur restante** dès que le Soleil est assez fort. L'ESP32
    **retient l'écart** entre les angles calculés et les angles où le capteur a centré le
    Soleil. Quand un nuage passe, le calcul seul reste juste.
+
+### Cadence du suivi : une petite correction toutes les 2 minutes
+
+Le panneau ne suit pas le Soleil en continu. Il le rattrape **par petites corrections**,
+avec les moteurs coupés entre deux corrections :
+
+1. **Toutes les 10 secondes**, l'ESP32 lit les 4 photodiodes et recalcule la position du
+   Soleil.
+2. **Tant que l'écart reste sous 0,25°**, il ne bouge pas.
+3. **Dès qu'il atteint 0,25°**, il tourne l'axe concerné de **0,5°**. Le panneau se place
+   ainsi 0,25° en avance : le Soleil le rattrape, le dépasse, et l'écart revient à 0,25°
+   environ **2 minutes plus tard** (le Soleil avance de 15° par heure, soit 0,25° par minute).
+4. Chaque axe se corrige seul, quand c'est nécessaire. La cadence varie dans la journée :
+   l'élévation s'arrête presque vers midi, alors que l'azimut accélère vers midi en été.
+5. Si le ciel est couvert (signal trop faible), le panneau suit la position calculée, avec
+   la même règle.
+6. Le soir, il revient vers l'est pour le lever du lendemain, en un seul mouvement à vitesse
+   rapide (14°/s, soit une quinzaine de secondes pour un demi-tour).
+
+**Une correction n'est pas un à-coup.**
+* 0,5°, c'est le diamètre apparent du Soleil. Cela représente environ 250 micro-pas au
+  panneau, d'environ 0,002° chacun (16 micro-pas par pas, réduction 50:1 ou 60:1).
+* Le mouvement se fait à **0,5°/s**, avec une rampe d'accélération et de freinage
+  (FastAccelStepper) : il dure environ une seconde et glisse sans saut.
+* Le mode StealthChop des TMC2209 rend les moteurs presque silencieux.
+* Le driver est alimenté (EN = 0) seulement pendant ce mouvement. Comme la vis sans fin bloque
+  le moteur quand il est coupé, il repart exactement de là où il s'était arrêté.
+
+**Pourquoi pas un suivi continu.** Il faudrait garder les moteurs alimentés en permanence :
+environ 12 W, plus que ce que produit le panneau (environ 10 W crête). Le NEMA 11 chaufferait
+assez pour ramollir ses supports en PETG. Avec la cadence ci-dessus, les moteurs sont
+alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,25°, soit
+0,001 % de puissance perdue.
+
+**Pour une vidéo en accéléré** (time-lapse), on peut descendre le seuil à 0,05° et la
+correction à 0,1° : le panneau se recale alors toutes les 25 secondes environ, et le
+mouvement paraît continu à l'écran. La consommation reste de quelques dizaines de mW.
 
 ## 18. Sur un trépied photo grand public
 

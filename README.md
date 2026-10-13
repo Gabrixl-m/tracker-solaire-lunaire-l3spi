@@ -687,11 +687,7 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | Graisse PTFE (vis, roues) | 1 |
 | Photodiodes BPW34, résistances de 1 kΩ, condensateurs de 100 nF, convertisseur ADS1115 (capteur solaire) | 4 + 4 + 4 + 1 |
 
-![Visserie à l'échelle](docs/visserie/nomenclature.png)
-
-La planche ci-dessus montre chaque modèle de vis, de rondelle et d'écrou à la même échelle,
-avec sa quantité dans le cas réel et dans la démonstration. Les vues éclatées du § 15
-montrent où va chacune.
+Toute la visserie, à l'échelle et avec ses quantités : § 15, « Visserie en bref ».
 
 Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
 plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
@@ -851,32 +847,20 @@ Toutes les pièces sont alors régénérées avec ce jeu.
     boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le petit côté du
     cadre, côté du pivot libre (2 × M3×10, écrous M3 posés dans le cadre).
 
-### Où va chaque vis : vues éclatées
+### Visserie en bref
 
-Dans ces vues, les **vis sont en orange**, les **rondelles et les écrous en vert clair**,
-comme dans les fichiers STEP. Chaque vis est sortie de son trou le long de son axe (trait
-gris) ; chaque rondelle et chaque écrou est écarté de la pièce sur laquelle il s'appuie.
-Les vues de la tête et du panneau sont celles du cas réel. La démonstration a la même
-visserie, à trois différences près :
-* le fond se visse par 3 × M3×10 et porte l'écrou 1/4" (dernière image), au lieu de 3 × M3×25 ;
-* la chape se visse sur le moyeu imprimé par 3 × M3×12 par-dessus (étape 7) ;
-* il n'y a pas de vis M3×6 d'arrêt sur une colonne.
+![Visserie à l'échelle](docs/visserie/nomenclature.png)
 
-| La tête entière | Dessus de la chape : vis M3×12 et rondelles sur les lumières (étape 8) |
-|---|---|
-| ![Tête en vue éclatée](docs/visserie/tete_eclatee.png) | ![Chape, vue de dessus](docs/visserie/chape_dessus_eclatee.png) |
-
-| Dessous de la tête : fond, roue d'azimut, vis par-dessous la chape (étapes 2, 4 et 5) | Vis sans tête de blocage d'une vis sans fin (étape 5) |
-|---|---|
-| ![Tête, vue de dessous](docs/visserie/tete_dessous_eclatee.png) | ![Vis sans tête M3×4](docs/visserie/vis_sans_fin_blocage.png) |
-
-| Rails sur le chapeau, cadre sur les rails (étape 10, laminé masqué) | Un bout de rail : vis par-dessous, écrou dans le cadre |
-|---|---|
-| ![Panneau en vue éclatée](docs/visserie/panneau_eclate.png) | ![Bout de rail](docs/visserie/panneau_rail_eclate.png) |
-
-| Capteur solaire, coupé par l'axe d'une vis (étape 11) | Démonstration : fond sur le trépied photo, en demi-coupe (étape 4) |
-|---|---|
-| ![Capteur solaire](docs/visserie/capteur_eclate.png) | ![Fond de la démonstration](docs/visserie/demo_fond_eclate.png) |
+* Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
+  écrous en vert clair**.
+* Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. S'y
+  ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×8 sous la roue d'azimut et 2 vis
+  sans tête M3×4 qui bloquent les vis sans fin sur leur arbre.
+* Les 4 **rondelles M3** vont sous les vis posées sur les lumières de la chaîne d'azimut.
+  Les 6 **écrous M3** sont dans le cadre du panneau (4 pour les rails, 2 pour le capteur
+  solaire). L'**écrou 1/4"** de la démonstration est prisonnier dans le fond.
+* Le détail étape par étape, avec des vues éclatées de chaque endroit :
+  **[docs/visserie/](docs/visserie/README.md)**.
 
 ## 16. Commande : Heltec WiFi LoRa 32 V4
 
@@ -1334,7 +1318,7 @@ roulements ZZ :
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/visserie/*.png` | Visserie : planche de tous les modèles à l'échelle avec leurs quantités, vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration (vis en orange, rondelles et écrous en vert clair) |
+| **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
 | `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |

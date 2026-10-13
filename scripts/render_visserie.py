@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Images de la visserie (docs/visserie/), avec le code couleur des assemblages STEP : vis en
+Images de la visserie (docs/visserie/, expliquées dans docs/visserie/README.md), avec le code
+couleur des assemblages STEP : vis en
 orange, rondelles et écrous en vert clair. Dans les vues éclatées, chaque vis est sortie de son
 trou le long de son axe (trait gris), chaque rondelle et chaque écrou est écarté de son appui.
   - nomenclature.png : chaque modèle de vis, de rondelle et d'écrou, à la même échelle, avec sa

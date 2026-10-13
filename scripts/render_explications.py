@@ -172,7 +172,8 @@ def main():
     zb = G.z_fond_photo()
     garde = cq.Solid.makeBox(90, 45, 45, cq.Vector(-45, 0, -15))
     f = cq.Assembly(name="fond_photo")
-    morceaux = [("Plateau_Trepied_Photo", cq.Location()), ("Fond_Socle", cq.Location()), ("Socle", cq.Location()),
+    morceaux = [("Plateau_Trepied_Photo", cq.Location()), ("Vis_1_4_Trepied_Photo", cq.Location()),
+                ("Fond_Socle", cq.Location()), ("Socle", cq.Location()),
                 ("Ecrou_1_4_UNC", G.trans(0, 0, zb + G.TREPIED_PHOTO["plancher"]))]
     morceaux += [(G.nom_vis(t), G.loc_vis(pt, d)) for rp, t, pt, d in G.visserie() if rp == "fixe" and t == "M3x10"]
     for i, (n, loc) in enumerate(morceaux):

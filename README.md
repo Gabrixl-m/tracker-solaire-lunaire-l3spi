@@ -529,7 +529,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
 * **Stabilité** : basculement sans ancrage à 25,2° dans la pire orientation du panneau
   (`scripts/optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 201 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 203 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -1318,6 +1318,19 @@ roulements ZZ :
 Un fichier SolidWorks natif (`.SLDASM` / `.SLDPRT`) ne peut être écrit que par SolidWorks
 lui-même. Le format STEP AP214 fourni s'ouvre directement comme un assemblage complet,
 avec les noms des pièces, les sous-assemblages et les couleurs.
+
+Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
+`Tete_Rotative_*.step`, `Demo_Trepied.step`) :
+* **orange** : toutes les vis (CHC et FHC M3, vis sans tête M3×4 de blocage des vis sans
+  fin, vis 1/4"-20 du plateau du trépied photo) ;
+* **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
+  écrou 1/4"-20).
+
+Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
+de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
+fichiers de pièces seules (`pieces/*.step`) n'ont pas de couleur. Si les couleurs
+n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP de
+SolidWorks.
 
 1. **Fichier › Ouvrir**, type *STEP AP203/214/242 (\*.step; \*.stp)*, puis choisir
    `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step`.

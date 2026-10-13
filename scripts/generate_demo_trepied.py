@@ -311,7 +311,7 @@ def rendus(noms):
     shoot(r, "demo_trepied_photo_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
     r = build_renderer(assy, sun, ground=False)
     r.SetBackground(0.80, 0.86, 0.93)
-    shoot(r, "demo_trepied_photo_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30)
+    shoot(r, "demo_trepied_photo_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
 
 
 def main():

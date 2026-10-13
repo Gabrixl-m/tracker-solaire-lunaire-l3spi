@@ -23,7 +23,7 @@ from vtkmodules.vtkIOImage import vtkPNGWriter
 from vtkmodules.vtkRenderingCore import vtkCoordinate, vtkRenderWindow, vtkWindowToImageFilter
 
 import generate_tracker as G
-from render_apercu import build_renderer
+from render_apercu import build_renderer, legende
 
 OUT = os.path.join(G.RACINE, "docs", "explications")
 SUN = tuple(v / math.sqrt(0.5 ** 2 + 0.8 ** 2 + 0.6 ** 2) for v in (0.5, 0.8, 0.6))
@@ -34,8 +34,9 @@ _maillage = cq.Shape.toVtkPolyData
 cq.Shape.toVtkPolyData = lambda self, *a, **k: _maillage(self, 0.02, 0.08)   # maillage fin : petits trous visibles
 
 
-def rendu(assy, fname, pos, focal, angle, etiquettes):
-    """Rendu sur fond blanc, puis étiquettes (texte, point 3D en repère Y-up, coin du texte)."""
+def rendu(assy, fname, pos, focal, angle, etiquettes, dossier=None, avec_legende=False):
+    """Rendu sur fond blanc, puis étiquettes (texte, point 3D en repère Y-up, coin du texte) et, au
+    besoin, bandeau du code couleur de la visserie."""
     ren = build_renderer(assy, SUN, ground=False)
     ren.SetBackground(1, 1, 1)
     rw = vtkRenderWindow()
@@ -53,7 +54,7 @@ def rendu(assy, fname, pos, focal, angle, etiquettes):
     w2i = vtkWindowToImageFilter()
     w2i.SetInput(rw)
     w2i.Update()
-    path = os.path.join(OUT, fname)
+    path = os.path.join(dossier or OUT, fname)
     pw = vtkPNGWriter()
     pw.SetFileName(path)
     pw.SetInputConnection(w2i.GetOutputPort())
@@ -81,6 +82,8 @@ def rendu(assy, fname, pos, focal, angle, etiquettes):
         d.rectangle([bb[0] - 8, bb[1] - 6, bb[2] + 8, bb[3] + 6], fill=(255, 255, 255), outline=ROUGE, width=3)
         d.multiline_text((tx, ty), txt, fill=(20, 20, 20), font=f)
     im.save(path)
+    if avec_legende:
+        legende(path)
     print("->", path)
 
 
@@ -187,7 +190,7 @@ def main():
         ("Fond imprimé : plancher de\n1,6 mm sous l'écrou", (-12, zb + 4, 0), (40, 500)),
         ("Vis M3×10, tête noyée,\nfond vissé sous le socle", (20, zb + 2, 0), (1050, 600)),
         ("Socle (imprimé)", (-29.5, 20, 0), (40, 60)),
-    ])
+    ], avec_legende=True)
     # 6. capteur solaire sur le petit côté du cadre : vue d'ensemble, puis coupe par 2 photodiodes
     G.set_ajustements("petg")
     G.PARTS.clear()
@@ -216,7 +219,7 @@ def main():
               ("Équerre imprimée", yup((xc - 4, -16, zd - c["corps"] - 2)), (560, 980)),
               ("Petit côté du cadre\n(côté du pivot libre)", yup((xf, -45, 62)), (40, 820)),
               ("Cellules : le capteur\nne leur fait pas d'ombre", yup((xf - 40, 30, 74.5)), (40, 300)),
-          ])
+          ], avec_legende=True)
 
     rendu(capteur(cq.Solid.makeBox(110, 60, 80, cq.Vector(xf - 38, yd, 30))), "capteur_solaire_coupe.png",
           (280, 120, 170), (192, 66, -yd), 30, [
@@ -228,7 +231,7 @@ def main():
                (40, 860)),
               ("Écrou M3 dans le cadre", yup((xf - 1.5, c["vis_y"] - 2.5, c["z_vis"])), (40, 640)),
               ("Croix d'ombre", yup((xc, yd, zd + 15)), (1100, 60)),
-          ])
+          ], avec_legende=True)
     G.set_ajustements("reel")
 
 

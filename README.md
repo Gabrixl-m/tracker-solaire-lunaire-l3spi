@@ -687,6 +687,8 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | Graisse PTFE (vis, roues) | 1 |
 | Photodiodes BPW34, résistances de 1 kΩ, condensateurs de 100 nF, convertisseur ADS1115 (capteur solaire) | 4 + 4 + 4 + 1 |
 
+Toute la visserie, à l'échelle et avec ses quantités : § 15, « Visserie en bref ».
+
 Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
 plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
 car un pivot PETG de Ø8 ne tiendrait pas le couple de la roue d'élévation (voir § 19).
@@ -844,6 +846,21 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 11. **Capteur solaire** (§ 17) : coller les 4 BPW34 dans le boîtier et les câbler, visser le
     boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le petit côté du
     cadre, côté du pivot libre (2 × M3×10, écrous M3 posés dans le cadre).
+
+### Visserie en bref
+
+![Visserie à l'échelle](docs/visserie/nomenclature.png)
+
+* Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
+  écrous en vert clair**.
+* Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. S'y
+  ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×8 sous la roue d'azimut et 2 vis
+  sans tête M3×4 qui bloquent les vis sans fin sur leur arbre.
+* Les 4 **rondelles M3** vont sous les vis posées sur les lumières de la chaîne d'azimut.
+  Les 6 **écrous M3** sont dans le cadre du panneau (4 pour les rails, 2 pour le capteur
+  solaire). L'**écrou 1/4"** de la démonstration est prisonnier dans le fond.
+* Le détail étape par étape, avec des vues éclatées de chaque endroit :
+  **[docs/visserie/](docs/visserie/README.md)**.
 
 ## 16. Commande : Heltec WiFi LoRa 32 V4
 
@@ -1301,6 +1318,7 @@ roulements ZZ :
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
+| **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
 | `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
@@ -1309,7 +1327,7 @@ roulements ZZ :
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
-| `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py` | Génèrent les rendus PNG et les images annotées |
+| `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py`, `scripts/render_visserie.py` | Génèrent les rendus PNG, les images annotées et les vues de la visserie |
 | `requirements.txt` | Dépendances Python (CadQuery) |
 | `LICENSE` | Licence du projet : CC BY-NC-SA 4.0 (§ 23) |
 
@@ -1325,6 +1343,9 @@ Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
   fin, vis 1/4"-20 du plateau du trépied photo) ;
 * **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
   écrou 1/4"-20).
+
+Les rendus PNG suivent le même code. La visserie y est éclairée plus fort et cernée de noir,
+et un bandeau en bas de l'image rappelle les deux couleurs.
 
 Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
 de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
@@ -1391,6 +1412,7 @@ xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau
 xvfb-run -a python scripts/render_explications.py                  # images annotées (docs/explications/)
+xvfb-run -a python scripts/render_visserie.py                      # visserie : planche et vues éclatées (docs/visserie/)
 ```
 
 ## 23. Licence

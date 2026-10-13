@@ -48,7 +48,8 @@ TREPIED_DEMO = dict(
     phis=(90.0, 210.0, 330.0),
 )
 COULEURS = {"alu": cq.Color(0.78, 0.79, 0.81), "noir": cq.Color(0.10, 0.10, 0.11),
-            "bleu": cq.Color(0.10, 0.30, 0.62), "orange": cq.Color(0.96, 0.52, 0.12)}
+            "bleu": cq.Color(0.10, 0.30, 0.62), "gris": cq.Color(0.38, 0.39, 0.41),
+            "vis": G.COL["vis"]}
 G.MAT.setdefault("Plastique (trépied)", 1150.0)
 G.MAT.setdefault("Al (trépied)", 2700.0)
 
@@ -118,24 +119,24 @@ def pieces_trepied():
     pts = [(rc * math.cos(math.radians(f)), rc * math.sin(math.radians(f))) for f in d["phis"]]
     corps = cq.Workplane("XY").polyline(pts).close().extrude(hc).edges("|Z").fillet(14).translate((0, 0, z_ct - hc))
     p["Corps"] = (corps.cut(cyl_z(d["colonne"][0] + 0.5, hc + 2, z=z_ct - hc - 1)), "noir")
-    # rotule 3D et plateau à clip, molettes orange
+    # rotule 3D et plateau à clip, molettes grises
     rot3d = cyl_z(44, 12, z=z_ct).union(cq.Workplane().add(cq.Solid.makeSphere(16, Vector(0, 0, z_ct + 24), angleDegrees1=-90)))
     rot3d = rot3d.union(box_span(-14, 14, -14, 14, z_ct + 24, z_pl - 16)).union(ovale(66, 54, 16, z_pl - 16))
     p["Rotule"] = (rot3d, "noir")
     p["Plateau"] = (ovale(*d["plateau"][:2], d["plateau"][2], z_pl), "noir")
-    p["Vis_1_4"] = (cyl_z(d["vis"][0], d["vis"][1] + 10, z=d["h_plateau"] - 10), "alu")
+    p["Vis_1_4"] = (cyl_z(d["vis"][0], d["vis"][1] + 10, z=d["h_plateau"] - 10), "vis")
     molettes = cyl_dir(7, 30, (-12, 0, z_ct + 28), (-1, 0, 0)).union(cyl_dir(18, 12, (-40, 0, z_ct + 28), (-1, 0, 0)))
     molettes = molettes.union(cyl_dir(16, 10, (33, 0, z_pl - 8), (1, 0, 0)))                     # inclinaison
     molettes = molettes.union(box_span(-6, 6, 27, 40, z_pl - 12, z_pl - 2))                        # levier du clip
     a = math.radians(d["phis"][0] + 60)
     molettes = molettes.union(cyl_dir(16, 12, (40 * math.cos(a), 40 * math.sin(a), z_ct - hc / 2),
                                       (math.cos(a), math.sin(a), 0)))                                # colonne
-    p["Molettes"] = (molettes, "orange")
+    p["Molettes"] = (molettes, "gris")
     # colonne centrale et moyeu des entretoises
     zb = d["colonne"][1]
     p["Colonne"] = (tube(d["colonne"][0], 1.5, (0, 0, zb), (0, 0, z_ct - 2)), "alu")
     p["Moyeu"] = (cyl_z(34, 22, z=zb).cut(cyl_z(d["colonne"][0] + 0.2, 24, z=zb - 1)).union(cyl_z(24, 10, z=zb - 10)),
-                  "orange")
+                  "gris")
     # jambes : charnière bleue, tube haut, verrou à clip, tube bas, embout ; entretoises
     for i, phi in enumerate(d["phis"], 1):
         s_v = (zc - d["z_verrou"]) / math.cos(beta)
@@ -145,7 +146,7 @@ def pieces_trepied():
         p[f"Verrou_{i}"] = (bloc(d["tube"][0] + 6, d["tube"][0] + 6, 46, le_long(phi, s_v), phi, beta), "bleu")
         t = (d["tube"][0] / 2 + 5) * math.cos(math.radians(phi)), (d["tube"][0] / 2 + 5) * math.sin(math.radians(phi))
         cv = le_long(phi, s_v)
-        p[f"Clip_{i}"] = (bloc(12, 5, 30, (cv[0] - t[1], cv[1] + t[0], cv[2]), phi, beta), "orange")
+        p[f"Clip_{i}"] = (bloc(12, 5, 30, (cv[0] - t[1], cv[1] + t[0], cv[2]), phi, beta), "gris")
         p[f"Tube_Bas_{i}"] = (tube(d["tube"][1], d["tube"][2], le_long(phi, s_v + 23), le_long(phi, L - 28)), "alu")
         e0, e1 = Vector(*le_long(phi, L - 28)), Vector(*le_long(phi, L))
         emb = cyl_dir(2 * R_EMBOUT, 28, tuple(e0), tuple(e1 - e0))

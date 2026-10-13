@@ -57,4 +57,6 @@ Vis_FHC_M3x8;3;Acier (visserie);0.001;Vis à tête fraisée M3x8 (ISO 10642)
 Vis_CHC_M3x6;1;Acier (visserie);0.001;Vis CHC M3x6 (ISO 4762)
 Rondelle_M3;4;Acier (visserie);0.000;Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5
 Photodiode_BPW34;4;Époxy transparent + silicium;0.000;Photodiode BPW34 (Vishay), surface sensible 7,5 mm²
+Vis_STHC_M3x4_Az;1;Acier (visserie);0.000;Vis sans tête M3x4 bout plat (ISO 4026), blocage de la vis sans fin sur son arbre
+Vis_STHC_M3x4_El;1;Acier (visserie);0.000;Vis sans tête M3x4 bout plat (ISO 4026), blocage de la vis sans fin sur son arbre
 TOTAL;;;25.90;

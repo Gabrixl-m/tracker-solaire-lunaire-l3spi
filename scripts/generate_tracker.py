@@ -151,6 +151,8 @@ COL = {
     "blue":   cq.Color(0.22, 0.52, 0.80),
     "grey":   cq.Color(0.60, 0.61, 0.63),
     "steel":  cq.Color(0.72, 0.72, 0.74),
+    "vis":    cq.Color(1.00, 0.50, 0.00),     # visserie : vis en orange vif
+    "rondelle": cq.Color(0.56, 0.93, 0.56),   # rondelles et écrous en vert clair
     "pv":     cq.Color(0.10, 0.20, 0.50),
     "pv_bg":  cq.Color(0.88, 0.89, 0.91),
     "nema":   cq.Color(0.12, 0.12, 0.13),
@@ -677,6 +679,19 @@ def p_vis(v):
     zh = (x0 + e - 0.6) / 2                       # vis de pression M3 sur le moyeu côté +Z
     w = w.cut(cyl_dir(AJ["taraud_m3"], 6.5, (0, 6.5, zh), (0, -1, 0)))
     return w.cut(cyl_z(5 + AJ["serrage"], 40, z=-20))
+
+
+def p_vis_pression(v):
+    """Vis sans tête M3 x 4 à bout plat (ISO 4026) dans le trou radial du moyeu côté +Z de la vis
+    sans fin v, dans le repère de cette vis (même trou que p_vis). Elle affleure le moyeu Ø12 :
+    en vrai, son bout entre de 0,5 mm dans le méplat limé sur l'arbre ; l'arbre de la CAO étant
+    rond, elle est modélisée de r = 2,5 (contre l'arbre) à r = 6 (3,5 mm visibles)."""
+    e = EL_VIS["palier"][0] - LEVRE_685 - 0.15
+    zh = (v["moyeu"] + e - 0.6) / 2
+    s = cyl_dir(2.4, 3.5, (0, 6.0, zh), (0, -1, 0))
+    six_pans = (cq.Workplane("XZ", origin=(0, 6.1, zh)).polygon(6, 1.5 / math.cos(math.radians(30)))
+                .extrude(1.6))                                    # empreinte clé de 1,5
+    return s.cut(six_pans)
 
 
 def p_accouplement():
@@ -1324,12 +1339,12 @@ def build_tripod_parts():
     reg("Ferrure_Jambe", p_ferrure_jambe(), "Ti-6Al-4V", COL["ti"], "Ferrure d'articulation de jambe")
     reg("Axe_Articulation", p_axe(6, 36, 10), "Ti-6Al-4V", COL["alu_d"], "Axe Ø6 revêtu MoS2")
     reg("Tube_Jambe_Superieur", p_tube_sup(), "Al 7075-T73", COL["alu"], "Tube Ø25x1,5 anodisé dur")
-    reg("Bague_Blocage", p_bague_blocage(), "Ti-6Al-4V", COL["orange"], "Bague de blocage télescopique")
+    reg("Bague_Blocage", p_bague_blocage(), "Ti-6Al-4V", COL["ti"], "Bague de blocage télescopique")
     reg("Tube_Jambe_Inferieur", p_tube_inf(), "Al 7075-T73", COL["alu"], "Tube coulissant Ø20x1,5")
     reg("Embout_Rotule", p_embout_rotule(), "Ti-6Al-4V", COL["ti"], "Embout à rotule Ø22")
     reg("Bride_Entretoise", p_bride_entretoise(), "Ti-6Al-4V", COL["ti"], "Bride de fixation d'entretoise")
     reg("Patin", p_patin(), "Al 7075-T73", COL["alu_d"], "Patin Ø120 à crampons + logement de rotule")
-    reg("Ancrage_Helicoidal", p_ancrage(), "Ti-6Al-4V", COL["orange"],
+    reg("Ancrage_Helicoidal", p_ancrage(), "Ti-6Al-4V", COL["ti"],
         "Vis d'ancrage hélicoïdale Ø60, 400 mm dans le régolithe")
     reg("Axe_Entretoise", p_axe(5, 21, 8), "Ti-6Al-4V", COL["alu_d"], "Axe Ø5")
 
@@ -1344,7 +1359,7 @@ def build_head_parts():
         "Fond du socle, vissé sur la vis 1/4\" d'un trépied photo (écrou captif)" if AJ["trepied_photo"]
         else "Fond du socle, centrage dans la colonne")
     if AJ["trepied_photo"]:
-        reg("Ecrou_1_4_UNC", p_ecrou_1_4(), "Acier (visserie)", COL["steel"], "Écrou 1/4\"-20 UNC, 7/16\" sur plats")
+        reg("Ecrou_1_4_UNC", p_ecrou_1_4(), "Acier (visserie)", COL["rondelle"], "Écrou 1/4\"-20 UNC, 7/16\" sur plats")
     reg("Socle", p_socle(), mat("Al 6061-T6"), COL["socle"], "Socle Ø62 : roulements d'azimut, passe-câble")
     reg("Roulement_6806", roulement_z("6806"), "Acier 440C", COL["roulement"],
         "Roulement d'azimut 6806 (61806) 30 x 42 x 7, protégé ZZ (ou 2RS)")
@@ -1383,15 +1398,18 @@ def build_head_parts():
     reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
-    reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["steel"], "Écrou M3 (ISO 4032)")
-    reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["steel"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
+    reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["rondelle"], "Écrou M3 (ISO 4032)")
+    reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["rondelle"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
+    for k, v in (("Az", VIS_AZ), ("El", VIS_EL)):
+        reg(f"Vis_STHC_M3x4_{k}", p_vis_pression(v), "Acier (visserie)", COL["vis"],
+            "Vis sans tête M3x4 bout plat (ISO 4026), blocage de la vis sans fin sur son arbre")
     for t in sorted({v[1] for v in visserie()}):
         d, L = t[1:].rstrip("F").split("x")
         if t.endswith("F"):
-            reg(nom_vis(t), p_vis_fraisee(float(d), float(L)), "Acier (visserie)", COL["steel"],
+            reg(nom_vis(t), p_vis_fraisee(float(d), float(L)), "Acier (visserie)", COL["vis"],
                 f"Vis à tête fraisée {t[:-1].replace('.', ',')} (ISO 10642)")
         else:
-            reg(nom_vis(t), p_vis_chc(float(d), float(L)), "Acier (visserie)", COL["steel"],
+            reg(nom_vis(t), p_vis_chc(float(d), float(L)), "Acier (visserie)", COL["vis"],
                 f"Vis CHC {t.replace('.', ',')} (ISO 4762)")
     # panneau
     reg("Cadre_Panneau", p_cadre_pv(), "Al 6063-T5", COL["alu"], "Cadre alu du panneau 356x253x30")
@@ -1509,8 +1527,9 @@ def build_head(az, el, with_panel=True):
     add(h, "Arbre_Vis_Azimut")
     for i, x0 in enumerate(x_685(a["palier"]), 1):
         add(h, "Roulement_685", trans(x0, ya, a["z"]), f"Roulement_685_Az_{i}")
-    add(h, "Vis_Azimut", trans(0, ya, a["z"]) * rot((0, 1, 0), 90)
-        * rot((0, 0, 1), PHASES[MODE]["az"] + VIS_AZ["z"] * az))
+    loc_vis_az = trans(0, ya, a["z"]) * rot((0, 1, 0), 90) * rot((0, 0, 1), PHASES[MODE]["az"] + VIS_AZ["z"] * az)
+    add(h, "Vis_Azimut", loc_vis_az)
+    add(h, "Vis_STHC_M3x4_Az", loc_vis_az)
     add(h, "Accouplement", trans(a["x_joint"] - 12.5, ya, a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
     add(h, "Support_Moteur_Azimut")
     add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], ya, a["z"]) * rot((0, 1, 0), 90))
@@ -1520,8 +1539,10 @@ def build_head(az, el, with_panel=True):
     add(h, "Arbre_Vis_Elevation")
     for i, y0 in enumerate(x_685(EL_VIS["palier"]), 1):
         add(h, "Roulement_685", trans(-30, y0, zv) * rot((0, 0, 1), 90), f"Roulement_685_El_{i}")
-    add(h, "Vis_Elevation", trans(-30, 0, zv) * rot((1, 0, 0), -90)
-        * rot((0, 0, 1), PHASES[MODE]["el"] - VIS_EL["z"] * (el - EL_REF)))
+    loc_vis_el = (trans(-30, 0, zv) * rot((1, 0, 0), -90)
+                  * rot((0, 0, 1), PHASES[MODE]["el"] - VIS_EL["z"] * (el - EL_REF)))
+    add(h, "Vis_Elevation", loc_vis_el)
+    add(h, "Vis_STHC_M3x4_El", loc_vis_el)
     add(h, "Accouplement", trans(-30, EL_VIS["y_joint"] - 12.5, zv) * rot((1, 0, 0), -90), "Accouplement_El")
     add(h, "Support_Moteur_Elevation")
     add(h, "Moteur_Elevation_NEMA17", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))

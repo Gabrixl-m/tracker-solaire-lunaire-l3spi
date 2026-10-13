@@ -32,6 +32,7 @@ Organisation du dépôt :
 CAO/Cas_Reel/          fichiers STEP du tracker lunaire : assemblages et pièces seules
 CAO/Demo_Terre_PETG/   démonstration sur Terre : pièces à imprimer (STL + STEP) et assemblages
 docs/                  rendus, images annotées, bilan de masse, optimisation des jambes
+Electronique/          schéma électrique (QElectroTech, PDF) et implantation du boîtier (Fritzing)
 scripts/               scripts Python qui génèrent la CAO, les contrôles et les rendus
 LISTE_ACHATS.md        liste d'achats de la démonstration sur Terre
 requirements.txt       dépendances Python
@@ -186,7 +187,7 @@ rendement des vis, les roulements et les câbles.
   4 % du besoin.
 * **Énergie** : alimentés, les moteurs consomment environ 5,5 W (NEMA 17 à 1,0 A) et 6 W
   (NEMA 11). Comme les vis tiennent seules, les drivers sont coupés entre deux corrections.
-  Avec une correction de 0,5° toutes les 2 minutes, les moteurs sont alimentés moins de 1 %
+  Avec une correction de 0,5° toutes les 2 minutes (cadence au § 17), les moteurs sont alimentés moins de 1 %
   du temps, soit quelques dizaines de mW en moyenne au lieu de 12 W.
 
 ### Tenue moteurs coupés
@@ -226,6 +227,7 @@ planter les vis d'ancrage ou lester les pieds. Au-dessus de 10 m/s, mettre le pa
 | Pas entier au panneau | 0,036° | 0,030° |
 | Micro-pas (1/16) | 0,0023° | 0,0019° |
 | Vitesse conseillée | 14°/s (moteur à 120 tr/min) | 12°/s |
+| Vitesse des corrections de suivi | 0,5°/s | 0,5°/s |
 
 Le Soleil se déplace d'environ 0,5°/h sur la Lune et 15°/h sur Terre : un retour à plat ou
 une remise en position prend quelques secondes.
@@ -332,7 +334,10 @@ erreur d'azimut    = (G − D) / S
   coefficient par photodiode (moyenne des 4 / sa valeur), pour corriger leurs petites
   différences.
 * Si S est trop faible (nuage, nuit), ignorer le capteur et rester sur la position calculée.
-* Si l'erreur est sous 0,026 (≈ 0,3°), ne pas bouger, pour que le panneau n'oscille pas.
+* Si l'erreur est sous 0,022 (≈ 0,25°), ne pas bouger, pour que le panneau n'oscille pas.
+  Au-delà, corriger de 0,5° : le panneau se place 0,25° **en avance** sur le Soleil, qui le
+  rattrape puis le dépasse. Sur Terre, cela fait une correction toutes les 2 minutes environ
+  (cadence détaillée au § 17).
 * En azimut, diviser l'erreur par cos(élévation) avant de la convertir en pas : près du
   zénith, l'azimut doit beaucoup tourner pour corriger une petite erreur (voir la
   bibliographie).
@@ -364,6 +369,9 @@ puissance du panneau, et 5° seulement 0,4 %.
     suit le calcul et signale le défaut.
 * Comme une erreur de quelques degrés ne coûte presque rien en énergie (plus haut), le
   calcul seul suffit à alimenter le système le temps d'une panne du capteur.
+* **Cadence** : le Soleil ne se déplace que de 0,5° par heure dans le ciel lunaire. Avec la
+  même règle que sur Terre (correction de 0,5° dès que l'écart atteint 0,25°), le panneau
+  bouge **une fois par heure** environ, et les moteurs restent coupés le reste du temps.
 
 Pour une version de vol, le capteur serait en aluminium anodisé noir (c'est déjà le
 matériau du cas réel dans la CAO), avec une **fenêtre en silice fondue** contre la poussière
@@ -521,7 +529,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
     près, entre l'accouplement d'azimut et le voile de la roue fixe.
 * **Stabilité** : basculement sans ancrage à 25,2° dans la pire orientation du panneau
   (`scripts/optimisation_angle.py`).
-* **Relecture** des fichiers STEP produits : 201 solides, géométrie valide.
+* **Relecture** des fichiers STEP produits : 203 solides, géométrie valide.
 
 ## 10. Limites
 
@@ -658,7 +666,7 @@ justes.
 ## 13. Pièces à acheter
 
 La liste complète, avec les noms à chercher sur les sites marchands, les quantités, les prix
-indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
+indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 **[`LISTE_ACHATS.md`](LISTE_ACHATS.md)**. En résumé, pour la mécanique :
 
 | Article | Qté |
@@ -677,7 +685,7 @@ indicatifs et l'électronique (ESP32, drivers, alimentation), est dans
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
-| Photodiodes BPW34, résistances de 1 kΩ et de 10 kΩ, condensateurs de 100 nF (capteur solaire) | 4 + 4 + 4 + 4 |
+| Photodiodes BPW34, résistances de 1 kΩ, condensateurs de 100 nF, convertisseur ADS1115 (capteur solaire) | 4 + 4 + 4 + 1 |
 
 Les deux pivots d'élévation sont **imprimés** (`Pivot_Entraine`, `Pivot_Libre`) : il n'y a
 plus d'axe Ø8 à acheter. Ils passent à **Ø12** et les 608 deviennent des **6801** (12 × 21 × 5),
@@ -837,45 +845,207 @@ Toutes les pièces sont alors régénérées avec ce jeu.
     boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le petit côté du
     cadre, côté du pivot libre (2 × M3×10, écrous M3 posés dans le cadre).
 
-## 16. Commande par ESP32
+## 16. Commande : Heltec WiFi LoRa 32 V4
 
-* **Drivers : 2 × TMC2209**, logique en 3,3 V. Ils sont pilotés par UART, sur un bus commun,
-  avec les adresses 0 et 1 fixées par MS1/MS2.
-* **Câblage** :
-  * élévation : STEP GPIO 25, DIR GPIO 26 ;
-  * azimut : STEP GPIO 32, DIR GPIO 33 ;
-  * EN commun : GPIO 27 ;
-  * UART : TX GPIO 17 vers PDN_UART à travers 1 kΩ, RX GPIO 16 ;
-  * fins de course : GPIO 18 et 19, avec pull-up interne.
-* **Alimentation : 12 V**, par exemple une batterie LiFePO4 4S de 12,8 V, avec 100 µF au
-  plus près de chaque driver. L'ESP32 est alimenté par un abaisseur 12 V → 5 V.
-* **Réglages** :
-  * courant de marche (`rms_current`) : 1,0 A pour le NEMA 17 (**0,6 A en version PETG**,
-    pour ne pas casser les dents si l'élévation bute), 0,67 A pour le NEMA 11 ;
-  * 16 micro-pas, StealthChop ;
-  * à l'arrêt : drivers désactivés par EN. Ne jamais laisser les moteurs alimentés en
-    permanence : le NEMA 11 dissipe alors environ 6 W et le NEMA 17 environ 2 W, assez
-    pour ramollir leurs supports en PETG.
-* **Branchement du NEMA 17 (Usongshine 17HS3401)** : connecteur JST PH à 6 broches. Une
-  bobine relie les broches 1 et 4, l'autre les broches 3 et 6 (vérifier au multimètre : faible
-  résistance entre les deux fils d'une même bobine, circuit ouvert entre les deux bobines).
-* **Branchement du NEMA 11 (11HS18-0674S)** : bobine A = noir (A+) et vert (A−), bobine B =
-  rouge (B+) et bleu (B−), vers les bornes A et B du TMC2209. Au multimètre, on doit lire
-  environ 6,8 Ω entre les deux fils d'une même bobine. Si le moteur tourne à l'envers,
-  inverser le sens dans le programme.
-* **Bibliothèques Arduino** : `FastAccelStepper`, qui génère les impulsions STEP en matériel
-  sur l'ESP32, avec rampes d'accélération, et `TMCStepper`, pour le courant et le micro-pas
-  par UART.
-* **Capteur solaire** : 4 photodiodes BPW34 sur 4 entrées analogiques de l'ADC1 (GPIO 36,
-  39, 34 et 35), avec une résistance de 1 kΩ chacune. Branchement au § 17, programme au § 3.
-* **Origine** :
-  * un micro-switch en butée basse d'élévation (−2°) ;
-  * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
+La carte de commande est un **Heltec WiFi LoRa 32 V4** : un ESP32-S3 avec une radio LoRa
+SX1262 (863–870 MHz), un écran OLED et un port USB-C. Il pilote les deux moteurs, lit le
+capteur solaire et les origines, et envoie les données du tracker en LoRa.
 
-  La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
+Le **schéma électrique complet** est un projet QElectroTech :
+[`Electronique/Schema_Electrique.qet`](Electronique/Schema_Electrique.qet), avec son export
+[`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf) (3 folios, à
+imprimer en A3). Il est généré par `scripts/generate_schema_electrique.py`. Chaque fil y porte
+sa section (AWG), et l'épaisseur du trait suit cette section.
+
+| Folio 1 : schéma complet | Folio 2 : brochage et liaisons | Folio 3 : section des fils |
+|---|---|---|
+| ![Schéma électrique](docs/electronique/schema_electrique.png) | ![Brochage du Heltec V4](docs/electronique/brochage_heltec.png) | ![Section des fils](docs/electronique/cablage_sections.png) |
+
+**Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
+7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
+mesure de la batterie, bouton PRG. Il ne reste que **9 broches libres** sur ses connecteurs,
+et le tracker les utilise toutes :
+
+| GPIO | Connecteur | Signal | Vers |
+|---|---|---|---|
+| 47 | J2-13 | STEP_EL | U2 (TMC2209 d'élévation) STEP |
+| 43 | J2-6 | DIR_EL | U2 DIR |
+| 48 | J2-14 | STEP_AZ | U3 (TMC2209 d'azimut) STEP |
+| 45 | J3-6 | DIR_AZ | U3 DIR |
+| 33 | J2-12 | EN | EN de U2 et U3 ; 0 = moteurs alimentés, résistance de tirage R5 au 3,3 V |
+| 3 | J3-14 | SDA | ADS1115 (capteur solaire), I²C |
+| 4 | J3-15 | SCL | ADS1115 |
+| 44 | J2-5 | FDC_EL | fin de course d'élévation (contact NC) ; tirage R6 |
+| 6 | J3-17 | HALL_AZ | capteur à effet Hall d'azimut ; tirage R7 |
+
+Faute de broches, deux choix découlent de ce brochage :
+* **les TMC2209 fonctionnent sans UART** : courant réglé par leur potentiomètre, micro-pas
+  par MS1 et MS2 ;
+* **les 4 photodiodes sont lues par un ADS1115** (convertisseur 16 bits, 4 entrées, sur
+  l'I²C) au lieu des entrées analogiques de l'ESP32. Il est plus précis, et son gain réglable
+  évite de changer les résistances entre le soleil et une lampe (§ 17).
+
+```cpp
+// Heltec WiFi LoRa 32 V4 : broches du tracker
+#define PIN_STEP_EL  47
+#define PIN_DIR_EL   43   // U0TXD : bouge au démarrage, sans effet tant que EN = 1
+#define PIN_STEP_AZ  48
+#define PIN_DIR_AZ   45   // broche de démarrage : laissée basse par le driver
+#define PIN_EN       33   // 0 = moteurs alimentés
+#define PIN_SDA       3   // ADS1115, adresse 0x48 : Wire.begin(PIN_SDA, PIN_SCL)
+#define PIN_SCL       4
+#define PIN_FDC_EL   44   // U0RXD ; 1 = butée basse atteinte, ou fil coupé
+#define PIN_HALL_AZ   6   // 0 = aimant devant le capteur
+```
+
+GPIO 43 et 44 sont l'UART0 de l'ESP32-S3. Le moniteur série passe par l'USB : dans l'IDE
+Arduino, garder **« USB CDC On Boot : Enabled »**, et ne jamais appeler `Serial0.begin()`.
+Prendre le **V4 « standard »** (ESP32-S3R2), pas la variante **V4-R8**, dont le brochage est
+différent.
+
+**Alimentation.**
+* 12 V par un bloc secteur 12 V 3 A, ou une batterie LiFePO4 4S de 12,8 V, avec un
+  **fusible de 3 A** et un **interrupteur** (F1, S1).
+* **F1 est un porte-fusible en ligne, sur le fil, à moins de 10 cm de la batterie.** Le fil
+  qui le précède n'est protégé par rien, et une batterie LiFePO4 en court-circuit débite
+  des centaines d'ampères : il doit rester le plus court possible.
+* Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et à l'abaisseur
+  LM2596 (U1).
+* U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
+  diode Schottky 1N5819 (D1) : le Heltec reçoit environ 5,0 V, et le 5 V de l'USB-C ne remonte
+  pas dans l'abaisseur quand la carte est branchée à l'ordinateur.
+* Le 3,3 V du Heltec alimente la logique des drivers, l'ADS1115, les photodiodes et les
+  résistances de tirage. Tous les 0 V sont reliés.
+
+**Drivers : 2 × TMC2209**, modules au format StepStick, logique en 3,3 V.
+* **MS1 et MS2 au 3,3 V : 16 micro-pas.** PDN_UART à la masse : courant réduit à l'arrêt.
+  StealthChop par défaut.
+* **Courant de marche**, par le potentiomètre du module. Sur les modules à résistances de
+  mesure de 0,11 Ω (les plus courants), Vref = 1,41 × I. Mesurer Vref entre GND et le
+  potentiomètre, moteur débranché :
+
+  | Moteur | Courant | Vref |
+  |---|---|---|
+  | NEMA 17, élévation, version PETG | 0,6 A, pour ne pas casser les dents si l'élévation bute | 0,85 V |
+  | NEMA 17, cas réel | 1,0 A | 1,41 V |
+  | NEMA 11, azimut | 0,67 A | 0,95 V |
+
+* **À l'arrêt, EN = 1** : drivers coupés. R5 tient EN à 1 au démarrage et pendant un
+  téléversement. Ne jamais laisser les moteurs alimentés en permanence : le NEMA 11 dissipe
+  alors environ 6 W et le NEMA 17 environ 2 W, assez pour ramollir leurs supports en PETG.
+
+**Moteurs.**
+* **NEMA 17 (Usongshine 17HS3401)** : connecteur JST PH à 6 broches. Une bobine relie les
+  broches 1 et 4, l'autre les broches 3 et 6. Vérifier au multimètre : faible résistance
+  entre les deux fils d'une même bobine, circuit ouvert entre les deux bobines.
+* **NEMA 11 (11HS18-0674S)** : bobine A = noir (A+) et vert (A−), bobine B = rouge (B+) et
+  bleu (B−), vers 1A, 1B, 2A et 2B du TMC2209. Au multimètre, environ 6,8 Ω entre les deux
+  fils d'une même bobine.
+* Si un moteur tourne à l'envers, inverser son sens dans le programme.
+
+**Origines.**
+* **Fin de course S2** (micro-rupteur SPS75GCC) en butée basse d'élévation (−2°). Son commun
+  va au 0 V, son contact **NC** au GPIO 44, avec une résistance de tirage de 10 kΩ. Si un fil
+  se coupe, l'ESP32 lit « butée atteinte » et arrête le moteur, au lieu de laisser le
+  panneau taper en bout de course.
+* **Capteur à effet Hall B1** (A3144) et un aimant sur la roue fixe pour l'azimut. Il est
+  alimenté en 5 V, et sa sortie (collecteur ouvert) est tirée au 3,3 V par 10 kΩ. Prendre un
+  **A3144 nu** : le module KY-003 tire sa sortie au 5 V, trop pour l'ESP32.
+* La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
   surtout derrière une vis sans fin.
-* Pour la démonstration, l'ESP32, les drivers et l'alimentation se posent au pied du trépied.
-  Les câbles descendent de la tête par le passe-câble du socle.
+
+**LoRa.**
+* L'**antenne 868 MHz** fournie se visse sur le connecteur IPEX. **Ne jamais émettre sans
+  elle** : l'étage de sortie peut griller.
+* Les données envoyées sont les angles (consigne et position), les 4 signaux du capteur,
+  l'erreur de pointage, l'état des origines, et l'heure et la position si le module GNSS est
+  branché.
+* Dans la bande 868 MHz, chaque émetteur ne doit occuper le canal que 1 % du temps en
+  général : un message toutes les 1 à 5 minutes suffit.
+* La réception se fait sur un second module LoRa, ou par LoRaWAN (The Things Network) si une
+  passerelle est à portée.
+
+**GNSS (facultatif).** Le module L76K de Heltec se branche sur le connecteur GNSS de la carte.
+Il donne l'heure et la position pour le calcul de la position du Soleil (§ 17).
+
+**Bibliothèques Arduino.**
+* `FastAccelStepper` : impulsions STEP générées en matériel, avec rampes d'accélération.
+* `Adafruit_ADS1X15` : lecture de l'ADS1115.
+* La bibliothèque Heltec (« Heltec ESP32 Dev-Boards ») ou `RadioLib` pour la radio. Sur le
+  V4, l'ampli de sortie se commande par les GPIO 7, 2 et 46 : partir des exemples Heltec.
+* `TinyGPSPlus` pour le GNSS.
+
+**Câbles : section de chaque fil** (détail au folio 3 du schéma). La section dépend du
+courant et de la longueur. Elle est écrite sur chaque fil du schéma, et dans ses propriétés
+QElectroTech (« Section du conducteur »).
+
+| Liaison | Courant | Longueur | Section | Fil |
+|---|---|---|---|---|
+| Batterie ou bloc 12 V → F1 → S1 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
+| 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
+| 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
+| Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |
+| STEP, DIR, EN, 3,3 V, I²C, filtres du capteur | < 20 mA | < 10 cm | **AWG 24** (0,20 mm²) | monobrin |
+| Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
+| Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
+| Pattes des photodiodes, dans le boîtier du capteur | 2 mA | 5 cm | **AWG 28** (0,08 mm²) | fil fin isolé (fil à wrapper) |
+| Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
+
+* En AWG 18, la chute de tension sur l'aller-retour du 12 V (2 × 1 m, 1,5 A) n'est que de
+  0,06 V. En AWG 22, la boucle d'une bobine de moteur (2 × 1,5 m) fait 0,16 Ω, à côté de
+  plusieurs ohms pour la bobine : le driver régule le courant, le moteur ne perd rien.
+* **Tout ce qui va vers la tête est en multibrin souple**, jamais en monobrin, qui casse à
+  force de plier dans la boucle de câble.
+* Torsader les fils de chaque bobine (A+ avec A−, B+ avec B−) : ils rayonnent moins de
+  parasites vers les capteurs.
+* Le câble du capteur solaire passe à l'écart des câbles moteurs. Son blindage est relié au
+  0 V **côté boîtier seulement**.
+* Dans les borniers à vis, sertir un **embout de câblage** : 0,75 mm² pour l'AWG 18,
+  0,5 mm² pour l'AWG 20 et 22, 0,25 mm² pour l'AWG 24 et 26.
+
+**Installation.** Pour la démonstration, le boîtier électronique (Heltec, drivers,
+alimentation, ADS1115) se pose au pied du trépied. Les câbles des moteurs, du fin de course,
+du capteur Hall et du capteur solaire descendent de la tête par le passe-câble du socle
+(folio 2 du schéma : nombre de conducteurs par câble).
+
+### Implantation du boîtier électronique
+
+Tout ce qui reste au pied du trépied tient sur une **plaque à pastilles de 8 × 12 cm**.
+L'implantation est dessinée à l'échelle dans Fritzing :
+[`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
+Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
+`scripts/generate_implantation_fritzing.py`.
+
+![Implantation du boîtier électronique](docs/electronique/implantation_boitier.png)
+
+* **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
+  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs et
+  la diode sont soudés.
+* **USB-C du Heltec au bord de la plaque**, face à une découpe du boîtier : on reprogramme
+  sans rien démonter.
+* **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
+
+  | Bornier | Pôles | Câble |
+  |---|---|---|
+  | X1 | 2 | arrivée 12 V, après l'interrupteur S1 |
+  | X2 | 4 | moteur M1 (élévation) |
+  | X3 | 4 | moteur M2 (azimut) |
+  | X4 | 2 | fin de course S2 |
+  | X5 | 3 | capteur à effet Hall B1 |
+  | X6 | 5 | capteur solaire |
+
+* **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
+  dissipateur, ≈ 14 mm pour le Heltec et le LM2596, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
+  borniers.
+* **Boîtier** : au moins 150 × 100 × 50 mm à l'intérieur, la plaque posée sur 4 entretoises
+  M3 de 6 mm. Un boîtier étanche en ABS de 200 × 120 × 75 mm laisse de la place pour les
+  câbles.
+* **Traversées du boîtier** :
+  * presse-étoupes pour le 12 V, les deux moteurs, le fin de course, le capteur Hall et le
+    capteur solaire ;
+  * l'interrupteur S1 sur la paroi ;
+  * l'antenne LoRa à l'extérieur, par un câble IPEX vers une traversée SMA : une antenne
+    enfermée dans le boîtier porte moins loin, surtout près des moteurs.
 
 ## 17. Capteur solaire de la démonstration
 
@@ -898,12 +1068,13 @@ démonstration, le boîtier et son équerre sont imprimés.
    l'équerre, puis le long d'un rail et avec les câbles des moteurs. Laisser une boucle près
    de l'axe d'élévation.
 
-**Branchement**, identique pour chacune des 4 photodiodes. Les résistances sont à côté de
-l'ESP32, pas dans le capteur :
+**Branchement**, identique pour chacune des 4 photodiodes (folio 1 du schéma électrique,
+§ 16). Les résistances, les condensateurs et l'ADS1115 sont dans le boîtier électronique,
+pas dans le capteur :
 
 ```
-3,3 V ──────── cathode   BPW34   anode ──┬───────┬──────► entrée analogique (ADC1)
-                                         │       │
+3,3 V ──────── cathode   BPW34   anode ──┬───────┬──────► ADS1115 : A0 (HG), A1 (HD),
+                                         │       │                  A2 (BG), A3 (BD)
                                        1 kΩ    100 nF
                                          │       │
 GND ─────────────────────────────────────┴───────┘
@@ -913,30 +1084,24 @@ GND ─────────────────────────�
 * En plein soleil (≈ 1000 W/m²), la fenêtre de 2,2 × 2,2 mm reçoit environ 4,8 mW. La BPW34
   en tire environ 0,3 A/W sur le spectre solaire, soit **≈ 1,5 mA**, entre 1,2 et 2 mA selon
   le ciel et l'exemplaire.
-* Avec 1 kΩ, cela fait **≈ 1,5 V** sur l'entrée, entre 1,2 et 2 V. C'est sous la limite de
-  lecture précise de l'ADC (≈ 2,4 V avec l'atténuation 11 dB), avec une bonne résolution :
-  ≈ 1900 points sur 4096, et une erreur de 0,1° change le signal d'environ 30 points.
+* Avec 1 kΩ, cela fait **≈ 1,5 V** sur l'entrée, entre 1,2 et 2 V. L'ADS1115, réglé sur son
+  calibre ±4,096 V, le lit à environ 12 000 points, et une erreur de 0,1° change le signal
+  d'environ 190 points. Sur la Lune, le Soleil plus fort (1361 W/m²) donnerait environ 2 V :
+  encore dans le calibre.
 * La photodiode garde au moins 1,3 V de polarisation inverse (3,3 V − 2 V) : sa réponse reste
   linéaire. La résistance ne dissipe que ≈ 2 mW.
 * ±1 % et couche métallique : les 4 résistances restent égales et varient peu avec la
   température, ce qui compte puisque le programme compare les 4 signaux. L'étalonnage au
   papier calque (§ 3) corrige ce qui reste.
-* **En intérieur, sous une lampe**, la lumière est 10 à 50 fois plus faible que le soleil :
-  avec 1 kΩ, le signal ne ferait que quelques dizaines de mV. Mettre alors **10 kΩ** à la
-  place (0,3 à 1,5 V selon la lampe et sa distance).
-* Si le signal dépasse 2,4 V en plein soleil (rare), mettre deux 1 kΩ en parallèle (500 Ω).
-  S'il reste sous 0,3 V sous la lampe, mettre deux 10 kΩ en série (20 kΩ), ou rapprocher la
-  lampe.
+* **En intérieur, sous une lampe**, la lumière est 10 à 50 fois plus faible : 30 à 150 mV.
+  On garde les mêmes 1 kΩ. Le programme passe l'ADS1115 sur un calibre plus petit
+  (±0,256 V, 7,8 µV par point), ce qui donne encore 4 000 à 19 000 points. Règle simple :
+  si le signal le plus fort dépasse 90 % du calibre, prendre le calibre au-dessus ; s'il
+  tombe sous 20 %, celui en dessous.
 * Le **condensateur de 100 nF** (céramique, 50 V) en parallèle sur chaque résistance filtre le
   bruit : avec 1 kΩ, il lisse au-delà d'environ 1,6 kHz, bien plus vite que le Soleil ne bouge.
-* Utiliser des entrées de l'**ADC1**, car l'ADC2 ne marche pas quand le Wi-Fi est actif :
-  * ESP32 DevKitC (WROOM-32) : **GPIO 36, 39, 34 et 35**. Ce sont des entrées seules, libres
-    avec le câblage du § 16 ;
-  * Heltec WiFi LoRa 32 V4 (ESP32-S3) : l'ADC1 correspond aux GPIO 1 à 10. Prendre 4 broches
-    de ce groupe que la carte n'utilise pas déjà (radio LoRa, mesure de la batterie, GPS) :
-    les vérifier sur le brochage de la carte.
-* Lecture : atténuation 11 dB (`analogSetAttenuation(ADC_11db)`), moyenne de 32 à 64
-  lectures pour lisser le bruit.
+* Lecture : 128 mesures par seconde (réglage par défaut), les 4 entrées l'une après l'autre,
+  moyenne de 8 à 16 tours.
 
 ### Stratégie de suivi sur Terre : le calcul et les photodiodes ensemble
 
@@ -947,6 +1112,43 @@ GND ─────────────────────────�
 2. **Les photodiodes corrigent l'erreur restante** dès que le Soleil est assez fort. L'ESP32
    **retient l'écart** entre les angles calculés et les angles où le capteur a centré le
    Soleil. Quand un nuage passe, le calcul seul reste juste.
+
+### Cadence du suivi : une petite correction toutes les 2 minutes
+
+Le panneau ne suit pas le Soleil en continu. Il le rattrape **par petites corrections**,
+avec les moteurs coupés entre deux corrections :
+
+1. **Toutes les 10 secondes**, l'ESP32 lit les 4 photodiodes et recalcule la position du
+   Soleil.
+2. **Tant que l'écart reste sous 0,25°**, il ne bouge pas.
+3. **Dès qu'il atteint 0,25°**, il tourne l'axe concerné de **0,5°**. Le panneau se place
+   ainsi 0,25° en avance : le Soleil le rattrape, le dépasse, et l'écart revient à 0,25°
+   environ **2 minutes plus tard** (le Soleil avance de 15° par heure, soit 0,25° par minute).
+4. Chaque axe se corrige seul, quand c'est nécessaire. La cadence varie dans la journée :
+   l'élévation s'arrête presque vers midi, alors que l'azimut accélère vers midi en été.
+5. Si le ciel est couvert (signal trop faible), le panneau suit la position calculée, avec
+   la même règle.
+6. Le soir, il revient vers l'est pour le lever du lendemain, en un seul mouvement à vitesse
+   rapide (14°/s, soit une quinzaine de secondes pour un demi-tour).
+
+**Une correction n'est pas un à-coup.**
+* 0,5°, c'est le diamètre apparent du Soleil. Cela représente environ 250 micro-pas au
+  panneau, d'environ 0,002° chacun (16 micro-pas par pas, réduction 50:1 ou 60:1).
+* Le mouvement se fait à **0,5°/s**, avec une rampe d'accélération et de freinage
+  (FastAccelStepper) : il dure environ une seconde et glisse sans saut.
+* Le mode StealthChop des TMC2209 rend les moteurs presque silencieux.
+* Le driver est alimenté (EN = 0) seulement pendant ce mouvement. Comme la vis sans fin bloque
+  le moteur quand il est coupé, il repart exactement de là où il s'était arrêté.
+
+**Pourquoi pas un suivi continu.** Il faudrait garder les moteurs alimentés en permanence :
+environ 12 W, plus que ce que produit le panneau (environ 10 W crête). Le NEMA 11 chaufferait
+assez pour ramollir ses supports en PETG. Avec la cadence ci-dessus, les moteurs sont
+alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,25°, soit
+0,001 % de puissance perdue.
+
+**Pour une vidéo en accéléré** (time-lapse), on peut descendre le seuil à 0,05° et la
+correction à 0,1° : le panneau se recale alors toutes les 25 secondes environ, et le
+mouvement paraît continu à l'écran. La consommation reste de quelques dizaines de mW.
 
 ## 18. Sur un trépied photo grand public
 
@@ -1093,6 +1295,9 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
+| **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil, brochage du Heltec V4 et liaisons, câblage et sections des fils) |
+| `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
+| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
@@ -1102,6 +1307,8 @@ roulements ZZ :
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
 | `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
+| `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
+| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py` | Génèrent les rendus PNG et les images annotées |
 | `requirements.txt` | Dépendances Python (CadQuery) |
 | `LICENSE` | Licence du projet : CC BY-NC-SA 4.0 (§ 23) |
@@ -1111,6 +1318,19 @@ roulements ZZ :
 Un fichier SolidWorks natif (`.SLDASM` / `.SLDPRT`) ne peut être écrit que par SolidWorks
 lui-même. Le format STEP AP214 fourni s'ouvre directement comme un assemblage complet,
 avec les noms des pièces, les sous-assemblages et les couleurs.
+
+Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
+`Tete_Rotative_*.step`, `Demo_Trepied.step`) :
+* **orange** : toutes les vis (CHC et FHC M3, vis sans tête M3×4 de blocage des vis sans
+  fin, vis 1/4"-20 du plateau du trépied photo) ;
+* **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
+  écrou 1/4"-20).
+
+Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
+de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
+fichiers de pièces seules (`pieces/*.step`) n'ont pas de couleur. Si les couleurs
+n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP de
+SolidWorks.
 
 1. **Fichier › Ouvrir**, type *STEP AP203/214/242 (\*.step; \*.stp)*, puis choisir
    `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step`.
@@ -1165,6 +1385,8 @@ python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PET
 python scripts/generate_demo_trepied.py               # démonstration sur trépied photo : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
+python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
+python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau

@@ -36,24 +36,31 @@ def main():
     fy = (G.Z_CHAPE + G.Z_T) / 2                      # hauteur du centre de la tête (Y-up)
     with_pan = T.build_head(0.0, G.EL_REF, "avec_panneau", True)
     r = build_renderer(with_pan, SUN, ground=False)
-    shoot(r, "tete_vis_sans_fin_avec_panneau.png", (620, 430, 760), focal=(0, 130, 0), angle=30)
+    shoot(r, "tete_vis_sans_fin_avec_panneau.png", (620, 430, 760), focal=(0, 130, 0), angle=30,
+          avec_legende=True)
     r = build_renderer(with_pan, (-SUN[0], SUN[1], -SUN[2]), ground=False)   # éclairé côté cellules
-    shoot(r, "tete_vis_sans_fin_avec_panneau_face.png", (-560, 380, -680), focal=(0, 130, 0), angle=30)
+    shoot(r, "tete_vis_sans_fin_avec_panneau_face.png", (-560, 380, -680), focal=(0, 130, 0), angle=30,
+          avec_legende=True)
 
     head = T.build_head(0.0, G.EL_REF, "tete", False)
     r = build_renderer(head, SUN, ground=False)
-    shoot(r, "tete_vis_sans_fin_iso.png", (330, 280, 400), focal=(-5, fy, 15), angle=36)
-    shoot(r, "tete_vis_sans_fin_cote_moteurs.png", (-380, 260, 330), focal=(-5, fy, 15), angle=36)
+    shoot(r, "tete_vis_sans_fin_iso.png", (330, 280, 400), focal=(-5, fy, 15), angle=36,
+          avec_legende=True)
+    shoot(r, "tete_vis_sans_fin_cote_moteurs.png", (-380, 260, 330), focal=(-5, fy, 15), angle=36,
+          avec_legende=True)
     # coupe dans le plan de la roue d'élévation (x = -30 : axe de la vis)
     r = build_renderer(coupe(head, x=(-1e3, -30.0)), SUN, ground=False)
-    shoot(r, "tete_vis_sans_fin_coupe_elevation.png", (420, 190, 160), focal=(-30, G.Z_T - 25, 0), angle=34)
+    shoot(r, "tete_vis_sans_fin_coupe_elevation.png", (420, 190, 160), focal=(-30, G.Z_T - 25, 0), angle=34,
+          avec_legende=True)
     # coupe verticale par les axes d'azimut et d'élévation : roulements 6806 et 608 (en rose)
     r = build_renderer(coupe(head, z=(-1e3, 0.0)), SUN, ground=False)
-    shoot(r, "tete_vis_sans_fin_coupe_roulements.png", (90, 150, 330), focal=(0, 105, 0), angle=40)
+    shoot(r, "tete_vis_sans_fin_coupe_roulements.png", (90, 150, 330), focal=(0, 105, 0), angle=40,
+          avec_legende=True)
     # coupe horizontale dans le plan de la vis d'azimut, vue de dessus
     z_az = G.AZ_VIS["z"]
     r = build_renderer(coupe(head, y=(-1e3, z_az)), SUN, ground=False)
-    shoot(r, "tete_vis_sans_fin_coupe_azimut.png", (110, 260, 210), focal=(-25, z_az - 10, 25), angle=30)
+    shoot(r, "tete_vis_sans_fin_coupe_azimut.png", (110, 260, 210), focal=(-25, z_az - 10, 25), angle=30,
+          avec_legende=True)
 
 
 if __name__ == "__main__" and "--plateau" not in __import__("sys").argv:

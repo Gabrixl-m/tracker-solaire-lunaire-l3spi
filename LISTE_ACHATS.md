@@ -68,19 +68,19 @@ des arbres des vis sans fin.
 | **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README § 16) | 13 € |
 | **Wattmètre SEN0291 de DFRobot** (INA219) — **déjà en stock** | Shunt 0,01 Ω, ±8 A, 26 V au plus, I²C 0x40 à 0x45 par micro-interrupteurs (**mettre 0x45**) ; 30 × 22 mm, câble Gravity fourni | 1 | `DFRobot SEN0291` | A5 : ce que consomme le tracker sur le 12 V | 8 € |
 | Câble STEMMA QT / Qwiic vers broches femelles | JST SH 4 broches vers 4 fiches femelles au pas de 2,54 mm, 15 cm environ | 1 | `STEMMA QT to female socket cable` | Relie A4 à la barrette J1 de la plaque | 1 € |
-| **Alimentation 12 V, en intérieur** | Bloc secteur 12 V 3 A, branché sur F1 à la place du régulateur | 1 | `12V 3A power supply` | Puissance des moteurs et du Heltec | 10 € |
+| Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, couvercle ouvert : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée suffit pour plusieurs jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
 | **Batterie 12 V, en extérieur** | **Plomb AGM étanche**, 12 V, 7 Ah (84 Wh, environ 2,2 kg). **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 7Ah AGM battery` | Stocke l'énergie du panneau ; le tracker tient environ 2 jours sans soleil | 20–25 € |
 | **Régulateur de charge PWM 10 A Velleman SOL10UC3** (Gotronic, réf. 27118) | Batteries 12 ou 24 V (reconnues au branchement), plomb, gel ou EFB ; panneau 32 V au plus ; sortie LOAD coupée quand la batterie est basse ; port USB 5 V 1,2 A ; consommation < 6 mA ; 80 × 110 × 25 mm | 1 | `Velleman SOL10UC3` | A6 : le panneau recharge la batterie, le tracker se branche sur la sortie LOAD ; A4 mesure ce que produit le panneau | 35,80 € |
 | **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18 | 2 (F1 près de la sortie LOAD ; F2 entre le régulateur et la batterie, **à moins de 10 cm de la batterie**) + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie au plomb débite des centaines d'ampères en court-circuit) | 4 € |
-| **Interrupteur** marche / arrêt | À bascule, 12 V continu, 3 A au moins | 1 | `rocker switch 12V 6A` | Coupe tout | 1 € |
+| **Interrupteur étanche** marche / arrêt | IP65 au moins : à bascule avec capuchon en silicone, ou à levier avec soufflet ; 12 V continu, 3 A au moins | 1 | `waterproof rocker switch IP65 12V` | S1, sur la paroi du boîtier : coupe tout | 3 € |
 | **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
 | **Condensateur 100 µF 25 V** | Électrolytique | 2 | `100uF 25V capacitor` | Un au plus près de chaque driver | 0,2 € |
 | **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
 | **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 3 | `10k ohm resistor 1/4W` | EN des drivers (R5), fin de course (R6), capteur Hall (R7) | 0,1 € |
-| **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1,5 m de chaque | `18AWG silicone wire red black` | Sortie LOAD (ou bloc 12 V) → F1 → S1 → A5 → X1 ; régulateur → F2 → batterie | 4 € |
-| **Câble souple 2 conducteurs AWG 20** (0,52 mm²) | Multibrin, rouge et noir | 3 m | `2 core 20AWG flexible cable` | Panneau → bornier X7 (2 m, par la boucle de câble) ; X7 → régulateur de charge (1 m) | 3 € |
+| **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1 m de chaque | `18AWG silicone wire red black` | Dans le boîtier : sortie LOAD → F1 → S1 → A5 → X1 ; régulateur → F2 → batterie | 3 € |
+| **Câble souple 2 conducteurs AWG 20** (0,52 mm²) | Multibrin, rouge et noir, gaine extérieure ronde (pour le presse-étoupe) | 2 m | `2 core 20AWG flexible cable` | Panneau → bornier X7, par la boucle de câble ; à souder sur les cosses du panneau | 2 € |
 | **Fil AWG 20** (0,52 mm²), rouge et noir | Pour souder sur la plaque | 0,5 m de chaque | `20AWG hook up wire` | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, LM2596) | 2 € |
 | **Fil AWG 22** (0,33 mm²), orange et noir | Pour souder sur la plaque | 0,5 m de chaque | `22AWG hook up wire` | 5 V : LM2596 → D1 → Heltec | 2 € |
 | **Fil de câblage monobrin AWG 24** (0,20 mm²) | Coffret de plusieurs couleurs | 1 coffret | `24AWG solid hook up wire kit` | Signaux et 3,3 V sur la plaque (STEP, DIR, EN, I²C, filtres) | 6 € |
@@ -103,11 +103,13 @@ des arbres des vis sans fin.
 | **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 4 × 8 (TMC2209), 1 × 10 (ADS1115) | 3 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
 | **Barrette mâle** au pas de 2,54 mm, double rangée | À couper : 2 × 4 broches | 1 | `male header 2x40 2.54mm` | J1 : bus I²C des deux wattmètres (3V3, GND, SDA, SCL pour chacun) | 1 € |
 | **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 9 de 2 pôles et 2 de 3 pôles. On les emboîte : 4 pôles = 2 + 2, 5 pôles = 2 + 3 | 9 + 2 | `KF301 2P 5.08mm`, `KF301 3P 5.08mm` | Branchement des câbles (X1 à X7) | 3 € |
-| **Boîtier** | ABS, au moins 190 × 110 × 50 mm à l'intérieur (plaque et wattmètres) ; par exemple 200 × 120 × 75 mm, étanche IP65 | 1 | `ABS enclosure 200x120x75 IP65` | Protège l'électronique au pied du trépied | 10–15 € |
-| **Presse-étoupes PG7** | Pour câbles de Ø3 à 6,5 mm | 8 | `PG7 cable gland` | Passage des câbles : 12 V, deux moteurs, fin de course, Hall, capteur solaire, panneau, régulateur | 4 € |
+| **Boîtier étanche IP65** | ABS ou polycarbonate, au moins 280 × 185 mm à l'intérieur et **110 mm de haut** (batterie de 94 mm) ; par exemple 300 × 200 × 130 mm. **Couvercle transparent** conseillé (voyants du régulateur, écran du Heltec). De couleur claire | 1 | `ABS enclosure 300x200x130 IP65 transparent lid` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, régulateur, batterie, fusibles | 20–30 € |
+| **Presse-étoupes PG7** étanches (IP68) | Pour câbles de Ø3 à 6,5 mm | 6 + 1 de rechange | `PG7 cable gland IP68` | Câbles de la tête : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau | 4 € |
 | **Entretoises M3** de 6 mm et vis M3 × 6 | Nylon ou laiton | 6 + 12 | `M3 standoff 6mm` | Fixent la plaque (4) et le SEN0291 (2) au fond du boîtier | 2 € |
+| **Aérateur à membrane** M12, IP67 | Laisse passer l'air, pas l'eau | 1 | `M12 vent plug IP67 breathable` | Évite la condensation dans le boîtier fermé ; laisse sortir les gaz de la batterie | 2 € |
+| Sangle de batterie ou deux équerres, et sachet de gel de silice | Sangle à boucle de 25 mm, ou équerres vissées au fond | 1 + 1 | `battery hold down strap`, `silica gel pack` | Tient la batterie (2,2 kg) ; absorbe l'humidité | 4 € |
 | **Entretoises M2,5** de 6 mm et vis M2,5 × 6 | Nylon ou laiton | 4 + 8 | `M2.5 standoff 6mm` | Fixent l'INA219B d'Adafruit (trous de 2,5 mm) | 2 € |
-| Câble IPEX (U.FL) vers SMA femelle de traversée, et antenne 868 MHz à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead`, `868MHz SMA antenna` | Sort l'antenne du boîtier (facultatif, mais elle porte plus loin) | 5 € |
+| Câble IPEX (U.FL) vers **traversée SMA femelle étanche** (avec joint), et antenne 868 MHz articulée à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead waterproof`, `868MHz SMA antenna` | Sort l'antenne du boîtier fermé (elle porte plus loin) | 6 € |
 
 Le câblage complet est sur le **schéma électrique**
 ([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech
@@ -208,7 +210,7 @@ Compter 10 à 15 € en tout.
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent |
+| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3,5 kg), suspendu sous la colonne, peut en tenir lieu |
 
 ---
 

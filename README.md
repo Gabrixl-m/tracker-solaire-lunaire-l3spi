@@ -932,14 +932,19 @@ Prendre le **V4 « standard »** (ESP32-S3R2), pas la variante **V4-R8**, dont l
 différent.
 
 **Alimentation.**
-* 12 V par un **bloc secteur 12 V 3 A** en intérieur. En extérieur, par la **sortie LOAD du
-  régulateur solaire** A6 (Velleman SOL10UC3), qui charge une **batterie au plomb AGM de
-  12 V** avec le panneau. Puis un **fusible de 3 A** et un **interrupteur** (F1, S1), et le
-  wattmètre A5, qui mesure la consommation du tracker, avant d'arriver sur la plaque (X1).
-* **F1 est un porte-fusible en ligne, sur le fil, près de la sortie LOAD** (ou du bloc
-  secteur). Côté batterie, c'est **F2, à moins de 10 cm de la batterie** : le fil qui le
-  précède n'est protégé par rien, et une batterie au plomb en court-circuit débite des
-  centaines d'ampères. Il doit rester le plus court possible.
+* Le 12 V vient de la **sortie LOAD du régulateur solaire** A6 (Velleman SOL10UC3). Celui-ci
+  charge une **batterie au plomb AGM de 12 V** avec le panneau. Le courant passe ensuite par
+  un **fusible de 3 A** et un **interrupteur** (F1, S1), puis par le wattmètre A5, qui mesure
+  la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, couvercle
+  ouvert, un bloc secteur 12 V 3 A peut remplacer le régulateur et la batterie, sur F1.
+* **F1 et F2 sont des porte-fusibles en ligne**, sertis sur les fils, **dans le boîtier** :
+  * **F1 à la sortie LOAD** du régulateur : il protège les fils qui vont à la plaque ;
+  * **F2 sur le fil entre la batterie et le régulateur, à moins de 10 cm du + de la
+    batterie**. Le fil qui le précède n'est protégé par rien, et une batterie au plomb en
+    court-circuit débite des centaines d'ampères : il doit rester le plus court possible.
+
+  Un fusible ne protège que ce qui vient après lui : chacun est donc au plus près de sa
+  source.
 * Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et à l'abaisseur
   LM2596 (U1).
 * U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
@@ -1029,8 +1034,9 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
     non 24 V), puis le panneau, puis la sortie LOAD. Débrancher dans l'ordre inverse.
   * Le régulateur a son propre fusible, **F2, à moins de 10 cm de la batterie**. Son port
     USB (5 V, 1,2 A) n'est pas utilisé.
-  * En intérieur, sur le bloc secteur, il n'y a pas de régulateur : A4 lit 0 A. **Ne jamais
-    brancher un régulateur de charge sur un bloc secteur.**
+  * Sur l'établi, avec un bloc secteur à la place du régulateur et de la batterie, A4 lit
+    0 A. **Ne jamais brancher un régulateur de charge sur un bloc secteur.** En intérieur,
+    la batterie chargée suffit pour plusieurs jours.
 * **Ce que lit A4.**
   * Un régulateur PWM relie le panneau à la batterie. Le panneau travaille alors à la
     tension de la batterie, environ 13 V, au lieu de ses 17,6 V : il donne ses 0,6 A, soit
@@ -1121,6 +1127,8 @@ Il donne l'heure et la position pour le calcul de la position du Soleil (§ 17).
 * La bibliothèque Heltec (« Heltec ESP32 Dev-Boards ») ou `RadioLib` pour la radio. Sur le
   V4, l'ampli de sortie se commande par les GPIO 7, 2 et 46 : partir des exemples Heltec.
 * `TinyGPSPlus` pour le GNSS.
+* `ArduinoOTA` (fournie avec le cœur ESP32) : mise à jour du programme par le WiFi, sans
+  ouvrir le boîtier étanche.
 
 **Câbles : section de chaque fil** (détail au folio 3 du schéma). La section dépend du
 courant et de la longueur. Elle est écrite sur chaque fil du schéma, et dans ses propriétés
@@ -1128,7 +1136,7 @@ QElectroTech (« Section du conducteur »).
 
 | Liaison | Courant | Longueur | Section | Fil |
 |---|---|---|---|---|
-| Sortie LOAD du régulateur (ou bloc 12 V) → F1 → S1 → A5 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
+| Sortie LOAD du régulateur (ou bloc 12 V) → F1 → S1 → A5 → X1, et 0 V | 1,5 A | < 30 cm | **AWG 18** (0,82 mm²) | souple, rouge et noir, dans le boîtier |
 | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
 | 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
 | Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |
@@ -1136,9 +1144,10 @@ QElectroTech (« Section du conducteur »).
 | Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
 | Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
 | Pattes des photodiodes, dans le boîtier du capteur | 2 mA | 5 cm | **AWG 28** (0,08 mm²) | fil fin isolé (fil à wrapper) |
-| Panneau → X7, puis X7 → régulateur de charge | 0,6 A | 2 m + 1 m | **AWG 20** (0,52 mm²) | câble souple 2 conducteurs ; le câble du panneau suit la boucle de câble |
+| Panneau → X7 | 0,6 A | 2 m | **AWG 20** (0,52 mm²) | câble souple 2 conducteurs, par la boucle de câble |
+| X7 → régulateur de charge | 0,6 A | < 30 cm | **AWG 20** (0,52 mm²) | rouge et noir, dans le boîtier |
 | X7 ↔ A4 (VIN+, VIN−), dans le boîtier | 0,6 A | < 20 cm | **AWG 20** (0,52 mm²) | rouge |
-| Régulateur → F2 → batterie | 0,6 A | 0,5 m | **AWG 18** (0,82 mm²) | souple, rouge et noir ; F2 à moins de 10 cm de la batterie |
+| Régulateur → F2 → batterie | 0,6 A | < 20 cm | **AWG 18** (0,82 mm²) | souple, rouge et noir, dans le boîtier ; F2 à moins de 10 cm de la batterie |
 | I²C des wattmètres (J1 → A4, A5) | < 2 mA | < 20 cm | **AWG 26** (0,13 mm²) | câble STEMMA QT (A4) et câble Gravity (A5) |
 | Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
 
@@ -1154,16 +1163,16 @@ QElectroTech (« Section du conducteur »).
 * Dans les borniers à vis, sertir un **embout de câblage** : 0,75 mm² pour l'AWG 18,
   0,5 mm² pour l'AWG 20 et 22, 0,25 mm² pour l'AWG 24 et 26.
 
-**Installation.** Pour la démonstration, le boîtier électronique (Heltec, drivers,
-alimentation, ADS1115, wattmètres) se pose au pied du trépied, avec la batterie et le
-régulateur de charge. Les câbles des moteurs, du fin de course, du capteur Hall, du capteur
-solaire et du panneau descendent de la tête par le passe-câble du socle (folio 2 du schéma :
-nombre de conducteurs par câble).
+**Installation.** Tout ce qui ne tourne pas avec la tête est dans **un seul boîtier
+étanche (IP65)**, au pied du trépied : plaque, wattmètres, régulateur, batterie et fusibles.
+Seuls restent dehors la tête (moteurs, fin de course, capteur Hall, capteur solaire) et le
+panneau. Leurs câbles descendent par le passe-câble du socle et entrent dans le boîtier par
+des presse-étoupes (folio 2 du schéma : nombre de conducteurs par câble).
 
 ### Implantation du boîtier électronique
 
-Tout ce qui reste au pied du trépied tient sur une **plaque à pastilles de 8 × 12 cm**, et les
-deux wattmètres à côté d'elle, dans le même boîtier.
+L'électronique tient sur une **plaque à pastilles de 8 × 12 cm**. Le même boîtier étanche
+reçoit aussi les deux wattmètres, le régulateur de charge, la batterie et les fusibles.
 L'implantation est dessinée à l'échelle dans Fritzing :
 [`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
@@ -1177,13 +1186,17 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Wattmètres A4 et A5 à droite de la plaque**, sur entretoises (M2,5 pour l'INA219B, M3
   pour le SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND,
   SDA, SCL pour chacun). Leurs fils de puissance longent la paroi du haut.
-* **USB-C du Heltec au bord de la plaque**, face à une découpe du boîtier : on reprogramme
-  sans rien démonter.
+* **Régulateur A6** vissé au fond, à droite. **Batterie G1** sous la plaque, tenue par deux
+  sangles (ou des équerres) : 2,2 kg ne doivent pas se promener dans le boîtier.
+* **Fusibles en ligne** : F2 entre le + de la batterie et le régulateur, à moins de 10 cm
+  de la batterie ; F1 à la sortie LOAD du régulateur, avant l'interrupteur S1.
+* **USB-C du Heltec au bord de la plaque, sans découpe** (elle casserait l'étanchéité). On
+  reprogramme couvercle ouvert, ou sans rien ouvrir par le WiFi (mise à jour OTA).
 * **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
 
   | Bornier | Pôles | Câble |
   |---|---|---|
-  | X1 | 2 | arrivée 12 V, après l'interrupteur S1 |
+  | X1 | 2 | 12 V (depuis A5 IN−) et 0 V (depuis LOAD− du régulateur) |
   | X2 | 4 | moteur M1 (élévation) |
   | X3 | 4 | moteur M2 (azimut) |
   | X4 | 2 | fin de course S2 |
@@ -1194,15 +1207,29 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
   dissipateur, ≈ 14 mm pour le Heltec et le LM2596, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
   borniers.
-* **Boîtier** : 190 × 110 × 50 mm à l'intérieur au moins, avec les wattmètres. Un boîtier
-  étanche en ABS de 200 × 120 × 75 mm convient. La plaque est posée sur 4 entretoises M3 de
-  6 mm, contre la paroi gauche (USB-C).
-* **Traversées du boîtier** :
-  * presse-étoupes pour le 12 V, les deux moteurs, le fin de course, le capteur Hall, le
-    capteur solaire, le panneau et le régulateur de charge ;
-  * l'interrupteur S1 sur la paroi ;
-  * l'antenne LoRa à l'extérieur, par un câble IPEX vers une traversée SMA : une antenne
-    enfermée dans le boîtier porte moins loin, surtout près des moteurs.
+* **Boîtier** : **étanche IP65**, au moins 280 × 185 mm à l'intérieur et **110 mm de haut**
+  (la batterie fait 94 mm). Un boîtier de 300 × 200 × 130 mm convient. Avec un **couvercle
+  transparent**, on voit les voyants du régulateur et l'écran du Heltec sans ouvrir. La plaque
+  est posée sur 4 entretoises M3 de 6 mm. Avec la batterie, l'ensemble pèse environ 3,5 kg.
+* **Traversées du boîtier**, toutes étanches :
+  * **6 presse-étoupes PG7**, sur une même paroi : moteurs M1 et M2, fin de course, capteur
+    Hall, capteur solaire, panneau. Faire faire à chaque câble une **boucle d'égouttement**
+    (un U plus bas que le presse-étoupe) : l'eau qui coule le long du câble tombe avant
+    d'arriver au boîtier ;
+  * l'**interrupteur S1, étanche** (à bascule avec capuchon en silicone, ou à levier avec
+    soufflet) ;
+  * l'antenne LoRa à l'extérieur, par un câble IPEX vers une **traversée SMA étanche** (avec
+    joint) : une antenne enfermée dans le boîtier porte moins loin. Une antenne articulée se
+    redresse verticalement ;
+  * un **aérateur à membrane** (M12, IP67) : il laisse passer l'air mais pas l'eau. Le boîtier
+    chauffe le jour et refroidit la nuit : sans lui, il aspire de l'air humide par les joints,
+    et l'eau se condense dedans. Il laisse aussi sortir les traces de gaz qu'une batterie au
+    plomb peut dégager en fin de charge. Ajouter un sachet de gel de silice.
+* **Chaleur** : un boîtier clair, à l'ombre (sous le trépied, par exemple). En plein soleil, un
+  boîtier fermé dépasse vite 50 °C : la batterie s'use bien plus vite au chaud, et le
+  régulateur est prévu pour 55 °C au plus.
+* **Lest** : suspendu sous la colonne, juste au-dessus du sol, le boîtier sert aussi de lest
+  contre le vent (§ 18). Laisser alors du mou aux câbles.
 
 ## 17. Capteur solaire de la démonstration
 

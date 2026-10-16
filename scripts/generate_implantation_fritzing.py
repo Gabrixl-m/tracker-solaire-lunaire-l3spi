@@ -2,10 +2,11 @@
 
 Écrit Electronique/Implantation_Boitier.fzz : une plaque à pastilles de 8 × 12 cm avec, à
 l'échelle, tout ce qui reste au pied du trépied (Heltec WiFi LoRa 32 V4, 2 TMC2209, ADS1115,
-abaisseur LM2596, borniers, résistances et condensateurs), et à côté d'elle, dans le boîtier,
-les deux wattmètres INA219 (INA219B d'Adafruit pour le panneau, SEN0291 de DFRobot pour le
-12 V du tracker). Ce qui est sur la tête (moteurs, fin de course, capteur Hall, photodiodes,
-panneau) n'y est pas : on n'en voit que les borniers.
+abaisseur LM2596, borniers, résistances et condensateurs), et à côté d'elle, dans le même
+boîtier étanche, les deux wattmètres INA219 (INA219B d'Adafruit pour le panneau, SEN0291 de
+DFRobot pour le 12 V du tracker), le régulateur de charge Velleman SOL10UC3, la batterie au plomb
+et les deux fusibles en ligne F1 et F2. Ce qui est sur la tête (moteurs, fin de course, capteur
+Hall, photodiodes, panneau) n'y est pas : on n'en voit que les borniers.
 
 Pièces standard de Fritzing : LM2596, résistances, diode, interrupteur et plaque à pastilles. Le Heltec V4, le TMC2209, l'ADS1115,
 les deux wattmètres, la barrette J1 et les borniers au pas de 5,08 mm n'existent pas dans
@@ -273,6 +274,56 @@ def barrette_2x4():
                  "Barrette mâle 2 x 4 au pas de 2,54 mm : 3,3 V, 0 V, SDA, SCL pour A5 et pour A4.", broche=0.6)
 
 
+def batterie_agm():
+    """Batterie au plomb AGM 12 V 7 Ah vue de dessus : 151 × 65 mm (94 mm de haut), bornes à droite."""
+    l, h = 151.0, 65.0
+    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="2" fill="#3a3d41" stroke="#1c1d1f" stroke-width="0.4"/>',
+         '<rect x="38" y="0" width="7" height="65" fill="#8d9196"/><rect x="104" y="0" width="7" height="65" '
+         'fill="#8d9196"/>',
+         '<rect x="137" y="7" width="9" height="7" rx="0.6" fill="#d32f2f"/>',
+         '<rect x="137" y="51" width="9" height="7" rx="0.6" fill="#202124" stroke="#9aa0a6" stroke-width="0.3"/>',
+         txt(141.5, 19.0, "+", 4.0, "#d32f2f", "middle", True), txt(141.5, 49.5, "−", 4.0, "#e8eaed", "middle", True),
+         txt(72, 28, "G1 batterie plomb AGM 12 V 7 Ah", 3.4, "#fff", "middle", True),
+         txt(72, 35, "151 × 65 × 94 mm, 2,2 kg ; pas de LiFePO4 avec A6", 2.4, "#e8eaed", "middle"),
+         txt(72, 41, "tenue par deux sangles (bandes grises)", 2.4, "#e8eaed", "middle")]
+    return Piece("Batterie_AGM_7Ah", "Batterie plomb AGM 12 V 7 Ah", l, h, [], "".join(d),
+                 "Batterie au plomb AGM 12 V 7 Ah, 151 x 65 x 94 mm, vue de dessus.")
+
+
+def regulateur_sol10uc3():
+    """Régulateur PWM Velleman SOL10UC3 posé à plat : 80 × 110 mm, ses 6 bornes le long du côté gauche."""
+    l, h = 80.0, 110.0
+    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="5" fill="#1e88e5" stroke="#0d47a1" stroke-width="0.5"/>']
+    for i in range(6):
+        y = 14 + 16.4 * i
+        d.append(f'<circle cx="8" cy="{f(y)}" r="3.2" fill="#0d47a1" stroke="#90caf9" stroke-width="0.4"/>'
+                 f'<line x1="5.8" y1="{f(y)}" x2="10.2" y2="{f(y)}" stroke="#90caf9" stroke-width="0.6"/>')
+    d += ['<rect x="62" y="40" width="9" height="14" rx="0.8" fill="#cfd8dc" stroke="#455a64" stroke-width="0.4"/>',
+          txt(66.5, 60, "USB", 2.2, "#fff", "middle")]
+    d += [f'<circle cx="{f(34 + 7 * k)}" cy="22" r="1.6" fill="{c}"/>'
+          for k, c in enumerate(("#66bb6a", "#ffca28", "#ef5350", "#66bb6a"))]
+    d += [txt(46, 76, "A6 Velleman SOL10UC3", 3.0, "#fff", "middle", True),
+          txt(46, 82, "régulateur PWM 10 A", 2.4, "#e3f2fd", "middle"),
+          txt(46, 88, "bornes : panneau, batterie, LOAD", 2.2, "#e3f2fd", "middle"),
+          txt(46, 93, "(ordre : voir le marquage)", 2.2, "#e3f2fd", "middle")]
+    return Piece("Regulateur_SOL10UC3", "Régulateur PWM Velleman SOL10UC3", l, h, [], "".join(d),
+                 "Régulateur de charge PWM Velleman SOL10UC3, 80 x 110 x 25 mm, vu de dessus.")
+
+
+def porte_fusible(nom, vertical):
+    """Porte-fusible en ligne 5 × 20 mm (fusible 3 A), serti sur le fil : 46 × 9 mm."""
+    l, h = (9.0, 46.0) if vertical else (46.0, 9.0)
+    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="4" fill="#212121" stroke="#000" stroke-width="0.3"/>']
+    if vertical:
+        d.append(f'<rect x="1.5" y="17" width="6" height="12" rx="1" fill="#f5f5f5"/>')
+        d.append(txt(4.5, 23, nom, 2.6, "#d32f2f", "middle", True, rot=-90))
+    else:
+        d.append(f'<rect x="17" y="1.5" width="12" height="6" rx="1" fill="#f5f5f5"/>')
+        d.append(txt(23, 5.6, nom, 2.6, "#d32f2f", "middle", True))
+    return Piece(f"Porte_fusible_{nom}", f"Porte-fusible en ligne {nom} (3 A)", l, h, [], "".join(d),
+                 f"Porte-fusible en ligne 5 x 20 mm {nom}, fusible 3 A, serti sur le fil.")
+
+
 def bornier(n):
     """Bornier à vis au pas de 5,08 mm (type KF301), n pôles, vu de dessus, entrées des fils en haut."""
     l, h = n * 5.08, 7.6
@@ -337,21 +388,20 @@ def regle(longueur):
     return Piece(f"Regle_{longueur}", f"Règle {longueur} mm", longueur, 7, [], "".join(d), "Règle graduée.")
 
 
-def boitier(l, h, plaque, px):
-    """Contour intérieur du boîtier, la plaque à px de la paroi gauche (USB-C) et centrée en hauteur ;
-    repères des traversées."""
-    py = (h - plaque[1]) / 2
-    d = [f'<rect x="0.3" y="0.3" width="{f(l - 0.6)}" height="{f(h - 0.6)}" rx="2" fill="none" stroke="#5f6368" '
-         f'stroke-width="0.6" stroke-dasharray="3,1.5"/>',
-         txt(l / 2, h - 1.6, f"Boîtier : intérieur {l} × {h} mm (boîtier de 200 × 120 × 75 mm)", 2.2, "#3c4043",
-             "middle", True),
-         txt(px + 70, 2.9, "presse-étoupes : câbles des moteurs, du fin de course, du capteur Hall, du panneau "
-             "et du régulateur", 1.6, "#3c4043", "middle"),
-         txt(px + 100, h - 4.3, "presse-étoupe : câble du capteur solaire", 1.6, "#3c4043", "middle"),
-         txt(2.0, py + 31.5, "découpe USB-C", 1.6, "#3c4043", "start", rot=-90),
-         txt(l - 1.8, py + 52, "antenne LoRa (traversée SMA)", 1.6, "#3c4043", "start", rot=90),
-         txt(2.0, py + 11.5, "entrée 12 V", 1.6, "#3c4043", "start", rot=-90)]
-    return Piece(f"Boitier_{l}x{h}", f"Boîtier {l} x {h} mm", l, h, [], "".join(d), "Contour intérieur du boîtier.")
+def boitier(l, h, px, py):
+    """Contour intérieur du boîtier étanche (plaque à px, py de son coin) ; repères des traversées."""
+    d = [f'<rect x="0.3" y="0.3" width="{f(l - 0.6)}" height="{f(h - 0.6)}" rx="3" fill="none" stroke="#5f6368" '
+         f'stroke-width="0.7" stroke-dasharray="3,1.5"/>',
+         txt(l / 2, h - 2.0, f"Boîtier étanche IP65 : intérieur {l} × {h} mm, 110 mm de haut "
+             "(boîtier de 300 × 200 × 130 mm)", 2.6, "#3c4043", "middle", True),
+         txt(px + 60, 3.0, "6 presse-étoupes PG7 : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau",
+             1.8, "#3c4043", "middle"),
+         txt(2.2, py + 26, "pas de découpe USB-C", 1.8, "#3c4043", "start", rot=-90),
+         txt(l - 2.2, py + 122, "antenne LoRa (traversée SMA étanche)", 1.8, "#3c4043", "start", rot=90),
+         f'<circle cx="{f(l - 70)}" cy="{f(h - 0.3)}" r="2.6" fill="#90a4ae" stroke="#37474f" stroke-width="0.4"/>',
+         txt(l - 66, h - 6.0, "aérateur à membrane (M12, IP67)", 1.8, "#3c4043", "start")]
+    return Piece(f"Boitier_{l}x{h}", f"Boîtier étanche {l} x {h} mm", l, h, [], "".join(d),
+                 "Contour intérieur du boîtier étanche.")
 
 
 # ---------------------------------------------------------------------------
@@ -429,11 +479,11 @@ def main():
     hel, tmc, ads = heltec_v4(), tmc2209(), ads1115()
     b2, b3, b4, b5 = bornier(2), bornier(3), bornier(4), bornier(5)
     plaque = (PAS * (TROUS[0] + 1), PAS * (TROUS[1] + 1))
-    bl, bh, bx = 190, 110, 15.3                 # intérieur du boîtier ; plaque à 15,3 mm de la paroi gauche
-    k.piece(boitier(bl, bh, plaque, bx), "Boîtier", -bx, -(bh - plaque[1]) / 2, z=1.2)
+    bl, bh, bx, by = 280, 185, 15.3, 15.6       # intérieur du boîtier ; plaque à 15,3 et 15,6 mm des parois
+    k.piece(boitier(bl, bh, bx, by), "Boîtier", -bx, -by, z=1.2)
     k.plaque(0, 0)
 
-    # bord haut : arrivée 12 V (le fusible F1 est en ligne, près de la batterie), panneau, câbles vers la tête
+    # bord haut : arrivée 12 V (depuis A5), panneau, câbles vers la tête
     k.piece(b2, "X1 12 V", *sur_trou(b2, 0, 2), etiquette=(1, -3.2))
     k.piece(b4, "X7 panneau", *sur_trou(b4, 5, 2), etiquette=(trou(5, 2)[0] - 1, -3.2))
     for p, c, titre in ((b4, 15, "X2 moteur M1"), (b4, 24, "X3 moteur M2"), (b2, 33, "X4 FDC"),
@@ -477,22 +527,30 @@ def main():
     k.piece(a5, "A5 SEN0291 (12 V)", plaque[0] + 9, 4, etiquette=(plaque[0] + 9, 1.6))
     k.piece(a4, "A4 INA219B (panneau)", plaque[0] + 11, 40, etiquette=(plaque[0] + 11, 37.6))
 
-    # hors de la plaque : interrupteur sur la paroi du boîtier, règle, explications
+    # énergie : régulateur, batterie et fusibles en ligne, dans le boîtier ; interrupteur sur la paroi
+    k.piece(regulateur_sol10uc3(), "A6 régulateur SOL10UC3", 172, 5)
+    k.piece(batterie_agm(), "G1 batterie", 0, 93)
+    k.piece(porte_fusible("F2", True), "F2 (près de G1+)", 157, 61, etiquette=(128.0, 66.0))
+    k.piece(porte_fusible("F1", False), "F1 (sortie LOAD)", 176, -12, etiquette=(224.0, -10.5))
     k.standard("Taiway-100-SP-X-T1-X-X-B1-M1_SPDT_miniature_toggle_switch",
                "Taiway-100-SP-X-T1-X-X-B1-M1_SPDT_miniature_toggle_switch.fzp", "S1",
-               -14.0, 44.0, (("part number", "marche / arrêt"),), etiquette=(-14.0, 57.5))
-    k.piece(regle(bl), "Règle", -bx, (plaque[1] + bh) / 2 + 2)
-    k.piece(cartouche(80, 124, (
-        ("Boîtier électronique, au pied du trépied", 2.6, True),
-        ("Tout ce qui n'est pas sur la tête. Dessin à l'échelle.", 1.9, False),
+               232.0, -30.0, (("part number", "marche / arrêt, étanche"),), etiquette=(247.0, -27.0))
+
+    # règle, explications
+    k.piece(regle(bl), "Règle", -bx, bh - by + 4)
+    k.piece(cartouche(86, 202, (
+        ("Boîtier étanche, au pied du trépied", 2.6, True),
+        ("Tout ce qui n'est pas sur la tête, régulateur, batterie et", 1.9, False),
+        ("fusibles compris : seuls la tête et le panneau sont dehors.", 1.9, False),
+        ("Dessin à l'échelle, vu de dessus.", 1.9, False),
         ("Plaque à pastilles 8 × 12 cm, 46 × 30 trous au pas de 2,54 mm.", 1.9, False),
         ("", 1.0, False),
         ("Hauteur au-dessus de la plaque", 2.1, True),
         ("TMC2209 sur barrettes, avec dissipateur : ≈ 20 mm", 1.9, False),
         ("Heltec V4 sur barrettes : ≈ 14 mm ; LM2596 : ≈ 14 mm", 1.9, False),
         ("100 µF : ≈ 12 mm ; borniers : ≈ 10 mm", 1.9, False),
-        ("Avec 6 mm d'entretoises sous la plaque : boîtier", 1.9, False),
-        ("d'au moins 50 mm de haut à l'intérieur.", 1.9, False),
+        ("Batterie : 94 mm de haut ; boîtier de 110 mm au moins", 1.9, False),
+        ("à l'intérieur. Plaque sur entretoises de 6 mm.", 1.9, False),
         ("", 1.0, False),
         ("Modules sur barrettes femelles (démontables)", 2.1, True),
         ("Heltec 2 × 18, TMC2209 2 × 8 chacun, ADS1115 1 × 10.", 1.9, False),
@@ -519,14 +577,22 @@ def main():
         ("Electronique/Schema_Electrique.qet.", 1.9, False),
         ("Broches du Heltec utilisées par le tracker : en orange.", 1.9, False),
         ("", 1.0, False),
-        ("Traversées du boîtier", 2.1, True),
-        ("Gauche : entrée 12 V, interrupteur S1, USB-C. Le fusible F1", 1.9, False),
-        ("est en ligne sur le fil, près de la sortie LOAD du régulateur", 1.9, False),
-        ("(ou du bloc secteur en intérieur).", 1.9, False),
-        ("Haut : moteurs, fin de course, Hall, panneau, régulateur.", 1.9, False),
-        ("Bas : câble du capteur solaire. Droite : antenne LoRa", 1.9, False),
-        ("(câble IPEX vers une traversée SMA).", 1.9, False),
-    )), "Explications", 180, -15.6)
+        ("Énergie, dans le boîtier", 2.1, True),
+        ("A6 SOL10UC3 et G1 batterie AGM 12 V 7 Ah (sanglée).", 1.9, False),
+        ("F2 : porte-fusible en ligne sur le fil G1+ -> A6, à moins", 1.9, False),
+        ("de 10 cm de G1+. F1 : sur le fil LOAD+ -> S1, à la sortie", 1.9, False),
+        ("LOAD. Fusibles 3 A ; le fusible protège le fil qui le suit.", 1.9, False),
+        ("Brancher G1 en premier, puis le panneau, puis LOAD.", 1.9, False),
+        ("", 1.0, False),
+        ("Étanchéité (IP65)", 2.1, True),
+        ("6 presse-étoupes PG7 sur une même paroi, câbles avec", 1.9, False),
+        ("une boucle d'égouttement. S1 étanche (capuchon).", 1.9, False),
+        ("Traversée SMA étanche, aérateur à membrane, sachet", 1.9, False),
+        ("de gel de silice. Pas de découpe USB-C : reprogrammer", 1.9, False),
+        ("couvercle ouvert, ou par le WiFi (OTA). Couvercle", 1.9, False),
+        ("transparent : voyants de A6 et écran du Heltec visibles.", 1.9, False),
+        ("Boîtier clair, à l'ombre : la batterie craint la chaleur.", 1.9, False),
+    )), "Explications", 270, -15.6)
     k.ecrire(SORTIE)
     print(f"{SORTIE} : {len(k.instances)} éléments, {len(k.pieces)} pièces dessinées")
 

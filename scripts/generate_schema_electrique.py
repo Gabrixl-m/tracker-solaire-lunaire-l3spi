@@ -428,7 +428,7 @@ COULEURS = {"12V": "#c00000", "5V": "#d06000", "3V3": "#a07000", "0V": "#202060"
 
 # section de chaque catégorie de fil : (AWG, mm², épaisseur du trait, fil à utiliser)
 SECTIONS = {
-    "bat": ("AWG 18", "0,82 mm²", 2.4, "fil souple, de la batterie (ou du bloc 12 V) au bornier X1"),
+    "bat": ("AWG 18", "0,82 mm²", 2.4, "fil souple, dans le boîtier : batterie, régulateur, fusibles, S1, A5, X1"),
     "p12": ("AWG 20", "0,52 mm²", 1.8, "fil de câblage sur la plaque : 12 V et 0 V de puissance"),
     "p5": ("AWG 22", "0,33 mm²", 1.4, "fil de câblage sur la plaque : 5 V"),
     "mot": ("AWG 22", "0,33 mm²", 1.4, "câble souple 4 conducteurs, 1,5 m, paires torsadées A+/A-, B+/B-"),
@@ -436,7 +436,7 @@ SECTIONS = {
     "capt": ("AWG 26", "0,13 mm²", 1.0, "câble souple 2 ou 3 conducteurs, 1,5 m, vers la tête"),
     "sol": ("AWG 26", "0,13 mm²", 1.0, "câble souple blindé 6 conducteurs, 1,5 m, vers le capteur solaire"),
     "pv": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du panneau au bornier X7 (par la boucle de câble)"),
-    "reg": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du bornier X7 au régulateur de charge"),
+    "reg": ("AWG 20", "0,52 mm²", 1.8, "fil de câblage, dans le boîtier : du bornier X7 au régulateur de charge"),
     "i2c": ("AWG 26", "0,13 mm²", 1.0, "câble 4 fils de J1 au module (STEMMA QT pour A4, Gravity pour A5)"),
     "ant": ("coaxial", "50 Ω", 1.0, "câble coaxial 50 Ω (1,13 mm ou RG178), IPEX vers SMA"),
     "gnss": ("fourni", "", 1.0, "câble fourni avec le module GNSS"),
@@ -773,10 +773,12 @@ def folio_schema():
             "Régulateur PWM : le panneau travaille à la tension de la batterie\n"
             "(≈ 13 V au lieu de 17,6 V) ; A4 mesure environ 8 W en plein soleil.\n"
             "Voc du panneau 21,8 V : sous les 26 V de A4 et les 32 V de A6.\n\n"
-            "En intérieur : un bloc secteur 12 V 3 A remplace A6 et G1, sur F1 ;\n"
-            "A4 lit alors 0 (panneau sans charge). Ne jamais brancher A6 sur un\n"
-            "bloc secteur. Panneau sur X7, LOAD sur F1, S1, A5 et X1 ;\n"
-            "A4 et A5 dans le boîtier, à côté de la plaque (câbles I2C sur J1).", 7)
+            "Tout est dans le boîtier étanche (IP65) : plaque, A4, A5, A6, G1, F1,\n"
+            "F2 ; seuls la tête et le panneau sont dehors. Panneau sur X7 ; LOAD\n"
+            "sur F1, S1, A5 et X1 ; câbles I2C de A4 et A5 sur J1.\n"
+            "Sur l'établi, couvercle ouvert : un bloc secteur 12 V 3 A peut\n"
+            "remplacer A6 et G1, sur F1 (A4 lit alors 0). Ne jamais brancher\n"
+            "A6 sur un bloc secteur.", 7)
 
     # ---- réglages -------------------------------------------------------------------------------
     f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
@@ -851,7 +853,7 @@ def folio_brochage():
         ("A5", "SEN0291 (DFRobot, INA219)", "0x45", "micro-interrupteurs A0 = 1 et A1 = 1",
          "12 V du tracker : tension et courant (shunt 0,01 Ω, ±8 A)")],
         (6, 25, 7, 36, 56)), 8, mono=True)
-    f.texte(60, 520, "Câbles du boîtier (au pied du trépied)", 10, True)
+    f.texte(60, 520, "Câbles et fils du boîtier étanche (au pied du trépied)", 10, True)
     f.texte(60, 544, tableau([
         ("Câble", "Bornier", "Conducteurs", "Signaux"),
         ("Moteur d'élévation M1", "X2", "4 × AWG 22", "A+ / A- (bobine A), B+ / B- (bobine B)"),
@@ -860,13 +862,14 @@ def folio_brochage():
         ("Capteur à effet Hall B1", "X5", "3 × AWG 26", "+5 V, 0 V, OUT (HALL_AZ)"),
         ("Capteur solaire", "X6", "5 × AWG 26 blindé", "+3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD"),
         ("Panneau PV1", "X7-1, X7-2", "2 × AWG 20 souple", "PV+ (vers A4 VIN+), PV- (relié à X7-4 seulement)"),
-        ("Régulateur de charge A6", "X7-3, X7-4", "2 × AWG 20 souple", "PV+ (depuis A4 VIN-), PV-"),
-        ("LOAD de A6 (ou bloc 12 V)", "A5, X1", "2 × AWG 18 souple", "+ : LOAD+ -> F1 -> S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : LOAD- -> X1-"),
-        ("Régulateur -> batterie", "-", "2 × AWG 18 souple", "BAT+ -> F2 -> G1+, BAT- -> G1- (hors du boîtier, sans 0 V)"),
+        ("Régulateur de charge A6", "X7-3, X7-4", "2 fils AWG 20", "PV+ (depuis A4 VIN-), PV- ; dans le boîtier"),
+        ("LOAD de A6 (ou bloc 12 V)", "A5, X1", "2 fils AWG 18", "+ : LOAD+ -> F1 -> S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : LOAD- -> X1-"),
+        ("Régulateur -> batterie", "-", "2 fils AWG 18", "BAT+ -> F2 -> G1+, BAT- -> G1- (dans le boîtier, sans 0 V)"),
         ("Wattmètres A4 et A5", "J1", "4 fils chacun", "+3,3 V, 0 V, SDA, SCL (câbles STEMMA QT et Gravity)")],
         (25, 10, 17, 62)), 8, mono=True)
     f.texte(60, 712, "Les câbles de la tête (moteurs, capteurs, panneau) passent par le passe-câble du socle ; laisser une\n"
-                     "boucle de câble près de l'axe d'élévation.", 8)
+                     "boucle de câble près de l'axe d'élévation. Ils entrent dans le boîtier par 6 presse-étoupes PG7 ; tout\n"
+                     "le reste (régulateur, batterie, fusibles) est dedans.", 8)
     f.texte(60, 762, "Données envoyées en LoRa : trame de 38 octets", 10, True)
     f.texte(60, 786, tableau([
         ("Octets", "Champ", "Type", "Unité"),
@@ -903,9 +906,9 @@ def folio_cablage():
     f.texte(60, 46, "Section de chaque fil", 11, True)
     f.texte(60, 84, tableau([
         ("Liaison", "De -> vers", "Courant", "Longueur", "Section", "Fil à utiliser"),
-        ("12 V du tracker, +", "A6 LOAD+ (ou bloc) -> F1 -> S1 -> A5 -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²",
-         "souple, rouge ; F1 près de la sortie LOAD"),
-        ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²", "souple, noir"),
+        ("12 V du tracker, +", "A6 LOAD+ (ou bloc) -> F1 -> S1 -> A5 -> X1", "1,5 A", "< 30 cm", "AWG 18  0,82 mm²",
+         "souple, rouge ; F1 à la sortie LOAD"),
+        ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", "1,5 A", "< 30 cm", "AWG 18  0,82 mm²", "souple, noir"),
         ("12 V sur la plaque", "X1 -> VM de U2 et U3, C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
         ("0 V de puissance", "X1 -> U2, U3 (GND), C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "noir"),
         ("5 V", "U1 OUT+ -> D1 -> A1 5V", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²", "orange ; 0 V de U1 et de A1 : noir"),
@@ -931,11 +934,11 @@ def folio_cablage():
          "câble souple 2 conducteurs, par la boucle de câble"),
         ("Wattmètre A4 (panneau)", "X7-1 -> A4 VIN+, A4 VIN- -> X7-3", "0,6 A", "< 20 cm", "AWG 20  0,52 mm²",
          "rouge ; X7-2 relié à X7-4 seulement"),
-        ("Vers le régulateur A6", "X7-3, X7-4 -> A6 PV+, PV-", "0,6 A", "1 m", "AWG 20  0,52 mm²",
-         "câble souple 2 conducteurs"),
+        ("Vers le régulateur A6", "X7-3, X7-4 -> A6 PV+, PV-", "0,6 A", "< 30 cm", "AWG 20  0,52 mm²",
+         "rouge et noir, dans le boîtier"),
         ("Wattmètre A5 (12 V)", "S1 -> A5 VIN+, A5 VIN- -> X1+", "1,5 A", "< 20 cm", "AWG 18  0,82 mm²", "souple, rouge"),
-        ("Régulateur -> batterie", "A6 BAT+ -> F2 -> G1+, BAT- -> G1-", "0,6 A", "0,5 m", "AWG 18  0,82 mm²",
-         "souple ; F2 à moins de 10 cm de G1"),
+        ("Régulateur -> batterie", "A6 BAT+ -> F2 -> G1+, BAT- -> G1-", "0,6 A", "< 20 cm", "AWG 18  0,82 mm²",
+         "souple ; F2 à moins de 10 cm de G1+"),
         ("Antenne LoRa", "A1 IPEX -> W1", "radio", "10 cm", "coaxial 50 Ω", "IPEX vers SMA, 1,13 mm ou RG178"),
         ("Module GNSS", "A1 -> A3", "-", "fourni", "-", "câble fourni avec le module")],
         (26, 42, 7, 8, 16, 42)), 9, mono=True)
@@ -943,9 +946,9 @@ def folio_cablage():
     f.texte(60, 470,
             "* Le courant fixe le minimum, la chute de tension le confirme. Résistance du cuivre : AWG 18 = 0,021 Ω/m,\n"
             "  AWG 20 = 0,033 Ω/m, AWG 22 = 0,053 Ω/m, AWG 24 = 0,084 Ω/m, AWG 26 = 0,134 Ω/m.\n"
-            "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). En AWG 18 sur 2 × 1 m, la chute\n"
-            "  n'est que de 0,06 V. Le fil entre la batterie et F2 n'est protégé par rien : il reste court (< 10 cm). F1, sur\n"
-            "  la sortie LOAD du régulateur (ou du bloc secteur), protège le câble qui va au boîtier.\n"
+            "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). Tout est dans le boîtier : en\n"
+            "  AWG 18 sur moins de 2 × 30 cm, la chute est inférieure à 0,02 V. Le fil entre la batterie et F2 n'est protégé par\n"
+            "  rien : il reste court (< 10 cm). F1, à la sortie LOAD du régulateur, protège les fils qui vont à la plaque.\n"
             "* Panneau (Velleman SOL10P) : 0,61 A au point de puissance maximale, un peu plus en court-circuit. En AWG 20 sur\n"
             "  2 × 2 m, la chute est de 0,08 V. Le câble suit ceux des moteurs dans la boucle : souple, multibrin, soudé sur\n"
             "  les cosses de la boîte de jonction du panneau.\n"

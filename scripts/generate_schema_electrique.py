@@ -191,7 +191,7 @@ def faire_symboles():
     s.borne("+", 0, -30, "n")
     s.borne("-", 0, 30, "s")
 
-    for cle, t in (("p12", "+12 V"), ("p5", "+5 V"), ("p33", "+3,3 V")):
+    for cle, t in (("p12", "+12 V"), ("p5", "+5 V"), ("p5u", "+5 V U1"), ("p33", "+3,3 V")):
         s = symbole(cle, f"Alimentation {t}")
         s.ligne(-10, 0, 10, 0)
         s.ligne(0, 0, 0, 10)
@@ -268,10 +268,10 @@ def faire_symboles():
         s.texte(-56, y - 2, t, 6)
         s.borne(n, -60, y, "w")
 
-    s = symbole("lm2596", "Abaisseur LM2596")
+    s = symbole("abaisseur", "Mini abaisseur 5 V")
     s.rect(-50, -40, 100, 80, BLANC)
-    s.texte(-26, -20, "LM2596", 9, True)
-    s.texte(-38, -8, "abaisseur réglable", 6)
+    s.texte(-40, -20, "Abaisseur", 9, True)
+    s.texte(-40, -8, "sortie fixe 5,0 V", 6)
     for n, t, y in (("IN+", "IN+", 10), ("IN-", "IN-", 30)):
         s.texte(-46, y + 3, t, 6)
         s.borne(n, -70, y, "w", 20)
@@ -435,8 +435,8 @@ SECTIONS = {
     "log": ("AWG 24", "0,20 mm²", 1.0, "fil de câblage monobrin sur la plaque : signaux et 3,3 V"),
     "capt": ("AWG 26", "0,13 mm²", 1.0, "câble souple 2 ou 3 conducteurs, 1,5 m, vers la tête"),
     "sol": ("AWG 26", "0,13 mm²", 1.0, "câble souple blindé 6 conducteurs, 1,5 m, vers le capteur solaire"),
-    "pv": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du panneau au bornier X7 (par la boucle de câble)"),
-    "reg": ("AWG 20", "0,52 mm²", 1.8, "fil de câblage, dans le boîtier : du bornier X7 au régulateur de charge"),
+    "pv": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du panneau à A4 et A6 (par la boucle de câble)"),
+    "reg": ("AWG 20", "0,52 mm²", 1.8, "fil de câblage, dans le boîtier : de A4 au régulateur de charge"),
     "i2c": ("AWG 26", "0,13 mm²", 1.0, "câble 4 fils de J1 au module (STEMMA QT pour A4, Gravity pour A5)"),
     "ant": ("coaxial", "50 Ω", 1.0, "câble coaxial 50 Ω (1,13 mm ou RG178), IPEX vers SMA"),
     "gnss": ("fourni", "", 1.0, "câble fourni avec le module GNSS"),
@@ -555,7 +555,7 @@ class Folio:
 
 def folio_schema():
     f = Folio(1, "Schéma électrique complet", 30, 18)
-    M, P12, P5, P33 = "masse", "p12", "p5", "p33"
+    M, P12, P5, P5U, P33 = "masse", "p12", "p5", "p5u", "p33"
 
     # ---- alimentation 5 V (le 12 V vient de la bande du bas : batterie, F1, S1, wattmètre A5) ----
     f.cadre(40, 40, 560, 600, "ALIMENTATION 5 V")
@@ -563,18 +563,22 @@ def folio_schema():
                     "bloc secteur) par le fusible F1, l'interrupteur S1 et le\n"
                     "wattmètre A5 (bande du bas : MESURE DE L'ÉNERGIE), puis\n"
                     "par le bornier X1.", 7)
-    u1 = f.el("lm2596", "U1", 330, 330, ("U1", -50, -66, 8, True),
-              ("sortie réglée à 5,3 V", -50, -54, 6, False))
+    u1 = f.el("abaisseur", "U1", 330, 330, ("U1", -50, -66, 8, True),
+              ("mini, entrée 5 à 30 V", -50, -54, 6, False))
     f.fil(f.auto(P12, 230, 290), "1", u1, "IN+", pot="12V")
     f.fil(u1, "IN-", f.auto(M, 250, 420), "1", via=[("x", 250)], pot="0V", cat="p12")
     f.fil(u1, "OUT-", f.auto(M, 410, 420), "1", via=[("x", 410)], pot="0V", cat="p5")
     d1 = f.el("schottky", "D1", 450, 340, ("D1", -10, -26, 8, True), ("1N5819", -16, 10, 6, False))
-    f.fil(u1, "OUT+", d1, "A", pot="5V")
+    j5 = f.auto("jonction", 420, 340)                 # +5 V U1, avant D1 : capteur Hall B1
+    f.fil(u1, "OUT+", j5, "w", pot="5V")
+    f.fil(j5, "e", d1, "A", pot="5V")
+    f.fil(j5, "n", f.auto(P5U, 420, 300), "1", pot="5V")
     f.fil(d1, "K", f.auto(P5, 500, 300), "1", via=[("x", 500)], pot="5V")
     f.texte(60, 440, "D1 empêche le 5 V du port USB-C de remonter dans\n"
                      "l'abaisseur quand le Heltec est branché à l'ordinateur.\n"
-                     "Régler U1 à 5,3 V au multimètre AVANT de brancher\n"
-                     "le Heltec : il reçoit alors environ 5,0 V après D1.", 7)
+                     "U1 a une sortie fixe de 5,0 V : la mesurer (4,9 à 5,2 V)\n"
+                     "AVANT de brancher le Heltec, qui reçoit ≈ 4,7 V après D1.\n"
+                     "Le capteur Hall B1 (4,5 V au moins) est pris avant D1.", 7)
     f.texte(60, 498, "SECTION DES FILS (écrite sur chaque fil ; détail au folio 3)", 7, True)
     f.texte(60, 512, "AWG 18 (0,82 mm²) : batterie ou bloc 12 V jusqu'au boîtier\n"
                      "AWG 20 (0,52 mm²) : 12 V et 0 V de puissance sur la plaque\n"
@@ -708,7 +712,7 @@ def folio_schema():
     b1 = f.el("hall", "B1", 1080, 920, ("B1", 36, 34, 8, True), ("A3144 nu, aimant sur", 36, 46, 6, False),
               ("la roue fixe. Pas de module", 36, 55, 6, False), ("KY-003 (tirage au 5 V)", 36, 64, 6, False))
     f.fil(jh, "s", b1, "OUT", via=[("y", 920)], cat="capt")
-    f.fil(f.auto(P5, 1070, 840), "1", b1, "VCC", pot="5V", cat="capt")
+    f.fil(f.auto(P5U, 1070, 840), "1", b1, "VCC", pot="5V", cat="capt")
     f.fil(b1, "GND", f.auto(M, 1090, 990), "1", pot="0V", cat="capt")
     r7 = f.el("resistance", "R7", 1200, 710, ("R7", 8, -14, 8, True), ("10 kΩ", 8, -2, 6, False))
     f.fil(jh, "e", r7, "2", via=[("x", 1200)])
@@ -774,8 +778,8 @@ def folio_schema():
             "(≈ 13 V au lieu de 17,6 V) ; A4 mesure environ 8 W en plein soleil.\n"
             "Voc du panneau 21,8 V : sous les 26 V de A4 et les 32 V de A6.\n\n"
             "Tout est dans le boîtier étanche (IP65) : plaque, A4, A5, A6, G1, F1,\n"
-            "F2 ; seuls la tête et le panneau sont dehors. Panneau sur X7 ; LOAD\n"
-            "sur F1, S1, A5 et X1 ; câbles I2C de A4 et A5 sur J1.\n"
+            "F2 ; seuls la tête et le panneau sont dehors. Panneau sur A4 et A6 ;\n"
+            "LOAD sur F1, S1, A5 et X1 ; câbles I2C de A4 et A5 sur J1.\n"
             "Sur l'établi, couvercle ouvert : un bloc secteur 12 V 3 A peut\n"
             "remplacer A6 et G1, sur F1 (A4 lit alors 0). Ne jamais brancher\n"
             "A6 sur un bloc secteur.", 7)
@@ -818,7 +822,7 @@ def folio_brochage():
     f.texte(60, 50, "Brochage du Heltec WiFi LoRa 32 V4 utilisé par le tracker", 11, True)
     f.texte(60, 84, tableau([
         ("Broche", "Connecteur", "Sens", "Signal", "Vers", "Remarque"),
-        ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 5,0 V"),
+        ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 4,7 V (5,0 V moins D1)"),
         ("GND", "J2-1", "-", "0 V", "masse commune", ""),
         ("3V3", "J3-2, J3-3", "sortie", "+3,3 V", "U2 U3 A2 A4 A5 D2 à D5",
          "VIO des drivers, ADS1115, wattmètres, photodiodes, tirages"),
@@ -859,10 +863,10 @@ def folio_brochage():
         ("Moteur d'élévation M1", "X2", "4 × AWG 22", "A+ / A- (bobine A), B+ / B- (bobine B)"),
         ("Moteur d'azimut M2", "X3", "4 × AWG 22", "noir A+, vert A-, rouge B+, bleu B-"),
         ("Fin de course S2", "X4", "2 × AWG 26", "C (0 V), NC (FDC_EL)"),
-        ("Capteur à effet Hall B1", "X5", "3 × AWG 26", "+5 V, 0 V, OUT (HALL_AZ)"),
+        ("Capteur à effet Hall B1", "X5", "3 × AWG 26", "+5 V (de U1, avant D1), 0 V, OUT (HALL_AZ)"),
         ("Capteur solaire", "X6", "5 × AWG 26 blindé", "+3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD"),
-        ("Panneau PV1", "X7-1, X7-2", "2 × AWG 20 souple", "PV+ (vers A4 VIN+), PV- (relié à X7-4 seulement)"),
-        ("Régulateur de charge A6", "X7-3, X7-4", "2 fils AWG 20", "PV+ (depuis A4 VIN-), PV- ; dans le boîtier"),
+        ("Panneau PV1", "A4, A6", "2 × AWG 20 souple", "PV+ -> A4 VIN+ ; PV- -> A6 PV-, jamais au 0 V du boîtier"),
+        ("A4 -> régulateur A6", "-", "1 fil AWG 20", "A4 VIN- -> A6 PV+ ; dans le boîtier"),
         ("LOAD de A6 (ou bloc 12 V)", "A5, X1", "2 fils AWG 18", "+ : LOAD+ -> F1 -> S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : LOAD- -> X1-"),
         ("Régulateur -> batterie", "-", "2 fils AWG 18", "BAT+ -> F2 -> G1+, BAT- -> G1- (dans le boîtier, sans 0 V)"),
         ("Wattmètres A4 et A5", "J1", "4 fils chacun", "+3,3 V, 0 V, SDA, SCL (câbles STEMMA QT et Gravity)")],
@@ -911,7 +915,8 @@ def folio_cablage():
         ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", "1,5 A", "< 30 cm", "AWG 18  0,82 mm²", "souple, noir"),
         ("12 V sur la plaque", "X1 -> VM de U2 et U3, C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
         ("0 V de puissance", "X1 -> U2, U3 (GND), C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "noir"),
-        ("5 V", "U1 OUT+ -> D1 -> A1 5V", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²", "orange ; 0 V de U1 et de A1 : noir"),
+        ("5 V", "U1 OUT+ -> D1 -> A1 5V ; U1 OUT+ -> X5", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²",
+         "orange ; 0 V de U1 et de A1 : noir"),
         ("Moteur M1 (élévation)", "U2 1A 1B 2A 2B -> X2 -> M1", "1,0 A", "1,5 m", "AWG 22  0,33 mm²",
          "câble souple 4 conducteurs"),
         ("Moteur M2 (azimut)", "U3 1A 1B 2A 2B -> X3 -> M2", "0,67 A", "1,5 m", "AWG 22  0,33 mm²",
@@ -930,12 +935,10 @@ def folio_cablage():
          "câble souple blindé, 6 conducteurs"),
         ("Pattes des photodiodes", "dans le boîtier du capteur", "2 mA", "5 cm", "AWG 28  0,08 mm²",
          "fil fin isolé (fil à wrapper)"),
-        ("Panneau PV1", "PV1 -> X7-1, X7-2", "0,6 A", "2 m", "AWG 20  0,52 mm²",
+        ("Panneau PV1", "PV1 + -> A4 VIN+, PV1 - -> A6 PV-", "0,6 A", "2 m", "AWG 20  0,52 mm²",
          "câble souple 2 conducteurs, par la boucle de câble"),
-        ("Wattmètre A4 (panneau)", "X7-1 -> A4 VIN+, A4 VIN- -> X7-3", "0,6 A", "< 20 cm", "AWG 20  0,52 mm²",
-         "rouge ; X7-2 relié à X7-4 seulement"),
-        ("Vers le régulateur A6", "X7-3, X7-4 -> A6 PV+, PV-", "0,6 A", "< 30 cm", "AWG 20  0,52 mm²",
-         "rouge et noir, dans le boîtier"),
+        ("Wattmètre A4 -> régulateur", "A4 VIN- -> A6 PV+", "0,6 A", "< 20 cm", "AWG 20  0,52 mm²",
+         "rouge, dans le boîtier"),
         ("Wattmètre A5 (12 V)", "S1 -> A5 VIN+, A5 VIN- -> X1+", "1,5 A", "< 20 cm", "AWG 18  0,82 mm²", "souple, rouge"),
         ("Régulateur -> batterie", "A6 BAT+ -> F2 -> G1+, BAT- -> G1-", "0,6 A", "< 20 cm", "AWG 18  0,82 mm²",
          "souple ; F2 à moins de 10 cm de G1+"),

@@ -68,9 +68,10 @@ des arbres des vis sans fin.
 | **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README § 16) | 13 € |
 | **Wattmètre SEN0291 de DFRobot** (INA219) — **déjà en stock** | Shunt 0,01 Ω, ±8 A, 26 V au plus, I²C 0x40 à 0x45 par micro-interrupteurs (**mettre 0x45**) ; 30 × 22 mm, câble Gravity fourni | 1 | `DFRobot SEN0291` | A5 : ce que consomme le tracker sur le 12 V | 8 € |
 | Câble STEMMA QT / Qwiic vers broches femelles | JST SH 4 broches vers 4 fiches femelles au pas de 2,54 mm, 15 cm environ | 1 | `STEMMA QT to female socket cable` | Relie A4 à la barrette J1 de la plaque | 1 € |
-| **Alimentation 12 V** | En intérieur : bloc secteur 12 V 3 A. En extérieur : batterie LiFePO4 4S 12,8 V | 1 | `12V 3A power supply` / `LiFePO4 12V battery` | Puissance des moteurs | 10 € / 40–80 € |
-| **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18, placé **à moins de 10 cm de la batterie** | 2 (F1 vers le tracker, F2 vers le régulateur de charge) + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie LiFePO4 débite des centaines d'ampères en court-circuit) | 4 € |
-| **Régulateur de charge solaire** 12 V, PWM (ou MPPT), 5 à 10 A, avec un **réglage LiFePO4** | Entre le panneau et la batterie, en extérieur seulement. Une « masse négative commune » permet à A4 de lire la tension du panneau, mais n'est pas obligatoire | 1 | `solar charge controller 12V 10A LiFePO4` | A6 : le panneau recharge la batterie, le tracker devient autonome et A4 mesure ce que produit le panneau | 10–25 € |
+| **Alimentation 12 V, en intérieur** | Bloc secteur 12 V 3 A, branché sur F1 à la place du régulateur | 1 | `12V 3A power supply` | Puissance des moteurs et du Heltec | 10 € |
+| **Batterie 12 V, en extérieur** | **Plomb AGM étanche**, 12 V, 7 Ah (84 Wh, environ 2,2 kg). **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 7Ah AGM battery` | Stocke l'énergie du panneau ; le tracker tient environ 2 jours sans soleil | 20–25 € |
+| **Régulateur de charge PWM 10 A Velleman SOL10UC3** (Gotronic, réf. 27118) | Batteries 12 ou 24 V (reconnues au branchement), plomb, gel ou EFB ; panneau 32 V au plus ; sortie LOAD coupée quand la batterie est basse ; port USB 5 V 1,2 A ; consommation < 6 mA ; 80 × 110 × 25 mm | 1 | `Velleman SOL10UC3` | A6 : le panneau recharge la batterie, le tracker se branche sur la sortie LOAD ; A4 mesure ce que produit le panneau | 35,80 € |
+| **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18 | 2 (F1 près de la sortie LOAD ; F2 entre le régulateur et la batterie, **à moins de 10 cm de la batterie**) + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie au plomb débite des centaines d'ampères en court-circuit) | 4 € |
 | **Interrupteur** marche / arrêt | À bascule, 12 V continu, 3 A au moins | 1 | `rocker switch 12V 6A` | Coupe tout | 1 € |
 | **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
@@ -78,7 +79,7 @@ des arbres des vis sans fin.
 | **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
 | **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 3 | `10k ohm resistor 1/4W` | EN des drivers (R5), fin de course (R6), capteur Hall (R7) | 0,1 € |
-| **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1,5 m de chaque | `18AWG silicone wire red black` | Batterie ou bloc 12 V → fusible → interrupteur → A5 → X1 ; régulateur → F2 → batterie | 4 € |
+| **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1,5 m de chaque | `18AWG silicone wire red black` | Sortie LOAD (ou bloc 12 V) → F1 → S1 → A5 → X1 ; régulateur → F2 → batterie | 4 € |
 | **Câble souple 2 conducteurs AWG 20** (0,52 mm²) | Multibrin, rouge et noir | 3 m | `2 core 20AWG flexible cable` | Panneau → bornier X7 (2 m, par la boucle de câble) ; X7 → régulateur de charge (1 m) | 3 € |
 | **Fil AWG 20** (0,52 mm²), rouge et noir | Pour souder sur la plaque | 0,5 m de chaque | `20AWG hook up wire` | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, LM2596) | 2 € |
 | **Fil AWG 22** (0,33 mm²), orange et noir | Pour souder sur la plaque | 0,5 m de chaque | `22AWG hook up wire` | 5 V : LM2596 → D1 → Heltec | 2 € |
@@ -211,7 +212,11 @@ Compter 10 à 15 € en tout.
 
 ---
 
+Le panneau est un **Velleman SOL10P** (Gotronic, réf. 27128, 36,50 €) : 10 W, 17,6 V et
+0,61 A au point de puissance maximale, 21,8 V à vide, 356 × 253 × 30 mm, 1,16 kg. C'est celui
+de la CAO. Sa sortie est sur cosses à souder : souder le câble souple 2 × AWG 20.
+
 **Ordre de grandeur total** : environ **100 à 150 €** avec une alimentation secteur, capteur
 solaire compris (environ 8 €), sans compter le trépied, le panneau, ni les deux wattmètres
-(déjà en stock). Pour la démonstration en extérieur, il faut ajouter environ 50 € pour une
-batterie LiFePO4, et 10 à 25 € pour le régulateur de charge.
+(déjà en stock). Pour la démonstration en extérieur, il faut ajouter environ 25 € pour une
+batterie au plomb AGM et 36 € pour le régulateur SOL10UC3.

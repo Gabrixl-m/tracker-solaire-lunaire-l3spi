@@ -4,8 +4,9 @@
 versions suivantes) avec trois folios :
   1. le schéma complet : alimentation 12 V / 5 V, Heltec WiFi LoRa 32 V4, 2 drivers TMC2209
      et leurs moteurs, capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall,
-     et la mesure de l'énergie : panneau, régulateur de charge, batterie et deux wattmètres INA219
-     (INA219B d'Adafruit sur le panneau, SEN0291 de DFRobot sur le 12 V du tracker) ;
+     et la mesure de l'énergie : panneau Velleman SOL10P, régulateur PWM Velleman SOL10UC3, batterie
+     au plomb et deux wattmètres INA219 (INA219B d'Adafruit sur le panneau, SEN0291 de DFRobot sur
+     le 12 V du tracker, branché sur la sortie LOAD du régulateur) ;
   2. le brochage du Heltec V4, les câbles entre le boîtier et la tête, les données envoyées en LoRa ;
   3. le câblage : section (AWG) et type de fil de chaque liaison.
 
@@ -352,15 +353,19 @@ def faire_symboles():
     s.borne("+", 45, -15, "e", 20)
     s.borne("-", 45, 15, "e", 20)
 
-    s = symbole("regulateur", "Régulateur de charge solaire")
-    s.rect(-70, -40, 140, 80, BLANC)
-    s.texte(-40, -8, "Régulateur", 7, True)
-    s.texte(-40, 2, "de charge solaire 12 V", 6)
-    s.texte(-40, 11, "PWM ou MPPT,", 6)
-    s.texte(-40, 20, "réglé LiFePO4", 6)
-    for n, x, y, o in (("PV+", -90, -20, "w"), ("PV-", -90, 20, "w"), ("BAT+", 90, -20, "e"), ("BAT-", 90, 20, "e")):
-        s.texte(-66 if o == "w" else 64 - 4 * len(n), y + 3, n, 6)
+    s = symbole("regulateur", "Régulateur de charge solaire PWM")
+    s.rect(-80, -45, 160, 90, BLANC)
+    s.texte(-50, -26, "Régulateur PWM 10 A", 7, True)
+    s.texte(-50, -16, "Velleman SOL10UC3", 6)
+    s.texte(-50, -7, "plomb, gel, EFB ; PV 32 V max", 6)
+    s.texte(-50, 2, "LOAD coupée si batterie basse", 6)
+    for n, x, y, o in (("PV+", -100, -20, "w"), ("PV-", -100, 20, "w"),
+                       ("LOAD+", 100, -20, "e"), ("LOAD-", 100, 20, "e")):
+        s.texte(-76 if o == "w" else 74 - 4 * len(n), y + 3, n, 6)
         s.borne(n, x, y, o, 20)
+    for n, x in (("BAT-", -30), ("BAT+", 30)):
+        s.texte(x - 9, 41, n, 6)
+        s.borne(n, x, 65, "s", 20)
 
     s = symbole("antenne", "Antenne")
     s.ligne(0, 20, 0, -10)
@@ -549,14 +554,15 @@ class Folio:
 # FOLIO 1 : SCHÉMA COMPLET
 
 def folio_schema():
-    f = Folio(1, "Schéma électrique complet", 30, 16)
+    f = Folio(1, "Schéma électrique complet", 30, 18)
     M, P12, P5, P33 = "masse", "p12", "p5", "p33"
 
     # ---- alimentation 5 V (le 12 V vient de la bande du bas : batterie, F1, S1, wattmètre A5) ----
     f.cadre(40, 40, 560, 600, "ALIMENTATION 5 V")
-    f.texte(60, 70, "Le +12 V arrive de la batterie G1 par le fusible F1,\n"
-                    "l'interrupteur S1 et le wattmètre A5 (bande du bas :\n"
-                    "MESURE DE L'ÉNERGIE), puis par le bornier X1.", 7)
+    f.texte(60, 70, "Le +12 V arrive de la sortie LOAD du régulateur A6 (ou d'un\n"
+                    "bloc secteur) par le fusible F1, l'interrupteur S1 et le\n"
+                    "wattmètre A5 (bande du bas : MESURE DE L'ÉNERGIE), puis\n"
+                    "par le bornier X1.", 7)
     u1 = f.el("lm2596", "U1", 330, 330, ("U1", -50, -66, 8, True),
               ("sortie réglée à 5,3 V", -50, -54, 6, False))
     f.fil(f.auto(P12, 230, 290), "1", u1, "IN+", pot="12V")
@@ -709,39 +715,38 @@ def folio_schema():
     f.fil(f.auto(P33, 1200, 660), "1", r7, "1", pot="3V3")
 
     # ---- mesure de l'énergie : panneau, régulateur, batterie, deux wattmètres INA219 -------------
-    f.cadre(40, 1050, 1780, 1290, "MESURE DE L'ÉNERGIE : PANNEAU, BATTERIE ET DEUX WATTMÈTRES INA219 (I2C)")
-    f.cadre(55, 1095, 205, 1282, None)
+    f.cadre(40, 1050, 1780, 1420, "MESURE DE L'ÉNERGIE : PANNEAU, RÉGULATEUR, BATTERIE ET DEUX WATTMÈTRES INA219 (I2C)")
+    f.cadre(55, 1095, 205, 1300, None)
     f.texte(61, 1099, "sur la tête rotative", 7, True)
-    yl = 1170                                          # ligne du + : panneau -> A4 -> A6 ; G1 -> F1 -> S1 -> A5
+    yl = 1170                                          # ligne du + : panneau -> A4 -> A6 -> F1 -> S1 -> A5
     pv = f.el("panneau_pv", "PV1", 110, yl + 15, ("PV1", -25, 34, 8, True),
-              ("panneau ≈ 10 W crête", -25, 46, 6, False), ("tension à vide < 26 V", -25, 55, 6, False))
+              ("Velleman SOL10P, 10 W", -25, 46, 6, False), ("17,6 V / 0,61 A", -25, 55, 6, False),
+              ("Voc 21,8 V (< 26 V)", -25, 64, 6, False))
     a4 = f.el("ina219_adafruit", "A4", 330, yl, ("A4", -100, -42, 8, True),
               ("production du panneau", -64, 52, 6, False))
-    a6 = f.el("regulateur", "A6", 560, yl + 20, ("A6", -70, -58, 8, True),
-              ("à côté de la batterie", -60, 46, 6, False))
-    f2 = f.el("fusible", "F2", 695, yl, ("F2", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
-              ("en ligne, près", -26, 8, 6, False), ("de la batterie", -26, 16, 6, False))
-    jb = f.auto("jonction", 740, yl)
-    g1 = f.el("batterie", "G1", 740, yl + 45, ("G1", 14, 0, 8, True),
-              ("LiFePO4 4S 12,8 V", 14, 12, 6, False), ("ou bloc secteur 12 V 3 A", 14, 21, 6, False))
-    f1 = f.el("fusible", "F1", 830, yl, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
+    a6 = f.el("regulateur", "A6", 580, yl + 20, ("A6", -80, -62, 8, True))
+    f2 = f.el("fusible", "F2", 705, 1290, ("F2", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
               ("en ligne, à moins de", -26, 8, 6, False), ("10 cm de la batterie", -26, 16, 6, False))
-    s1 = f.el("interrupteur", "S1", 920, yl, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),
+    g1 = f.el("batterie", "G1", 790, 1320, ("G1", 14, -26, 8, True),
+              ("batterie plomb AGM 12 V 7 Ah", 14, -14, 6, False), ("(pas de LiFePO4 avec A6)", 14, -5, 6, False))
+    f1 = f.el("fusible", "F1", 740, yl, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
+              ("en ligne, près de", -26, 8, 6, False), ("la sortie LOAD", -26, 16, 6, False))
+    s1 = f.el("interrupteur", "S1", 840, yl, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),
               ("sur le boîtier", -26, 16, 6, False))
-    a5 = f.el("ina219_sen0291", "A5", 1060, yl, ("A5", 95, -42, 8, True),
+    a5 = f.el("ina219_sen0291", "A5", 1000, yl, ("A5", 95, -42, 8, True),
               ("consommation du tracker", -64, 52, 6, False))
     f.fil(pv, "+", a4, "VIN+", num="PV+", pot="12V", cat="pv")
-    f.fil(pv, "-", a6, "PV-", via=[("x", 200), ("y", 1275), ("x", 450)], num="PV-", cat="pv")
+    f.fil(pv, "-", a6, "PV-", via=[("x", 200), ("y", 1275), ("x", 460)], num="PV-", cat="pv")
     f.fil(a4, "VIN-", a6, "PV+", pot="12V", cat="reg")
     f.fil(a6, "BAT+", f2, "1", pot="12V", cat="bat")
-    f.fil(a6, "BAT-", f.auto(M, 670, yl + 65), "1", via=[("x", 670)], pot="0V", cat="bat")
-    f.fil(f2, "2", jb, "w", pot="12V", cat="bat")
-    f.fil(jb, "s", g1, "+", pot="12V", cat="bat")
-    f.fil(g1, "-", f.auto(M, 740, yl + 95), "1", pot="0V", cat="bat")
-    f.fil(jb, "e", f1, "1", pot="12V", cat="bat")
+    f.fil(f2, "2", g1, "+", pot="12V", cat="bat")
+    f.fil(a6, "BAT-", g1, "-", via=[("y", 1385), ("x", 790)], num="BAT-", cat="bat")
+    f.fil(a6, "LOAD+", f1, "1", num="LOAD+", pot="12V", cat="bat")
+    f.fil(a6, "LOAD-", f.auto(M, 700, 1250), "1", via=[("x", 700)], pot="0V", cat="bat")
+    f.texte(712, 1222, "0 V du boîtier\n= LOAD- seulement", 6)
     f.fil(f1, "2", s1, "1", pot="12V", cat="bat")
     f.fil(s1, "2", a5, "VIN+", pot="12V", cat="bat")
-    f.fil(a5, "VIN-", f.auto(P12, 1190, 1130), "1", via=[("x", 1190)], num="vers X1", pot="12V", cat="bat")
+    f.fil(a5, "VIN-", f.auto(P12, 1130, 1130), "1", via=[("x", 1130)], num="vers X1", pot="12V", cat="bat")
     for a, x in ((a4, a4.p("VCC")[0]), (a5, a5.p("VCC")[0])):
         f.fil(f.auto(P33, x, 1085), "1", a, "VCC", pot="3V3", cat="i2c")
         f.fil(a, "GND", f.auto(M, a.p("GND")[0], yl + 85), "1", pot="0V", cat="i2c")
@@ -753,19 +758,25 @@ def folio_schema():
     f.fil(jsb, "e", a5, "SDA", via=[("x", a5.p("SDA")[0])], cat="i2c")
     f.fil(jscb, "w", a4, "SCL", via=[("x", a4.p("SCL")[0])], cat="i2c")
     f.fil(jscb, "e", a5, "SCL", via=[("x", a5.p("SCL")[0])], cat="i2c")
-    f.texte(1250, 1064,
+    f.texte(1210, 1064,
             "A4 mesure ce que produit le panneau, A5 ce que consomme le tracker.\n"
             "Trois modules sur le même bus I2C (GPIO 3 et 4), adresses différentes :\n"
             "  A2 ADS1115 = 0x48 ; A4 INA219B = 0x40 (A0, A1 ouverts) ;\n"
             "  A5 SEN0291 = 0x45 (micro-interrupteurs A0 = 1 et A1 = 1).\n"
-            "A4 et A5 sont alimentés en 3,3 V : leurs tirages I2C restent à 3,3 V.\n"
-            "Le - du panneau va au PV- de A6 sans toucher le 0 V du boîtier : le\n"
-            "montage convient à tout régulateur. A4 lit la tension du panneau si\n"
-            "A6 est à masse négative commune, celle de la batterie sinon.\n"
-            "Tension à vide du panneau (Voc, sur son étiquette) < 26 V, limite de A4.\n"
-            "En intérieur sur le bloc secteur : pas de régulateur, A4 lit 0.\n"
-            "Le panneau, le régulateur et la batterie se branchent sur X7 et X1 ;\n"
-            "A4 et A5 sont dans le boîtier, à côté de la plaque (câbles I2C sur J1).", 7)
+            "A4 et A5 sont alimentés en 3,3 V : leurs tirages I2C restent à 3,3 V.\n\n"
+            "A6 (Velleman SOL10UC3) charge une batterie au plomb, gel ou EFB : pas de\n"
+            "LiFePO4. Le tracker se branche sur sa sortie LOAD, coupée quand la\n"
+            "batterie est trop basse : le 0 V du boîtier vient de LOAD- seulement.\n"
+            "Le - du panneau (PV-) et celui de la batterie (BAT-) ne touchent pas le\n"
+            "0 V du boîtier : le montage convient que A6 coupe le - ou le +.\n"
+            "Brancher G1 en premier (A6 reconnaît 12 V), puis le panneau, puis LOAD.\n\n"
+            "Régulateur PWM : le panneau travaille à la tension de la batterie\n"
+            "(≈ 13 V au lieu de 17,6 V) ; A4 mesure environ 8 W en plein soleil.\n"
+            "Voc du panneau 21,8 V : sous les 26 V de A4 et les 32 V de A6.\n\n"
+            "En intérieur : un bloc secteur 12 V 3 A remplace A6 et G1, sur F1 ;\n"
+            "A4 lit alors 0 (panneau sans charge). Ne jamais brancher A6 sur un\n"
+            "bloc secteur. Panneau sur X7, LOAD sur F1, S1, A5 et X1 ;\n"
+            "A4 et A5 dans le boîtier, à côté de la plaque (câbles I2C sur J1).", 7)
 
     # ---- réglages -------------------------------------------------------------------------------
     f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
@@ -850,10 +861,10 @@ def folio_brochage():
         ("Capteur solaire", "X6", "5 × AWG 26 blindé", "+3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD"),
         ("Panneau PV1", "X7-1, X7-2", "2 × AWG 20 souple", "PV+ (vers A4 VIN+), PV- (relié à X7-4 seulement)"),
         ("Régulateur de charge A6", "X7-3, X7-4", "2 × AWG 20 souple", "PV+ (depuis A4 VIN-), PV-"),
-        ("Batterie G1, par F1 et S1", "A5, X1", "2 × AWG 18 souple", "+ : S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : X1-"),
-        ("Régulateur -> batterie", "-", "2 × AWG 18 souple", "BAT+ -> F2 -> G1+, BAT- -> G1- (hors du boîtier)"),
+        ("LOAD de A6 (ou bloc 12 V)", "A5, X1", "2 × AWG 18 souple", "+ : LOAD+ -> F1 -> S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : LOAD- -> X1-"),
+        ("Régulateur -> batterie", "-", "2 × AWG 18 souple", "BAT+ -> F2 -> G1+, BAT- -> G1- (hors du boîtier, sans 0 V)"),
         ("Wattmètres A4 et A5", "J1", "4 fils chacun", "+3,3 V, 0 V, SDA, SCL (câbles STEMMA QT et Gravity)")],
-        (25, 10, 17, 52)), 8, mono=True)
+        (25, 10, 17, 62)), 8, mono=True)
     f.texte(60, 712, "Les câbles de la tête (moteurs, capteurs, panneau) passent par le passe-câble du socle ; laisser une\n"
                      "boucle de câble près de l'axe d'élévation.", 8)
     f.texte(60, 762, "Données envoyées en LoRa : trame de 38 octets", 10, True)
@@ -892,9 +903,9 @@ def folio_cablage():
     f.texte(60, 46, "Section de chaque fil", 11, True)
     f.texte(60, 84, tableau([
         ("Liaison", "De -> vers", "Courant", "Longueur", "Section", "Fil à utiliser"),
-        ("Batterie ou bloc 12 V, +", "G1+ -> F1 -> S1 -> A5 -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²",
-         "souple, rouge ; F1 à moins de 10 cm de G1"),
-        ("Batterie ou bloc 12 V, 0 V", "G1- -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²", "souple, noir"),
+        ("12 V du tracker, +", "A6 LOAD+ (ou bloc) -> F1 -> S1 -> A5 -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²",
+         "souple, rouge ; F1 près de la sortie LOAD"),
+        ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²", "souple, noir"),
         ("12 V sur la plaque", "X1 -> VM de U2 et U3, C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
         ("0 V de puissance", "X1 -> U2, U3 (GND), C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "noir"),
         ("5 V", "U1 OUT+ -> D1 -> A1 5V", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²", "orange ; 0 V de U1 et de A1 : noir"),
@@ -927,16 +938,17 @@ def folio_cablage():
          "souple ; F2 à moins de 10 cm de G1"),
         ("Antenne LoRa", "A1 IPEX -> W1", "radio", "10 cm", "coaxial 50 Ω", "IPEX vers SMA, 1,13 mm ou RG178"),
         ("Module GNSS", "A1 -> A3", "-", "fourni", "-", "câble fourni avec le module")],
-        (26, 35, 7, 8, 16, 48)), 9, mono=True)
+        (26, 42, 7, 8, 16, 42)), 9, mono=True)
     f.texte(60, 444, "Pourquoi ces sections", 11, True)
     f.texte(60, 470,
             "* Le courant fixe le minimum, la chute de tension le confirme. Résistance du cuivre : AWG 18 = 0,021 Ω/m,\n"
             "  AWG 20 = 0,033 Ω/m, AWG 22 = 0,053 Ω/m, AWG 24 = 0,084 Ω/m, AWG 26 = 0,134 Ω/m.\n"
             "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). En AWG 18 sur 2 × 1 m, la chute\n"
-            "  n'est que de 0,06 V. Le fil entre la batterie et F1 n'est pas protégé par le fusible : il reste court (< 10 cm).\n"
-            "  De même pour F2, sur le fil du régulateur.\n"
-            "* Panneau : 0,6 A au plus (courant de court-circuit d'un panneau de 10 W). En AWG 20 sur 2 × 2 m, la chute est\n"
-            "  de 0,08 V. Le câble suit ceux des moteurs dans la boucle : souple, multibrin.\n"
+            "  n'est que de 0,06 V. Le fil entre la batterie et F2 n'est protégé par rien : il reste court (< 10 cm). F1, sur\n"
+            "  la sortie LOAD du régulateur (ou du bloc secteur), protège le câble qui va au boîtier.\n"
+            "* Panneau (Velleman SOL10P) : 0,61 A au point de puissance maximale, un peu plus en court-circuit. En AWG 20 sur\n"
+            "  2 × 2 m, la chute est de 0,08 V. Le câble suit ceux des moteurs dans la boucle : souple, multibrin, soudé sur\n"
+            "  les cosses de la boîte de jonction du panneau.\n"
             "* Moteurs : 1,0 A au plus par bobine. En AWG 22 sur 2 × 1,5 m, la boucle fait 0,16 Ω contre plusieurs ohms\n"
             "  pour la bobine : le driver régule le courant, le moteur ne perd rien. Torsader A+ avec A-, et B+ avec B- :\n"
             "  moins de parasites rayonnés vers les capteurs.\n"

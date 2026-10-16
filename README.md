@@ -259,8 +259,12 @@ Le câblage détaillé (broches, réglages, bibliothèques) est celui de la dém
 
 ## 2. Panneau photovoltaïque
 
+* **Velleman SOL10P** (Gotronic, réf. 27128) : silicium polycristallin, **10 W** ; **17,6 V
+  et 0,61 A** au point de puissance maximale, **21,8 V à vide** (Voc). La fiche compte 36
+  cellules (4 × 9) ; on en voit 72 (9 × 8) sur la face avant.
 * **356 × 253 × 30 mm** : cadre aluminium en C (rebord avant et aile arrière de 12 mm),
-  laminé verre 3,2 mm + EVA + face arrière, 72 cellules (9 × 8), boîte de jonction au dos.
+  laminé verre 3,2 mm + EVA + face arrière, boîte de jonction au dos, sortie sur cosses à
+  souder.
 * Monté en **format paysage** : l'axe d'élévation est parallèle au côté de 356 mm.
 * **Masse : 1,16 kg (pesée)**. Le modèle en tient compte (`P["pan_masse"]` dans
   `scripts/generate_tracker.py`) : couples, stabilité et angle des jambes sont calculés avec.
@@ -270,9 +274,10 @@ Le câblage détaillé (broches, réglages, bibliothèques) est celui de la dém
   extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
 * **Capteur solaire** sur le petit côté du pivot libre (§ 3) : percer 2 trous Ø3,4 dans ce
   petit côté, à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre.
-* **Électricité** : son câble descend par la boucle de câble jusqu'au bornier X7 du boîtier,
-  où le wattmètre A4 mesure ce qu'il produit (§ 16). Lire sa tension à vide (Voc) sur son
-  étiquette : elle doit rester sous 26 V.
+* **Électricité** : un câble souple 2 × AWG 20, soudé sur les cosses de la boîte de jonction,
+  descend par la boucle de câble jusqu'au bornier X7 du boîtier. Le wattmètre A4 y mesure ce
+  que produit le panneau, puis le courant va au régulateur de charge (§ 16). Ses 21,8 V à
+  vide restent sous les 26 V que supporte A4.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
   passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
@@ -484,8 +489,8 @@ Le trépied pèse 4,3 kg.
 | Hauteur de l'axe d'élévation | 700 mm |
 | Angle des jambes | φ = 33,0° par rapport à la colonne (optimisé) |
 | Emprise au sol | Pieds sur Ø749 mm, Ø869 mm hors patins (≈ Ø1050 mm avec les anneaux d'ancrage) |
-| Panneau | 356 × 253 × 30 mm, 72 cellules |
-| Puissance du panneau | ≈ 10 W crête sur Terre (valeur typique de ce format, à confirmer sur sa fiche) |
+| Panneau | Velleman SOL10P, 356 × 253 × 30 mm |
+| Puissance du panneau | 10 W crête sur Terre : 17,6 V et 0,61 A au point de puissance maximale, 21,8 V à vide |
 | Débattements | Azimut ±180° (boucle de câble), élévation −2° à +92° |
 | Réductions | Azimut 60:1, élévation 50:1, vis sans fin irréversibles |
 | Moteurs | NEMA 17 de 34 mm (élévation), NEMA 11 de 45 mm (azimut), pilotés par ESP32 + TMC2209 |
@@ -927,12 +932,14 @@ Prendre le **V4 « standard »** (ESP32-S3R2), pas la variante **V4-R8**, dont l
 différent.
 
 **Alimentation.**
-* 12 V par un bloc secteur 12 V 3 A, ou une batterie LiFePO4 4S de 12,8 V, avec un
-  **fusible de 3 A** et un **interrupteur** (F1, S1). Le 12 V passe ensuite par le wattmètre
-  A5, qui mesure la consommation du tracker, avant d'arriver sur la plaque (X1).
-* **F1 est un porte-fusible en ligne, sur le fil, à moins de 10 cm de la batterie.** Le fil
-  qui le précède n'est protégé par rien, et une batterie LiFePO4 en court-circuit débite
-  des centaines d'ampères : il doit rester le plus court possible.
+* 12 V par un **bloc secteur 12 V 3 A** en intérieur. En extérieur, par la **sortie LOAD du
+  régulateur solaire** A6 (Velleman SOL10UC3), qui charge une **batterie au plomb AGM de
+  12 V** avec le panneau. Puis un **fusible de 3 A** et un **interrupteur** (F1, S1), et le
+  wattmètre A5, qui mesure la consommation du tracker, avant d'arriver sur la plaque (X1).
+* **F1 est un porte-fusible en ligne, sur le fil, près de la sortie LOAD** (ou du bloc
+  secteur). Côté batterie, c'est **F2, à moins de 10 cm de la batterie** : le fil qui le
+  précède n'est protégé par rien, et une batterie au plomb en court-circuit débite des
+  centaines d'ampères. Il doit rester le plus court possible.
 * Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et à l'abaisseur
   LM2596 (U1).
 * U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
@@ -1003,17 +1010,42 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
   * Les deux modules sont alimentés en **3,3 V** par le Heltec, par la barrette J1 (3V3, GND,
     SDA, SCL) : un câble STEMMA QT pour A4, le câble Gravity pour A5. Leurs résistances de
     tirage I²C tirent alors au 3,3 V. L'ESP32 ne supporte pas 5 V sur ses broches.
-* **Avant de brancher le panneau, lire sa tension à vide (Voc) sur son étiquette : elle doit
-  rester sous 26 V**, la limite de l'INA219. Un panneau « 12 V » de 10 W fait environ 21 V :
-  c'est bon. Un panneau « 24 V » (Voc ≈ 43 V) détruirait A4.
-* **Pour que le panneau débite, il lui faut une charge.** En extérieur, c'est un
-  **régulateur de charge solaire** (A6, réglé pour le LiFePO4) qui recharge la batterie du
-  tracker : le tracker devient autonome. Il a son propre fusible F2, à moins de 10 cm de la
-  batterie.
-  * En intérieur, sur le bloc secteur, il n'y a pas de régulateur : A4 lit 0 A. Ne jamais
-    brancher un régulateur de charge sur un bloc secteur.
-  * Quand la batterie est pleine, le régulateur coupe le panneau : A4 lit aussi 0 A, même en
-    plein soleil. Le panneau ne donne que ce que la batterie accepte.
+* **Tension du panneau.** L'INA219 supporte 26 V au plus. Le panneau SOL10P fait 21,8 V à
+  vide : c'est bon. Un panneau « 24 V » (Voc ≈ 43 V) détruirait A4.
+* **Pour que le panneau débite, il lui faut une charge.** En extérieur, c'est le
+  **régulateur de charge PWM Velleman SOL10UC3** (A6, Gotronic réf. 27118). Il recharge la
+  batterie, et le tracker se branche sur sa sortie LOAD : le tracker devient autonome.
+  * **Il ne charge que les batteries au plomb, gel ou EFB, pas les LiFePO4.** Prendre une
+    batterie au plomb AGM étanche de 12 V, 7 Ah par exemple.
+  * Sa sortie LOAD est **coupée quand la batterie est trop basse** : le régulateur protège
+    ainsi la batterie au plomb, qu'une décharge profonde abîme. Les vis sans fin tiennent le
+    panneau en place, moteurs coupés. Quand la batterie remonte, le Heltec redémarre : les
+    énergies cumulées et le numéro de message repartent de 0.
+  * **Le 0 V du boîtier vient de LOAD− seulement.** Le − du panneau va au PV− du régulateur,
+    celui de la batterie à BAT−, sans toucher le 0 V du boîtier. Certains régulateurs
+    coupent le −, d'autres le + : ainsi, le montage convient aux deux, et la coupure de
+    LOAD reste active.
+  * **Ordre de branchement : la batterie d'abord** (le régulateur reconnaît alors 12 V et
+    non 24 V), puis le panneau, puis la sortie LOAD. Débrancher dans l'ordre inverse.
+  * Le régulateur a son propre fusible, **F2, à moins de 10 cm de la batterie**. Son port
+    USB (5 V, 1,2 A) n'est pas utilisé.
+  * En intérieur, sur le bloc secteur, il n'y a pas de régulateur : A4 lit 0 A. **Ne jamais
+    brancher un régulateur de charge sur un bloc secteur.**
+* **Ce que lit A4.**
+  * Un régulateur PWM relie le panneau à la batterie. Le panneau travaille alors à la
+    tension de la batterie, environ 13 V, au lieu de ses 17,6 V : il donne ses 0,6 A, soit
+    environ **8 W au lieu de 10 W** en plein soleil.
+  * Quand la batterie est pleine, le régulateur hache puis coupe le courant du panneau. A4
+    lit alors moins, voire 0 A, même en plein soleil : le panneau ne donne que ce que la
+    batterie accepte. La moyenne de l'INA219 (68 ms) et le cumul toutes les 0,2 s lissent
+    ce hachage.
+* **Ordre de grandeur du bilan** (à confirmer avec A4 et A5) :
+  * le panneau produit environ 30 Wh par jour de beau temps (8 W pendant 4 heures
+    équivalentes de plein soleil) ;
+  * le tracker consomme surtout par le Heltec, en continu : quelques dixièmes de watt,
+    soit 5 à 20 Wh par jour. Les moteurs ne tournent que 1 % du temps ;
+  * une batterie AGM de 12 V et 7 Ah stocke 84 Wh. On n'en utilise que la moitié pour ne
+    pas l'abîmer : cela fait environ 2 jours sans soleil.
 * **Étalonnage.** DFRobot demande d'étalonner le courant du SEN0291 :
   1. mettre un multimètre en série (calibre 10 A) pendant un mouvement des moteurs ;
   2. diviser le courant du multimètre par celui que lit A5 ;
@@ -1096,7 +1128,7 @@ QElectroTech (« Section du conducteur »).
 
 | Liaison | Courant | Longueur | Section | Fil |
 |---|---|---|---|---|
-| Batterie ou bloc 12 V → F1 → S1 → A5 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
+| Sortie LOAD du régulateur (ou bloc 12 V) → F1 → S1 → A5 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
 | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
 | 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
 | Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |

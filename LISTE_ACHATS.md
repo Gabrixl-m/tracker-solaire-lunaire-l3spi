@@ -60,7 +60,7 @@ des arbres des vis sans fin.
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
 | **Moteur pas à pas NEMA 17, 34 mm** (Usongshine 17HS3401) | 42 × 42 × 34 mm, **0,34 N·m (34 N·cm)**, 1,0 A, axe Ø5 × 23,5 à méplat, connecteur JST PH 6 broches | 1 | `Usongshine 17HS3401 34N.cm` | Élévation. **À régler à 0,6 A** en version PETG | 10–15 € |
-| **Moteur pas à pas NEMA 11, 45 mm** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, axe Ø5 | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
+| **Moteur pas à pas NEMA 11, 45 mm, 11HS18-0674S** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, 6,8 Ω, 4 fils, axe Ø5 (18 à 20 mm selon qu'on compte ou non le centrage). Même moteur chez StepperOnline et chez Gotronic (réf. 31113) : les calculs prennent 0,095 N·m | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
 | **Driver TMC2209** | Module UART, 3,3 V logique | 2 | `TMC2209 stepper driver UART` | Un par moteur | 4–6 € |
 | **Heltec WiFi LoRa 32 V4**, version 863–870 MHz | ESP32-S3R2 + radio LoRa SX1262, écran OLED, USB-C, antenne LoRa 868 MHz fournie (IPEX). Prendre le V4 standard, **pas la variante V4-R8** (brochage différent) | 1 | `Heltec WiFi LoRa 32 V4 868MHz` | Commande des moteurs, lecture des capteurs, envoi des données en LoRa | 20–30 € |
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |

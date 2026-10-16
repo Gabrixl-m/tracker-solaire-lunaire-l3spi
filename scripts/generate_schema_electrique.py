@@ -3,7 +3,9 @@
 Écrit Electronique/Schema_Electrique.qet : un projet QElectroTech 0.9 (s'ouvre aussi dans les
 versions suivantes) avec trois folios :
   1. le schéma complet : alimentation 12 V / 5 V, Heltec WiFi LoRa 32 V4, 2 drivers TMC2209
-     et leurs moteurs, capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall ;
+     et leurs moteurs, capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall,
+     et la mesure de l'énergie : panneau, régulateur de charge, batterie et deux wattmètres INA219
+     (INA219B d'Adafruit sur le panneau, SEN0291 de DFRobot sur le 12 V du tracker) ;
   2. le brochage du Heltec V4, les câbles entre le boîtier et la tête, les données envoyées en LoRa ;
   3. le câblage : section (AWG) et type de fil de chaque liaison.
 
@@ -316,6 +318,50 @@ def faire_symboles():
     s.borne("NC", -20, -40, "n")
     s.borne("NO", 20, -40, "n")
 
+    for cle, nom, l1, l2, l3, shunt, haut in (
+            ("ina219_adafruit", "Wattmètre INA219B (Adafruit 904)", "INA219B (Adafruit 904)",
+             "shunt 0,1 Ω, ±3,2 A", "I2C 0x40 (A0, A1 ouverts)", "0,1 Ω", ("VCC", "SDA", "SCL")),
+            ("ina219_sen0291", "Wattmètre INA219 (DFRobot SEN0291)", "SEN0291 (DFRobot)",
+             "INA219, shunt 0,01 Ω, ±8 A", "I2C 0x45 (A0 = A1 = 1)", "0,01 Ω", ("SCL", "SDA", "VCC"))):
+        s = symbole(cle, nom)
+        s.rect(-70, -45, 140, 90, BLANC)
+        s.ligne(-70, 0, -20, 0)                        # shunt sur le trajet du courant
+        s.rect(-20, -5, 40, 10)
+        s.ligne(20, 0, 70, 0)
+        s.texte(-3.2 * len(shunt), -9, shunt, 6)
+        s.texte(-66, -6, "VIN+", 6)
+        s.texte(44, -6, "VIN-", 6)
+        s.texte(-64, 18, l1, 7, True)
+        s.texte(-64, 28, l2, 6)
+        s.texte(-64, 38, l3, 6)
+        s.borne("VIN+", -90, 0, "w", 20)
+        s.borne("VIN-", 90, 0, "e", 20)
+        for n, x in zip(haut, (-40, 0, 40)):
+            s.texte(x - 2 * len(n) - 1, -34, n, 6)
+            s.borne(n, x, -65, "n", 20)
+        s.texte(48, 42, "GND", 6)
+        s.borne("GND", 55, 65, "s", 20)
+
+    s = symbole("panneau_pv", "Panneau photovoltaïque")
+    s.rect(-25, -30, 50, 60, BLANC)
+    s.ligne(-25, 30, 25, -30, FIN)
+    for dx in (-14, -4):                               # rayons du Soleil
+        s.ligne(dx - 16, -46, dx - 5, -35, FIN, "simple")
+    s.texte(30, -19, "+", 8, True)
+    s.texte(30, 12, "-", 8, True)
+    s.borne("+", 45, -15, "e", 20)
+    s.borne("-", 45, 15, "e", 20)
+
+    s = symbole("regulateur", "Régulateur de charge solaire")
+    s.rect(-70, -40, 140, 80, BLANC)
+    s.texte(-40, -8, "Régulateur", 7, True)
+    s.texte(-40, 2, "de charge solaire 12 V", 6)
+    s.texte(-40, 11, "PWM ou MPPT,", 6)
+    s.texte(-40, 20, "réglé LiFePO4", 6)
+    for n, x, y, o in (("PV+", -90, -20, "w"), ("PV-", -90, 20, "w"), ("BAT+", 90, -20, "e"), ("BAT-", 90, 20, "e")):
+        s.texte(-66 if o == "w" else 64 - 4 * len(n), y + 3, n, 6)
+        s.borne(n, x, y, o, 20)
+
     s = symbole("antenne", "Antenne")
     s.ligne(0, 20, 0, -10)
     s.poly([(-10, -20), (10, -20), (0, -6)], ferme=True)
@@ -384,6 +430,9 @@ SECTIONS = {
     "log": ("AWG 24", "0,20 mm²", 1.0, "fil de câblage monobrin sur la plaque : signaux et 3,3 V"),
     "capt": ("AWG 26", "0,13 mm²", 1.0, "câble souple 2 ou 3 conducteurs, 1,5 m, vers la tête"),
     "sol": ("AWG 26", "0,13 mm²", 1.0, "câble souple blindé 6 conducteurs, 1,5 m, vers le capteur solaire"),
+    "pv": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du panneau au bornier X7 (par la boucle de câble)"),
+    "reg": ("AWG 20", "0,52 mm²", 1.8, "câble souple 2 conducteurs, du bornier X7 au régulateur de charge"),
+    "i2c": ("AWG 26", "0,13 mm²", 1.0, "câble 4 fils de J1 au module (STEMMA QT pour A4, Gravity pour A5)"),
     "ant": ("coaxial", "50 Ω", 1.0, "câble coaxial 50 Ω (1,13 mm ou RG178), IPEX vers SMA"),
     "gnss": ("fourni", "", 1.0, "câble fourni avec le module GNSS"),
 }
@@ -500,28 +549,17 @@ class Folio:
 # FOLIO 1 : SCHÉMA COMPLET
 
 def folio_schema():
-    f = Folio(1, "Schéma électrique complet", 30, 13)
+    f = Folio(1, "Schéma électrique complet", 30, 16)
     M, P12, P5, P33 = "masse", "p12", "p5", "p33"
 
-    # ---- alimentation 12 V et 5 V ----------------------------------------------------------
-    f.cadre(40, 40, 560, 600, "ALIMENTATION")
-    g1 = f.el("batterie", "G1", 100, 220, ("G1", 20, -20, 8, True),
-              ("bloc secteur 12 V 3 A", 20, -6, 6, False),
-              ("ou LiFePO4 4S 12,8 V", 20, 4, 6, False))
-    f1 = f.el("fusible", "F1", 180, 120, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
-              ("en ligne, à moins de", -26, 8, 6, False), ("10 cm de la batterie", -26, 16, 6, False))
-    s1 = f.el("interrupteur", "S1", 290, 120, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),
-              ("sur le boîtier", -26, 16, 6, False))
-    j12 = f.auto("jonction", 360, 120)
-    f.fil(g1, "+", f1, "1", via=[(100, 120)], pot="12V", cat="bat")
-    f.fil(f1, "2", s1, "1", pot="12V", cat="bat")
-    f.fil(s1, "2", j12, "w", pot="12V", cat="bat")
-    f.fil(j12, "n", f.auto(P12, 360, 70), "1", pot="12V")
-    f.fil(g1, "-", f.auto(M, 100, 290), "1", pot="0V", cat="bat")
-
+    # ---- alimentation 5 V (le 12 V vient de la bande du bas : batterie, F1, S1, wattmètre A5) ----
+    f.cadre(40, 40, 560, 600, "ALIMENTATION 5 V")
+    f.texte(60, 70, "Le +12 V arrive de la batterie G1 par le fusible F1,\n"
+                    "l'interrupteur S1 et le wattmètre A5 (bande du bas :\n"
+                    "MESURE DE L'ÉNERGIE), puis par le bornier X1.", 7)
     u1 = f.el("lm2596", "U1", 330, 330, ("U1", -50, -66, 8, True),
               ("sortie réglée à 5,3 V", -50, -54, 6, False))
-    f.fil(j12, "s", u1, "IN+", via=[(360, 220), (240, 220), (240, 340)], pot="12V")
+    f.fil(f.auto(P12, 230, 290), "1", u1, "IN+", pot="12V")
     f.fil(u1, "IN-", f.auto(M, 250, 420), "1", via=[("x", 250)], pot="0V", cat="p12")
     f.fil(u1, "OUT-", f.auto(M, 410, 420), "1", via=[("x", 410)], pot="0V", cat="p5")
     d1 = f.el("schottky", "D1", 450, 340, ("D1", -10, -26, 8, True), ("1N5819", -16, 10, 6, False))
@@ -537,6 +575,7 @@ def folio_schema():
                      "AWG 22 (0,33 mm²) : moteurs (câble 4 conducteurs) et 5 V\n"
                      "AWG 24 (0,20 mm²) : signaux et 3,3 V sur la plaque\n"
                      "AWG 26 (0,13 mm²) : capteurs de la tête (blindé pour le solaire)\n"
+                     "AWG 20 souple : câbles du panneau et du régulateur de charge\n"
                      "tirets : câble coaxial 50 Ω de l'antenne LoRa", 7)
 
     # ---- Heltec V4 ----------------------------------------------------------------------
@@ -636,8 +675,12 @@ def folio_schema():
     f.fil(ads, "GND", jg, "n", via=[("x", 710)], pot="0V")
     f.fil(ads, "ADDR", jg, "w", pot="0V")
     f.fil(jg, "s", f.auto(M, 710, 1000), "1", pot="0V")
-    f.fil(a1, "SDA", ads, "SDA", via=[("y", ads.p("SDA")[1])], num="SDA")
-    f.fil(a1, "SCL", ads, "SCL", via=[("y", ads.p("SCL")[1])], num="SCL")
+    jsda = f.auto("jonction", 760, ads.p("SDA")[1])
+    jscl = f.auto("jonction", 800, ads.p("SCL")[1])
+    f.fil(a1, "SDA", jsda, "n", num="SDA")
+    f.fil(a1, "SCL", jscl, "n", num="SCL")
+    f.fil(jsda, "w", ads, "SDA")
+    f.fil(jscl, "w", ads, "SCL")
 
     # ---- origines : fin de course d'élévation et capteur à effet Hall d'azimut -----------------
     f.cadre(830, 620, 1300, 1030, "ORIGINES DES AXES", dx=90)
@@ -665,6 +708,65 @@ def folio_schema():
     f.fil(jh, "e", r7, "2", via=[("x", 1200)])
     f.fil(f.auto(P33, 1200, 660), "1", r7, "1", pot="3V3")
 
+    # ---- mesure de l'énergie : panneau, régulateur, batterie, deux wattmètres INA219 -------------
+    f.cadre(40, 1050, 1780, 1290, "MESURE DE L'ÉNERGIE : PANNEAU, BATTERIE ET DEUX WATTMÈTRES INA219 (I2C)")
+    f.cadre(55, 1095, 205, 1282, None)
+    f.texte(61, 1099, "sur la tête rotative", 7, True)
+    yl = 1170                                          # ligne du + : panneau -> A4 -> A6 ; G1 -> F1 -> S1 -> A5
+    pv = f.el("panneau_pv", "PV1", 110, yl + 15, ("PV1", -25, 34, 8, True),
+              ("panneau ≈ 10 W crête", -25, 46, 6, False), ("tension à vide < 26 V", -25, 55, 6, False))
+    a4 = f.el("ina219_adafruit", "A4", 330, yl, ("A4", -100, -42, 8, True),
+              ("production du panneau", -64, 52, 6, False))
+    a6 = f.el("regulateur", "A6", 560, yl + 20, ("A6", -70, -58, 8, True),
+              ("à côté de la batterie", -60, 46, 6, False))
+    f2 = f.el("fusible", "F2", 695, yl, ("F2", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
+              ("en ligne, près", -26, 8, 6, False), ("de la batterie", -26, 16, 6, False))
+    jb = f.auto("jonction", 740, yl)
+    g1 = f.el("batterie", "G1", 740, yl + 45, ("G1", 14, 0, 8, True),
+              ("LiFePO4 4S 12,8 V", 14, 12, 6, False), ("ou bloc secteur 12 V 3 A", 14, 21, 6, False))
+    f1 = f.el("fusible", "F1", 830, yl, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
+              ("en ligne, à moins de", -26, 8, 6, False), ("10 cm de la batterie", -26, 16, 6, False))
+    s1 = f.el("interrupteur", "S1", 920, yl, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),
+              ("sur le boîtier", -26, 16, 6, False))
+    a5 = f.el("ina219_sen0291", "A5", 1060, yl, ("A5", 95, -42, 8, True),
+              ("consommation du tracker", -64, 52, 6, False))
+    f.fil(pv, "+", a4, "VIN+", num="PV+", pot="12V", cat="pv")
+    f.fil(pv, "-", a6, "PV-", via=[("x", 200), ("y", 1275), ("x", 450)], num="PV-", cat="pv")
+    f.fil(a4, "VIN-", a6, "PV+", pot="12V", cat="reg")
+    f.fil(a6, "BAT+", f2, "1", pot="12V", cat="bat")
+    f.fil(a6, "BAT-", f.auto(M, 670, yl + 65), "1", via=[("x", 670)], pot="0V", cat="bat")
+    f.fil(f2, "2", jb, "w", pot="12V", cat="bat")
+    f.fil(jb, "s", g1, "+", pot="12V", cat="bat")
+    f.fil(g1, "-", f.auto(M, 740, yl + 95), "1", pot="0V", cat="bat")
+    f.fil(jb, "e", f1, "1", pot="12V", cat="bat")
+    f.fil(f1, "2", s1, "1", pot="12V", cat="bat")
+    f.fil(s1, "2", a5, "VIN+", pot="12V", cat="bat")
+    f.fil(a5, "VIN-", f.auto(P12, 1190, 1130), "1", via=[("x", 1190)], num="vers X1", pot="12V", cat="bat")
+    for a, x in ((a4, a4.p("VCC")[0]), (a5, a5.p("VCC")[0])):
+        f.fil(f.auto(P33, x, 1085), "1", a, "VCC", pot="3V3", cat="i2c")
+        f.fil(a, "GND", f.auto(M, a.p("GND")[0], yl + 85), "1", pot="0V", cat="i2c")
+    jsb = f.auto("jonction", 760, 1070)
+    jscb = f.auto("jonction", 800, 1085)
+    f.fil(jsda, "s", jsb, "n")
+    f.fil(jscl, "s", jscb, "n")
+    f.fil(jsb, "w", a4, "SDA", via=[("x", a4.p("SDA")[0])], cat="i2c")
+    f.fil(jsb, "e", a5, "SDA", via=[("x", a5.p("SDA")[0])], cat="i2c")
+    f.fil(jscb, "w", a4, "SCL", via=[("x", a4.p("SCL")[0])], cat="i2c")
+    f.fil(jscb, "e", a5, "SCL", via=[("x", a5.p("SCL")[0])], cat="i2c")
+    f.texte(1250, 1064,
+            "A4 mesure ce que produit le panneau, A5 ce que consomme le tracker.\n"
+            "Trois modules sur le même bus I2C (GPIO 3 et 4), adresses différentes :\n"
+            "  A2 ADS1115 = 0x48 ; A4 INA219B = 0x40 (A0, A1 ouverts) ;\n"
+            "  A5 SEN0291 = 0x45 (micro-interrupteurs A0 = 1 et A1 = 1).\n"
+            "A4 et A5 sont alimentés en 3,3 V : leurs tirages I2C restent à 3,3 V.\n"
+            "Le - du panneau va au PV- de A6 sans toucher le 0 V du boîtier : le\n"
+            "montage convient à tout régulateur. A4 lit la tension du panneau si\n"
+            "A6 est à masse négative commune, celle de la batterie sinon.\n"
+            "Tension à vide du panneau (Voc, sur son étiquette) < 26 V, limite de A4.\n"
+            "En intérieur sur le bloc secteur : pas de régulateur, A4 lit 0.\n"
+            "Le panneau, le régulateur et la batterie se branchent sur X7 et X1 ;\n"
+            "A4 et A5 sont dans le boîtier, à côté de la plaque (câbles I2C sur J1).", 7)
+
     # ---- réglages -------------------------------------------------------------------------------
     f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
     f.texte(1330, 644,
@@ -690,49 +792,95 @@ def folio_schema():
 # ---------------------------------------------------------------------------
 # FOLIO 2 : BROCHAGE ET LIAISONS
 
+def tableau(lignes, largeurs):
+    """Tableau en texte à chasse fixe : colonnes alignées, ligne de tirets sous l'en-tête."""
+    def ligne(cols):
+        return "  ".join(c.ljust(l) for c, l in zip(cols, largeurs)).rstrip()
+    sortie = [ligne(lignes[0]), ligne(["-" * l for l in largeurs])]
+    return "\n".join(sortie + [ligne(c) for c in lignes[1:]])
+
+
 def folio_brochage():
-    f = Folio(2, "Brochage du Heltec V4 et liaisons", 30, 13)
+    f = Folio(2, "Brochage du Heltec V4 et liaisons", 30, 16)
     f.texte(60, 50, "Brochage du Heltec WiFi LoRa 32 V4 utilisé par le tracker", 11, True)
-    f.texte(60, 90,
-            "Broche   Connecteur  Sens     Signal    Vers                    Remarque\n"
-            "------   ----------  -------  --------  ----------------------  ---------------------------------------------\n"
-            "5V       J2-2        entrée   +5 V      D1 (abaisseur U1)       alimentation de la carte, environ 5,0 V\n"
-            "GND      J2-1        -        0 V       masse commune\n"
-            "3V3      J3-2, J3-3  sortie   +3,3 V    U2, U3, A2, D2 à D5     VIO des drivers, ADS1115, photodiodes, tirages\n"
-            "GPIO47   J2-13       sortie   STEP_EL   U2 STEP                 impulsions de pas, élévation\n"
-            "GPIO43   J2-6        sortie   DIR_EL    U2 DIR                  sens, élévation (TX0 : bouge au démarrage, sans effet : EN = 1)\n"
-            "GPIO48   J2-14       sortie   STEP_AZ   U3 STEP                 impulsions de pas, azimut\n"
-            "GPIO45   J3-6        sortie   DIR_AZ    U3 DIR                  sens, azimut (broche de démarrage : laissée basse par le driver)\n"
-            "GPIO33   J2-12       sortie   EN        U2 EN, U3 EN            0 = moteurs alimentés ; tirage R5 au 3,3 V\n"
-            "GPIO3    J3-14       I2C      SDA       ADS1115 SDA             Wire.begin(3, 4)\n"
-            "GPIO4    J3-15       I2C      SCL       ADS1115 SCL\n"
-            "GPIO44   J2-5        entrée   FDC_EL    S2 NC (commun à 0 V)    1 = butée atteinte OU fil coupé ; tirage R6\n"
-            "GPIO6    J3-17       entrée   HALL_AZ   B1 OUT                  0 = aimant devant le capteur ; tirage R7\n"
-            "IPEX     -           radio    ANT       W1                      antenne LoRa 868 MHz\n"
-            "GNSS     SH1.25 8 br -        -         A3 (facultatif)         GPIO 34, 38 à 42 réservés au GNSS", 8, mono=True)
-    f.texte(60, 330, "Broches de la carte à ne pas utiliser", 10, True)
-    f.texte(60, 356,
+    f.texte(60, 84, tableau([
+        ("Broche", "Connecteur", "Sens", "Signal", "Vers", "Remarque"),
+        ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 5,0 V"),
+        ("GND", "J2-1", "-", "0 V", "masse commune", ""),
+        ("3V3", "J3-2, J3-3", "sortie", "+3,3 V", "U2 U3 A2 A4 A5 D2 à D5",
+         "VIO des drivers, ADS1115, wattmètres, photodiodes, tirages"),
+        ("GPIO47", "J2-13", "sortie", "STEP_EL", "U2 STEP", "impulsions de pas, élévation"),
+        ("GPIO43", "J2-6", "sortie", "DIR_EL", "U2 DIR",
+         "sens, élévation (TX0 : bouge au démarrage, sans effet : EN = 1)"),
+        ("GPIO48", "J2-14", "sortie", "STEP_AZ", "U3 STEP", "impulsions de pas, azimut"),
+        ("GPIO45", "J3-6", "sortie", "DIR_AZ", "U3 DIR",
+         "sens, azimut (broche de démarrage : laissée basse par le driver)"),
+        ("GPIO33", "J2-12", "sortie", "EN", "U2 EN, U3 EN", "0 = moteurs alimentés ; tirage R5 au 3,3 V"),
+        ("GPIO3", "J3-14", "I2C", "SDA", "A2, A4, A5 : SDA", "Wire.begin(3, 4) ; bus I2C partagé par trois modules"),
+        ("GPIO4", "J3-15", "I2C", "SCL", "A2, A4, A5 : SCL", ""),
+        ("GPIO44", "J2-5", "entrée", "FDC_EL", "S2 NC (commun à 0 V)", "1 = butée atteinte OU fil coupé ; tirage R6"),
+        ("GPIO6", "J3-17", "entrée", "HALL_AZ", "B1 OUT", "0 = aimant devant le capteur ; tirage R7"),
+        ("IPEX", "-", "radio", "ANT", "W1", "antenne LoRa 868 MHz"),
+        ("GNSS", "SH1.25 8 br", "-", "-", "A3 (facultatif)", "GPIO 34, 38 à 42 réservés au GNSS")],
+        (6, 11, 6, 8, 22, 62)), 8, mono=True)
+    f.texte(60, 300, "Broches de la carte à ne pas utiliser", 10, True)
+    f.texte(60, 324,
             "GPIO0 bouton PRG (démarrage) - GPIO1 mesure de la batterie LiPo - GPIO2, 5, 7, 46 ampli radio (FEM)\n"
             "GPIO8 à 14 radio SX1262 - GPIO17, 18, 21 écran OLED - GPIO19, 20 USB - GPIO26 mémoire PSRAM\n"
             "GPIO34, 38 à 42 module GNSS - GPIO35 LED - GPIO36 Vext - GPIO37 commande de la mesure batterie\n"
             "Il ne reste donc que 9 broches libres sur les connecteurs : toutes sont utilisées ci-dessus. C'est pourquoi\n"
-            "les TMC2209 sont réglés par leur potentiomètre (pas d'UART) et les photodiodes lues par un ADS1115 (I2C).", 8)
-    f.texte(60, 470, "Liaisons entre le boîtier (au pied du trépied) et la tête", 10, True)
-    f.texte(60, 496,
-            "Câble                    Bornier  Conducteurs       Signaux\n"
-            "-----------------------  -------  ----------------  --------------------------------------------\n"
-            "Moteur d'élévation M1    X2       4 × AWG 22        A+ / A- (bobine A), B+ / B- (bobine B)\n"
-            "Moteur d'azimut M2       X3       4 × AWG 22        noir A+, vert A-, rouge B+, bleu B-\n"
-            "Fin de course S2         X4       2 × AWG 26        C (0 V), NC (FDC_EL)\n"
-            "Capteur à effet Hall B1  X5       3 × AWG 26        +5 V, 0 V, OUT (HALL_AZ)\n"
-            "Capteur solaire          X6       5 × AWG 26 blindé +3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD\n"
-            "Laisser une boucle de câble près de l'axe d'élévation ; tout passe par le passe-câble du socle.", 8, mono=True)
-    f.texte(60, 650, "Données envoyées en LoRa (exemple)", 10, True)
-    f.texte(60, 676,
-            "angles d'azimut et d'élévation (consigne et position), 4 signaux du capteur solaire,\n"
-            "erreur de pointage, état des origines, heure et position GNSS si le module A3 est branché.\n"
-            "Ne pas dépasser le temps d'émission autorisé dans la bande 868 MHz (1 % en général) :\n"
-            "un message toutes les 1 à 5 minutes suffit.", 8)
+            "les TMC2209 sont réglés par leur potentiomètre (pas d'UART), et les photodiodes et les wattmètres sont lus\n"
+            "par l'I2C : trois modules sur les deux mêmes broches, chacun à son adresse.", 8)
+    f.texte(60, 420, "Bus I2C (GPIO 3 et 4, 100 kHz) : trois modules", 10, True)
+    f.texte(60, 444, tableau([
+        ("Repère", "Module", "Adresse", "Réglage de l'adresse", "Mesure"),
+        ("A2", "ADS1115", "0x48", "ADDR à 0 V", "les 4 photodiodes du capteur solaire"),
+        ("A4", "INA219B (Adafruit 904)", "0x40", "A0 et A1 ouverts (d'origine)",
+         "panneau : tension et courant (shunt 0,1 Ω, ±3,2 A)"),
+        ("A5", "SEN0291 (DFRobot, INA219)", "0x45", "micro-interrupteurs A0 = 1 et A1 = 1",
+         "12 V du tracker : tension et courant (shunt 0,01 Ω, ±8 A)")],
+        (6, 25, 7, 36, 56)), 8, mono=True)
+    f.texte(60, 520, "Câbles du boîtier (au pied du trépied)", 10, True)
+    f.texte(60, 544, tableau([
+        ("Câble", "Bornier", "Conducteurs", "Signaux"),
+        ("Moteur d'élévation M1", "X2", "4 × AWG 22", "A+ / A- (bobine A), B+ / B- (bobine B)"),
+        ("Moteur d'azimut M2", "X3", "4 × AWG 22", "noir A+, vert A-, rouge B+, bleu B-"),
+        ("Fin de course S2", "X4", "2 × AWG 26", "C (0 V), NC (FDC_EL)"),
+        ("Capteur à effet Hall B1", "X5", "3 × AWG 26", "+5 V, 0 V, OUT (HALL_AZ)"),
+        ("Capteur solaire", "X6", "5 × AWG 26 blindé", "+3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD"),
+        ("Panneau PV1", "X7-1, X7-2", "2 × AWG 20 souple", "PV+ (vers A4 VIN+), PV- (relié à X7-4 seulement)"),
+        ("Régulateur de charge A6", "X7-3, X7-4", "2 × AWG 20 souple", "PV+ (depuis A4 VIN-), PV-"),
+        ("Batterie G1, par F1 et S1", "A5, X1", "2 × AWG 18 souple", "+ : S1 -> A5 VIN+, A5 VIN- -> X1+ ; - : X1-"),
+        ("Régulateur -> batterie", "-", "2 × AWG 18 souple", "BAT+ -> F2 -> G1+, BAT- -> G1- (hors du boîtier)"),
+        ("Wattmètres A4 et A5", "J1", "4 fils chacun", "+3,3 V, 0 V, SDA, SCL (câbles STEMMA QT et Gravity)")],
+        (25, 10, 17, 52)), 8, mono=True)
+    f.texte(60, 712, "Les câbles de la tête (moteurs, capteurs, panneau) passent par le passe-câble du socle ; laisser une\n"
+                     "boucle de câble près de l'axe d'élévation.", 8)
+    f.texte(60, 762, "Données envoyées en LoRa : trame de 38 octets", 10, True)
+    f.texte(60, 786, tableau([
+        ("Octets", "Champ", "Type", "Unité"),
+        ("0", "version de la trame (= 1)", "uint8", ""),
+        ("1-2", "numéro du message", "uint16", "de 0 à 65535, puis repart à 0"),
+        ("3-4", "azimut : consigne", "int16", "0,01°"),
+        ("5-6", "azimut : position", "int16", "0,01°"),
+        ("7-8", "élévation : consigne", "int16", "0,01°"),
+        ("9-10", "élévation : position", "int16", "0,01°"),
+        ("11-12", "erreur de pointage", "uint16", "0,001°"),
+        ("13-20", "photodiodes HG, HD, BG, BD", "4 × int16", "valeur brute de l'ADS1115"),
+        ("21", "état", "uint8", "bits : 0 butée basse, 1 aimant Hall, 2 moteurs alimentés, 3 GNSS valide,"),
+        ("", "", "", "4 calibre intérieur de l'ADS1115, 5 A4 absent, 6 A5 absent"),
+        ("22-23", "panneau : tension (A4)", "uint16", "mV"),
+        ("24-25", "panneau : courant (A4)", "int16", "0,1 mA"),
+        ("26-27", "12 V du tracker : tension (A5)", "uint16", "mV"),
+        ("28-29", "12 V du tracker : courant (A5)", "int16", "mA"),
+        ("30-33", "énergie produite par le panneau", "uint32", "mWh, cumulée depuis la mise sous tension"),
+        ("34-37", "énergie consommée par le tracker", "uint32", "mWh, cumulée depuis la mise sous tension")],
+        (6, 32, 9, 75)), 8, mono=True)
+    f.texte(60, 1046,
+            "Octets de poids faible en premier (little-endian, l'ordre de l'ESP32). Les wattmètres sont lus toutes les 0,2 s,\n"
+            "l'énergie est cumulée entre deux messages. Ne pas dépasser le temps d'émission autorisé dans la bande 868 MHz\n"
+            "(1 % en général) : 38 octets durent environ 0,3 s en SF9, donc un message par minute ; en SF12 (2 s), un toutes\n"
+            "les 5 minutes.", 8)
     return f
 
 
@@ -740,45 +888,66 @@ def folio_brochage():
 # FOLIO 3 : CÂBLAGE ET SECTIONS DES FILS
 
 def folio_cablage():
-    f = Folio(3, "Câblage et sections des fils", 30, 13)
+    f = Folio(3, "Câblage et sections des fils", 30, 16)
     f.texte(60, 46, "Section de chaque fil", 11, True)
-    f.texte(60, 84,
-            "Liaison                      De -> vers                          Courant    Longueur  Section             Fil à utiliser\n"
-            "---------------------------  ----------------------------------  ---------  --------  ------------------  ----------------------------------------------\n"
-            "Batterie ou bloc 12 V, +     G1+ -> F1 -> S1 -> X1               1,5 A      1 m       AWG 18  0,82 mm²    souple, rouge ; F1 à moins de 10 cm de G1\n"
-            "Batterie ou bloc 12 V, 0 V   G1- -> X1                           1,5 A      1 m       AWG 18  0,82 mm²    souple, noir\n"
-            "12 V sur la plaque           X1 -> VM de U2 et U3, C1, C2, U1    1,5 A      < 15 cm   AWG 20  0,52 mm²    rouge\n"
-            "0 V de puissance             X1 -> U2, U3 (GND), C1, C2, U1      1,5 A      < 15 cm   AWG 20  0,52 mm²    noir\n"
-            "5 V                          U1 OUT+ -> D1 -> A1 5V              0,5 A      < 10 cm   AWG 22  0,33 mm²    orange ; 0 V de U1 et de A1 : noir\n"
-            "Moteur M1 (élévation)        U2 1A 1B 2A 2B -> X2 -> M1          1,0 A      1,5 m     AWG 22  0,33 mm²    câble souple 4 conducteurs\n"
-            "Moteur M2 (azimut)           U3 1A 1B 2A 2B -> X3 -> M2          0,67 A     1,5 m     AWG 22  0,33 mm²    câble souple 4 conducteurs\n"
-            "STEP, DIR, EN                A1 -> U2, U3 ; R5                   < 1 mA     < 10 cm   AWG 24  0,20 mm²    monobrin, une couleur par signal\n"
-            "3,3 V, VIO, MS1, MS2, PDN    A1 3V3 -> U2, U3, A2, R5 à R7       < 20 mA    < 10 cm   AWG 24  0,20 mm²    monobrin, jaune ; 0 V : noir\n"
-            "I2C (SDA, SCL)               A1 GPIO3, GPIO4 -> A2               < 1 mA     < 10 cm   AWG 24  0,20 mm²    monobrin\n"
-            "Filtres du capteur solaire   R1 à R4, C3 à C6 -> A2 A0 à A3      2 mA       < 5 cm    AWG 24  0,20 mm²    monobrin\n"
-            "Fin de course S2             X4 -> S2 C et NC                    0,3 mA     1,5 m     AWG 26  0,13 mm²    câble souple 2 conducteurs\n"
-            "Capteur à effet Hall B1      X5 -> B1 VCC, GND, OUT              10 mA      1,5 m     AWG 26  0,13 mm²    câble souple 3 conducteurs\n"
-            "Capteur solaire              X6 -> D2 à D5 (+3,3 V et 4 anodes)  8 mA       1,5 m     AWG 26  0,13 mm²    câble souple blindé, 6 conducteurs\n"
-            "Pattes des photodiodes       dans le boîtier du capteur          2 mA       5 cm      AWG 28  0,08 mm²    fil fin isolé (fil à wrapper)\n"
-            "Antenne LoRa                 A1 IPEX -> W1                       radio      10 cm     coaxial 50 Ω        IPEX vers SMA, 1,13 mm ou RG178\n"
-            "Module GNSS                  A1 -> A3                            -          fourni    -                   câble fourni avec le module", 9, mono=True)
-    f.texte(60, 372, "Pourquoi ces sections", 11, True)
-    f.texte(60, 398,
+    f.texte(60, 84, tableau([
+        ("Liaison", "De -> vers", "Courant", "Longueur", "Section", "Fil à utiliser"),
+        ("Batterie ou bloc 12 V, +", "G1+ -> F1 -> S1 -> A5 -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²",
+         "souple, rouge ; F1 à moins de 10 cm de G1"),
+        ("Batterie ou bloc 12 V, 0 V", "G1- -> X1", "1,5 A", "1 m", "AWG 18  0,82 mm²", "souple, noir"),
+        ("12 V sur la plaque", "X1 -> VM de U2 et U3, C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
+        ("0 V de puissance", "X1 -> U2, U3 (GND), C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "noir"),
+        ("5 V", "U1 OUT+ -> D1 -> A1 5V", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²", "orange ; 0 V de U1 et de A1 : noir"),
+        ("Moteur M1 (élévation)", "U2 1A 1B 2A 2B -> X2 -> M1", "1,0 A", "1,5 m", "AWG 22  0,33 mm²",
+         "câble souple 4 conducteurs"),
+        ("Moteur M2 (azimut)", "U3 1A 1B 2A 2B -> X3 -> M2", "0,67 A", "1,5 m", "AWG 22  0,33 mm²",
+         "câble souple 4 conducteurs"),
+        ("STEP, DIR, EN", "A1 -> U2, U3 ; R5", "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin, une couleur par signal"),
+        ("3,3 V, VIO, MS1, MS2, PDN", "A1 3V3 -> U2, U3, A2, J1, R5 à R7", "< 20 mA", "< 10 cm", "AWG 24  0,20 mm²",
+         "monobrin, jaune ; 0 V : noir"),
+        ("I2C (SDA, SCL)", "A1 GPIO3, GPIO4 -> A2, J1", "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin"),
+        ("I2C des wattmètres", "J1 -> A4, A5 (3,3 V, 0 V, SDA, SCL)", "< 2 mA", "< 20 cm", "AWG 26  0,13 mm²",
+         "câble STEMMA QT (A4) et Gravity (A5)"),
+        ("Filtres du capteur solaire", "R1 à R4, C3 à C6 -> A2 A0 à A3", "2 mA", "< 5 cm", "AWG 24  0,20 mm²", "monobrin"),
+        ("Fin de course S2", "X4 -> S2 C et NC", "0,3 mA", "1,5 m", "AWG 26  0,13 mm²", "câble souple 2 conducteurs"),
+        ("Capteur à effet Hall B1", "X5 -> B1 VCC, GND, OUT", "10 mA", "1,5 m", "AWG 26  0,13 mm²",
+         "câble souple 3 conducteurs"),
+        ("Capteur solaire", "X6 -> D2 à D5 (+3,3 V et 4 anodes)", "8 mA", "1,5 m", "AWG 26  0,13 mm²",
+         "câble souple blindé, 6 conducteurs"),
+        ("Pattes des photodiodes", "dans le boîtier du capteur", "2 mA", "5 cm", "AWG 28  0,08 mm²",
+         "fil fin isolé (fil à wrapper)"),
+        ("Panneau PV1", "PV1 -> X7-1, X7-2", "0,6 A", "2 m", "AWG 20  0,52 mm²",
+         "câble souple 2 conducteurs, par la boucle de câble"),
+        ("Wattmètre A4 (panneau)", "X7-1 -> A4 VIN+, A4 VIN- -> X7-3", "0,6 A", "< 20 cm", "AWG 20  0,52 mm²",
+         "rouge ; X7-2 relié à X7-4 seulement"),
+        ("Vers le régulateur A6", "X7-3, X7-4 -> A6 PV+, PV-", "0,6 A", "1 m", "AWG 20  0,52 mm²",
+         "câble souple 2 conducteurs"),
+        ("Wattmètre A5 (12 V)", "S1 -> A5 VIN+, A5 VIN- -> X1+", "1,5 A", "< 20 cm", "AWG 18  0,82 mm²", "souple, rouge"),
+        ("Régulateur -> batterie", "A6 BAT+ -> F2 -> G1+, BAT- -> G1-", "0,6 A", "0,5 m", "AWG 18  0,82 mm²",
+         "souple ; F2 à moins de 10 cm de G1"),
+        ("Antenne LoRa", "A1 IPEX -> W1", "radio", "10 cm", "coaxial 50 Ω", "IPEX vers SMA, 1,13 mm ou RG178"),
+        ("Module GNSS", "A1 -> A3", "-", "fourni", "-", "câble fourni avec le module")],
+        (26, 35, 7, 8, 16, 48)), 9, mono=True)
+    f.texte(60, 444, "Pourquoi ces sections", 11, True)
+    f.texte(60, 470,
             "* Le courant fixe le minimum, la chute de tension le confirme. Résistance du cuivre : AWG 18 = 0,021 Ω/m,\n"
             "  AWG 20 = 0,033 Ω/m, AWG 22 = 0,053 Ω/m, AWG 24 = 0,084 Ω/m, AWG 26 = 0,134 Ω/m.\n"
             "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). En AWG 18 sur 2 × 1 m, la chute\n"
             "  n'est que de 0,06 V. Le fil entre la batterie et F1 n'est pas protégé par le fusible : il reste court (< 10 cm).\n"
+            "  De même pour F2, sur le fil du régulateur.\n"
+            "* Panneau : 0,6 A au plus (courant de court-circuit d'un panneau de 10 W). En AWG 20 sur 2 × 2 m, la chute est\n"
+            "  de 0,08 V. Le câble suit ceux des moteurs dans la boucle : souple, multibrin.\n"
             "* Moteurs : 1,0 A au plus par bobine. En AWG 22 sur 2 × 1,5 m, la boucle fait 0,16 Ω contre plusieurs ohms\n"
             "  pour la bobine : le driver régule le courant, le moteur ne perd rien. Torsader A+ avec A-, et B+ avec B- :\n"
             "  moins de parasites rayonnés vers les capteurs.\n"
             "* Capteurs : quelques milliampères ; en AWG 26 sur 1,5 m, la chute est inférieure à 4 mV. Le câble du capteur\n"
             "  solaire est blindé (blindage relié au 0 V côté boîtier seulement) et passe à l'écart des câbles moteurs.\n"
-            "* Tout ce qui bouge avec la tête (moteurs, capteurs) est en fil multibrin souple, jamais en monobrin : il casse\n"
-            "  à force de plier. Sur la plaque, le monobrin AWG 24 se soude plus facilement.\n"
+            "* Tout ce qui bouge avec la tête (moteurs, capteurs, panneau) est en fil multibrin souple, jamais en monobrin :\n"
+            "  il casse à force de plier. Sur la plaque, le monobrin AWG 24 se soude plus facilement.\n"
             "* Dans les borniers à vis, sertir un embout de câblage : 0,75 mm² pour l'AWG 18, 0,5 mm² pour l'AWG 20 et 22,\n"
             "  0,25 mm² pour l'AWG 24 et 26 (deux fils fins dans un embout de 0,5 mm² si besoin).", 9)
-    f.texte(60, 618, "Correspondance AWG et mm²", 11, True)
-    f.texte(60, 644,
+    f.texte(60, 720, "Correspondance AWG et mm²", 11, True)
+    f.texte(60, 746,
             "AWG   Section    Diamètre du cuivre   Courant conseillé (fil isolé, en faisceau court)\n"
             "----  ---------  -------------------  -----------------------------------------------\n"
             "18    0,82 mm²   1,02 mm              5 A\n"
@@ -787,7 +956,7 @@ def folio_cablage():
             "24    0,20 mm²   0,51 mm              1 A\n"
             "26    0,13 mm²   0,40 mm              0,5 A\n"
             "28    0,08 mm²   0,32 mm              0,3 A", 9, mono=True)
-    f.texte(60, 790, "Dans QElectroTech, la section est aussi dans les propriétés de chaque fil (double-clic sur le fil :\n"
+    f.texte(60, 892, "Dans QElectroTech, la section est aussi dans les propriétés de chaque fil (double-clic sur le fil :\n"
                      "« Section du conducteur »), avec le type de fil dans « Câble ». Sur le folio 1, l'épaisseur du trait\n"
                      "suit la section, et les fils trop courts pour porter le texte gardent la section de leur liaison.", 9)
     return f
@@ -802,7 +971,7 @@ def projet(folios):
                   '<name lang="en">Imported elements</name></names><category name="tracker"><names>'
                   '<name lang="fr">Tracker solaire</name><name lang="en">Solar tracker</name></names>'
                   f'{syms}</category></category></collection>')
-    nouv = ('<newdiagrams><border cols="30" colsize="60" rows="13" rowsize="80" displaycols="true" '
+    nouv = ('<newdiagrams><border cols="30" colsize="60" rows="16" rowsize="80" displaycols="true" '
             'displayrows="true"/><inset displayAt="bottom" title="Tracker solaire lunaire" author="Gabrixl-m" '
             f'date="{date}" folio="%id/%total" filename="Schema_Electrique.qet" plant="" locmach="" '
             'indexrev="" auto_page_num="" version=""/><conductors type="multi" num="" numsize="7" '

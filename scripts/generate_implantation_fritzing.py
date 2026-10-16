@@ -2,12 +2,15 @@
 
 Écrit Electronique/Implantation_Boitier.fzz : une plaque à pastilles de 8 × 12 cm avec, à
 l'échelle, tout ce qui reste au pied du trépied (Heltec WiFi LoRa 32 V4, 2 TMC2209, ADS1115,
-abaisseur LM2596, borniers, résistances et condensateurs). Ce qui est sur la tête
-(moteurs, fin de course, capteur Hall, photodiodes) n'y est pas : on n'en voit que les borniers.
+abaisseur LM2596, borniers, résistances et condensateurs), et à côté d'elle, dans le boîtier,
+les deux wattmètres INA219 (INA219B d'Adafruit pour le panneau, SEN0291 de DFRobot pour le
+12 V du tracker). Ce qui est sur la tête (moteurs, fin de course, capteur Hall, photodiodes,
+panneau) n'y est pas : on n'en voit que les borniers.
 
-Pièces standard de Fritzing : LM2596, résistances, diode, interrupteur et plaque à pastilles. Le Heltec V4, le TMC2209, l'ADS1115 et les borniers au
-pas de 5,08 mm n'existent pas dans Fritzing (ou pas à l'échelle) : ils sont dessinés ici, à leurs
-dimensions réelles, et intégrés au fichier.
+Pièces standard de Fritzing : LM2596, résistances, diode, interrupteur et plaque à pastilles. Le Heltec V4, le TMC2209, l'ADS1115,
+les deux wattmètres, la barrette J1 et les borniers au pas de 5,08 mm n'existent pas dans
+Fritzing (ou pas à l'échelle) : ils sont dessinés ici, à leurs dimensions réelles, et intégrés
+au fichier.
 
 Ouvrir le fichier dans Fritzing (gratuit, https://fritzing.org) : vue « Platine d'essai ».
 Le câblage est celui du schéma électrique (Electronique/Schema_Electrique.qet).
@@ -203,6 +206,73 @@ def ads1115():
                  "Module ADS1115 (convertisseur 16 bits, 4 entrées, I2C), 28 x 17,5 mm.")
 
 
+def ina219_adafruit():
+    """Wattmètre INA219B d'Adafruit (904, version STEMMA QT) : 25,6 × 20,4 mm, bornier 2 points
+    (VIN+, VIN-), 6 broches au pas de 2,54 mm le long du bas, deux prises STEMMA QT."""
+    l, h = 25.6, 20.4
+    noms = ("VCC", "GND", "SCL", "SDA", "VIN-", "VIN+")
+    x0 = (l - 5 * PAS) / 2
+    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="1.5" fill="#1d1d1f" stroke="#000" stroke-width="0.2"/>']
+    d += [f'<circle cx="{f(cx)}" cy="{f(cy)}" r="1.3" fill="#fff" stroke="#c9b04a" stroke-width="0.5"/>'
+          for cx in (2.5, l - 2.5) for cy in (2.5, h - 2.5)]
+    d += ['<rect x="5.2" y="1.2" width="8" height="7" rx="0.4" fill="#2e9d55" stroke="#1b5e33" stroke-width="0.2"/>',
+          '<circle cx="7.2" cy="4.4" r="1.2" fill="#c0c4c8"/><circle cx="11.2" cy="4.4" r="1.2" fill="#c0c4c8"/>',
+          txt(9.2, 9.6, "VIN+  VIN-", 0.8, "#fff", "middle"),
+          '<rect x="14.6" y="2.0" width="5.2" height="2.6" fill="#e8e8e8"/>', txt(17.2, 3.8, "R100", 0.9, "#222", "middle"),
+          '<rect x="14.6" y="6.0" width="5.4" height="3.4" rx="0.2" fill="#2b2b2b" stroke="#888" stroke-width="0.15"/>',
+          '<rect x="0.6" y="11.0" width="3.0" height="4.4" fill="#f0eadc" stroke="#999" stroke-width="0.15"/>',
+          '<rect x="{0}" y="11.0" width="3.0" height="4.4" fill="#f0eadc" stroke="#999" stroke-width="0.15"/>'.format(f(l - 3.6)),
+          txt(l / 2, 12.6, "INA219B  0x40", 1.25, "#fff", "middle", True),
+          txt(l / 2, 14.4, "panneau", 0.95, "#cfcfcf", "middle")]
+    broches = []
+    for i, n in enumerate(noms):
+        x = x0 + i * PAS
+        d.append(txt(x, h - 2.7, n, 0.7, "#fff", "middle"))
+        broches.append((n, x, h - 1.27))
+    return Piece("INA219_Adafruit", "Wattmètre INA219B Adafruit 904", l, h, broches, "".join(d),
+                 "Wattmètre INA219B d'Adafruit (904), shunt 0,1 ohm, ±3,2 A, I2C 0x40, 25,6 x 20,4 mm.")
+
+
+def sen0291():
+    """Wattmètre SEN0291 de DFRobot (INA219, shunt 0,01 Ω) : 30 × 22 mm, bornier 3 points sur le
+    côté gauche (IN+, IN-, GND), prise Gravity I2C, 4 pastilles VCC, GND, SCL, SDA."""
+    l, h = 30.0, 22.0
+    noms = ("VCC", "GND", "SCL", "SDA")
+    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="1.5" fill="#1d1d1f" stroke="#000" stroke-width="0.2"/>',
+         '<rect x="0.6" y="2.4" width="7.4" height="15.4" rx="0.4" fill="#2e9d55" stroke="#1b5e33" stroke-width="0.2"/>']
+    d += [f'<circle cx="4.3" cy="{f(5.1 + 5.0 * k)}" r="1.5" fill="#c0c4c8"/>' for k in range(3)]
+    d += [txt(4.3, 19.6, "IN+ IN- GND", 0.75, "#fff", "middle"),
+          '<circle cx="15.5" cy="3.4" r="1.6" fill="#fff" stroke="#c9b04a" stroke-width="0.7"/>',
+          '<circle cx="15.5" cy="19.2" r="1.6" fill="#fff" stroke="#c9b04a" stroke-width="0.7"/>',
+          '<rect x="22.0" y="1.0" width="7.4" height="6.0" fill="#f0eadc" stroke="#999" stroke-width="0.15"/>',
+          txt(25.7, 8.4, "Gravity I2C", 0.75, "#fff", "middle"),
+          '<rect x="9.6" y="7.0" width="6.0" height="2.6" fill="#e8e8e8"/>', txt(12.6, 8.8, "R010", 0.9, "#222", "middle"),
+          '<rect x="17.2" y="9.6" width="4.4" height="2.4" fill="#c62828"/>', txt(19.4, 13.3, "A0 A1", 0.7, "#fff", "middle"),
+          txt(14.5, 14.2, "SEN0291  0x45", 1.2, "#fff", "middle", True),
+          txt(14.5, 15.8, "12 V du tracker", 0.9, "#cfcfcf", "middle")]
+    broches = []
+    for i, n in enumerate(noms):
+        x = 21.4 + i * PAS - 1.27 * 3 + 2.54
+        d.append(txt(x, h - 2.6, n, 0.65, "#fff", "middle"))
+        broches.append((n, x, h - 1.1))
+    return Piece("SEN0291", "Wattmètre SEN0291 DFRobot", l, h, broches, "".join(d),
+                 "Wattmètre SEN0291 de DFRobot (INA219, shunt 0,01 ohm, ±8 A, I2C 0x45), 30 x 22 mm.")
+
+
+def barrette_2x4():
+    """Barrette mâle 2 × 4 broches (J1) : une colonne par wattmètre, 3V3, GND, SDA, SCL."""
+    l, h = 2 * PAS, 4 * PAS
+    d = [f'<rect x="0" y="0" width="{f(l)}" height="{f(h)}" fill="#202124" stroke="#000" stroke-width="0.15"/>']
+    broches = []
+    for j, mod in enumerate(("A5", "A4")):
+        for i, n in enumerate(("3V3", "GND", "SDA", "SCL")):
+            x, y = 1.27 + j * PAS, 1.27 + i * PAS
+            d.append(f'<rect x="{f(x - 0.32)}" y="{f(y - 0.32)}" width="0.64" height="0.64" fill="#d4af37"/>')
+            broches.append((f"{mod} {n}", x, y))
+    return Piece("Barrette_2x4", "Barrette mâle 2 x 4 (bus I2C des wattmètres)", l, h, broches, "".join(d),
+                 "Barrette mâle 2 x 4 au pas de 2,54 mm : 3,3 V, 0 V, SDA, SCL pour A5 et pour A4.", broche=0.6)
+
+
 def bornier(n):
     """Bornier à vis au pas de 5,08 mm (type KF301), n pôles, vu de dessus, entrées des fils en haut."""
     l, h = n * 5.08, 7.6
@@ -267,18 +337,19 @@ def regle(longueur):
     return Piece(f"Regle_{longueur}", f"Règle {longueur} mm", longueur, 7, [], "".join(d), "Règle graduée.")
 
 
-def boitier(l, h, plaque):
-    """Contour intérieur du boîtier, la plaque centrée dedans ; repères des traversées."""
-    px, py = (l - plaque[0]) / 2, (h - plaque[1]) / 2
+def boitier(l, h, plaque, px):
+    """Contour intérieur du boîtier, la plaque à px de la paroi gauche (USB-C) et centrée en hauteur ;
+    repères des traversées."""
+    py = (h - plaque[1]) / 2
     d = [f'<rect x="0.3" y="0.3" width="{f(l - 0.6)}" height="{f(h - 0.6)}" rx="2" fill="none" stroke="#5f6368" '
          f'stroke-width="0.6" stroke-dasharray="3,1.5"/>',
-         txt(l / 2, h - 1.6, f"Boîtier : intérieur {l} × {h} mm au moins (hauteur 50 mm)", 2.2, "#3c4043",
+         txt(l / 2, h - 1.6, f"Boîtier : intérieur {l} × {h} mm (boîtier de 200 × 120 × 75 mm)", 2.2, "#3c4043",
              "middle", True),
-         txt(px + 70, 2.9, "presse-étoupes : câbles des moteurs, du fin de course et du capteur Hall", 1.6,
-             "#3c4043", "middle"),
+         txt(px + 70, 2.9, "presse-étoupes : câbles des moteurs, du fin de course, du capteur Hall, du panneau "
+             "et du régulateur", 1.6, "#3c4043", "middle"),
          txt(px + 100, h - 4.3, "presse-étoupe : câble du capteur solaire", 1.6, "#3c4043", "middle"),
          txt(2.0, py + 31.5, "découpe USB-C", 1.6, "#3c4043", "start", rot=-90),
-         txt(l - 1.8, py + 20, "antenne LoRa (traversée SMA)", 1.6, "#3c4043", "start", rot=90),
+         txt(l - 1.8, py + 52, "antenne LoRa (traversée SMA)", 1.6, "#3c4043", "start", rot=90),
          txt(2.0, py + 11.5, "entrée 12 V", 1.6, "#3c4043", "start", rot=-90)]
     return Piece(f"Boitier_{l}x{h}", f"Boîtier {l} x {h} mm", l, h, [], "".join(d), "Contour intérieur du boîtier.")
 
@@ -358,12 +429,13 @@ def main():
     hel, tmc, ads = heltec_v4(), tmc2209(), ads1115()
     b2, b3, b4, b5 = bornier(2), bornier(3), bornier(4), bornier(5)
     plaque = (PAS * (TROUS[0] + 1), PAS * (TROUS[1] + 1))
-    bl, bh = 150, 100
-    k.piece(boitier(bl, bh, plaque), "Boîtier", -(bl - plaque[0]) / 2, -(bh - plaque[1]) / 2, z=1.2)
+    bl, bh, bx = 190, 110, 15.3                 # intérieur du boîtier ; plaque à 15,3 mm de la paroi gauche
+    k.piece(boitier(bl, bh, plaque, bx), "Boîtier", -bx, -(bh - plaque[1]) / 2, z=1.2)
     k.plaque(0, 0)
 
-    # bord haut : arrivée 12 V (le fusible F1 est en ligne, près de la batterie), câbles vers la tête
+    # bord haut : arrivée 12 V (le fusible F1 est en ligne, près de la batterie), panneau, câbles vers la tête
     k.piece(b2, "X1 12 V", *sur_trou(b2, 0, 2), etiquette=(1, -3.2))
+    k.piece(b4, "X7 panneau", *sur_trou(b4, 5, 2), etiquette=(trou(5, 2)[0] - 1, -3.2))
     for p, c, titre in ((b4, 15, "X2 moteur M1"), (b4, 24, "X3 moteur M2"), (b2, 33, "X4 FDC"),
                         (b3, 38, "X5 Hall")):
         x, _y = trou(c, 2)
@@ -376,6 +448,8 @@ def main():
         x, y = sur_trou(tmc, c, 5)
         k.piece(tmc, ref, x, y, etiquette=(x, 10.4))
         k.piece(el, cond, *sur_trou(el, c + 5, 15), etiquette=(trou(c + 5, 15)[0] + 4.0, 38.4))
+    j1 = barrette_2x4()
+    k.piece(j1, "J1 I2C", *sur_trou(j1, 44, 12), etiquette=(120.2, 34.4))
     for i, titre in enumerate(("R5", "R6", "R7")):
         x, y = trou(39, 6 + 2 * i)
         k.standard("ResistorModuleID", "resistor.fzp", titre, x, y - 1.2,
@@ -398,12 +472,17 @@ def main():
         k.piece(ce, f"C{i + 3}", *sur_trou(ce, c, r), etiquette=(trou(c, r)[0] - 0.8, trou(c, r)[1] + 2.0))
     k.piece(b5, "X6 capteur solaire", *sur_trou(b5, 34, 27), etiquette=(87, 73.3))
 
+    # à droite de la plaque, sur entretoises : les deux wattmètres INA219
+    a5, a4 = sen0291(), ina219_adafruit()
+    k.piece(a5, "A5 SEN0291 (12 V)", plaque[0] + 9, 4, etiquette=(plaque[0] + 9, 1.6))
+    k.piece(a4, "A4 INA219B (panneau)", plaque[0] + 11, 40, etiquette=(plaque[0] + 11, 37.6))
+
     # hors de la plaque : interrupteur sur la paroi du boîtier, règle, explications
     k.standard("Taiway-100-SP-X-T1-X-X-B1-M1_SPDT_miniature_toggle_switch",
                "Taiway-100-SP-X-T1-X-X-B1-M1_SPDT_miniature_toggle_switch.fzp", "S1",
                -14.0, 44.0, (("part number", "marche / arrêt"),), etiquette=(-14.0, 57.5))
-    k.piece(regle(150), "Règle", -(bl - plaque[0]) / 2, 96)
-    k.piece(cartouche(78, 100, (
+    k.piece(regle(bl), "Règle", -bx, (plaque[1] + bh) / 2 + 2)
+    k.piece(cartouche(80, 124, (
         ("Boîtier électronique, au pied du trépied", 2.6, True),
         ("Tout ce qui n'est pas sur la tête. Dessin à l'échelle.", 1.9, False),
         ("Plaque à pastilles 8 × 12 cm, 46 × 30 trous au pas de 2,54 mm.", 1.9, False),
@@ -418,11 +497,20 @@ def main():
         ("Modules sur barrettes femelles (démontables)", 2.1, True),
         ("Heltec 2 × 18, TMC2209 2 × 8 chacun, ADS1115 1 × 10.", 1.9, False),
         ("", 1.0, False),
+        ("Wattmètres, à droite de la plaque, sur entretoises", 2.1, True),
+        ("A5 SEN0291 (12 V du tracker, 0x45) : S1 -> IN+, IN- -> X1+.", 1.9, False),
+        ("A4 INA219B (panneau, 0x40) : X7-1 -> VIN+, VIN- -> X7-3.", 1.9, False),
+        ("Bus I2C par J1 (3V3, GND, SDA, SCL) : câble STEMMA QT", 1.9, False),
+        ("pour A4, câble Gravity pour A5. Fils de puissance de A4", 1.9, False),
+        ("et A5 le long de la paroi du haut (AWG 20 et AWG 18).", 1.9, False),
+        ("", 1.0, False),
         ("Borniers à vis au pas de 5,08 mm", 2.1, True),
-        ("X1 : arrivée 12 V, 2 pôles, fil AWG 18", 1.9, False),
+        ("X1 : 12 V (depuis A5 IN-) et 0 V de la batterie, AWG 18", 1.9, False),
         ("X2 et X3 : moteurs M1 et M2, 4 pôles, câble AWG 22", 1.9, False),
         ("X4 : fin de course, 2 pôles ; X5 : Hall, 3 pôles ; AWG 26", 1.9, False),
         ("X6 : capteur solaire, 5 pôles, câble blindé AWG 26", 1.9, False),
+        ("X7 : panneau (1 +, 2 -) et régulateur (3 +, 4 -), AWG 20 ;", 1.9, False),
+        ("X7-2 relié à X7-4 seulement, pas au 0 V.", 1.9, False),
         ("Sur la plaque : AWG 20 pour le 12 V et son 0 V, AWG 22", 1.9, False),
         ("pour le 5 V, AWG 24 pour les signaux (folio 3 du schéma).", 1.9, False),
         ("", 1.0, False),
@@ -434,10 +522,10 @@ def main():
         ("Traversées du boîtier", 2.1, True),
         ("Gauche : entrée 12 V, interrupteur S1, USB-C. Le fusible F1", 1.9, False),
         ("est en ligne sur le fil, à moins de 10 cm de la batterie.", 1.9, False),
-        ("Haut : câbles des moteurs, du fin de course, du Hall.", 1.9, False),
+        ("Haut : moteurs, fin de course, Hall, panneau, régulateur.", 1.9, False),
         ("Bas : câble du capteur solaire. Droite : antenne LoRa", 1.9, False),
         ("(câble IPEX vers une traversée SMA).", 1.9, False),
-    )), "Explications", 140, -10.6)
+    )), "Explications", 180, -15.6)
     k.ecrire(SORTIE)
     print(f"{SORTIE} : {len(k.instances)} éléments, {len(k.pieces)} pièces dessinées")
 

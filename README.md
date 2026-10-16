@@ -270,6 +270,9 @@ Le câblage détaillé (broches, réglages, bibliothèques) est celui de la dém
   extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
 * **Capteur solaire** sur le petit côté du pivot libre (§ 3) : percer 2 trous Ø3,4 dans ce
   petit côté, à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre.
+* **Électricité** : son câble descend par la boucle de câble jusqu'au bornier X7 du boîtier,
+  où le wattmètre A4 mesure ce qu'il produit (§ 16). Lire sa tension à vide (Voc) sur son
+  étiquette : elle doit rester sous 26 V.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
   passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
@@ -866,7 +869,8 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 La carte de commande est un **Heltec WiFi LoRa 32 V4** : un ESP32-S3 avec une radio LoRa
 SX1262 (863–870 MHz), un écran OLED et un port USB-C. Il pilote les deux moteurs, lit le
-capteur solaire et les origines, et envoie les données du tracker en LoRa.
+capteur solaire et les origines, mesure l'énergie produite par le panneau et consommée par le
+tracker, et envoie toutes ces données en LoRa.
 
 Le **schéma électrique complet** est un projet QElectroTech :
 [`Electronique/Schema_Electrique.qet`](Electronique/Schema_Electrique.qet), avec son export
@@ -890,8 +894,8 @@ et le tracker les utilise toutes :
 | 48 | J2-14 | STEP_AZ | U3 (TMC2209 d'azimut) STEP |
 | 45 | J3-6 | DIR_AZ | U3 DIR |
 | 33 | J2-12 | EN | EN de U2 et U3 ; 0 = moteurs alimentés, résistance de tirage R5 au 3,3 V |
-| 3 | J3-14 | SDA | ADS1115 (capteur solaire), I²C |
-| 4 | J3-15 | SCL | ADS1115 |
+| 3 | J3-14 | SDA | bus I²C : ADS1115 (capteur solaire), INA219B et SEN0291 (wattmètres) |
+| 4 | J3-15 | SCL | bus I²C |
 | 44 | J2-5 | FDC_EL | fin de course d'élévation (contact NC) ; tirage R6 |
 | 6 | J3-17 | HALL_AZ | capteur à effet Hall d'azimut ; tirage R7 |
 
@@ -900,7 +904,9 @@ Faute de broches, deux choix découlent de ce brochage :
   par MS1 et MS2 ;
 * **les 4 photodiodes sont lues par un ADS1115** (convertisseur 16 bits, 4 entrées, sur
   l'I²C) au lieu des entrées analogiques de l'ESP32. Il est plus précis, et son gain réglable
-  évite de changer les résistances entre le soleil et une lampe (§ 17).
+  évite de changer les résistances entre le soleil et une lampe (§ 17) ;
+* **les deux wattmètres sont aussi sur l'I²C** : trois modules sur les deux mêmes broches,
+  chacun à son adresse.
 
 ```cpp
 // Heltec WiFi LoRa 32 V4 : broches du tracker
@@ -909,7 +915,7 @@ Faute de broches, deux choix découlent de ce brochage :
 #define PIN_STEP_AZ  48
 #define PIN_DIR_AZ   45   // broche de démarrage : laissée basse par le driver
 #define PIN_EN       33   // 0 = moteurs alimentés
-#define PIN_SDA       3   // ADS1115, adresse 0x48 : Wire.begin(PIN_SDA, PIN_SCL)
+#define PIN_SDA       3   // I2C : ADS1115 0x48, INA219B 0x40, SEN0291 0x45 ; Wire.begin(PIN_SDA, PIN_SCL)
 #define PIN_SCL       4
 #define PIN_FDC_EL   44   // U0RXD ; 1 = butée basse atteinte, ou fil coupé
 #define PIN_HALL_AZ   6   // 0 = aimant devant le capteur
@@ -922,7 +928,8 @@ différent.
 
 **Alimentation.**
 * 12 V par un bloc secteur 12 V 3 A, ou une batterie LiFePO4 4S de 12,8 V, avec un
-  **fusible de 3 A** et un **interrupteur** (F1, S1).
+  **fusible de 3 A** et un **interrupteur** (F1, S1). Le 12 V passe ensuite par le wattmètre
+  A5, qui mesure la consommation du tracker, avant d'arriver sur la plaque (X1).
 * **F1 est un porte-fusible en ligne, sur le fil, à moins de 10 cm de la batterie.** Le fil
   qui le précède n'est protégé par rien, et une batterie LiFePO4 en court-circuit débite
   des centaines d'ampères : il doit rester le plus court possible.
@@ -931,8 +938,9 @@ différent.
 * U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
   diode Schottky 1N5819 (D1) : le Heltec reçoit environ 5,0 V, et le 5 V de l'USB-C ne remonte
   pas dans l'abaisseur quand la carte est branchée à l'ordinateur.
-* Le 3,3 V du Heltec alimente la logique des drivers, l'ADS1115, les photodiodes et les
-  résistances de tirage. Tous les 0 V sont reliés.
+* Le 3,3 V du Heltec alimente la logique des drivers, l'ADS1115, les deux wattmètres, les
+  photodiodes et les résistances de tirage. Tous les 0 V sont reliés, sauf le − du panneau
+  (voir plus bas, « Mesure de l'énergie »).
 
 **Drivers : 2 × TMC2209**, modules au format StepStick, logique en 3,3 V.
 * **MS1 et MS2 au 3,3 V : 16 micro-pas.** PDN_UART à la masse : courant réduit à l'arrêt.
@@ -971,14 +979,103 @@ différent.
 * La détection de calage sans capteur (StallGuard) n'est pas fiable à basse vitesse,
   surtout derrière une vis sans fin.
 
+**Mesure de l'énergie : deux wattmètres INA219.** Les deux modules mesurent chacun une
+tension et un courant. L'ESP32 en tire la puissance, et l'énergie en wattheures. Ils
+partagent le bus I²C de l'ADS1115 : aucune broche en plus.
+
+| Repère | Module | Branché sur | Shunt, calibre | Adresse I²C |
+|---|---|---|---|---|
+| A4 | **INA219B d'Adafruit** (904) | le + du panneau, entre le panneau et le régulateur de charge : **ce que produit le panneau** | 0,1 Ω, ±3,2 A | 0x40 (A0 et A1 ouverts, réglage d'origine) |
+| A5 | **SEN0291 de DFRobot** (INA219) | le + de la batterie, après F1 et S1 : **ce que consomme tout le tracker** (moteurs, Heltec, capteurs) | 0,01 Ω, ±8 A | 0x45 : mettre ses deux micro-interrupteurs A0 et A1 sur 1 |
+
+* **Pourquoi cette répartition.** Le panneau débite 0,6 A au plus. Le shunt de 0,1 Ω de
+  l'INA219B mesure ce courant dix fois plus finement que celui de 0,01 Ω (0,1 mA au lieu de
+  1 mA). Le 12 V du tracker monte à 1,5 A, et le fusible F1 est de 3 A : le SEN0291, prévu
+  pour 8 A, garde de la marge.
+* **Câblage** (bande « Mesure de l'énergie » du folio 1 du schéma) :
+  * **A5** : le fil qui vient de S1 arrive sur IN+. Un fil AWG 18 relie IN− à X1+, l'entrée
+    12 V de la plaque. GND va au 0 V.
+  * **A4** : le panneau arrive sur le bornier X7 (1 : +, 2 : −). X7-1 va à VIN+ de A4, et
+    VIN− revient sur X7-3, vers le PV+ du régulateur. **X7-2 n'est relié qu'à X7-4**, le PV−
+    du régulateur, jamais au 0 V du boîtier. Certains régulateurs coupent le −, d'autres
+    le + : ainsi, le montage convient aux deux. A4 lit la tension du panneau avec un
+    régulateur à « masse négative commune », celle de la batterie avec les autres.
+  * Les deux modules sont alimentés en **3,3 V** par le Heltec, par la barrette J1 (3V3, GND,
+    SDA, SCL) : un câble STEMMA QT pour A4, le câble Gravity pour A5. Leurs résistances de
+    tirage I²C tirent alors au 3,3 V. L'ESP32 ne supporte pas 5 V sur ses broches.
+* **Avant de brancher le panneau, lire sa tension à vide (Voc) sur son étiquette : elle doit
+  rester sous 26 V**, la limite de l'INA219. Un panneau « 12 V » de 10 W fait environ 21 V :
+  c'est bon. Un panneau « 24 V » (Voc ≈ 43 V) détruirait A4.
+* **Pour que le panneau débite, il lui faut une charge.** En extérieur, c'est un
+  **régulateur de charge solaire** (A6, réglé pour le LiFePO4) qui recharge la batterie du
+  tracker : le tracker devient autonome. Il a son propre fusible F2, à moins de 10 cm de la
+  batterie.
+  * En intérieur, sur le bloc secteur, il n'y a pas de régulateur : A4 lit 0 A. Ne jamais
+    brancher un régulateur de charge sur un bloc secteur.
+  * Quand la batterie est pleine, le régulateur coupe le panneau : A4 lit aussi 0 A, même en
+    plein soleil. Le panneau ne donne que ce que la batterie accepte.
+* **Étalonnage.** DFRobot demande d'étalonner le courant du SEN0291 :
+  1. mettre un multimètre en série (calibre 10 A) pendant un mouvement des moteurs ;
+  2. diviser le courant du multimètre par celui que lit A5 ;
+  3. mettre ce rapport dans le programme (`kTracker` ci-dessous).
+
+  Faire de même pour A4 au soleil (`kPanneau`).
+
+```cpp
+#include <Wire.h>
+#include <DFRobot_INA219.h>
+
+DFRobot_INA219_IIC inaPanneau(&Wire, INA219_I2C_ADDRESS1);  // A4 : INA219B Adafruit, 0x40
+DFRobot_INA219_IIC inaTracker(&Wire, INA219_I2C_ADDRESS4);  // A5 : SEN0291, 0x45
+const float R_PANNEAU = 0.1, R_TRACKER = 0.01;  // shunts (ohms)
+float kPanneau = 1.0, kTracker = 1.0;           // étalonnage au multimètre
+
+bool initWattmetre(DFRobot_INA219_IIC &ina) {
+  if (!ina.begin()) return false;               // absent : signalé dans la trame LoRa
+  ina.setBRNG(eIna219BusVolRange_32V);
+  ina.setPGA(eIna219PGABits_8);                 // ±320 mV sur le shunt
+  ina.setBADC(eIna219AdcBits_12, eIna219AdcSample_128);
+  ina.setSADC(eIna219AdcBits_12, eIna219AdcSample_128);   // moyenne sur 68 ms : lisse le découpage des drivers
+  ina.setMode(eIna219SAndBVolCon);
+  return true;
+}
+
+// toutes les 0,2 s : courant = tension du shunt / résistance du shunt, énergie cumulée
+float mA(DFRobot_INA219_IIC &ina, float r, float k) { return k * ina.getShuntVoltage_mV() / r; }
+// energie_mWh += ina.getBusVoltage_V() * mA(...) * 0.2 / 3600;
+```
+
+Le même calcul sert pour les deux modules : seule la valeur du shunt change. On évite ainsi
+le réglage de calibration propre à chaque bibliothèque.
+
 **LoRa.**
 * L'**antenne 868 MHz** fournie se visse sur le connecteur IPEX. **Ne jamais émettre sans
   elle** : l'étage de sortie peut griller.
-* Les données envoyées sont les angles (consigne et position), les 4 signaux du capteur,
-  l'erreur de pointage, l'état des origines, et l'heure et la position si le module GNSS est
-  branché.
+* Les données partent dans une **trame de 38 octets**, octets de poids faible en premier
+  (l'ordre de l'ESP32). Elle est aussi au folio 2 du schéma.
+
+  | Octets | Champ | Type | Unité |
+  |---|---|---|---|
+  | 0 | version de la trame (= 1) | uint8 | |
+  | 1–2 | numéro du message | uint16 | de 0 à 65 535, puis repart à 0 |
+  | 3–6 | azimut : consigne, position | 2 × int16 | 0,01° |
+  | 7–10 | élévation : consigne, position | 2 × int16 | 0,01° |
+  | 11–12 | erreur de pointage | uint16 | 0,001° |
+  | 13–20 | photodiodes HG, HD, BG, BD | 4 × int16 | valeur brute de l'ADS1115 |
+  | 21 | état | uint8 | bits : 0 butée basse, 1 aimant Hall, 2 moteurs alimentés, 3 GNSS valide, 4 calibre intérieur de l'ADS1115, 5 A4 absent, 6 A5 absent |
+  | 22–23 | panneau : tension (A4) | uint16 | mV |
+  | 24–25 | panneau : courant (A4) | int16 | 0,1 mA |
+  | 26–27 | 12 V du tracker : tension (A5) | uint16 | mV |
+  | 28–29 | 12 V du tracker : courant (A5) | int16 | mA |
+  | 30–33 | énergie produite par le panneau | uint32 | mWh, cumulée depuis la mise sous tension |
+  | 34–37 | énergie consommée par le tracker | uint32 | mWh, cumulée depuis la mise sous tension |
+
+  Le récepteur obtient la puissance (tension × courant), et l'énergie d'une journée par
+  différence entre deux messages. La comparaison des deux énergies montre si le panneau
+  couvre la consommation du tracker.
 * Dans la bande 868 MHz, chaque émetteur ne doit occuper le canal que 1 % du temps en
-  général : un message toutes les 1 à 5 minutes suffit.
+  général. 38 octets durent environ 0,3 s en SF9 : un message par minute. En SF12 (2 s), un
+  message toutes les 5 minutes.
 * La réception se fait sur un second module LoRa, ou par LoRaWAN (The Things Network) si une
   passerelle est à portée.
 
@@ -988,6 +1085,7 @@ Il donne l'heure et la position pour le calcul de la position du Soleil (§ 17).
 **Bibliothèques Arduino.**
 * `FastAccelStepper` : impulsions STEP générées en matériel, avec rampes d'accélération.
 * `Adafruit_ADS1X15` : lecture de l'ADS1115.
+* `DFRobot_INA219` : lecture des deux wattmètres (elle règle aussi leur moyenne).
 * La bibliothèque Heltec (« Heltec ESP32 Dev-Boards ») ou `RadioLib` pour la radio. Sur le
   V4, l'ampli de sortie se commande par les GPIO 7, 2 et 46 : partir des exemples Heltec.
 * `TinyGPSPlus` pour le GNSS.
@@ -998,7 +1096,7 @@ QElectroTech (« Section du conducteur »).
 
 | Liaison | Courant | Longueur | Section | Fil |
 |---|---|---|---|---|
-| Batterie ou bloc 12 V → F1 → S1 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
+| Batterie ou bloc 12 V → F1 → S1 → A5 → X1, et 0 V | 1,5 A | 1 m | **AWG 18** (0,82 mm²) | souple, rouge et noir |
 | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
 | 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
 | Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |
@@ -1006,13 +1104,17 @@ QElectroTech (« Section du conducteur »).
 | Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
 | Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
 | Pattes des photodiodes, dans le boîtier du capteur | 2 mA | 5 cm | **AWG 28** (0,08 mm²) | fil fin isolé (fil à wrapper) |
+| Panneau → X7, puis X7 → régulateur de charge | 0,6 A | 2 m + 1 m | **AWG 20** (0,52 mm²) | câble souple 2 conducteurs ; le câble du panneau suit la boucle de câble |
+| X7 ↔ A4 (VIN+, VIN−), dans le boîtier | 0,6 A | < 20 cm | **AWG 20** (0,52 mm²) | rouge |
+| Régulateur → F2 → batterie | 0,6 A | 0,5 m | **AWG 18** (0,82 mm²) | souple, rouge et noir ; F2 à moins de 10 cm de la batterie |
+| I²C des wattmètres (J1 → A4, A5) | < 2 mA | < 20 cm | **AWG 26** (0,13 mm²) | câble STEMMA QT (A4) et câble Gravity (A5) |
 | Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
 
 * En AWG 18, la chute de tension sur l'aller-retour du 12 V (2 × 1 m, 1,5 A) n'est que de
   0,06 V. En AWG 22, la boucle d'une bobine de moteur (2 × 1,5 m) fait 0,16 Ω, à côté de
   plusieurs ohms pour la bobine : le driver régule le courant, le moteur ne perd rien.
-* **Tout ce qui va vers la tête est en multibrin souple**, jamais en monobrin, qui casse à
-  force de plier dans la boucle de câble.
+* **Tout ce qui va vers la tête est en multibrin souple** (câble du panneau compris), jamais
+  en monobrin, qui casse à force de plier dans la boucle de câble.
 * Torsader les fils de chaque bobine (A+ avec A−, B+ avec B−) : ils rayonnent moins de
   parasites vers les capteurs.
 * Le câble du capteur solaire passe à l'écart des câbles moteurs. Son blindage est relié au
@@ -1021,13 +1123,15 @@ QElectroTech (« Section du conducteur »).
   0,5 mm² pour l'AWG 20 et 22, 0,25 mm² pour l'AWG 24 et 26.
 
 **Installation.** Pour la démonstration, le boîtier électronique (Heltec, drivers,
-alimentation, ADS1115) se pose au pied du trépied. Les câbles des moteurs, du fin de course,
-du capteur Hall et du capteur solaire descendent de la tête par le passe-câble du socle
-(folio 2 du schéma : nombre de conducteurs par câble).
+alimentation, ADS1115, wattmètres) se pose au pied du trépied, avec la batterie et le
+régulateur de charge. Les câbles des moteurs, du fin de course, du capteur Hall, du capteur
+solaire et du panneau descendent de la tête par le passe-câble du socle (folio 2 du schéma :
+nombre de conducteurs par câble).
 
 ### Implantation du boîtier électronique
 
-Tout ce qui reste au pied du trépied tient sur une **plaque à pastilles de 8 × 12 cm**.
+Tout ce qui reste au pied du trépied tient sur une **plaque à pastilles de 8 × 12 cm**, et les
+deux wattmètres à côté d'elle, dans le même boîtier.
 L'implantation est dessinée à l'échelle dans Fritzing :
 [`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
@@ -1038,6 +1142,9 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
   TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs et
   la diode sont soudés.
+* **Wattmètres A4 et A5 à droite de la plaque**, sur entretoises (M2,5 pour l'INA219B, M3
+  pour le SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND,
+  SDA, SCL pour chacun). Leurs fils de puissance longent la paroi du haut.
 * **USB-C du Heltec au bord de la plaque**, face à une découpe du boîtier : on reprogramme
   sans rien démonter.
 * **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
@@ -1050,16 +1157,17 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
   | X4 | 2 | fin de course S2 |
   | X5 | 3 | capteur à effet Hall B1 |
   | X6 | 5 | capteur solaire |
+  | X7 | 4 | panneau (1 : +, 2 : −) et régulateur de charge (3 : +, 4 : −) ; 2 relié à 4 seulement |
 
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
   dissipateur, ≈ 14 mm pour le Heltec et le LM2596, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
   borniers.
-* **Boîtier** : au moins 150 × 100 × 50 mm à l'intérieur, la plaque posée sur 4 entretoises
-  M3 de 6 mm. Un boîtier étanche en ABS de 200 × 120 × 75 mm laisse de la place pour les
-  câbles.
+* **Boîtier** : 190 × 110 × 50 mm à l'intérieur au moins, avec les wattmètres. Un boîtier
+  étanche en ABS de 200 × 120 × 75 mm convient. La plaque est posée sur 4 entretoises M3 de
+  6 mm, contre la paroi gauche (USB-C).
 * **Traversées du boîtier** :
-  * presse-étoupes pour le 12 V, les deux moteurs, le fin de course, le capteur Hall et le
-    capteur solaire ;
+  * presse-étoupes pour le 12 V, les deux moteurs, le fin de course, le capteur Hall, le
+    capteur solaire, le panneau et le régulateur de charge ;
   * l'interrupteur S1 sur la paroi ;
   * l'antenne LoRa à l'extérieur, par un câble IPEX vers une traversée SMA : une antenne
     enfermée dans le boîtier porte moins loin, surtout près des moteurs.
@@ -1312,9 +1420,9 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
-| **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil, brochage du Heltec V4 et liaisons, câblage et sections des fils) |
+| **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
 | `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
-| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
+| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, wattmètres, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
 | `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |

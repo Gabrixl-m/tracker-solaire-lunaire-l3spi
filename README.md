@@ -935,7 +935,7 @@ différent.
 * Le 12 V vient de la **sortie LOAD du régulateur solaire** A6 (Velleman SOL10UC3). Celui-ci
   charge une **batterie au plomb étanche de 12 V et 5 Ah** avec le panneau. Le courant passe ensuite par
   un **fusible de 3 A** et un **interrupteur** (F1, S1), puis par le wattmètre A5, qui mesure
-  la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, couvercle
+  la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, porte
   ouvert, un bloc secteur 12 V 3 A peut remplacer le régulateur et la batterie, sur F1.
 * **F1 et F2 sont des porte-fusibles en ligne**, sertis sur les fils, **dans le boîtier** :
   * **F1 à la sortie LOAD** du régulateur : il protège les fils qui vont à la plaque ;
@@ -1179,8 +1179,8 @@ des presse-étoupes (folio 2 du schéma : nombre de conducteurs par câble).
 ### Implantation du boîtier électronique
 
 L'électronique tient sur une **plaque à pastilles de 7 × 9 cm** (24 × 30 trous), tassée au
-plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, le régulateur de charge,
-la batterie et les fusibles. L'implantation est dessinée à l'échelle dans Fritzing :
+plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, la batterie, les
+fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à l'échelle dans Fritzing :
 [`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 `scripts/generate_implantation_fritzing.py`.
@@ -1207,18 +1207,37 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
   TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Les résistances, les condensateurs et la diode
   sont soudés. U1 est posé à plat, tenu par 4 pattes (des chutes de pattes de résistance)
   soudées dans ses pastilles et dans la plaque.
-* **Wattmètres A4 et A5 sous le régulateur**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
+* **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
   SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND, SDA, SCL
   pour chacun).
-* **Régulateur A6** vissé au fond, à droite, ses bornes vers la gauche. **Batterie G1** sous
-  la plaque, ses bornes du même côté, tenue par une sangle (ou des équerres) : 1,9 kg ne
-  doivent pas se promener dans le boîtier.
-* **Couloir de câblage** de 20 mm entre la plaque et la batterie d'un côté, le régulateur de
-  l'autre : on y range les fils et les **fusibles en ligne**. F2 entre le + de la batterie et
-  le régulateur, à moins de 10 cm de la batterie ; F1 à la sortie LOAD du régulateur, avant
-  l'interrupteur S1.
+* **Batterie G1** debout à droite de la plaque, ses bornes tournées vers elle, tenue par une
+  sangle (ou des équerres) : 1,9 kg ne doivent pas se promener dans le boîtier.
+* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils et le
+  fusible en ligne **F2**, entre le + de la batterie et le régulateur, à moins de 10 cm de la
+  batterie.
+* **Régulateur A6 vissé sous la porte**, comme sur les stations solaires de terrain : il ne
+  prend plus de place au fond du boîtier.
+  * **Fixation** : 4 vis inox dans ses trous de fixation, avec une **rondelle d'étanchéité**
+    (EPDM ou joint torique) sous chaque tête, côté extérieur, et un écrou frein à l'intérieur.
+    Sans elles, chaque trou laisserait entrer l'eau. À défaut, le coller avec un adhésif double
+    face pour l'extérieur (type VHB) : la porte reste sans trou.
+  * **Place** : porte fermée, il descend d'environ 35 mm (25 mm d'épaisseur, plus ses fils) au
+    droit de la plaque et des wattmètres, qui ne montent qu'à 34 mm. Il ne doit **jamais** être
+    au droit de la batterie : 106 mm de batterie + 35 mm de régulateur dépassent les 120 mm du
+    boîtier. Le dessin montre la porte ouverte, avec la zone à laisser libre.
+  * **Ses 6 fils passent par la charnière** : fil multibrin souple (jamais de monobrin, qui
+    casse à force de plier), réunis dans une gaine spirale. Laisser une **boucle d'environ
+    20 cm** pour que la porte s'ouvre en grand sans tirer. Attacher la boucle de chaque côté de
+    la charnière (colliers sur embases adhésives), **à l'intérieur du joint** : la porte ne
+    doit pas pincer les fils en se fermant.
+  * **F1** est posé sur la porte, contre la borne LOAD : un fusible protège le fil qui le suit.
+    Les deux fils + qui passent la charnière (BAT+ après F2, LOAD+ après F1) sont donc
+    protégés.
+  * Ses voyants font face à l'intérieur : on les voit porte ouverte. Les mesures de A4 et A5
+    arrivent de toute façon par LoRa.
+* **Interrupteur S1** sur la paroi des presse-étoupes.
 * **USB-C du Heltec au bord de la plaque, sans découpe** (elle casserait l'étanchéité). Il reste
-  environ 14 mm jusqu'à la paroi : on reprogramme couvercle ouvert avec un câble USB-C coudé,
+  environ 14 mm jusqu'à la paroi : on reprogramme porte ouverte avec un câble USB-C coudé,
   ou sans rien ouvrir par le WiFi (mise à jour OTA).
 * **Borniers à vis** au bord de la plaque : au pas de 5,08 mm (KF301) pour le 12 V et les
   moteurs, au pas de 2,54 mm (DG308, fils AWG 26 à 18) pour les capteurs, deux fois moins
@@ -1238,13 +1257,15 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
   dissipateur, ≈ 14 mm pour le Heltec et l'ADS1115, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
   borniers, ≈ 5 mm pour U1.
-* **Boîtier** : **étanche IP65**, au moins 208 × 166 mm à l'intérieur et **120 mm de haut**
-  (la batterie fait 100 mm, environ 106 avec ses bornes, et il faut de la place au-dessus pour
-  les cosses et les fils) : un boîtier d'environ 230 × 190 × 140 mm, ou plus grand. Vérifier
-  les cotes intérieures : les vis du couvercle prennent de la place dans les coins. Avec un
-  **couvercle transparent**, on voit les voyants du régulateur et l'écran du Heltec sans
-  ouvrir. La plaque est posée sur 4 entretoises M3 de 6 mm, dans ses trous de fixation. Avec la
-  batterie, l'ensemble pèse environ 3 kg.
+* **Boîtier** : **étanche IP65, à porte sur charnières**, au moins 196 × 120 mm à l'intérieur
+  et **120 mm de haut** (la batterie fait 100 mm, environ 106 avec ses bornes, et il faut de
+  la place au-dessus pour les cosses et les fils) : un boîtier d'environ 220 × 150 × 140 mm, ou
+  plus grand. La porte doit faire au moins 110 × 80 mm à l'intérieur pour recevoir le
+  régulateur. Vérifier les cotes intérieures : les vis et les charnières prennent de la place
+  dans les coins. **Porte opaque et de couleur claire** : un couvercle transparent n'apporte
+  plus rien (le régulateur cache l'écran du Heltec et tourne ses voyants vers l'intérieur), et
+  il chauffe plus au soleil. La plaque est posée sur 4 entretoises M3 de 6 mm, dans ses trous
+  de fixation. Avec la batterie, l'ensemble pèse environ 3 kg.
 * **Traversées du boîtier**, toutes étanches :
   * **6 presse-étoupes PG7**, sur une même paroi : moteurs M1 et M2, fin de course, capteur
     Hall, capteur solaire, panneau. Faire faire à chaque câble une **boucle d'égouttement**
@@ -1261,7 +1282,7 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
     plomb peut dégager en fin de charge. Ajouter un sachet de gel de silice.
 * **Chaleur** : un boîtier clair, à l'ombre (sous le trépied, par exemple). En plein soleil, un
   boîtier fermé dépasse vite 50 °C : la batterie s'use bien plus vite au chaud, et le
-  régulateur est prévu pour 55 °C au plus.
+  régulateur, sur la porte, est prévu pour 55 °C au plus.
 * **Lest** : suspendu sous la colonne, juste au-dessus du sol, le boîtier sert aussi de lest
   contre le vent (§ 18). Laisser alors du mou aux câbles.
 

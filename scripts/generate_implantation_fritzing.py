@@ -281,22 +281,24 @@ def barrette_2x4():
 
 
 def batterie_plomb():
-    """Batterie au plomb étanche 12 V 5 Ah vue de dessus, posée debout dans le dessin : 70 × 88 mm,
-    100 mm de haut (environ 106 mm avec ses bornes), bornes le long du bas : − à gauche, + à droite."""
-    l, h = 70.0, 88.0
-    d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="2" fill="#3a3d41" stroke="#1c1d1f" stroke-width="0.4"/>',
-         '<rect x="0" y="9" width="70" height="7" fill="#8d9196"/>',
-         '<rect x="5" y="75" width="8" height="8" rx="0.6" fill="#202124" stroke="#9aa0a6" stroke-width="0.3"/>',
-         '<rect x="57" y="75" width="8" height="8" rx="0.6" fill="#d32f2f"/>',
-         txt(18.5, 82, "−", 4.0, "#e8eaed", "middle", True), txt(51.5, 82, "+", 4.0, "#d32f2f", "middle", True),
-         txt(37, 30, "G1 batterie plomb", 3.0, "#fff", "middle", True),
-         txt(37, 35, "12 V 5 Ah", 3.0, "#fff", "middle", True),
-         txt(37, 42, "88 × 70 × 100 mm", 2.2, "#e8eaed", "middle"),
-         txt(37, 46.5, "≈ 1,9 kg", 2.2, "#e8eaed", "middle"),
-         txt(37, 51, "pas de LiFePO4 avec A6", 2.2, "#e8eaed", "middle"),
-         txt(37, 55.5, "sanglée (bande grise)", 2.2, "#e8eaed", "middle")]
+    """Batterie au plomb étanche 12 V 5 Ah couchée, vue de face (porte ouverte) : 100 mm de large,
+    88 mm de haut, 70 mm dans la profondeur du boîtier. Ses bornes sortent de la face gauche
+    (− au-dessus du +) : 6 mm de bornes à gauche du corps."""
+    l, h, b = 106.0, 88.0, 6.0
+    d = [f'<rect x="{f(b)}" y="0" width="{f(l - b)}" height="{f(h)}" rx="2" fill="#3a3d41" stroke="#1c1d1f" '
+         f'stroke-width="0.4"/>',
+         '<rect x="84" y="0" width="7" height="88" fill="#8d9196"/>',
+         '<rect x="0" y="14" width="7" height="8" rx="0.6" fill="#202124" stroke="#9aa0a6" stroke-width="0.3"/>',
+         '<rect x="0" y="46" width="7" height="8" rx="0.6" fill="#d32f2f"/>',
+         txt(12.5, 20.5, "−", 4.0, "#e8eaed", "middle", True), txt(12.5, 52.5, "+", 4.0, "#d32f2f", "middle", True),
+         txt(46, 30, "G1 batterie plomb", 3.0, "#fff", "middle", True),
+         txt(46, 35, "12 V 5 Ah, couchée", 3.0, "#fff", "middle", True),
+         txt(46, 42, "100 × 88 mm de face,", 2.2, "#e8eaed", "middle"),
+         txt(46, 46.5, "70 mm dans la profondeur", 2.2, "#e8eaed", "middle"),
+         txt(46, 51, "≈ 1,9 kg ; pas de LiFePO4 avec A6", 2.2, "#e8eaed", "middle"),
+         txt(46, 55.5, "sanglée (bande grise)", 2.2, "#e8eaed", "middle")]
     return Piece("Batterie_Plomb_5Ah", "Batterie plomb 12 V 5 Ah", l, h, [], "".join(d),
-                 "Batterie au plomb étanche 12 V 5 Ah, 88 x 70 x 100 mm, vue de dessus.")
+                 "Batterie au plomb étanche 12 V 5 Ah couchée, vue de face, bornes à gauche.")
 
 
 def regulateur_sol10uc3():
@@ -508,7 +510,7 @@ def boitier(l, h):
          f'stroke-width="0.7" stroke-dasharray="3,1.5"/>',
          txt(l - 38, 5.2, f"Boîtier étanche IP65 à porte : intérieur {l} × {h} mm,", 2.2, "#3c4043", "middle",
              True),
-         txt(l - 38, 9.4, "120 mm de haut (boîtier d'environ 220 × 150 × 140 mm)", 2.0, "#3c4043", "middle"),
+         txt(l - 38, 9.4, "80 mm de profondeur (boîtier d'environ 250 × 150 × 100 mm)", 2.0, "#3c4043", "middle"),
          txt(60, 3.0, "6 presse-étoupes PG7 : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau",
              1.8, "#3c4043", "middle"),
          txt(2.2, 50, "antenne LoRa (traversée SMA étanche)", 1.8, "#3c4043", "start", rot=-90),
@@ -599,7 +601,7 @@ def main():
     # à 14 mm de celle du haut (arrivée des câbles des presse-étoupes)
     rx = PAS - (REEL[0] - (TROUS[0] - 1) * PAS) / 2      # coin de la plaque réelle, repère de Fritzing
     ry = PAS - (REEL[1] - (TROUS[1] - 1) * PAS) / 2
-    bl, bh, ecart = 196, 120, 12                         # intérieur du boîtier ; place de la charnière
+    bl, bh, ecart = 226, 120, 12                         # intérieur du boîtier ; place de la charnière
     bx, by = 12 - rx, 14 - ry                            # coin de la plaque de Fritzing dans le boîtier
     k.piece(boitier(bl, bh), "Boîtier", -bx, -by, z=1.2)
     k.piece(plaque_reelle(-rx, -ry), "Plaque 7 × 9 cm", rx, ry, z=1.3)
@@ -643,12 +645,12 @@ def main():
     x1 = bornier(2, droite=True)
     k.piece(x1, "X1 12 V", *sur_trou(x1, 29, 18), etiquette=(72.0, 56.6))
 
-    # énergie : batterie debout à droite de la plaque, bornes vers la charnière (− à gauche, + à
-    # droite), F2 juste devant son + ; couloir de câblage de 18 mm entre la plaque et la batterie ;
-    # wattmètres sous la plaque ; interrupteur sur la paroi du haut
-    batterie = (120, 14, 190, 102)
+    # énergie : batterie couchée à droite de la plaque, bornes dans le couloir de câblage de 18 mm
+    # (− au-dessus du +), F2 sous elle, près de son + ; wattmètres sous la plaque ; interrupteur
+    # sur la paroi du haut
+    batterie = (114, 14, 220, 102)                       # bornes comprises
     k.piece(batterie_plomb(), "G1 batterie", *dedans(batterie[0], batterie[1]))
-    k.piece(porte_fusible("F2", False), "F2 (près de G1+)", *dedans(128, 106), etiquette=dedans(105.0, 108.6))
+    k.piece(porte_fusible("F2", False), "F2 (près de G1+)", *dedans(124, 106), etiquette=dedans(102.0, 108.6))
     a4, a5 = ina219_adafruit(), sen0291()
     k.piece(a4, "A4 INA219B (panneau)", *dedans(14, 90), etiquette=dedans(14, 111.6))
     k.piece(a5, "A5 SEN0291 (12 V)", *dedans(48, 89.5), etiquette=dedans(48, 112.6))
@@ -664,7 +666,7 @@ def main():
         return (x - bx, bh - by + ecart + y)
 
     k.piece(porte(bl, bh, ecart, batterie), "Porte", -bx, bh - by, z=1.2)
-    k.piece(regulateur_sol10uc3(), "A6 régulateur SOL10UC3", *porte_ouverte(8, 6))
+    k.piece(regulateur_sol10uc3(), "A6 régulateur SOL10UC3", *porte_ouverte(2, 6))
     k.piece(porte_fusible("F1", False), "F1 (sortie LOAD)", *porte_ouverte(124, 4),
             etiquette=porte_ouverte(124, 14.6))
 
@@ -674,8 +676,8 @@ def main():
         ("Boîtier étanche, au pied du trépied", 2.6, True),
         ("Tout ce qui n'est pas sur la tête, régulateur, batterie et", 1.9, False),
         ("fusibles compris : seuls la tête et le panneau sont dehors.", 1.9, False),
-        ("Dessin à l'échelle : le boîtier vu de dessus et, sous lui,", 1.9, False),
-        ("sa porte ouverte, vue de l'intérieur.", 1.9, False),
+        ("Dessin à l'échelle : le boîtier vu de face, porte ouverte,", 1.9, False),
+        ("et sous lui sa porte, vue de l'intérieur.", 1.9, False),
         ("", 1.0, False),
         ("Plaque à pastilles 7 × 9 cm, 24 × 30 trous", 2.1, True),
         ("Pas de 2,54 mm ; 4 trous de fixation Ø3 (entretoises M3).", 1.9, False),
@@ -690,8 +692,8 @@ def main():
         ("TMC2209 sur barrettes, avec dissipateur : ≈ 20 mm", 1.9, False),
         ("Heltec V4 et ADS1115 sur barrettes : ≈ 14 mm", 1.9, False),
         ("100 µF : ≈ 12 mm ; borniers : ≈ 10 mm ; U1 : ≈ 5 mm", 1.9, False),
-        ("Batterie : 100 mm de haut (≈ 106 avec ses bornes) ;", 1.9, False),
-        ("boîtier de 120 mm au moins à l'intérieur.", 1.9, False),
+        ("Batterie couchée : 70 mm dans la profondeur ; boîtier", 1.9, False),
+        ("de 80 mm de profondeur au moins à l'intérieur.", 1.9, False),
         ("Plaque sur entretoises de 6 mm.", 1.9, False),
         ("", 1.0, False),
         ("Modules sur barrettes femelles (démontables)", 2.1, True),
@@ -724,10 +726,11 @@ def main():
         ("Broches du Heltec utilisées par le tracker : en orange.", 1.9, False),
         ("", 1.0, False),
         ("Énergie", 2.1, True),
-        ("G1 batterie plomb 12 V 5 Ah, debout à droite de la plaque,", 1.9, False),
-        ("sanglée, bornes vers la charnière : - à gauche, + à droite.", 1.9, False),
-        ("F2 : porte-fusible en ligne sur le fil G1+ -> A6, juste", 1.9, False),
-        ("devant G1+ (moins de 10 cm). F1 : sur le fil LOAD+, sur", 1.9, False),
+        ("G1 batterie plomb 12 V 5 Ah, couchée à droite de la plaque,", 1.9, False),
+        ("sanglée, bornes à gauche (- au-dessus du +) : couchée, il", 1.9, False),
+        ("faut une batterie étanche (AGM), jamais tête en bas.", 1.9, False),
+        ("F2 : porte-fusible en ligne sur le fil G1+ -> A6, sous la", 1.9, False),
+        ("batterie (moins de 10 cm de G1+). F1 : sur le fil LOAD+, sur", 1.9, False),
         ("la porte, contre la borne LOAD. Fusibles 3 A ; un fusible", 1.9, False),
         ("protège le fil qui le suit : les deux fils + qui passent la", 1.9, False),
         ("charnière (BAT+ et LOAD+) sont donc protégés.", 1.9, False),
@@ -735,9 +738,9 @@ def main():
         ("", 1.0, False),
         ("Régulateur A6 sous la porte", 2.1, True),
         ("Vissé par 4 vis inox à rondelle d'étanchéité (ou collé).", 1.9, False),
-        ("Porte fermée, il descend de 35 mm (25 mm et ses fils) au-", 1.9, False),
-        ("dessus de la plaque et des wattmètres, qui montent à", 1.9, False),
-        ("34 mm au plus : jamais au-dessus de la batterie (106 mm).", 1.9, False),
+        ("Porte fermée, il avance de 35 mm (25 mm et ses fils) devant", 1.9, False),
+        ("la plaque et les wattmètres, qui avancent de 35 mm au plus :", 1.9, False),
+        ("jamais devant la batterie (70 + 35 mm > 80 mm).", 1.9, False),
         ("Ses 6 fils passent la charnière en une boucle souple", 1.9, False),
         ("(multibrin, gaine spirale), attachée de chaque côté, à", 1.9, False),
         ("l'intérieur du joint : la porte ne doit pas les pincer.", 1.9, False),

@@ -1210,22 +1210,28 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
   SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND, SDA, SCL
   pour chacun).
-* **Batterie G1** debout à droite de la plaque, tenue par une sangle (ou des équerres) : 1,9 kg
-  ne doivent pas se promener dans le boîtier. Ses bornes sont du côté de la charnière, le −
-  à gauche et le + à droite : ses deux fils vont droit à la boucle de la charnière.
-* Le fusible en ligne **F2**, entre le + de la batterie et le régulateur, est juste devant le
-  + : moins de 10 cm de fil entre eux.
-* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils.
+* **Batterie G1 couchée** à droite de la plaque : vue de face (porte ouverte), elle fait
+  100 mm de large et 88 mm de haut, et seulement **70 mm dans la profondeur** du boîtier. Ses
+  bornes sortent de la face gauche, le − au-dessus du +, dans le couloir de câblage. Tenue par
+  une sangle (ou des équerres) : 1,9 kg ne doivent pas se promener dans le boîtier.
+  * Couchée, elle doit être **étanche (AGM, « VRLA », sans entretien)** : c'est le cas des
+    batteries au plomb 12 V 5 Ah de ce format, qui marchent dans toutes les positions sauf
+    **tête en bas**. Pas de batterie à bouchons (plomb ouvert, électrolyte liquide).
+* Le fusible en ligne **F2**, entre le + de la batterie et le régulateur, est sous la batterie :
+  moins de 10 cm de fil depuis le +.
+* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils, et les
+  bornes de la batterie y sortent.
 * **Régulateur A6 vissé sous la porte**, comme sur les stations solaires de terrain : il ne
   prend plus de place au fond du boîtier.
   * **Fixation** : 4 vis inox dans ses trous de fixation, avec une **rondelle d'étanchéité**
     (EPDM ou joint torique) sous chaque tête, côté extérieur, et un écrou frein à l'intérieur.
     Sans elles, chaque trou laisserait entrer l'eau. À défaut, le coller avec un adhésif double
     face pour l'extérieur (type VHB) : la porte reste sans trou.
-  * **Place** : porte fermée, il descend d'environ 35 mm (25 mm d'épaisseur, plus ses fils) au
-    droit de la plaque et des wattmètres, qui ne montent qu'à 34 mm. Il ne doit **jamais** être
-    au droit de la batterie : 106 mm de batterie + 35 mm de régulateur dépassent les 120 mm du
-    boîtier. Le dessin montre la porte ouverte, avec la zone à laisser libre.
+  * **Place** : porte fermée, il avance d'environ 35 mm (25 mm d'épaisseur, plus ses fils)
+    devant la plaque et les wattmètres, qui n'avancent que de 35 mm au plus : 70 mm sur les
+    80 mm de profondeur. Il ne doit **jamais** être devant la batterie : 70 mm de batterie +
+    35 mm de régulateur dépassent les 80 mm du boîtier. Le dessin montre la porte ouverte,
+    avec la zone à laisser libre.
   * **Ses 6 fils passent par la charnière** : fil multibrin souple (jamais de monobrin, qui
     casse à force de plier), réunis dans une gaine spirale. Laisser une **boucle d'environ
     20 cm** pour que la porte s'ouvre en grand sans tirer. Attacher la boucle de chaque côté de
@@ -1258,10 +1264,10 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
   dissipateur, ≈ 14 mm pour le Heltec et l'ADS1115, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
   borniers, ≈ 5 mm pour U1.
-* **Boîtier** : **étanche IP65, à porte sur charnières**, au moins 196 × 120 mm à l'intérieur
-  et **120 mm de haut** (la batterie fait 100 mm, environ 106 avec ses bornes, et il faut de
-  la place au-dessus pour les cosses et les fils) : un boîtier d'environ 220 × 150 × 140 mm, ou
-  plus grand. La porte doit faire au moins 110 × 80 mm à l'intérieur pour recevoir le
+* **Boîtier** : **étanche IP65, à porte sur charnières**, au moins 226 × 120 mm à l'intérieur
+  (vu de face) et **80 mm de profondeur** intérieure, de la porte fermée au fond : la batterie
+  couchée y prend 70 mm, la plaque 35 mm plus les 35 mm du régulateur de la porte. Soit un
+  boîtier d'environ 250 × 150 × 100 mm, ou plus grand. La porte doit faire au moins 110 × 80 mm à l'intérieur pour recevoir le
   régulateur. Vérifier les cotes intérieures : les vis et les charnières prennent de la place
   dans les coins. **Porte opaque et de couleur claire** : un couvercle transparent n'apporte
   plus rien (le régulateur cache l'écran du Heltec et tourne ses voyants vers l'intérieur), et

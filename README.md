@@ -933,7 +933,7 @@ différent.
 
 **Alimentation.**
 * Le 12 V vient de la **sortie LOAD du régulateur solaire** A6 (Velleman SOL10UC3). Celui-ci
-  charge une **batterie au plomb AGM de 12 V** avec le panneau. Le courant passe ensuite par
+  charge une **batterie au plomb étanche de 12 V et 5 Ah** avec le panneau. Le courant passe ensuite par
   un **fusible de 3 A** et un **interrupteur** (F1, S1), puis par le wattmètre A5, qui mesure
   la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, couvercle
   ouvert, un bloc secteur 12 V 3 A peut remplacer le régulateur et la batterie, sur F1.
@@ -1023,8 +1023,10 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
 * **Pour que le panneau débite, il lui faut une charge.** En extérieur, c'est le
   **régulateur de charge PWM Velleman SOL10UC3** (A6, Gotronic réf. 27118). Il recharge la
   batterie, et le tracker se branche sur sa sortie LOAD : le tracker devient autonome.
-  * **Il ne charge que les batteries au plomb, gel ou EFB, pas les LiFePO4.** Prendre une
-    batterie au plomb AGM étanche de 12 V, 7 Ah par exemple.
+  * **Il ne charge que les batteries au plomb, gel ou EFB, pas les LiFePO4.** La batterie
+    fournie, au plomb étanche de 12 V et 5 Ah (88 × 70 × 100 mm), convient. Le panneau la
+    charge à 0,6 A au plus, soit un huitième de sa capacité : bien en dessous du quart que
+    supporte une batterie au plomb.
   * Sa sortie LOAD est **coupée quand la batterie est trop basse** : le régulateur protège
     ainsi la batterie au plomb, qu'une décharge profonde abîme. Les vis sans fin tiennent le
     panneau en place, moteurs coupés. Quand la batterie remonte, le Heltec redémarre : les
@@ -1039,7 +1041,7 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
     USB (5 V, 1,2 A) n'est pas utilisé.
   * Sur l'établi, avec un bloc secteur à la place du régulateur et de la batterie, A4 lit
     0 A. **Ne jamais brancher un régulateur de charge sur un bloc secteur.** En intérieur,
-    la batterie chargée suffit pour plusieurs jours.
+    la batterie chargée tient 1,5 à 6 jours.
 * **Ce que lit A4.**
   * Un régulateur PWM relie le panneau à la batterie. Le panneau travaille alors à la
     tension de la batterie, environ 13 V, au lieu de ses 17,6 V : il donne ses 0,6 A, soit
@@ -1053,8 +1055,11 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
     équivalentes de plein soleil) ;
   * le tracker consomme surtout par le Heltec, en continu : quelques dixièmes de watt,
     soit 5 à 20 Wh par jour. Les moteurs ne tournent que 1 % du temps ;
-  * une batterie AGM de 12 V et 7 Ah stocke 84 Wh. On n'en utilise que la moitié pour ne
-    pas l'abîmer : cela fait environ 2 jours sans soleil.
+  * la batterie de 12 V et 5 Ah stocke 60 Wh. On n'en utilise que la moitié pour ne pas
+    l'abîmer, soit 30 Wh : le tracker tient **1,5 à 6 jours sans soleil** selon ce que
+    consomme le Heltec (1,5 jour au pire). Une journée de beau temps (≈ 30 Wh) remplit cette
+    moitié. Pour tenir plus longtemps, il faut réduire la consommation du Heltec : WiFi coupé
+    hors des mises à jour, écran éteint, sommeil léger entre deux corrections.
 * **Étalonnage.** DFRobot demande d'étalonner le courant du SEN0291 :
   1. mettre un multimètre en série (calibre 10 A) pendant un mouvement des moteurs ;
   2. diviser le courant du multimètre par celui que lit A5 ;
@@ -1205,11 +1210,13 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Wattmètres A4 et A5 sous le régulateur**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
   SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND, SDA, SCL
   pour chacun).
-* **Régulateur A6** vissé au fond, en haut à droite, ses bornes vers le bas. **Batterie G1**
-  sous la plaque, tenue par deux sangles (ou des équerres) : 2,2 kg ne doivent pas se promener
-  dans le boîtier.
-* **Fusibles en ligne** : F2 entre le + de la batterie et le régulateur, à moins de 10 cm
-  de la batterie ; F1 à la sortie LOAD du régulateur, avant l'interrupteur S1.
+* **Régulateur A6** vissé au fond, à droite, ses bornes vers la gauche. **Batterie G1** sous
+  la plaque, ses bornes du même côté, tenue par une sangle (ou des équerres) : 1,9 kg ne
+  doivent pas se promener dans le boîtier.
+* **Couloir de câblage** de 20 mm entre la plaque et la batterie d'un côté, le régulateur de
+  l'autre : on y range les fils et les **fusibles en ligne**. F2 entre le + de la batterie et
+  le régulateur, à moins de 10 cm de la batterie ; F1 à la sortie LOAD du régulateur, avant
+  l'interrupteur S1.
 * **USB-C du Heltec au bord de la plaque, sans découpe** (elle casserait l'étanchéité). Il reste
   environ 14 mm jusqu'à la paroi : on reprogramme couvercle ouvert avec un câble USB-C coudé,
   ou sans rien ouvrir par le WiFi (mise à jour OTA).
@@ -1231,12 +1238,13 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
   dissipateur, ≈ 14 mm pour le Heltec et l'ADS1115, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
   borniers, ≈ 5 mm pour U1.
-* **Boîtier** : **étanche IP65**, au moins 234 × 170 mm à l'intérieur et **110 mm de haut**
-  (la batterie fait 94 mm) : un boîtier d'environ 260 × 190 × 130 mm, ou plus grand. Vérifier
+* **Boîtier** : **étanche IP65**, au moins 208 × 166 mm à l'intérieur et **120 mm de haut**
+  (la batterie fait 100 mm, environ 106 avec ses bornes, et il faut de la place au-dessus pour
+  les cosses et les fils) : un boîtier d'environ 230 × 190 × 140 mm, ou plus grand. Vérifier
   les cotes intérieures : les vis du couvercle prennent de la place dans les coins. Avec un
   **couvercle transparent**, on voit les voyants du régulateur et l'écran du Heltec sans
   ouvrir. La plaque est posée sur 4 entretoises M3 de 6 mm, dans ses trous de fixation. Avec la
-  batterie, l'ensemble pèse environ 3,5 kg.
+  batterie, l'ensemble pèse environ 3 kg.
 * **Traversées du boîtier**, toutes étanches :
   * **6 presse-étoupes PG7**, sur une même paroi : moteurs M1 et M2, fin de course, capteur
     Hall, capteur solaire, panneau. Faire faire à chaque câble une **boucle d'égouttement**

@@ -732,7 +732,7 @@ def folio_schema():
     f2 = f.el("fusible", "F2", 705, 1290, ("F2", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
               ("en ligne, à moins de", -26, 8, 6, False), ("10 cm de la batterie", -26, 16, 6, False))
     g1 = f.el("batterie", "G1", 790, 1320, ("G1", 14, -26, 8, True),
-              ("batterie plomb AGM 12 V 7 Ah", 14, -14, 6, False), ("(pas de LiFePO4 avec A6)", 14, -5, 6, False))
+              ("batterie plomb 12 V 5 Ah", 14, -14, 6, False), ("(pas de LiFePO4 avec A6)", 14, -5, 6, False))
     f1 = f.el("fusible", "F1", 740, yl, ("F1", -10, -24, 8, True), ("3 A", 10, -24, 6, False),
               ("en ligne, près de", -26, 8, 6, False), ("la sortie LOAD", -26, 16, 6, False))
     s1 = f.el("interrupteur", "S1", 840, yl, ("S1", -10, -30, 8, True), ("marche / arrêt,", -26, 8, 6, False),

@@ -68,8 +68,8 @@ des arbres des vis sans fin.
 | **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README § 16) | 13 € |
 | **Wattmètre SEN0291 de DFRobot** (INA219) — **déjà en stock** | Shunt 0,01 Ω, ±8 A, 26 V au plus, I²C 0x40 à 0x45 par micro-interrupteurs (**mettre 0x45**) ; 30 × 22 mm, câble Gravity fourni | 1 | `DFRobot SEN0291` | A5 : ce que consomme le tracker sur le 12 V | 8 € |
 | Câble STEMMA QT / Qwiic vers broches femelles | JST SH 4 broches vers 4 fiches femelles au pas de 2,54 mm, 15 cm environ | 1 | `STEMMA QT to female socket cable` | Relie A4 à la barrette J1 de la plaque | 1 € |
-| Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, couvercle ouvert : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée suffit pour plusieurs jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
-| **Batterie 12 V, en extérieur** | **Plomb AGM étanche**, 12 V, 7 Ah (84 Wh, environ 2,2 kg). **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 7Ah AGM battery` | Stocke l'énergie du panneau ; le tracker tient environ 2 jours sans soleil | 20–25 € |
+| Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, couvercle ouvert : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée tient 1,5 à 6 jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
+| **Batterie 12 V, en extérieur** — **fournie** | **Plomb étanche**, 12 V, 5 Ah (60 Wh), 88 × 70 × 100 mm (environ 106 mm avec ses bornes), environ 1,9 kg. **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 5Ah sealed lead acid battery` | Stocke l'énergie du panneau ; le tracker tient 1,5 à 6 jours sans soleil | fournie |
 | **Régulateur de charge PWM 10 A Velleman SOL10UC3** (Gotronic, réf. 27118) | Batteries 12 ou 24 V (reconnues au branchement), plomb, gel ou EFB ; panneau 32 V au plus ; sortie LOAD coupée quand la batterie est basse ; port USB 5 V 1,2 A ; consommation < 6 mA ; 80 × 110 × 25 mm | 1 | `Velleman SOL10UC3` | A6 : le panneau recharge la batterie, le tracker se branche sur la sortie LOAD ; A4 mesure ce que produit le panneau | 35,80 € |
 | **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18 | 2 (F1 près de la sortie LOAD ; F2 entre le régulateur et la batterie, **à moins de 10 cm de la batterie**) + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie au plomb débite des centaines d'ampères en court-circuit) | 4 € |
 | **Interrupteur étanche** marche / arrêt | IP65 au moins : à bascule avec capuchon en silicone, ou à levier avec soufflet ; 12 V continu, 3 A au moins | 1 | `waterproof rocker switch IP65 12V` | S1, sur la paroi du boîtier : coupe tout | 3 € |
@@ -104,11 +104,11 @@ des arbres des vis sans fin.
 | **Barrette mâle** au pas de 2,54 mm, double rangée | À couper : 2 × 4 broches | 1 | `male header 2x40 2.54mm` | J1 : bus I²C des deux wattmètres (3V3, GND, SDA, SCL pour chacun) | 1 € |
 | **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 5 de 2 pôles. On les emboîte : 4 pôles = 2 + 2 | 5 | `KF301 2P 5.08mm` | X1 (12 V), X2 et X3 (moteurs) | 2 € |
 | **Borniers à vis au pas de 2,54 mm** (DG308 ou équivalent) | Fils AWG 26 à 18, 6 A ; un de 2 pôles, un de 3, un de 5. Deux fois moins larges que les KF301 | 1 + 1 + 1 | `DG308 2.54mm screw terminal 2P`, `3P`, `5P` | X4 (fin de course), X5 (Hall), X6 (capteur solaire) | 2 € |
-| **Boîtier étanche IP65** | ABS ou polycarbonate, au moins 234 × 170 mm à l'intérieur et **110 mm de haut** (batterie de 94 mm) : un boîtier d'environ 260 × 190 × 130 mm, ou plus grand. Vérifier les cotes **intérieures** : les vis du couvercle prennent de la place dans les coins. **Couvercle transparent** conseillé (voyants du régulateur, écran du Heltec). De couleur claire | 1 | `IP65 ABS enclosure transparent lid 130mm deep` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, régulateur, batterie, fusibles | 20–30 € |
+| **Boîtier étanche IP65** | ABS ou polycarbonate, au moins 208 × 166 mm à l'intérieur et **120 mm de haut** (batterie de 100 mm, environ 106 avec ses bornes) : un boîtier d'environ 230 × 190 × 140 mm, ou plus grand. Vérifier les cotes **intérieures** : les vis du couvercle prennent de la place dans les coins. **Couvercle transparent** conseillé (voyants du régulateur, écran du Heltec). De couleur claire | 1 | `IP65 ABS enclosure transparent lid 130mm deep` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, régulateur, batterie, fusibles | 20–30 € |
 | **Presse-étoupes PG7** étanches (IP68) | Pour câbles de Ø3 à 6,5 mm | 6 + 1 de rechange | `PG7 cable gland IP68` | Câbles de la tête : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau | 4 € |
 | **Entretoises M3** de 6 mm et vis M3 × 6 | Nylon ou laiton | 6 + 12 | `M3 standoff 6mm` | Fixent la plaque (4) et le SEN0291 (2) au fond du boîtier | 2 € |
 | **Aérateur à membrane** M12, IP67 | Laisse passer l'air, pas l'eau | 1 | `M12 vent plug IP67 breathable` | Évite la condensation dans le boîtier fermé ; laisse sortir les gaz de la batterie | 2 € |
-| Sangle de batterie ou deux équerres, et sachet de gel de silice | Sangle à boucle de 25 mm, ou équerres vissées au fond | 1 + 1 | `battery hold down strap`, `silica gel pack` | Tient la batterie (2,2 kg) ; absorbe l'humidité | 4 € |
+| Sangle de batterie ou deux équerres, et sachet de gel de silice | Sangle à boucle de 25 mm, ou équerres vissées au fond | 1 + 1 | `battery hold down strap`, `silica gel pack` | Tient la batterie (1,9 kg) ; absorbe l'humidité | 4 € |
 | **Entretoises M2,5** de 6 mm et vis M2,5 × 6 | Nylon ou laiton | 4 + 8 | `M2.5 standoff 6mm` | Fixent l'INA219B d'Adafruit (trous de 2,5 mm) | 2 € |
 | Câble IPEX (U.FL) vers **traversée SMA femelle étanche** (avec joint), et antenne 868 MHz articulée à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead waterproof`, `868MHz SMA antenna` | Sort l'antenne du boîtier fermé (elle porte plus loin) | 6 € |
 
@@ -211,7 +211,7 @@ Compter 10 à 15 € en tout.
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3,5 kg), suspendu sous la colonne, peut en tenir lieu |
+| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3 kg), suspendu sous la colonne, peut en tenir lieu |
 
 ---
 
@@ -221,5 +221,5 @@ de la CAO. Sa sortie est sur cosses à souder : souder le câble souple 2 × AWG
 
 **Ordre de grandeur total** : environ **100 à 150 €** avec une alimentation secteur, capteur
 solaire compris (environ 8 €), sans compter le trépied, le panneau, ni les deux wattmètres
-(déjà en stock). Pour la démonstration en extérieur, il faut ajouter environ 25 € pour une
-batterie au plomb AGM et 36 € pour le régulateur SOL10UC3.
+(déjà en stock). Pour la démonstration en extérieur, il faut ajouter 36 € pour le régulateur
+SOL10UC3 (la batterie est fournie).

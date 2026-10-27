@@ -282,13 +282,13 @@ def barrette_2x4():
 
 def batterie_plomb():
     """Batterie au plomb étanche 12 V 5 Ah vue de dessus, posée debout dans le dessin : 70 × 88 mm,
-    100 mm de haut (environ 106 mm avec ses bornes), bornes du côté gauche."""
+    100 mm de haut (environ 106 mm avec ses bornes), bornes le long du bas : − à gauche, + à droite."""
     l, h = 70.0, 88.0
     d = [f'<rect x="0" y="0" width="{l}" height="{h}" rx="2" fill="#3a3d41" stroke="#1c1d1f" stroke-width="0.4"/>',
-         '<rect x="0" y="66" width="70" height="7" fill="#8d9196"/>',
-         '<rect x="5" y="5" width="7" height="8" rx="0.6" fill="#d32f2f"/>',
-         '<rect x="5" y="75" width="7" height="8" rx="0.6" fill="#202124" stroke="#9aa0a6" stroke-width="0.3"/>',
-         txt(17, 12.5, "+", 4.0, "#d32f2f", "middle", True), txt(17, 82, "−", 4.0, "#e8eaed", "middle", True),
+         '<rect x="0" y="9" width="70" height="7" fill="#8d9196"/>',
+         '<rect x="5" y="75" width="8" height="8" rx="0.6" fill="#202124" stroke="#9aa0a6" stroke-width="0.3"/>',
+         '<rect x="57" y="75" width="8" height="8" rx="0.6" fill="#d32f2f"/>',
+         txt(18.5, 82, "−", 4.0, "#e8eaed", "middle", True), txt(51.5, 82, "+", 4.0, "#d32f2f", "middle", True),
          txt(37, 30, "G1 batterie plomb", 3.0, "#fff", "middle", True),
          txt(37, 35, "12 V 5 Ah", 3.0, "#fff", "middle", True),
          txt(37, 42, "88 × 70 × 100 mm", 2.2, "#e8eaed", "middle"),
@@ -506,9 +506,9 @@ def boitier(l, h):
     en haut, antenne, USB-C et aérateur à gauche, charnière de la porte en bas)."""
     d = [f'<rect x="0.3" y="0.3" width="{f(l - 0.6)}" height="{f(h - 0.6)}" rx="3" fill="none" stroke="#5f6368" '
          f'stroke-width="0.7" stroke-dasharray="3,1.5"/>',
-         txt(l - 38, h - 9.0, f"Boîtier étanche IP65 à porte : intérieur {l} × {h} mm,", 2.2, "#3c4043", "middle",
+         txt(l - 38, 5.2, f"Boîtier étanche IP65 à porte : intérieur {l} × {h} mm,", 2.2, "#3c4043", "middle",
              True),
-         txt(l - 38, h - 5.0, "120 mm de haut (boîtier d'environ 220 × 150 × 140 mm)", 2.0, "#3c4043", "middle"),
+         txt(l - 38, 9.4, "120 mm de haut (boîtier d'environ 220 × 150 × 140 mm)", 2.0, "#3c4043", "middle"),
          txt(60, 3.0, "6 presse-étoupes PG7 : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau",
              1.8, "#3c4043", "middle"),
          txt(2.2, 50, "antenne LoRa (traversée SMA étanche)", 1.8, "#3c4043", "start", rot=-90),
@@ -643,11 +643,12 @@ def main():
     x1 = bornier(2, droite=True)
     k.piece(x1, "X1 12 V", *sur_trou(x1, 29, 18), etiquette=(72.0, 56.6))
 
-    # énergie : batterie debout à droite de la plaque, bornes vers le couloir de câblage (18 mm)
-    # où passent les fils et F2 ; wattmètres sous la plaque ; interrupteur sur la paroi du haut
+    # énergie : batterie debout à droite de la plaque, bornes vers la charnière (− à gauche, + à
+    # droite), F2 juste devant son + ; couloir de câblage de 18 mm entre la plaque et la batterie ;
+    # wattmètres sous la plaque ; interrupteur sur la paroi du haut
     batterie = (120, 14, 190, 102)
     k.piece(batterie_plomb(), "G1 batterie", *dedans(batterie[0], batterie[1]))
-    k.piece(porte_fusible("F2", True), "F2 (près de G1+)", *dedans(106.5, 14), etiquette=dedans(102.4, 61.4))
+    k.piece(porte_fusible("F2", False), "F2 (près de G1+)", *dedans(128, 106), etiquette=dedans(105.0, 108.6))
     a4, a5 = ina219_adafruit(), sen0291()
     k.piece(a4, "A4 INA219B (panneau)", *dedans(14, 90), etiquette=dedans(14, 111.6))
     k.piece(a5, "A5 SEN0291 (12 V)", *dedans(48, 89.5), etiquette=dedans(48, 112.6))
@@ -724,9 +725,9 @@ def main():
         ("", 1.0, False),
         ("Énergie", 2.1, True),
         ("G1 batterie plomb 12 V 5 Ah, debout à droite de la plaque,", 1.9, False),
-        ("sanglée, bornes vers le couloir de câblage (18 mm).", 1.9, False),
-        ("F2 : porte-fusible en ligne sur le fil G1+ -> A6, dans le", 1.9, False),
-        ("couloir, à moins de 10 cm de G1+. F1 : sur le fil LOAD+, sur", 1.9, False),
+        ("sanglée, bornes vers la charnière : - à gauche, + à droite.", 1.9, False),
+        ("F2 : porte-fusible en ligne sur le fil G1+ -> A6, juste", 1.9, False),
+        ("devant G1+ (moins de 10 cm). F1 : sur le fil LOAD+, sur", 1.9, False),
         ("la porte, contre la borne LOAD. Fusibles 3 A ; un fusible", 1.9, False),
         ("protège le fil qui le suit : les deux fils + qui passent la", 1.9, False),
         ("charnière (BAT+ et LOAD+) sont donc protégés.", 1.9, False),

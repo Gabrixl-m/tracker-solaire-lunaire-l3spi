@@ -1210,11 +1210,12 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
   SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND, SDA, SCL
   pour chacun).
-* **Batterie G1** debout à droite de la plaque, ses bornes tournées vers elle, tenue par une
-  sangle (ou des équerres) : 1,9 kg ne doivent pas se promener dans le boîtier.
-* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils et le
-  fusible en ligne **F2**, entre le + de la batterie et le régulateur, à moins de 10 cm de la
-  batterie.
+* **Batterie G1** debout à droite de la plaque, tenue par une sangle (ou des équerres) : 1,9 kg
+  ne doivent pas se promener dans le boîtier. Ses bornes sont du côté de la charnière, le −
+  à gauche et le + à droite : ses deux fils vont droit à la boucle de la charnière.
+* Le fusible en ligne **F2**, entre le + de la batterie et le régulateur, est juste devant le
+  + : moins de 10 cm de fil entre eux.
+* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils.
 * **Régulateur A6 vissé sous la porte**, comme sur les stations solaires de terrain : il ne
   prend plus de place au fond du boîtier.
   * **Fixation** : 4 vis inox dans ses trous de fixation, avec une **rondelle d'étanchéité**

@@ -99,7 +99,7 @@ des arbres des vis sans fin.
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
-| **Plaque à pastilles 7 × 9 cm** | 24 × 30 trous, pastilles séparées, pas de 2,54 mm, double face de préférence, 4 trous de fixation | 1 | `perfboard 7x9cm double sided` | Reçoit toute l'électronique du boîtier | 1 € |
+| **Plaque à pastilles 7 × 9 cm** (modèle générique, sans marque) | Époxy FR4 de 1,6 mm, double face, trous métallisés, pastilles séparées étamées, pas de 2,54 mm, 4 trous de fixation Ø 3 mm. **24 × 30 trous** : certaines 7 × 9 cm n'en ont que 23 × 31, il manque alors la rangée du bas (D1, R5 à R7). Vendue par lots de 5 ou 10 | 1 (+ 1 de rechange) | `PCB prototype 7x9 cm double face 24x30` | Reçoit toute l'électronique du boîtier | 1 € |
 | **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 4 × 8 (TMC2209), 1 × 10 (ADS1115) | 3 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
 | **Barrette mâle** au pas de 2,54 mm, double rangée | À couper : 2 × 4 broches | 1 | `male header 2x40 2.54mm` | J1 : bus I²C des deux wattmètres (3V3, GND, SDA, SCL pour chacun) | 1 € |
 | **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 5 de 2 pôles. On les emboîte : 4 pôles = 2 + 2 | 5 | `KF301 2P 5.08mm` | X1 (12 V), X2 et X3 (moteurs) | 2 € |

@@ -1178,9 +1178,11 @@ des presse-étoupes (folio 2 du schéma : nombre de conducteurs par câble).
 
 ### Implantation du boîtier électronique
 
-L'électronique tient sur une **plaque à pastilles de 7 × 9 cm** (24 × 30 trous), tassée au
+L'électronique tient sur une **plaque à pastilles de 7 × 9 cm** (24 × 30 trous utilisés : une
+plaque d'essais ECS1/2 en époxy, coupée à 28 × 34 trous, voir la liste d'achats), tassée au
 plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, la batterie, les
-fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à l'échelle dans Fritzing :
+fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à
+l'échelle dans Fritzing :
 [`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 `scripts/generate_implantation_fritzing.py`.

@@ -13,7 +13,7 @@ chaque écrou est écarté de son appui.
   - panneau_eclate.png, panneau_rail_eclate.png : rails sur le chapeau, cadre du panneau sur les
     rails (laminé, cellules et boîte de jonction masqués pour voir les écrous) ;
   - capteur_eclate.png : capteur solaire sur le petit côté du cadre, coupé par l'axe d'une vis ;
-  - demo_fond_eclate.png : fond de la démonstration PETG sur le trépied photo, en demi-coupe.
+  - demo_fond_eclate.png : fond de la démonstration PETG sur le trépied, en demi-coupe.
 Sur serveur : xvfb-run -a python scripts/render_visserie.py
 """
 
@@ -39,7 +39,7 @@ MASQUE_TETE = ("Haut_Colonne_Trepied", "Rail_Panneau", "Vis_CHC_M3x14")   # rail
 
 
 def est_visserie(k):
-    return k.startswith(("Vis_CHC_", "Vis_FHC_", "Vis_STHC_", "Rondelle_", "Ecrou_")) or k == "Vis_1_4_Trepied_Photo"
+    return k.startswith(("Vis_CHC_", "Vis_FHC_", "Vis_STHC_", "Rondelle_", "Ecrou_")) or k == "Vis_1_4_Trepied"
 
 
 def longueur(k):
@@ -54,7 +54,7 @@ def decalage(k):
         return (0, 0, longueur(k) + 10)
     if k.startswith("Vis_STHC_"):
         return (0, 10, 0)
-    if k == "Vis_1_4_Trepied_Photo":
+    if k == "Vis_1_4_Trepied":
         return (0, 0, -18)
     return (0, 0, ECART[k]) if k in ECART else None
 
@@ -149,7 +149,7 @@ def nom(k):
     if k.startswith(("Vis_CHC_", "Vis_FHC_")):
         t = "Vis CHC" if k.startswith("Vis_CHC_") else "Vis fraisée"
         return t + "\n" + k[8:].replace("x", "×").replace(".", ",")
-    return {"Vis_STHC_M3x4": "Vis sans\ntête M3×4", "Vis_1_4_Trepied_Photo": "Vis 1/4\"\ndu trépied",
+    return {"Vis_STHC_M3x4": "Vis sans\ntête M3×4", "Vis_1_4_Trepied": "Vis 1/4\"\ndu trépied",
             "Rondelle_M3": "Rondelle\nM3", "Ecrou_M3": "Écrou\nM3", "Ecrou_1_4_UNC": "Écrou\n1/4\"-20"}[k]
 
 
@@ -205,7 +205,7 @@ def nomenclature(q_reel, q_petg):
         bb = s.BoundingBox()
         if k == "Vis_STHC_M3x4":         # dans le repère de la vis sans fin : axe selon Y, bout plat en bas
             loc = G.rot((1, 0, 0), 90) * G.trans(-bb.center.x, -bb.ymin, -bb.center.z)
-        elif k == "Vis_1_4_Trepied_Photo":
+        elif k == "Vis_1_4_Trepied":
             loc = G.trans(0, 0, -bb.zmax)
         elif k.startswith(("Rondelle_", "Ecrou_")):
             loc = G.trans(0, 0, -4) * G.rot((1, 0, 0), 65) * G.trans(0, 0, -bb.center.z)
@@ -339,7 +339,7 @@ def main():
         ("Petit côté du cadre\n(en coupe)", yup((xf - 0.75, -c["vis_y"], c["z_vis"] - 8)), (40, 900)),
     ])
 
-    # démonstration PETG : fond sur le trépied photo, demi-coupe
+    # démonstration PETG : fond sur le trépied, demi-coupe
     G.set_ajustements("petg")
     T.build_parts()
     garde = cq.Solid.makeBox(110, 90, 60, cq.Vector(-55, -50, -60))
@@ -348,10 +348,10 @@ def main():
     rendu(fond, "demo_fond_eclate.png", cam, (0, -5, 0), 38, [
         ("Écrou 1/4\"-20 (vert clair) :\nposé dans son logement\nhexagonal du fond", plus_proche(pos, "Ecrou_1_4", cam),
          (1080, 40)),
-        ("Vis 1/4\" du trépied photo (orange)", plus_proche(pos, "Vis_1_4", cam), (900, 940)),
+        ("Vis 1/4\" du trépied (orange)", plus_proche(pos, "Vis_1_4", cam), (900, 940)),
         ("Vis CHC M3×10 (orange) :\nfond sous le socle", plus_proche(pos, "Vis_CHC_M3x10", cam), (40, 900)),
         ("Vis CHC M3×8 : rondelle\nd'arrêt sous le moyeu", plus_proche(pos, "Vis_CHC_M3x8", cam), (40, 300)),
-        ("Plateau du trépied photo", (-20, G.z_fond_photo() - 5, -10), (40, 700)),
+        ("Plateau du trépied", (-20, G.z_fond_1_4() - 5, -10), (40, 700)),
         ("Socle (imprimé)", (30, 20, -5), (1250, 420)),
         ("Fond (imprimé)", (-25, -1, -5), (40, 520)),
     ])

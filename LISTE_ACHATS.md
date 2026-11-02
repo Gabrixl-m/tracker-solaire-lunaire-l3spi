@@ -60,7 +60,7 @@ des arbres des vis sans fin.
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
 | **Moteur pas à pas NEMA 17, 34 mm** (Usongshine 17HS3401) | 42 × 42 × 34 mm, **0,34 N·m (34 N·cm)**, 1,0 A, axe Ø5 × 23,5 à méplat, connecteur JST PH 6 broches | 1 | `Usongshine 17HS3401 34N.cm` | Élévation. **À régler à 0,6 A** en version PETG | 10–15 € |
-| **Moteur pas à pas NEMA 11, 45 mm** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, axe Ø5 | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
+| **Moteur pas à pas NEMA 11, 45 mm, 11HS18-0674S** | 28 × 28 × 45 mm, 0,095–0,10 N·m, 0,67 A, 6,8 Ω, 4 fils, axe Ø5 (18 à 20 mm selon qu'on compte ou non le centrage). Même moteur chez StepperOnline et chez Gotronic (réf. 31113) : les calculs prennent 0,095 N·m | 1 | `11HS18-0674S nema 11 stepper` | Azimut | 15–25 € |
 | **Driver TMC2209** | Module UART, 3,3 V logique | 2 | `TMC2209 stepper driver UART` | Un par moteur | 4–6 € |
 | **Heltec WiFi LoRa 32 V4**, version 863–870 MHz | ESP32-S3R2 + radio LoRa SX1262, écran OLED, USB-C, antenne LoRa 868 MHz fournie (IPEX). Prendre le V4 standard, **pas la variante V4-R8** (brochage différent) | 1 | `Heltec WiFi LoRa 32 V4 868MHz` | Commande des moteurs, lecture des capteurs, envoi des données en LoRa | 20–30 € |
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
@@ -68,21 +68,21 @@ des arbres des vis sans fin.
 | **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README § 16) | 13 € |
 | **Wattmètre SEN0291 de DFRobot** (INA219) — **déjà en stock** | Shunt 0,01 Ω, ±8 A, 26 V au plus, I²C 0x40 à 0x45 par micro-interrupteurs (**mettre 0x45**) ; 30 × 22 mm, câble Gravity fourni | 1 | `DFRobot SEN0291` | A5 : ce que consomme le tracker sur le 12 V | 8 € |
 | Câble STEMMA QT / Qwiic vers broches femelles | JST SH 4 broches vers 4 fiches femelles au pas de 2,54 mm, 15 cm environ | 1 | `STEMMA QT to female socket cable` | Relie A4 à la barrette J1 de la plaque | 1 € |
-| Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, couvercle ouvert : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée suffit pour plusieurs jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
-| **Batterie 12 V, en extérieur** | **Plomb AGM étanche**, 12 V, 7 Ah (84 Wh, environ 2,2 kg). **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 7Ah AGM battery` | Stocke l'énergie du panneau ; le tracker tient environ 2 jours sans soleil | 20–25 € |
+| Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, porte ouverte : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée tient 1,5 à 6 jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
+| **Batterie 12 V, en extérieur** — **fournie** | **Plomb étanche** (AGM, sans entretien), 12 V, 5 Ah (60 Wh), 88 × 70 × 100 mm, environ 1,9 kg. Couchée dans le boîtier (70 mm dans la profondeur) : possible avec une batterie étanche, jamais tête en bas. **Pas de LiFePO4** : le régulateur SOL10UC3 ne charge que le plomb, le gel et l'EFB | 1 | `12V 5Ah sealed lead acid battery` | Stocke l'énergie du panneau ; le tracker tient 1,5 à 6 jours sans soleil | fournie |
 | **Régulateur de charge PWM 10 A Velleman SOL10UC3** (Gotronic, réf. 27118) | Batteries 12 ou 24 V (reconnues au branchement), plomb, gel ou EFB ; panneau 32 V au plus ; sortie LOAD coupée quand la batterie est basse ; port USB 5 V 1,2 A ; consommation < 6 mA ; 80 × 110 × 25 mm | 1 | `Velleman SOL10UC3` | A6 : le panneau recharge la batterie, le tracker se branche sur la sortie LOAD ; A4 mesure ce que produit le panneau | 35,80 € |
 | **Fusible 3 A** et porte-fusible **en ligne** | Fusible 5 × 20 mm rapide ; porte-fusible pour fil AWG 18 | 2 (F1 près de la sortie LOAD ; F2 entre le régulateur et la batterie, **à moins de 10 cm de la batterie**) + 2 fusibles de rechange | `inline fuse holder 5x20 18AWG`, `fuse 3A 5x20` | Protège tout le câblage (une batterie au plomb débite des centaines d'ampères en court-circuit) | 4 € |
 | **Interrupteur étanche** marche / arrêt | IP65 au moins : à bascule avec capuchon en silicone, ou à levier avec soufflet ; 12 V continu, 3 A au moins | 1 | `waterproof rocker switch IP65 12V` | S1, sur la paroi du boîtier : coupe tout | 3 € |
-| **Abaisseur 12 V → 5 V** | Module à découpage, 1 A au moins, **réglé à 5,3 V** avant de brancher le Heltec | 1 | `LM2596 buck converter` (ou `MP1584`) | Alimente le Heltec et le capteur Hall | 2 € |
+| **Mini abaisseur 12 V → 5 V** | Module à découpage, entrée 5 à 30 V, **sortie fixe 5,0 V**, 3 A annoncés (1,5 à 2 A en réalité, il en faut quelques centaines de mA), environ 18 × 13 mm. Vérifier à réception que c'est bien la version 5 V : **mesurer sa sortie (4,9 à 5,2 V) avant de brancher le Heltec** | 1 | `mini buck converter 5V fixed 3A 5-30V` | U1 : alimente le Heltec (par D1) et le capteur Hall (avant D1) | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
 | **Condensateur 100 µF 25 V** | Électrolytique | 2 | `100uF 25V capacitor` | Un au plus près de chaque driver | 0,2 € |
 | **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
 | **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 3 | `10k ohm resistor 1/4W` | EN des drivers (R5), fin de course (R6), capteur Hall (R7) | 0,1 € |
 | **Fil souple AWG 18** (0,82 mm²), rouge et noir | Multibrin, isolant PVC ou silicone | 1 m de chaque | `18AWG silicone wire red black` | Dans le boîtier : sortie LOAD → F1 → S1 → A5 → X1 ; régulateur → F2 → batterie | 3 € |
-| **Câble souple 2 conducteurs AWG 20** (0,52 mm²) | Multibrin, rouge et noir, gaine extérieure ronde (pour le presse-étoupe) | 2 m | `2 core 20AWG flexible cable` | Panneau → bornier X7, par la boucle de câble ; à souder sur les cosses du panneau | 2 € |
-| **Fil AWG 20** (0,52 mm²), rouge et noir | Pour souder sur la plaque | 0,5 m de chaque | `20AWG hook up wire` | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, LM2596) | 2 € |
-| **Fil AWG 22** (0,33 mm²), orange et noir | Pour souder sur la plaque | 0,5 m de chaque | `22AWG hook up wire` | 5 V : LM2596 → D1 → Heltec | 2 € |
+| **Câble souple 2 conducteurs AWG 20** (0,52 mm²) | Multibrin, rouge et noir, gaine extérieure ronde (pour le presse-étoupe) | 2 m | `2 core 20AWG flexible cable` | Panneau → A4 (le +) et régulateur (le −), par la boucle de câble ; à souder sur les cosses du panneau | 2 € |
+| **Fil AWG 20** (0,52 mm²), rouge et noir | Pour souder sur la plaque | 0,5 m de chaque | `20AWG hook up wire` | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) ; A4 → régulateur | 2 € |
+| **Fil AWG 22** (0,33 mm²), orange et noir | Pour souder sur la plaque | 0,5 m de chaque | `22AWG hook up wire` | 5 V : U1 → D1 → Heltec, U1 → capteur Hall | 2 € |
 | **Fil de câblage monobrin AWG 24** (0,20 mm²) | Coffret de plusieurs couleurs | 1 coffret | `24AWG solid hook up wire kit` | Signaux et 3,3 V sur la plaque (STEP, DIR, EN, I²C, filtres) | 6 € |
 | **Câble souple 4 conducteurs AWG 22** | Câble pour moteur pas à pas, multibrin | 2 × 1,5 m | `4 core 22AWG stepper motor cable` | Moteurs M1 et M2, des borniers X2 et X3 aux moteurs | 5 € |
 | **Câble souple 4 conducteurs AWG 26** | Multibrin (on n'utilise que 2 ou 3 conducteurs) | 2 × 1,5 m | `4 core 26AWG flexible cable` | Fin de course (X4, 2 fils) et capteur Hall (X5, 3 fils) | 3 € |
@@ -99,15 +99,18 @@ des arbres des vis sans fin.
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
-| **Plaque à pastilles 8 × 12 cm** | Pastilles séparées, pas de 2,54 mm, double face de préférence | 1 | `perfboard 8x12cm double sided` | Reçoit toute l'électronique du boîtier | 2 € |
+| **Plaque d'essais ECS1/2** (Gotronic, code 12041) | Époxy FR4, 80 × 100 mm, **pastilles carrées séparées** au pas de 2,54 mm, non étamée. L'implantation en utilise 24 × 30 : la couper à **28 × 34 trous** (≈ 71 × 87 mm, deux trous de marge tout autour), à la scie à métaux, puis, dans chaque coin, percer à Ø 3,2 mm le trou de la 2e rangée et de la 2e colonne (celui du bord est trop près de la découpe) pour les entretoises M3. Trous de 1 mm : bons pour toutes les pattes, sauf peut-être celles des borniers KF301, plus grosses ; s'ils forcent, agrandir leurs 10 trous à Ø 1,2 mm. Frotter le cuivre (gomme abrasive) juste avant de souder. Moins cher pour en avoir deux : l'ECS1 de 100 × 160 mm (code 12046, 7,20 €), coupée en deux. À défaut, une plaque 7 × 9 cm double face générique, si elle a bien 24 × 30 trous (certaines n'en ont que 23 × 31) | 1 | Gotronic 12041 | Reçoit toute l'électronique du boîtier | 5,90 € |
 | **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 4 × 8 (TMC2209), 1 × 10 (ADS1115) | 3 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
 | **Barrette mâle** au pas de 2,54 mm, double rangée | À couper : 2 × 4 broches | 1 | `male header 2x40 2.54mm` | J1 : bus I²C des deux wattmètres (3V3, GND, SDA, SCL pour chacun) | 1 € |
-| **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 9 de 2 pôles et 2 de 3 pôles. On les emboîte : 4 pôles = 2 + 2, 5 pôles = 2 + 3 | 9 + 2 | `KF301 2P 5.08mm`, `KF301 3P 5.08mm` | Branchement des câbles (X1 à X7) | 3 € |
-| **Boîtier étanche IP65** | ABS ou polycarbonate, au moins 280 × 185 mm à l'intérieur et **110 mm de haut** (batterie de 94 mm) ; par exemple 300 × 200 × 130 mm. **Couvercle transparent** conseillé (voyants du régulateur, écran du Heltec). De couleur claire | 1 | `ABS enclosure 300x200x130 IP65 transparent lid` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, régulateur, batterie, fusibles | 20–30 € |
+| **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 5 de 2 pôles. On les emboîte : 4 pôles = 2 + 2 | 5 | `KF301 2P 5.08mm` | X1 (12 V), X2 et X3 (moteurs) | 2 € |
+| **Borniers à vis au pas de 2,54 mm** (DG308 ou équivalent) | Fils AWG 26 à 18, 6 A ; un de 2 pôles, un de 3, un de 5. Deux fois moins larges que les KF301 | 1 + 1 + 1 | `DG308 2.54mm screw terminal 2P`, `3P`, `5P` | X4 (fin de course), X5 (Hall), X6 (capteur solaire) | 2 € |
+| **Boîtier étanche IP65 à porte sur charnières** | ABS ou polycarbonate, au moins 226 × 120 mm à l'intérieur (vu de face) et **80 mm de profondeur** intérieure (batterie couchée de 70 mm) : un boîtier d'environ 250 × 150 × 100 mm, ou plus grand. La porte reçoit le régulateur (110 × 80 mm). Vérifier les cotes **intérieures** : les vis et les charnières prennent de la place dans les coins. **Porte opaque, boîtier de couleur claire** (il chauffe moins au soleil) | 1 | `IP65 ABS enclosure hinged door 100mm deep` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, batterie, fusibles ; le régulateur est vissé sous la porte | 20–30 € |
+| Vis inox de la taille des trous du régulateur (M3 ou M4), avec **rondelle d'étanchéité** EPDM (ou joint torique) et écrou frein | Longueur : épaisseur de la porte + patte du régulateur + écrou. À défaut, adhésif double face pour l'extérieur (type VHB) | 4 | `M4 stainless screw sealing washer EPDM` | Fixent le régulateur sous la porte sans laisser entrer l'eau | 3 € |
+| Gaine spirale Ø 10 mm, colliers et embases adhésives | 30 cm de gaine | 1 + 6 | `spiral wrap 10mm`, `adhesive cable tie mount` | Boucle des 6 fils du régulateur à la charnière, attachée de chaque côté | 3 € |
 | **Presse-étoupes PG7** étanches (IP68) | Pour câbles de Ø3 à 6,5 mm | 6 + 1 de rechange | `PG7 cable gland IP68` | Câbles de la tête : moteurs M1 et M2, fin de course, Hall, capteur solaire, panneau | 4 € |
 | **Entretoises M3** de 6 mm et vis M3 × 6 | Nylon ou laiton | 6 + 12 | `M3 standoff 6mm` | Fixent la plaque (4) et le SEN0291 (2) au fond du boîtier | 2 € |
 | **Aérateur à membrane** M12, IP67 | Laisse passer l'air, pas l'eau | 1 | `M12 vent plug IP67 breathable` | Évite la condensation dans le boîtier fermé ; laisse sortir les gaz de la batterie | 2 € |
-| Sangle de batterie ou deux équerres, et sachet de gel de silice | Sangle à boucle de 25 mm, ou équerres vissées au fond | 1 + 1 | `battery hold down strap`, `silica gel pack` | Tient la batterie (2,2 kg) ; absorbe l'humidité | 4 € |
+| Sangle de batterie ou deux équerres, et sachet de gel de silice | Sangle à boucle de 25 mm, ou équerres vissées au fond | 1 + 1 | `battery hold down strap`, `silica gel pack` | Tient la batterie (1,9 kg) ; absorbe l'humidité | 4 € |
 | **Entretoises M2,5** de 6 mm et vis M2,5 × 6 | Nylon ou laiton | 4 + 8 | `M2.5 standoff 6mm` | Fixent l'INA219B d'Adafruit (trous de 2,5 mm) | 2 € |
 | Câble IPEX (U.FL) vers **traversée SMA femelle étanche** (avec joint), et antenne 868 MHz articulée à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead waterproof`, `868MHz SMA antenna` | Sort l'antenne du boîtier fermé (elle porte plus loin) | 6 € |
 
@@ -119,7 +122,7 @@ bibliothèques sont décrits dans le README, § 16. Le branchement du capteur so
 ## 3. Visserie
 
 Toute la visserie est **métrique à pas standard** (M3 × 0,5 et M2,5 × 0,45), sauf l'écrou du
-trépied photo (1/4"-20 UNC). Prendre de l'**inox A2-70** (il ne rouille pas dehors), sinon de
+trépied (1/4"-20 UNC). Prendre de l'**inox A2-70** (il ne rouille pas dehors), sinon de
 l'acier zingué classe 8.8.
 
 La longueur d'une vis CHC se mesure sous la tête ; celle d'une vis fraisée, hors tout. Chaque
@@ -152,7 +155,7 @@ Les vis de serrage des accouplements flexibles sont fournies avec eux.
 | Article (norme) | Dimensions | Qté | Où |
 |---|---|---|---|
 | **Écrou hexagonal M3** (ISO 4032 / DIN 934) | 5,5 mm sur plats, 2,4 mm d'épaisseur | 6 | Posés dans le cadre du panneau : sur l'aile arrière, un par vis des rails (4) ; contre le petit côté, pour l'équerre du capteur (2) |
-| **Écrou hexagonal 1/4"-20 UNC** (filetage photo) | 7/16" = 11,1 mm sur plats, 7/32" = 5,6 mm d'épaisseur (un contre-écrou de 4 mm convient aussi) | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied photo. Ce n'est pas un écrou M6 : le pas est différent |
+| **Écrou hexagonal 1/4"-20 UNC** (filetage des trépieds) | 7/16" = 11,1 mm sur plats, 7/32" = 5,6 mm d'épaisseur (un contre-écrou de 4 mm convient aussi) | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied. Ce n'est pas un écrou M6 : le pas est différent |
 | **Rondelle plate M3** (ISO 7089 / DIN 125-A) | 3,2 × 7 × 0,5 mm | 4 | Sous la tête des 4 vis d'azimut posées sur les lumières de la chape. Sans elle, la tête Ø5,5 ne porterait que sur 0,4 mm aux deux bouts d'une lumière de 4,7 mm et s'enfoncerait dans le PETG |
 | Rondelle plate M3 (ISO 7089), en plus | 3,2 × 7 × 0,5 mm | 8 | **Seulement si les rails sont en barre de 12 × 12** au lieu de 12 × 13 : deux rondelles empilées (1 mm) sous chaque vis, entre le rail et le chapeau |
 
@@ -210,7 +213,7 @@ Compter 10 à 15 € en tout.
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3,5 kg), suspendu sous la colonne, peut en tenir lieu |
+| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3 kg), suspendu sous la colonne, peut en tenir lieu |
 
 ---
 
@@ -220,5 +223,5 @@ de la CAO. Sa sortie est sur cosses à souder : souder le câble souple 2 × AWG
 
 **Ordre de grandeur total** : environ **100 à 150 €** avec une alimentation secteur, capteur
 solaire compris (environ 8 €), sans compter le trépied, le panneau, ni les deux wattmètres
-(déjà en stock). Pour la démonstration en extérieur, il faut ajouter environ 25 € pour une
-batterie au plomb AGM et 36 € pour le régulateur SOL10UC3.
+(déjà en stock). Pour la démonstration en extérieur, il faut ajouter 36 € pour le régulateur
+SOL10UC3 (la batterie est fournie).

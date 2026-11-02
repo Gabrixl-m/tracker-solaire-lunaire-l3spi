@@ -21,7 +21,7 @@ Ce document a trois parties, suivies de la bibliographie :
 * **Partie A — Le tracker lunaire (cas réel)** : tête rotative, panneau, capteur solaire,
   conditions lunaires, trépied, matériaux et vérifications (§ 1 à 10) ;
 * **Partie B — La démonstration sur Terre** : la même tête imprimée en PETG et posée sur un
-  trépied photo, avec ce qui change par rapport au cas réel et tout ce qu'il faut pour la
+  trépied, avec ce qui change par rapport au cas réel et tout ce qu'il faut pour la
   fabriquer (§ 11 à 19) ;
 * **Partie C — Fichiers, scripts, régénération et licence** (§ 20 à 23) ;
 * **Bibliographie**.
@@ -275,9 +275,9 @@ Le câblage détaillé (broches, réglages, bibliothèques) est celui de la dém
 * **Capteur solaire** sur le petit côté du pivot libre (§ 3) : percer 2 trous Ø3,4 dans ce
   petit côté, à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre.
 * **Électricité** : un câble souple 2 × AWG 20, soudé sur les cosses de la boîte de jonction,
-  descend par la boucle de câble jusqu'au bornier X7 du boîtier. Le wattmètre A4 y mesure ce
-  que produit le panneau, puis le courant va au régulateur de charge (§ 16). Ses 21,8 V à
-  vide restent sous les 26 V que supporte A4.
+  descend par la boucle de câble jusqu'au boîtier. Son + passe par le wattmètre A4, qui mesure
+  ce que produit le panneau, puis va au régulateur de charge ; son − va droit au régulateur
+  (§ 16). Ses 21,8 V à vide restent sous les 26 V que supporte A4.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
   passe à côté du socle et de la roue d'azimut, et reste au-dessus de tout le trépied.
@@ -568,12 +568,12 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 # Partie B — La démonstration sur Terre (tête imprimée en PETG)
 
 La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
-trépied photo grand public (§ 18) :
+trépied (§ 18) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur un trépied photo](docs/demo_trepied_photo_iso.png) | ![Côté moteurs](docs/demo_trepied_photo_arriere.png) |
-| ![De profil](docs/demo_trepied_photo_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_photo_detail.png) |
+| ![Sur un trépied](docs/demo_trepied_iso.png) | ![Côté moteurs](docs/demo_trepied_arriere.png) |
+| ![De profil](docs/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_detail.png) |
 
 ## 11. Du cas réel à la démonstration : ce qui change
 
@@ -624,7 +624,7 @@ l'électronique.
 
 | Grandeur | Cas réel | Démonstration PETG |
 |---|---|---|
-| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied photo (vis 1/4"), axe à 758 mm sur le trépied modélisé (§ 18) |
+| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied (vis 1/4"), axe à 758 mm sur le trépied modélisé (§ 18) |
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
 | Masse de la tête (hors panneau) | 1,86 kg | 1,20 kg |
 | Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,50 kg, centre de gravité à 62,0 mm de l'axe |
@@ -639,7 +639,7 @@ l'électronique.
 | Pièce | Qté | Orientation (déjà appliquée) | Remarque |
 |---|---|---|---|
 | `Socle` | 1 | Debout, ouverture en bas | Cône à 45° sous le logement du 6806 bas : pas de support |
-| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied photo : écrou 1/4" pris dans un logement hexagonal |
+| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied : écrou 1/4" pris dans un logement hexagonal |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
@@ -687,7 +687,7 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
-| Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
+| Écrou 1/4"-20 UNC (filetage des trépieds, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
@@ -821,7 +821,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
    rondelle d'arrêt par-dessous (2 × M3×8).
 4. **Fond** : poser l'écrou 1/4" dans son logement hexagonal, par le dessus. Visser ensuite
    le fond sous le socle avec 3 × M3×10, têtes noyées par-dessous : l'écrou est alors
-   prisonnier. Poser la tête sur le trépied photo et la visser sur la vis 1/4" du plateau.
+   prisonnier. Poser la tête sur le trépied et la visser sur la vis 1/4" du plateau.
 5. **Chape** : sur l'établi, presser les deux 6801 dans les bras, par l'extérieur, jusqu'à
    l'épaulement. Monter ensuite la
    chaîne d'élévation :
@@ -933,9 +933,9 @@ différent.
 
 **Alimentation.**
 * Le 12 V vient de la **sortie LOAD du régulateur solaire** A6 (Velleman SOL10UC3). Celui-ci
-  charge une **batterie au plomb AGM de 12 V** avec le panneau. Le courant passe ensuite par
+  charge une **batterie au plomb étanche de 12 V et 5 Ah** avec le panneau. Le courant passe ensuite par
   un **fusible de 3 A** et un **interrupteur** (F1, S1), puis par le wattmètre A5, qui mesure
-  la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, couvercle
+  la consommation du tracker, avant d'arriver sur la plaque (X1). Sur l'établi, porte
   ouvert, un bloc secteur 12 V 3 A peut remplacer le régulateur et la batterie, sur F1.
 * **F1 et F2 sont des porte-fusibles en ligne**, sertis sur les fils, **dans le boîtier** :
   * **F1 à la sortie LOAD** du régulateur : il protège les fils qui vont à la plaque ;
@@ -945,11 +945,14 @@ différent.
 
   Un fusible ne protège que ce qui vient après lui : chacun est donc au plus près de sa
   source.
-* Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et à l'abaisseur
-  LM2596 (U1).
-* U1 est **réglé à 5,3 V au multimètre avant de brancher le Heltec**. Le 5 V passe par une
-  diode Schottky 1N5819 (D1) : le Heltec reçoit environ 5,0 V, et le 5 V de l'USB-C ne remonte
-  pas dans l'abaisseur quand la carte est branchée à l'ordinateur.
+* Le 12 V va aux deux drivers, avec **100 µF au plus près de chacun**, et au mini abaisseur
+  5 V (U1, environ 18 × 13 mm).
+* U1 a une **sortie fixe de 5,0 V** : **la mesurer au multimètre (4,9 à 5,2 V) avant de
+  brancher le Heltec**. Le 5 V passe ensuite par une diode Schottky 1N5819 (D1) : le Heltec
+  reçoit environ 4,7 V, assez pour son régulateur 3,3 V, et le 5 V de l'USB-C ne remonte pas
+  dans l'abaisseur quand la carte est branchée à l'ordinateur.
+* Le **capteur Hall B1 est alimenté avant D1**, directement par U1 : l'A3144 demande 4,5 V au
+  moins, et les 4,7 V d'après D1 seraient trop justes.
 * Le 3,3 V du Heltec alimente la logique des drivers, l'ADS1115, les deux wattmètres, les
   photodiodes et les résistances de tirage. Tous les 0 V sont reliés, sauf le − du panneau
   (voir plus bas, « Mesure de l'énergie »).
@@ -1007,10 +1010,10 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
 * **Câblage** (bande « Mesure de l'énergie » du folio 1 du schéma) :
   * **A5** : le fil qui vient de S1 arrive sur IN+. Un fil AWG 18 relie IN− à X1+, l'entrée
     12 V de la plaque. GND va au 0 V.
-  * **A4** : le panneau arrive sur le bornier X7 (1 : +, 2 : −). X7-1 va à VIN+ de A4, et
-    VIN− revient sur X7-3, vers le PV+ du régulateur. **X7-2 n'est relié qu'à X7-4**, le PV−
-    du régulateur, jamais au 0 V du boîtier. Certains régulateurs coupent le −, d'autres
-    le + : ainsi, le montage convient aux deux. A4 lit la tension du panneau avec un
+  * **A4** : le + du panneau arrive directement sur le bornier VIN+ de A4, et VIN− va au PV+
+    du régulateur. **Le − du panneau va directement au PV− du régulateur**, jamais au 0 V du
+    boîtier. Certains régulateurs coupent le −, d'autres le + : ainsi, le montage convient
+    aux deux. A4 lit la tension du panneau avec un
     régulateur à « masse négative commune », celle de la batterie avec les autres.
   * Les deux modules sont alimentés en **3,3 V** par le Heltec, par la barrette J1 (3V3, GND,
     SDA, SCL) : un câble STEMMA QT pour A4, le câble Gravity pour A5. Leurs résistances de
@@ -1020,8 +1023,10 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
 * **Pour que le panneau débite, il lui faut une charge.** En extérieur, c'est le
   **régulateur de charge PWM Velleman SOL10UC3** (A6, Gotronic réf. 27118). Il recharge la
   batterie, et le tracker se branche sur sa sortie LOAD : le tracker devient autonome.
-  * **Il ne charge que les batteries au plomb, gel ou EFB, pas les LiFePO4.** Prendre une
-    batterie au plomb AGM étanche de 12 V, 7 Ah par exemple.
+  * **Il ne charge que les batteries au plomb, gel ou EFB, pas les LiFePO4.** La batterie
+    fournie, au plomb étanche de 12 V et 5 Ah (88 × 70 × 100 mm), convient. Le panneau la
+    charge à 0,6 A au plus, soit un huitième de sa capacité : bien en dessous du quart que
+    supporte une batterie au plomb.
   * Sa sortie LOAD est **coupée quand la batterie est trop basse** : le régulateur protège
     ainsi la batterie au plomb, qu'une décharge profonde abîme. Les vis sans fin tiennent le
     panneau en place, moteurs coupés. Quand la batterie remonte, le Heltec redémarre : les
@@ -1036,7 +1041,7 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
     USB (5 V, 1,2 A) n'est pas utilisé.
   * Sur l'établi, avec un bloc secteur à la place du régulateur et de la batterie, A4 lit
     0 A. **Ne jamais brancher un régulateur de charge sur un bloc secteur.** En intérieur,
-    la batterie chargée suffit pour plusieurs jours.
+    la batterie chargée tient 1,5 à 6 jours.
 * **Ce que lit A4.**
   * Un régulateur PWM relie le panneau à la batterie. Le panneau travaille alors à la
     tension de la batterie, environ 13 V, au lieu de ses 17,6 V : il donne ses 0,6 A, soit
@@ -1050,8 +1055,11 @@ partagent le bus I²C de l'ADS1115 : aucune broche en plus.
     équivalentes de plein soleil) ;
   * le tracker consomme surtout par le Heltec, en continu : quelques dixièmes de watt,
     soit 5 à 20 Wh par jour. Les moteurs ne tournent que 1 % du temps ;
-  * une batterie AGM de 12 V et 7 Ah stocke 84 Wh. On n'en utilise que la moitié pour ne
-    pas l'abîmer : cela fait environ 2 jours sans soleil.
+  * la batterie de 12 V et 5 Ah stocke 60 Wh. On n'en utilise que la moitié pour ne pas
+    l'abîmer, soit 30 Wh : le tracker tient **1,5 à 6 jours sans soleil** selon ce que
+    consomme le Heltec (1,5 jour au pire). Une journée de beau temps (≈ 30 Wh) remplit cette
+    moitié. Pour tenir plus longtemps, il faut réduire la consommation du Heltec : WiFi coupé
+    hors des mises à jour, écran éteint, sommeil léger entre deux corrections.
 * **Étalonnage.** DFRobot demande d'étalonner le courant du SEN0291 :
   1. mettre un multimètre en série (calibre 10 A) pendant un mouvement des moteurs ;
   2. diviser le courant du multimètre par celui que lit A5 ;
@@ -1138,15 +1146,14 @@ QElectroTech (« Section du conducteur »).
 |---|---|---|---|---|
 | Sortie LOAD du régulateur (ou bloc 12 V) → F1 → S1 → A5 → X1, et 0 V | 1,5 A | < 30 cm | **AWG 18** (0,82 mm²) | souple, rouge et noir, dans le boîtier |
 | 12 V et 0 V de puissance sur la plaque (VM des drivers, C1, C2, U1) | 1,5 A | < 15 cm | **AWG 20** (0,52 mm²) | rouge et noir |
-| 5 V : U1 → D1 → Heltec, et son 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
+| 5 V : U1 → D1 → Heltec, U1 → capteur Hall (X5), et leur 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
 | Moteurs M1 et M2 (U2, U3 → X2, X3 → moteur) | 1 A | 1,5 m | **AWG 22** (0,33 mm²) | câble souple 4 conducteurs, par moteur |
 | STEP, DIR, EN, 3,3 V, I²C, filtres du capteur | < 20 mA | < 10 cm | **AWG 24** (0,20 mm²) | monobrin |
 | Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
 | Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
 | Pattes des photodiodes, dans le boîtier du capteur | 2 mA | 5 cm | **AWG 28** (0,08 mm²) | fil fin isolé (fil à wrapper) |
-| Panneau → X7 | 0,6 A | 2 m | **AWG 20** (0,52 mm²) | câble souple 2 conducteurs, par la boucle de câble |
-| X7 → régulateur de charge | 0,6 A | < 30 cm | **AWG 20** (0,52 mm²) | rouge et noir, dans le boîtier |
-| X7 ↔ A4 (VIN+, VIN−), dans le boîtier | 0,6 A | < 20 cm | **AWG 20** (0,52 mm²) | rouge |
+| Panneau → A4 (le +) et régulateur (le −) | 0,6 A | 2 m | **AWG 20** (0,52 mm²) | câble souple 2 conducteurs, par la boucle de câble |
+| A4 (VIN−) → régulateur de charge (PV+) | 0,6 A | < 20 cm | **AWG 20** (0,52 mm²) | rouge, dans le boîtier |
 | Régulateur → F2 → batterie | 0,6 A | < 20 cm | **AWG 18** (0,82 mm²) | souple, rouge et noir, dans le boîtier ; F2 à moins de 10 cm de la batterie |
 | I²C des wattmètres (J1 → A4, A5) | < 2 mA | < 20 cm | **AWG 26** (0,13 mm²) | câble STEMMA QT (A4) et câble Gravity (A5) |
 | Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
@@ -1171,46 +1178,103 @@ des presse-étoupes (folio 2 du schéma : nombre de conducteurs par câble).
 
 ### Implantation du boîtier électronique
 
-L'électronique tient sur une **plaque à pastilles de 8 × 12 cm**. Le même boîtier étanche
-reçoit aussi les deux wattmètres, le régulateur de charge, la batterie et les fusibles.
-L'implantation est dessinée à l'échelle dans Fritzing :
+L'électronique tient sur une **plaque à pastilles de 7 × 9 cm** (24 × 30 trous utilisés : une
+plaque d'essais ECS1/2 en époxy, coupée à 28 × 34 trous, voir la liste d'achats), tassée au
+plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, la batterie, les
+fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à
+l'échelle dans Fritzing :
 [`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 `scripts/generate_implantation_fritzing.py`.
 
 ![Implantation du boîtier électronique](docs/electronique/implantation_boitier.png)
 
+| La plaque à pastilles, de plus près |
+|---|
+| ![Plaque à pastilles 7 × 9 cm](docs/electronique/plaque_pastilles.png) |
+
+* **Organisation de la plaque** : chaque pièce est à côté de ce qu'elle dessert, ce qui
+  raccourcit les fils.
+  * **En haut**, les borniers des câbles de la tête : ceux des moteurs (X2, X3) au-dessus de
+    leurs drivers, ceux des capteurs (X4 à X6) au-dessus de l'ADS1115. Les 4 photodiodes de X6
+    tombent droit sur les entrées A0 à A3.
+  * **Au milieu**, les deux TMC2209, chacun avec son 100 µF contre VM et GND, et l'ADS1115 avec
+    ses filtres juste dessous (R1 à R4, C3 à C6).
+  * **En bas**, le Heltec, USB-C au bord gauche. D1 et les résistances de tirage R5 à R7 sont le
+    long du bas, près des broches qu'elles desservent.
+  * **Au bord droit**, vers l'énergie : J1 (bus I²C des wattmètres), le mini abaisseur U1 et X1
+    (12 V, fils entrant par la droite).
+  * Aucune pièce n'est cachée sous un module : tout reste visible, mesurable et réparable.
 * **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
-  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Le LM2596, les résistances, les condensateurs et
-  la diode sont soudés.
-* **Wattmètres A4 et A5 à droite de la plaque**, sur entretoises (M2,5 pour l'INA219B, M3
-  pour le SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND,
-  SDA, SCL pour chacun). Leurs fils de puissance longent la paroi du haut.
-* **Régulateur A6** vissé au fond, à droite. **Batterie G1** sous la plaque, tenue par deux
-  sangles (ou des équerres) : 2,2 kg ne doivent pas se promener dans le boîtier.
-* **Fusibles en ligne** : F2 entre le + de la batterie et le régulateur, à moins de 10 cm
-  de la batterie ; F1 à la sortie LOAD du régulateur, avant l'interrupteur S1.
-* **USB-C du Heltec au bord de la plaque, sans découpe** (elle casserait l'étanchéité). On
-  reprogramme couvercle ouvert, ou sans rien ouvrir par le WiFi (mise à jour OTA).
-* **Borniers à vis au pas de 5,08 mm** au bord de la plaque :
+  TMC2209 (2 × 8 chacun), ADS1115 (1 × 10). Les résistances, les condensateurs et la diode
+  sont soudés. U1 est posé à plat, tenu par 4 pattes (des chutes de pattes de résistance)
+  soudées dans ses pastilles et dans la plaque.
+* **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
+  SEN0291). Leur bus I²C arrive par la **barrette mâle J1** (2 × 4 broches : 3V3, GND, SDA, SCL
+  pour chacun).
+* **Batterie G1 couchée** à droite de la plaque : vue de face (porte ouverte), elle fait
+  100 mm de large et 88 mm de haut, et seulement **70 mm dans la profondeur** du boîtier. Ses
+  bornes sortent de la face gauche, le − au-dessus du +, dans le couloir de câblage. Tenue par
+  une sangle (ou des équerres) : 1,9 kg ne doivent pas se promener dans le boîtier.
+  * Couchée, elle doit être **étanche (AGM, « VRLA », sans entretien)** : c'est le cas des
+    batteries au plomb 12 V 5 Ah de ce format, qui marchent dans toutes les positions sauf
+    **tête en bas**. Pas de batterie à bouchons (plomb ouvert, électrolyte liquide).
+* Le fusible en ligne **F2**, entre le + de la batterie et le régulateur, est sous la batterie :
+  moins de 10 cm de fil depuis le +.
+* **Couloir de câblage** de 18 mm entre la plaque et la batterie : on y range les fils, et les
+  bornes de la batterie y sortent.
+* **Régulateur A6 vissé sous la porte**, comme sur les stations solaires de terrain : il ne
+  prend plus de place au fond du boîtier.
+  * **Fixation** : 4 vis inox dans ses trous de fixation, avec une **rondelle d'étanchéité**
+    (EPDM ou joint torique) sous chaque tête, côté extérieur, et un écrou frein à l'intérieur.
+    Sans elles, chaque trou laisserait entrer l'eau. À défaut, le coller avec un adhésif double
+    face pour l'extérieur (type VHB) : la porte reste sans trou.
+  * **Place** : porte fermée, il avance d'environ 35 mm (25 mm d'épaisseur, plus ses fils)
+    devant la plaque et les wattmètres, qui n'avancent que de 35 mm au plus : 70 mm sur les
+    80 mm de profondeur. Il ne doit **jamais** être devant la batterie : 70 mm de batterie +
+    35 mm de régulateur dépassent les 80 mm du boîtier. Le dessin montre la porte ouverte,
+    avec la zone à laisser libre.
+  * **Ses 6 fils passent par la charnière** : fil multibrin souple (jamais de monobrin, qui
+    casse à force de plier), réunis dans une gaine spirale. Laisser une **boucle d'environ
+    20 cm** pour que la porte s'ouvre en grand sans tirer. Attacher la boucle de chaque côté de
+    la charnière (colliers sur embases adhésives), **à l'intérieur du joint** : la porte ne
+    doit pas pincer les fils en se fermant.
+  * **F1** est posé sur la porte, contre la borne LOAD : un fusible protège le fil qui le suit.
+    Les deux fils + qui passent la charnière (BAT+ après F2, LOAD+ après F1) sont donc
+    protégés.
+  * Ses voyants font face à l'intérieur : on les voit porte ouverte. Les mesures de A4 et A5
+    arrivent de toute façon par LoRa.
+* **Interrupteur S1** sur la paroi des presse-étoupes.
+* **USB-C du Heltec au bord de la plaque, sans découpe** (elle casserait l'étanchéité). Il reste
+  environ 14 mm jusqu'à la paroi : on reprogramme porte ouverte avec un câble USB-C coudé,
+  ou sans rien ouvrir par le WiFi (mise à jour OTA).
+* **Borniers à vis** au bord de la plaque : au pas de 5,08 mm (KF301) pour le 12 V et les
+  moteurs, au pas de 2,54 mm (DG308, fils AWG 26 à 18) pour les capteurs, deux fois moins
+  larges.
 
-  | Bornier | Pôles | Câble |
-  |---|---|---|
-  | X1 | 2 | 12 V (depuis A5 IN−) et 0 V (depuis LOAD− du régulateur) |
-  | X2 | 4 | moteur M1 (élévation) |
-  | X3 | 4 | moteur M2 (azimut) |
-  | X4 | 2 | fin de course S2 |
-  | X5 | 3 | capteur à effet Hall B1 |
-  | X6 | 5 | capteur solaire |
-  | X7 | 4 | panneau (1 : +, 2 : −) et régulateur de charge (3 : +, 4 : −) ; 2 relié à 4 seulement |
+  | Bornier | Pôles | Pas | Câble |
+  |---|---|---|---|
+  | X1 | 2 | 5,08 mm | 12 V (depuis A5 IN−) et 0 V (depuis LOAD− du régulateur) |
+  | X2 | 4 | 5,08 mm | moteur M1 (élévation) |
+  | X3 | 4 | 5,08 mm | moteur M2 (azimut) |
+  | X4 | 2 | 2,54 mm | fin de course S2 |
+  | X5 | 3 | 2,54 mm | capteur à effet Hall B1 (+5 V pris avant D1) |
+  | X6 | 5 | 2,54 mm | capteur solaire |
 
+  Le panneau n'a pas de bornier sur la plaque : il se branche directement sur A4 et sur le
+  régulateur.
 * **Hauteur au-dessus de la plaque** : ≈ 20 mm pour les TMC2209 sur barrettes avec leur
-  dissipateur, ≈ 14 mm pour le Heltec et le LM2596, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
-  borniers.
-* **Boîtier** : **étanche IP65**, au moins 280 × 185 mm à l'intérieur et **110 mm de haut**
-  (la batterie fait 94 mm). Un boîtier de 300 × 200 × 130 mm convient. Avec un **couvercle
-  transparent**, on voit les voyants du régulateur et l'écran du Heltec sans ouvrir. La plaque
-  est posée sur 4 entretoises M3 de 6 mm. Avec la batterie, l'ensemble pèse environ 3,5 kg.
+  dissipateur, ≈ 14 mm pour le Heltec et l'ADS1115, ≈ 12 mm pour les 100 µF, ≈ 10 mm pour les
+  borniers, ≈ 5 mm pour U1.
+* **Boîtier** : **étanche IP65, à porte sur charnières**, au moins 226 × 120 mm à l'intérieur
+  (vu de face) et **80 mm de profondeur** intérieure, de la porte fermée au fond : la batterie
+  couchée y prend 70 mm, la plaque 35 mm plus les 35 mm du régulateur de la porte. Soit un
+  boîtier d'environ 250 × 150 × 100 mm, ou plus grand. La porte doit faire au moins 110 × 80 mm à l'intérieur pour recevoir le
+  régulateur. Vérifier les cotes intérieures : les vis et les charnières prennent de la place
+  dans les coins. **Porte opaque et de couleur claire** : un couvercle transparent n'apporte
+  plus rien (le régulateur cache l'écran du Heltec et tourne ses voyants vers l'intérieur), et
+  il chauffe plus au soleil. La plaque est posée sur 4 entretoises M3 de 6 mm, dans ses trous
+  de fixation. Avec la batterie, l'ensemble pèse environ 3 kg.
 * **Traversées du boîtier**, toutes étanches :
   * **6 presse-étoupes PG7**, sur une même paroi : moteurs M1 et M2, fin de course, capteur
     Hall, capteur solaire, panneau. Faire faire à chaque câble une **boucle d'égouttement**
@@ -1227,7 +1291,7 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
     plomb peut dégager en fin de charge. Ajouter un sachet de gel de silice.
 * **Chaleur** : un boîtier clair, à l'ombre (sous le trépied, par exemple). En plein soleil, un
   boîtier fermé dépasse vite 50 °C : la batterie s'use bien plus vite au chaud, et le
-  régulateur est prévu pour 55 °C au plus.
+  régulateur, sur la porte, est prévu pour 55 °C au plus.
 * **Lest** : suspendu sous la colonne, juste au-dessus du sol, le boîtier sert aussi de lest
   contre le vent (§ 18). Laisser alors du mou aux câbles.
 
@@ -1334,11 +1398,11 @@ alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,2
 correction à 0,1° : le panneau se recale alors toutes les 25 secondes environ, et le
 mouvement paraît continu à l'écran. La consommation reste de quelques dizaines de mW.
 
-## 18. Sur un trépied photo grand public
+## 18. Sur un trépied
 
-![Fond sur trépied photo](docs/explications/fond_trepied_photo.png)
+![Fond sur trépied](docs/explications/fond_trepied.png)
 
-La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied photo**.
+La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied**.
 Le fond contient un écrou 1/4"-20 pris dans un logement hexagonal. Les câbles sortent
 par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas réel garde sa
 colonne Ø50.
@@ -1351,8 +1415,8 @@ colonne Ø50.
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
   La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
-* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet.
-  Le calcul est fait ci-dessous pour un trépied photo courant.
+* **Stabilité** : un trépied léger bascule bien plus tôt que le trépied du projet.
+  Le calcul est fait ci-dessous pour un trépied courant.
 
 ### Le trépied modélisé : dimensions et stabilité
 
@@ -1478,19 +1542,19 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
+| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 18) |
 | **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
 | `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
-| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 8 × 12 cm, modules, borniers, wattmètres, contour du boîtier ; image dans `docs/electronique/implantation_boitier.png` |
+| **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs/electronique/implantation_boitier.png` et `docs/electronique/plaque_pastilles.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
-| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
+| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
@@ -1507,7 +1571,7 @@ avec les noms des pièces, les sous-assemblages et les couleurs.
 Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
 `Tete_Rotative_*.step`, `Demo_Trepied.step`) :
 * **orange** : toutes les vis (CHC et FHC M3, vis sans tête M3×4 de blocage des vis sans
-  fin, vis 1/4"-20 du plateau du trépied photo) ;
+  fin, vis 1/4"-20 du plateau du trépied) ;
 * **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
   écrou 1/4"-20).
 
@@ -1515,7 +1579,7 @@ Les rendus PNG suivent le même code. La visserie y est éclairée plus fort et 
 et un bandeau en bas de l'image rappelle les deux couleurs.
 
 Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
-de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
+de blocage et ancrages en gris titane, molettes et clips du trépied de la démonstration en gris. Les
 fichiers de pièces seules (`pieces/*.step`) n'ont pas de couleur. Si les couleurs
 n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP de
 SolidWorks.
@@ -1562,7 +1626,7 @@ paramètres sont regroupés en tête de `scripts/generate_tracker.py` :
 * dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (Partie B).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
-`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied photo (`TREPIED_DEMO`, lests) sont en tête
+`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied de la démonstration (`TREPIED_DEMO`, lests) sont en tête
 de `scripts/generate_demo_trepied.py`.
 
 ```bash
@@ -1570,7 +1634,7 @@ pip install -r requirements.txt
 python scripts/generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python scripts/generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
-python scripts/generate_demo_trepied.py               # démonstration sur trépied photo : STEP, contrôles, stabilité
+python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech

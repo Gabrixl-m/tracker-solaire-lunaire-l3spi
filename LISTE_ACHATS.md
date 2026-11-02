@@ -1,8 +1,9 @@
 # Liste d'achats — démonstration sur Terre (tête imprimée en PETG)
 
 Tout ce qu'il faut acheter pour **une tête rotative à vis sans fin** en version PETG et son
-**capteur solaire** (4 photodiodes sous une croix d'ombre, README § 3 et § 17), en plus des
-pièces imprimées de `CAO/Demo_Terre_PETG/a_imprimer/` (voir README, Partie B, § 12).
+**capteur solaire** (4 photodiodes sous une croix d'ombre, [README principal](README.md) § 4 et
+[README du modèle terrestre](CAO/Demo_Terre_PETG/README.md) § 7), en plus des pièces imprimées de
+`CAO/Demo_Terre_PETG/a_imprimer/` (voir le [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 2).
 Les deux pivots d'élévation sont **imprimés** : le seul axe en acier à acheter est la tige Ø5
 des arbres des vis sans fin.
 
@@ -65,7 +66,7 @@ des arbres des vis sans fin.
 | **Heltec WiFi LoRa 32 V4**, version 863–870 MHz | ESP32-S3R2 + radio LoRa SX1262, écran OLED, USB-C, antenne LoRa 868 MHz fournie (IPEX). Prendre le V4 standard, **pas la variante V4-R8** (brochage différent) | 1 | `Heltec WiFi LoRa 32 V4 868MHz` | Commande des moteurs, lecture des capteurs, envoi des données en LoRa | 20–30 € |
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
 | **Convertisseur ADS1115** (module) | 16 bits, 4 entrées, I²C (adresse 0x48), résistances de tirage I²C sur le module | 1 | `ADS1115 module 16 bit I2C` | Lit les 4 photodiodes du capteur solaire | 2–4 € |
-| **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README § 16) | 13 € |
+| **Wattmètre INA219B d'Adafruit** (904, STEMMA QT) — **déjà en stock** | Shunt 0,1 Ω, ±3,2 A, 26 V au plus, I²C 0x40 ; 25,6 × 20,4 mm | 1 | `Adafruit 904 INA219` | A4 : ce que produit le panneau (README du modèle terrestre, § 6) | 13 € |
 | **Wattmètre SEN0291 de DFRobot** (INA219) — **déjà en stock** | Shunt 0,01 Ω, ±8 A, 26 V au plus, I²C 0x40 à 0x45 par micro-interrupteurs (**mettre 0x45**) ; 30 × 22 mm, câble Gravity fourni | 1 | `DFRobot SEN0291` | A5 : ce que consomme le tracker sur le 12 V | 8 € |
 | Câble STEMMA QT / Qwiic vers broches femelles | JST SH 4 broches vers 4 fiches femelles au pas de 2,54 mm, 15 cm environ | 1 | `STEMMA QT to female socket cable` | Relie A4 à la barrette J1 de la plaque | 1 € |
 | Bloc secteur 12 V 3 A (facultatif) | Pour l'établi seulement, porte ouverte : branché sur F1 à la place du régulateur et de la batterie. En intérieur, la batterie chargée tient 1,5 à 6 jours | 1 | `12V 3A power supply` | Essais sur l'établi | 10 € |
@@ -94,7 +95,7 @@ des arbres des vis sans fin.
 | **Câble souple blindé 6 conducteurs AWG 26** | Multibrin, avec blindage (tresse ou feuillard) relié au 0 V côté boîtier seulement. À défaut : câble réseau blindé F/UTP multibrin | 1,5 m | `6 core 26AWG shielded cable` | Du capteur solaire au bornier X6 : 3,3 V et les 4 signaux | 3 € |
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
-**Montage du boîtier électronique** (implantation au README, § 16, et dans
+**Montage du boîtier électronique** (implantation au [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 6, et dans
 `Electronique/Implantation_Boitier.fzz`) :
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
@@ -117,7 +118,8 @@ des arbres des vis sans fin.
 Le câblage complet est sur le **schéma électrique**
 ([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech
 `Electronique/Schema_Electrique.qet`). Le brochage du Heltec V4, le réglage des TMC2209 et les
-bibliothèques sont décrits dans le README, § 16. Le branchement du capteur solaire est au § 17.
+bibliothèques sont décrits dans le [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 6. Le branchement du
+capteur solaire est au § 7.
 
 ## 3. Visserie
 

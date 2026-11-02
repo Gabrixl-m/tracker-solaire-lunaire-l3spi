@@ -1,9 +1,9 @@
 # Visserie : où va chaque vis
 
 Guide détaillé de la visserie de la tête rotative, pour le cas réel et pour la démonstration
-PETG. Le résumé et l'ordre de montage complet sont dans le [README principal](../../README.md)
-(§ 13 « Pièces à acheter » et § 15 « Ordre de montage »). Les numéros d'étape ci-dessous sont
-ceux du § 15.
+PETG. Le résumé et l'ordre de montage complet sont dans le
+[README du modèle terrestre](../../CAO/Demo_Terre_PETG/README.md) (§ 3 « Pièces à acheter » et
+§ 5 « Ordre de montage »). Les numéros d'étape ci-dessous sont ceux du § 5.
 
 **Code couleur**, le même que dans les fichiers STEP et les rendus : les **vis sont en
 orange**, les **rondelles et les écrous en vert clair**. Dans les vues éclatées, chaque vis est

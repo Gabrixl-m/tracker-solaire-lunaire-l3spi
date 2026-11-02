@@ -27,9 +27,9 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 | Vis sans tête M3×4 | Blocage de chaque vis sans fin sur son arbre | 2 | 2 |
 | Rondelle M3 (3,2 × 7 × 0,5) | Sous les 4 vis posées sur les lumières de la chaîne d'azimut | 4 | 4 |
 | Écrou M3 | Dans le cadre du panneau : rails (4) et capteur solaire (2) | 6 | 6 |
-| Écrou 1/4"-20 | Prisonnier dans le fond, pour le trépied photo | 0 | 1 |
+| Écrou 1/4"-20 | Prisonnier dans le fond, pour le trépied | 0 | 1 |
 
-La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied photo.
+La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied.
 
 ## Vue d'ensemble de la tête (cas réel)
 
@@ -49,7 +49,7 @@ La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied photo.
     colonne qui empêche la tête de tourner sur elle ;
   * démonstration : poser l'écrou 1/4" dans son logement hexagonal, par le dessus, puis
     visser le fond sous le socle (3 × M3×10, têtes noyées). L'écrou est alors prisonnier ;
-    la vis 1/4" du trépied photo vient s'y visser par-dessous.
+    la vis 1/4" du trépied vient s'y visser par-dessous.
 
 ## Étape 5 : chaîne d'élévation
 

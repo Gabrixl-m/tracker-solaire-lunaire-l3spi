@@ -21,7 +21,7 @@ Ce document a trois parties, suivies de la bibliographie :
 * **Partie A — Le tracker lunaire (cas réel)** : tête rotative, panneau, capteur solaire,
   conditions lunaires, trépied, matériaux et vérifications (§ 1 à 10) ;
 * **Partie B — La démonstration sur Terre** : la même tête imprimée en PETG et posée sur un
-  trépied photo, avec ce qui change par rapport au cas réel et tout ce qu'il faut pour la
+  trépied, avec ce qui change par rapport au cas réel et tout ce qu'il faut pour la
   fabriquer (§ 11 à 19) ;
 * **Partie C — Fichiers, scripts, régénération et licence** (§ 20 à 23) ;
 * **Bibliographie**.
@@ -568,12 +568,12 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 # Partie B — La démonstration sur Terre (tête imprimée en PETG)
 
 La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
-trépied photo grand public (§ 18) :
+trépied (§ 18) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur un trépied photo](docs/demo_trepied_photo_iso.png) | ![Côté moteurs](docs/demo_trepied_photo_arriere.png) |
-| ![De profil](docs/demo_trepied_photo_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_photo_detail.png) |
+| ![Sur un trépied](docs/demo_trepied_iso.png) | ![Côté moteurs](docs/demo_trepied_arriere.png) |
+| ![De profil](docs/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](docs/demo_trepied_detail.png) |
 
 ## 11. Du cas réel à la démonstration : ce qui change
 
@@ -624,7 +624,7 @@ l'électronique.
 
 | Grandeur | Cas réel | Démonstration PETG |
 |---|---|---|
-| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied photo (vis 1/4"), axe à 758 mm sur le trépied modélisé (§ 18) |
+| Support | Trépied du projet (colonne Ø50), axe d'élévation à 700 mm du sol | Trépied (vis 1/4"), axe à 758 mm sur le trépied modélisé (§ 18) |
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
 | Masse de la tête (hors panneau) | 1,86 kg | 1,20 kg |
 | Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,50 kg, centre de gravité à 62,0 mm de l'axe |
@@ -639,7 +639,7 @@ l'électronique.
 | Pièce | Qté | Orientation (déjà appliquée) | Remarque |
 |---|---|---|---|
 | `Socle` | 1 | Debout, ouverture en bas | Cône à 45° sous le logement du 6806 bas : pas de support |
-| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied photo : écrou 1/4" pris dans un logement hexagonal |
+| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied : écrou 1/4" pris dans un logement hexagonal |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
@@ -687,7 +687,7 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
-| Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
+| Écrou 1/4"-20 UNC (filetage des trépieds, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
@@ -821,7 +821,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
    rondelle d'arrêt par-dessous (2 × M3×8).
 4. **Fond** : poser l'écrou 1/4" dans son logement hexagonal, par le dessus. Visser ensuite
    le fond sous le socle avec 3 × M3×10, têtes noyées par-dessous : l'écrou est alors
-   prisonnier. Poser la tête sur le trépied photo et la visser sur la vis 1/4" du plateau.
+   prisonnier. Poser la tête sur le trépied et la visser sur la vis 1/4" du plateau.
 5. **Chape** : sur l'établi, presser les deux 6801 dans les bras, par l'extérieur, jusqu'à
    l'épaulement. Monter ensuite la
    chaîne d'élévation :
@@ -1398,11 +1398,11 @@ alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,2
 correction à 0,1° : le panneau se recale alors toutes les 25 secondes environ, et le
 mouvement paraît continu à l'écran. La consommation reste de quelques dizaines de mW.
 
-## 18. Sur un trépied photo grand public
+## 18. Sur un trépied
 
-![Fond sur trépied photo](docs/explications/fond_trepied_photo.png)
+![Fond sur trépied](docs/explications/fond_trepied.png)
 
-La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied photo**.
+La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied**.
 Le fond contient un écrou 1/4"-20 pris dans un logement hexagonal. Les câbles sortent
 par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas réel garde sa
 colonne Ø50.
@@ -1415,8 +1415,8 @@ colonne Ø50.
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
   La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
-* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet.
-  Le calcul est fait ci-dessous pour un trépied photo courant.
+* **Stabilité** : un trépied léger bascule bien plus tôt que le trépied du projet.
+  Le calcul est fait ci-dessous pour un trépied courant.
 
 ### Le trépied modélisé : dimensions et stabilité
 
@@ -1542,19 +1542,19 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 18) |
+| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 18) |
 | **`Electronique/Schema_Electrique.qet`** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
 | `Electronique/Schema_Electrique.pdf` | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
 | **`Electronique/Implantation_Boitier.fzz`** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs/electronique/implantation_boitier.png` et `docs/electronique/plaque_pastilles.png` |
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
 | **`LISTE_ACHATS.md`** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
-| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
+| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
@@ -1571,7 +1571,7 @@ avec les noms des pièces, les sous-assemblages et les couleurs.
 Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
 `Tete_Rotative_*.step`, `Demo_Trepied.step`) :
 * **orange** : toutes les vis (CHC et FHC M3, vis sans tête M3×4 de blocage des vis sans
-  fin, vis 1/4"-20 du plateau du trépied photo) ;
+  fin, vis 1/4"-20 du plateau du trépied) ;
 * **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
   écrou 1/4"-20).
 
@@ -1579,7 +1579,7 @@ Les rendus PNG suivent le même code. La visserie y est éclairée plus fort et 
 et un bandeau en bas de l'image rappelle les deux couleurs.
 
 Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
-de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
+de blocage et ancrages en gris titane, molettes et clips du trépied de la démonstration en gris. Les
 fichiers de pièces seules (`pieces/*.step`) n'ont pas de couleur. Si les couleurs
 n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP de
 SolidWorks.
@@ -1626,7 +1626,7 @@ paramètres sont regroupés en tête de `scripts/generate_tracker.py` :
 * dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (Partie B).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
-`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied photo (`TREPIED_DEMO`, lests) sont en tête
+`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied de la démonstration (`TREPIED_DEMO`, lests) sont en tête
 de `scripts/generate_demo_trepied.py`.
 
 ```bash
@@ -1634,7 +1634,7 @@ pip install -r requirements.txt
 python scripts/generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python scripts/generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
-python scripts/generate_demo_trepied.py               # démonstration sur trépied photo : STEP, contrôles, stabilité
+python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech

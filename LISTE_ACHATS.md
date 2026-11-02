@@ -122,7 +122,7 @@ bibliothèques sont décrits dans le README, § 16. Le branchement du capteur so
 ## 3. Visserie
 
 Toute la visserie est **métrique à pas standard** (M3 × 0,5 et M2,5 × 0,45), sauf l'écrou du
-trépied photo (1/4"-20 UNC). Prendre de l'**inox A2-70** (il ne rouille pas dehors), sinon de
+trépied (1/4"-20 UNC). Prendre de l'**inox A2-70** (il ne rouille pas dehors), sinon de
 l'acier zingué classe 8.8.
 
 La longueur d'une vis CHC se mesure sous la tête ; celle d'une vis fraisée, hors tout. Chaque
@@ -155,7 +155,7 @@ Les vis de serrage des accouplements flexibles sont fournies avec eux.
 | Article (norme) | Dimensions | Qté | Où |
 |---|---|---|---|
 | **Écrou hexagonal M3** (ISO 4032 / DIN 934) | 5,5 mm sur plats, 2,4 mm d'épaisseur | 6 | Posés dans le cadre du panneau : sur l'aile arrière, un par vis des rails (4) ; contre le petit côté, pour l'équerre du capteur (2) |
-| **Écrou hexagonal 1/4"-20 UNC** (filetage photo) | 7/16" = 11,1 mm sur plats, 7/32" = 5,6 mm d'épaisseur (un contre-écrou de 4 mm convient aussi) | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied photo. Ce n'est pas un écrou M6 : le pas est différent |
+| **Écrou hexagonal 1/4"-20 UNC** (filetage des trépieds) | 7/16" = 11,1 mm sur plats, 7/32" = 5,6 mm d'épaisseur (un contre-écrou de 4 mm convient aussi) | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied. Ce n'est pas un écrou M6 : le pas est différent |
 | **Rondelle plate M3** (ISO 7089 / DIN 125-A) | 3,2 × 7 × 0,5 mm | 4 | Sous la tête des 4 vis d'azimut posées sur les lumières de la chape. Sans elle, la tête Ø5,5 ne porterait que sur 0,4 mm aux deux bouts d'une lumière de 4,7 mm et s'enfoncerait dans le PETG |
 | Rondelle plate M3 (ISO 7089), en plus | 3,2 × 7 × 0,5 mm | 8 | **Seulement si les rails sont en barre de 12 × 12** au lieu de 12 × 13 : deux rondelles empilées (1 mm) sous chaque vis, entre le rail et le chapeau |
 

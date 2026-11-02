@@ -15,9 +15,9 @@ Terre comme sur la Lune. Toutes les cotes sont en **millimètres, à taille rée
 **Licence : [CC BY-NC-SA 4.0](LICENSE).** Libre pour un usage personnel, scolaire ou associatif,
 en citant l'auteur ; **usage commercial interdit** (§ 6).
 
-| Modèle lunaire (panneau à 40°) | Modèle terrestre, sur un trépied photo |
+| Modèle lunaire (panneau à 40°) | Modèle terrestre, sur un trépied |
 |---|---|
-| ![Vue d'ensemble du modèle lunaire](docs/apercu_latitudemoyenne_iso.png) | ![Modèle terrestre sur un trépied photo](docs/demo_trepied_photo_iso.png) |
+| ![Vue d'ensemble du modèle lunaire](docs/apercu_latitudemoyenne_iso.png) | ![Modèle terrestre sur un trépied](docs/demo_trepied_iso.png) |
 
 ## 1. Deux modèles : choisir le sien
 
@@ -28,9 +28,9 @@ le **« cas réel »** désigne le modèle lunaire (dossier `CAO/Cas_Reel/`), et
 
 | | 🌙 **Modèle lunaire** (cas réel) | 🌍 **Modèle terrestre** (démonstration en PETG) |
 |---|---|---|
-| **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | La même tête, imprimée en PETG, vissée sur un trépied photo grand public : **c'est celui qu'on construit** |
+| **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | La même tête, imprimée en PETG, vissée sur un trépied : **c'est celui qu'on construit** |
 | **Matériaux** | Aluminium, bronze, inox, titane ; roulements secs (MoS₂) pour le vide | PETG imprimé, roulements et visserie du commerce |
-| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied photo (vis 1/4"), axe à 758 mm |
+| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 758 mm |
 | **On y trouve** | Conditions lunaires, choix de l'angle, trépied, matériaux, couples et marges, vérifications, limites | Pièces à imprimer et à acheter, réglages, montage pas à pas, électronique complète, boîtier étanche, énergie, LoRa |
 | **Fichiers** | `CAO/Cas_Reel/` (STEP) | `CAO/Demo_Terre_PETG/` (STL et STEP), `Electronique/`, `LISTE_ACHATS.md` |
 | **Documentation** | **➜ [README du modèle lunaire](CAO/Cas_Reel/README.md)** | **➜ [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md)** |
@@ -79,7 +79,7 @@ tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), 
 
 Le modèle terrestre reprend exactement cette architecture, imprimée en PETG. Seuls changent les
 pivots d'élévation (PETG Ø12 sur roulements **6801**, au lieu d'inox Ø8 sur **608**) et la
-fixation du socle, vissé sur la vis 1/4" d'un trépied photo
+fixation du socle, vissé sur la vis 1/4" d'un trépied
 ([README du modèle terrestre](CAO/Demo_Terre_PETG/README.md)).
 
 **Roulements** : deux **6806** en azimut, deux **608** (lunaire) ou **6801** (terrestre) en
@@ -272,12 +272,12 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | Fichier | Contenu |
 |---|---|
 | `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_photo_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied photo |
+| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
 | **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
 | `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
-| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied photo grand public, vérifie les interférences et calcule la stabilité (basculement, vent) |
+| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
@@ -294,7 +294,7 @@ avec les noms des pièces, les sous-assemblages et les couleurs.
 Code couleur de la visserie dans les assemblages (`Tracker_Lunaire_*.step`,
 `Tete_Rotative_*.step`, `Demo_Trepied.step`) :
 * **orange** : toutes les vis (CHC et FHC M3, vis sans tête M3×4 de blocage des vis sans
-  fin, vis 1/4"-20 du plateau du trépied photo) ;
+  fin, vis 1/4"-20 du plateau du trépied) ;
 * **vert clair** : les rondelles et les écrous qui vont avec (rondelles M3, écrous M3,
   écrou 1/4"-20).
 
@@ -302,7 +302,7 @@ Les rendus PNG suivent le même code. La visserie y est éclairée plus fort et 
 et un bandeau en bas de l'image rappelle les deux couleurs.
 
 Les autres pièces qui étaient orange ont changé de teinte pour éviter la confusion : bague
-de blocage et ancrages en gris titane, molettes et clips du trépied photo en gris. Les
+de blocage et ancrages en gris titane, molettes et clips du trépied de la démonstration en gris. Les
 fichiers de pièces seules (`pieces/*.step`) n'ont pas de couleur. Si les couleurs
 n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP de
 SolidWorks.
@@ -337,7 +337,7 @@ paramètres sont regroupés en tête de `scripts/generate_tracker.py` :
 * dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (modèle terrestre).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
-`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied photo (`TREPIED_DEMO`, lests) sont en tête
+`scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied de la démonstration (`TREPIED_DEMO`, lests) sont en tête
 de `scripts/generate_demo_trepied.py`.
 
 ```bash
@@ -345,7 +345,7 @@ pip install -r requirements.txt
 python scripts/generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python scripts/generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
-python scripts/generate_demo_trepied.py               # démonstration sur trépied photo : STEP, contrôles, stabilité
+python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech

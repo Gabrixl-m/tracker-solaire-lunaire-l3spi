@@ -82,7 +82,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #61 = PRODUCT_DEFINITION_SHAPE('','',#62);
 #62 = PRODUCT_DEFINITION('design','',#63,#66);
 #63 = PRODUCT_DEFINITION_FORMATION('','',#64);
-#64 = PRODUCT('Plateau_Trepied_Photo','Plateau_Trepied_Photo','',(#65));
+#64 = PRODUCT('Plateau_Trepied','Plateau_Trepied','',(#65));
 #65 = PRODUCT_CONTEXT('',#2,'mechanical');
 #66 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
 #67 = ADVANCED_BREP_SHAPE_REPRESENTATION('',(#11,#68),#166);
@@ -214,14 +214,14 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #173 = ITEM_DEFINED_TRANSFORMATION('','',#11,#41);
 #174 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',#175
   );
-#175 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('96','Plateau_Trepied_Photo','',
+#175 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('96','Plateau_Trepied','',
   #35,#62,$);
 #176 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#64));
 #177 = SHAPE_DEFINITION_REPRESENTATION(#178,#184);
 #178 = PRODUCT_DEFINITION_SHAPE('','',#179);
 #179 = PRODUCT_DEFINITION('design','',#180,#183);
 #180 = PRODUCT_DEFINITION_FORMATION('','',#181);
-#181 = PRODUCT('Vis_1_4_Trepied_Photo','Vis_1_4_Trepied_Photo','',(#182)
+#181 = PRODUCT('Vis_1_4_Trepied','Vis_1_4_Trepied','',(#182)
   );
 #182 = PRODUCT_CONTEXT('',#2,'mechanical');
 #183 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -352,7 +352,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #290 = ITEM_DEFINED_TRANSFORMATION('','',#11,#45);
 #291 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',#292
   );
-#292 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('97','Vis_1_4_Trepied_Photo','',
+#292 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('97','Vis_1_4_Trepied','',
   #35,#179,$);
 #293 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#181));
 #294 = SHAPE_DEFINITION_REPRESENTATION(#295,#301);

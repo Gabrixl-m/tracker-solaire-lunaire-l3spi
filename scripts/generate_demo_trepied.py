@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Démonstration sur Terre : la tête PETG, le panneau et le capteur solaire vissés sur le trépied
-photo grand public (trépied photo ou de chantier, avec rotule et plateau à vis 1/4").
+Démonstration sur Terre : la tête PETG, le panneau et le capteur solaire vissés sur un trépied du
+commerce (avec rotule et plateau à vis 1/4").
 
 Le trépied est modélisé simplement, d'après des photos et deux cotes mesurées sur un trépied du commerce :
   - dessus du plateau à 600 mm du sol (sans la vis 1/4" qui dépasse) ;
@@ -60,7 +60,7 @@ LESTS = (0.0, 2.0, 3.0)             # lest suspendu sous le trépied (kg), à 50
 
 def z_tete():
     """Hauteur (sol) de l'origine du repère tête : le dessous du fond est sur le plateau."""
-    return TREPIED_DEMO["h_plateau"] - G.z_fond_photo()
+    return TREPIED_DEMO["h_plateau"] - G.z_fond_1_4()
 
 
 R_EMBOUT = 10.0                     # embout caoutchouc arrondi : il touche le sol à r_pieds
@@ -179,19 +179,19 @@ def enregistrer_trepied():
         faites.append(n)
     noms = []
     for n, (wp, c) in pieces.items():
-        nom = f"Trepied_Photo_{n}"
+        nom = f"Trepied_{n}"
         mat = "Al (trépied)" if c == "alu" else "Plastique (trépied)"
-        G.reg(nom, wp, mat, COULEURS[c], f"Trépied photo grand public (modèle simplifié) : {n.replace('_', ' ').lower()}")
+        G.reg(nom, wp, mat, COULEURS[c], f"Trépied (modèle simplifié) : {n.replace('_', ' ').lower()}")
         noms.append(nom)
     return noms
 
 
 def assemblage(az, el, noms, name="Demo_Trepied"):
     root = cq.Assembly(name=name)
-    tr = cq.Assembly(name="SA_Trepied_Photo")
+    tr = cq.Assembly(name="SA_Trepied")
     for n in noms:
         G.add(tr, n)
-    root.add(tr, name="SA_Trepied_Photo", loc=G.TO_YUP)
+    root.add(tr, name="SA_Trepied", loc=G.TO_YUP)
     zt = trans(0, 0, z_tete())
     root.add(G.build_head_fixed(), name="SA_Tete_Fixe", loc=G.TO_YUP * zt)
     root.add(G.build_head(az, el), name="SA_Tete_Orientable", loc=G.TO_YUP * zt * rot((0, 0, 1), az))
@@ -208,7 +208,7 @@ def stabilite(noms):
     Trois ensembles : le fixe (trépied + partie fixe de la tête), la partie qui tourne en azimut
     sans le panneau, et la partie qui bascule ; on fait tourner leurs centres de gravité."""
     fl = G.flatten(assemblage(0.0, 90.0, noms, "stab"))
-    trep = [x for x in fl if "/SA_Trepied_Photo/" in x[0]]
+    trep = [x for x in fl if "/SA_Trepied/" in x[0]]
     tete_fixe = [x for x in fl if "/SA_Tete_Fixe/" in x[0]]
     tourne = [x for x in fl if "/SA_Tete_Orientable/" in x[0] and "/SA_Panneau/" not in x[0]]
     m0, c0 = masse_cdg(trep)
@@ -292,7 +292,7 @@ def garde(noms):
         for az in (0.0, 60.0, 120.0, 180.0, 240.0, 300.0):
             fl = G.flatten(assemblage(az, el, noms, "g"))
             mob = [x for x in fl if "/SA_Tete_Orientable/" in x[0]]
-            tr = [x for x in fl if "/SA_Trepied_Photo/" in x[0]]
+            tr = [x for x in fl if "/SA_Trepied/" in x[0]]
             dd = G.min_clearance(mob, tr, cutoff=60.0)
             if dd[0] < pire[0]:
                 pire = dd + (az, el)
@@ -306,12 +306,12 @@ def rendus(noms):
     r = build_renderer(assy, sun)
     r.SetBackground(0.80, 0.86, 0.93)                  # ciel de jour : démonstration sur Terre
     f0 = (0, 520, 0)
-    shoot(r, "demo_trepied_photo_iso.png", (1350, 1050, -1500), focal=f0, angle=34)
-    shoot(r, "demo_trepied_photo_profil.png", (2300, 560, 0), focal=f0, angle=30)
-    shoot(r, "demo_trepied_photo_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
+    shoot(r, "demo_trepied_iso.png", (1350, 1050, -1500), focal=f0, angle=34)
+    shoot(r, "demo_trepied_profil.png", (2300, 560, 0), focal=f0, angle=30)
+    shoot(r, "demo_trepied_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
     r = build_renderer(assy, sun, ground=False)
     r.SetBackground(0.80, 0.86, 0.93)
-    shoot(r, "demo_trepied_photo_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
+    shoot(r, "demo_trepied_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
 
 
 def main():

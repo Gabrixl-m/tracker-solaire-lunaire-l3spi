@@ -3,12 +3,12 @@
 [⬅ Retour au README principal](../../README.md) · [Modèle lunaire ➜](../Cas_Reel/README.md)
 
 La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
-trépied photo grand public (§ 8) :
+trépied (§ 8) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur un trépied photo](../../docs/demo_trepied_photo_iso.png) | ![Côté moteurs](../../docs/demo_trepied_photo_arriere.png) |
-| ![De profil](../../docs/demo_trepied_photo_profil.png) | ![La tête sur la rotule du trépied](../../docs/demo_trepied_photo_detail.png) |
+| ![Sur un trépied](../../docs/demo_trepied_iso.png) | ![Côté moteurs](../../docs/demo_trepied_arriere.png) |
+| ![De profil](../../docs/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](../../docs/demo_trepied_detail.png) |
 
 C'est **le modèle qu'on construit** : ce document donne tout ce qu'il faut pour le fabriquer,
 de l'impression au boîtier électronique. La tête, le panneau, le capteur solaire et la
@@ -23,7 +23,7 @@ commande, communs aux deux modèles, sont décrits dans le [README principal](..
 5. [Ordre de montage](#5-ordre-de-montage)
 6. [Commande : Heltec WiFi LoRa 32 V4](#6-commande--heltec-wifi-lora-32-v4)
 7. [Capteur solaire de la démonstration](#7-capteur-solaire-de-la-démonstration)
-8. [Sur un trépied photo grand public](#8-sur-un-trépied-photo-grand-public)
+8. [Sur un trépied](#8-sur-un-trépied)
 9. [Couples, marges et tenue de la version PETG](#9-couples-marges-et-tenue-de-la-version-petg)
 10. [Fichiers de ce dossier et du boîtier électronique](#10-fichiers-de-ce-dossier-et-du-boîtier-électronique)
 
@@ -80,7 +80,7 @@ Les chiffres côte à côte (masses, marges, courant du moteur d'élévation) so
 | Pièce | Qté | Orientation (déjà appliquée) | Remarque |
 |---|---|---|---|
 | `Socle` | 1 | Debout, ouverture en bas | Cône à 45° sous le logement du 6806 bas : pas de support |
-| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied photo : écrou 1/4" pris dans un logement hexagonal |
+| `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied : écrou 1/4" pris dans un logement hexagonal |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
@@ -128,7 +128,7 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
 | Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
-| Écrou 1/4"-20 UNC (filetage photo, 7/16" sur plats) | 1 |
+| Écrou 1/4"-20 UNC (filetage des trépieds, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
 | Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
@@ -263,7 +263,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
    rondelle d'arrêt par-dessous (2 × M3×8).
 4. **Fond** : poser l'écrou 1/4" dans son logement hexagonal, par le dessus. Visser ensuite
    le fond sous le socle avec 3 × M3×10, têtes noyées par-dessous : l'écrou est alors
-   prisonnier. Poser la tête sur le trépied photo et la visser sur la vis 1/4" du plateau.
+   prisonnier. Poser la tête sur le trépied et la visser sur la vis 1/4" du plateau.
 5. **Chape** : sur l'établi, presser les deux 6801 dans les bras, par l'extérieur, jusqu'à
    l'épaulement. Monter ensuite la
    chaîne d'élévation :
@@ -841,11 +841,11 @@ alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,2
 correction à 0,1° : le panneau se recale alors toutes les 25 secondes environ, et le
 mouvement paraît continu à l'écran. La consommation reste de quelques dizaines de mW.
 
-## 8. Sur un trépied photo grand public
+## 8. Sur un trépied
 
-![Fond sur trépied photo](../../docs/explications/fond_trepied_photo.png)
+![Fond sur trépied](../../docs/explications/fond_trepied.png)
 
-La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied photo**.
+La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied**.
 Le fond contient un écrou 1/4"-20 pris dans un logement hexagonal. Les câbles sortent
 par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas réel garde sa
 colonne Ø50.
@@ -858,8 +858,8 @@ colonne Ø50.
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
   La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
-* **Stabilité** : un trépied photo léger bascule bien plus tôt que le trépied du projet.
-  Le calcul est fait ci-dessous pour un trépied photo courant.
+* **Stabilité** : un trépied léger bascule bien plus tôt que le trépied du projet.
+  Le calcul est fait ci-dessous pour un trépied courant.
 
 ### Le trépied modélisé : dimensions et stabilité
 
@@ -975,12 +975,12 @@ roulements ZZ :
 | `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied photo grand public : tête PETG, panneau, capteur solaire et trépied (§ 8) |
+| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 8) |
 | **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
 | [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
 | **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs/electronique/implantation_boitier.png` et `docs/electronique/plaque_pastilles.png` |
 | **[`LISTE_ACHATS.md`](../../LISTE_ACHATS.md)** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied photo, capteur solaire (vue et coupe) |
+| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
 
 Arborescence de l'assemblage de la tête dans SolidWorks : celle du modèle lunaire
 ([README du modèle lunaire](../Cas_Reel/README.md), § 10), sans trépied ni unité au sol, avec des

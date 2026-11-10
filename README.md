@@ -278,6 +278,7 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
 | `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
+| `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité du modèle terrestre sur son trépied : vent de toutes les directions, glissement, planche lestée, incertitudes |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
@@ -347,6 +348,7 @@ python scripts/generate_tracker.py --balayage         # + garde sur toute la pla
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
 python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
+python scripts/verification_stabilite.py              # stabilité du modèle terrestre, calcul indépendant (vent, glissement, lest)
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
 python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique

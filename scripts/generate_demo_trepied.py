@@ -53,9 +53,25 @@ COULEURS = {"alu": cq.Color(0.78, 0.79, 0.81), "noir": cq.Color(0.10, 0.10, 0.11
 G.MAT.setdefault("Plastique (trépied)", 1150.0)
 G.MAT.setdefault("Al (trépied)", 2700.0)
 
+G.MAT.setdefault("ABS (boîtier)", 1050.0)
+G.MAT.setdefault("Sable (sac de lest)", 1600.0)
+G.MAT.setdefault("Sangle polyester", 1380.0)
+
+# Lest : le boîtier électronique posé à plat sous le trépied, entre deux sacs de sable, le tout
+# sanglé au moyeu de la colonne. Le trépied n'est pas modifié : rien n'est fixé sur ses jambes.
+LEST = dict(
+    boitier=(250.0, 150.0, 100.0, 3.0),   # boîtier étanche à plat (L, l, h) et sa masse avec la batterie
+    sac=(260.0, 100.0, 96.0, 4.0),        # sac de sable (L, l, h) et sa masse ; un de chaque côté du boîtier
+    jeu=4.0,                              # entre le boîtier et chaque sac (passage de la sangle)
+    dy=-20.0,                             # lest décalé de 20 mm, à l'opposé d'une jambe : 20 mm de garde à son verrou
+)
+
 # Cas de charge
-RHO_AIR, CD_PANNEAU = 1.2, 1.2     # vent : pression dynamique x Cx du panneau (plaque plane)
-LESTS = (0.0, 2.0, 3.0)             # lest suspendu sous le trépied (kg), à 50 mm du sol
+RHO_AIR, CD_PANNEAU = 1.2, 1.2     # vent : pression dynamique x coefficient de force du panneau
+ALPHA_PLEIN = 35.0                  # au-delà de cette incidence, la force normale d'une plaque ne baisse plus
+ANNEXES = ((0.012 * 1.1, 700.0), (0.036 * 1.0, 270.0))   # prise au vent (S x Cx en m², hauteur en mm) : tête, jambes
+LESTS = (0.0, LEST["boitier"][3], LEST["boitier"][3] + 2 * LEST["sac"][3])   # sans lest, boîtier seul, boîtier + 2 sacs
+Z_LEST = 50.0                       # hauteur du centre de gravité du lest (mm)
 
 
 def z_tete():
@@ -186,12 +202,48 @@ def enregistrer_trepied():
     return noms
 
 
-def assemblage(az, el, noms, name="Demo_Trepied"):
+NOMS_LEST = ("Lest_Boitier_Electronique", "Lest_Sac_1", "Lest_Sac_2", "Lest_Sangle")
+
+
+def enregistrer_lest():
+    """Le lest dans G.PARTS, déjà en place sous le trépied (repère Z-up, sol en z = 0)."""
+    bl, bw, bh, bm = LEST["boitier"]
+    sl, sw, sh, sm = LEST["sac"]
+    j, dy = LEST["jeu"], LEST["dy"]
+    zb = TREPIED_DEMO["colonne"][1] - 10                       # dessous du moyeu
+    boitier = box_span(-bl / 2, bl / 2, dy - bw / 2, dy + bw / 2, 0, bh).edges("|Z").fillet(8)
+    G.reg(NOMS_LEST[0], boitier, "ABS (boîtier)", cq.Color(0.86, 0.87, 0.88),
+          "Boîtier électronique étanche, à plat sous le trépied : il sert de lest (3 kg avec la batterie)")
+    for i, sgn in enumerate((1, -1), 1):
+        y0, y1 = sorted((dy + sgn * (bw / 2 + j), dy + sgn * (bw / 2 + j + sw)))
+        sac = box_span(-sl / 2, sl / 2, y0, y1, 0, sh).edges().fillet(20)
+        G.reg(NOMS_LEST[i], sac, "Sable (sac de lest)", cq.Color(0.72, 0.62, 0.42),
+              "Sac de sable de 4 kg, contre le boîtier")
+    # sangle : un tour autour du boîtier et des deux sacs, puis un brin qui monte au moyeu
+    e, w = 2.0, 25.0
+    demi = bw / 2 + j + sw
+    tour = box_span(-w / 2, w / 2, dy - demi - e - 1, dy + demi + e + 1, bh + 0.5, bh + 0.5 + e)
+    for sgn in (1, -1):
+        y0, y1 = sorted((dy + sgn * (demi + 1), dy + sgn * (demi + 1 + e)))
+        tour = tour.union(box_span(-w / 2, w / 2, y0, y1, 6, bh + 0.5 + e))
+    brin = box_span(-w / 2, w / 2, -e / 2, e / 2, bh + 0.5 + e, zb - 1)
+    G.reg(NOMS_LEST[3], tour.union(brin), "Sangle polyester", cq.Color(0.95, 0.75, 0.10),
+          "Sangle à boucle de 25 mm : un tour autour du lest, puis autour du moyeu de la colonne, tendue à la main")
+    G.MASS_TARGET.update({NOMS_LEST[0]: bm, NOMS_LEST[1]: sm, NOMS_LEST[2]: sm})
+    return list(NOMS_LEST)
+
+
+def assemblage(az, el, noms, name="Demo_Trepied", lest=True):
     root = cq.Assembly(name=name)
     tr = cq.Assembly(name="SA_Trepied")
     for n in noms:
         G.add(tr, n)
     root.add(tr, name="SA_Trepied", loc=G.TO_YUP)
+    if lest and NOMS_LEST[0] in G.PARTS:
+        ls = cq.Assembly(name="SA_Lest")
+        for n in NOMS_LEST:
+            G.add(ls, n)
+        root.add(ls, name="SA_Lest", loc=G.TO_YUP)
     zt = trans(0, 0, z_tete())
     root.add(G.build_head_fixed(), name="SA_Tete_Fixe", loc=G.TO_YUP * zt)
     root.add(G.build_head(az, el), name="SA_Tete_Orientable", loc=G.TO_YUP * zt * rot((0, 0, 1), az))
@@ -207,7 +259,7 @@ def stabilite(noms):
     """Basculement sans vent et vent de basculement, dans toutes les orientations du panneau.
     Trois ensembles : le fixe (trépied + partie fixe de la tête), la partie qui tourne en azimut
     sans le panneau, et la partie qui bascule ; on fait tourner leurs centres de gravité."""
-    fl = G.flatten(assemblage(0.0, 90.0, noms, "stab"))
+    fl = G.flatten(assemblage(0.0, 90.0, noms, "stab", lest=False))
     trep = [x for x in fl if "/SA_Trepied/" in x[0]]
     tete_fixe = [x for x in fl if "/SA_Tete_Fixe/" in x[0]]
     tourne = [x for x in fl if "/SA_Tete_Orientable/" in x[0] and "/SA_Panneau/" not in x[0]]
@@ -245,11 +297,15 @@ def stabilite(noms):
         tete = pose(az, el)
         mt = m1 + m2 + m3
         M = m0 + mt + lest
-        cg = [(m0 * u + mt * v + lest * w) / M for u, v, w in zip((c0.x, c0.y, c0.z), tete, (0.0, 0.0, 50.0))]
+        cg = [(m0 * u + mt * v + lest * w) / M for u, v, w in zip((c0.x, c0.y, c0.z), tete, (0.0, 0.0, Z_LEST))]
         n0, o = panneau(az, el, (0, 0, 1)), panneau(az, el, (0, 0, 0))
         nh = (n0[0] - o[0], n0[1] - o[1])                         # normale du panneau, à plat : |nh| = cos(él)
         pc = panneau(az, el, pan_c)                               # centre de poussée
-        coef = 0.5 * RHO_AIR * CD_PANNEAU * s_pan * math.cos(math.radians(el))   # poussée = coef x v²
+        # force normale au panneau = coef x v² : constante tant que le vent l'attaque à plus de
+        # ALPHA_PLEIN (incidence = 90° - él pour un vent horizontal dans l'axe du panneau)
+        ch = math.cos(math.radians(el))
+        coef = 0.5 * RHO_AIR * CD_PANNEAU * s_pan * min(1.0, ch / math.sin(math.radians(ALPHA_PLEIN)))
+        annexes = 0.5 * RHO_AIR * sum(s * z for s, z in ANNEXES)   # tête et jambes : moment / v², vent vers l'arête
         ang, vent = 90.0, (1e9, "")
         for ne in normales:
             m_e = (math.cos(ne), math.sin(ne))
@@ -260,6 +316,8 @@ def stabilite(noms):
                 f_h = sgn * (nh[0] * m_e[0] + nh[1] * m_e[1])      # poussée horizontale vers l'arête
                 f_v = sgn * math.sin(math.radians(el))             # poussée verticale (> 0 : soulève)
                 mt_v = coef * (f_h * pc[2] + f_v * r_pc) / 1000    # moment de renversement / v²
+                if ch > 1e-6:                                      # vent horizontal, dans l'axe du panneau
+                    mt_v += annexes * f_h / ch / 1000
                 if mt_v > 0 and bras > 0:
                     v = math.sqrt(M * 9.81 * bras / 1000 / mt_v)
                     if v < vent[0]:
@@ -292,7 +350,7 @@ def garde(noms):
         for az in (0.0, 60.0, 120.0, 180.0, 240.0, 300.0):
             fl = G.flatten(assemblage(az, el, noms, "g"))
             mob = [x for x in fl if "/SA_Tete_Orientable/" in x[0]]
-            tr = [x for x in fl if "/SA_Trepied/" in x[0]]
+            tr = [x for x in fl if "/SA_Trepied/" in x[0] or "/SA_Lest/" in x[0]]
             dd = G.min_clearance(mob, tr, cutoff=60.0)
             if dd[0] < pire[0]:
                 pire = dd + (az, el)
@@ -312,12 +370,14 @@ def rendus(noms):
     r = build_renderer(assy, sun, ground=False)
     r.SetBackground(0.80, 0.86, 0.93)
     shoot(r, "demo_trepied_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
+    shoot(r, "demo_trepied_lest.png", (620, 420, -640), focal=(0, 90, 0), angle=30)
 
 
 def main():
     G.set_ajustements("petg")
     T.build_parts()
     noms = enregistrer_trepied()
+    enregistrer_lest()
     if "--rendus" in sys.argv:
         rendus(noms)
         return
@@ -335,6 +395,9 @@ def main():
     g = garde(noms)
     print(f"garde mini tête orientable + panneau / trépied : {g[0]:.1f} mm "
           f"({g[1].split('/')[-1]} / {g[2].split('/')[-1]}, az={g[3]:g}°, él={g[4]:g}°)")
+    fl = G.flatten(assy)
+    gl = G.min_clearance([x for x in fl if "/SA_Lest/" in x[0]], [x for x in fl if "/SA_Trepied/" in x[0]], cutoff=80.0)
+    print(f"garde mini lest / trépied : {gl[0]:.1f} mm ({gl[1].split('/')[-1]} / {gl[2].split('/')[-1]})")
     s = stabilite(noms)
     print(f"masses : trépied {s['m_trepied']:.2f} kg (estimée), charge sur la rotule (tête + panneau) "
           f"{s['m_charge']:.2f} kg, dont partie qui bascule {s['m_bascule']:.2f} kg")

@@ -215,7 +215,8 @@ Compter 10 à 15 € en tout.
 
 | Article | Qté | Pour quoi |
 |---|---|---|
-| Lest de 2 à 3 kg (sac de sable, bouteille d'eau) | 1 | Démonstration en extérieur, contre le vent. Le boîtier avec sa batterie (≈ 3 kg), suspendu sous la colonne, peut en tenir lieu |
+| Sacs de sable de 4 kg (environ 26 × 10 × 10 cm : sac solide rempli de 2,5 L de sable sec) | 2 | Lest contre le vent, de chaque côté du boîtier posé à plat sous le trépied (README du modèle terrestre, § 8) |
+| Sangle à boucle de 25 mm, 1,5 m | 1 | Fait le tour du boîtier et des deux sacs, puis du moyeu de la colonne du trépied ; tendue à la main |
 
 ---
 

@@ -25,11 +25,11 @@ import sys
 import cadquery as cq
 from cadquery import Location, Vector
 
-# racine du dépôt : les scripts sont dans scripts/, les fichiers produits dans CAO/ et docs/
+# racine du dépôt : les scripts sont dans scripts/, les fichiers produits dans « Fichiers 3D (CAO) »/ et « docs (extra) »/
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_CAD = os.path.join(RACINE, "CAO", "Cas_Reel")
+OUT_CAD = os.path.join(RACINE, "Fichiers 3D (CAO)", "Cas Lunaire")
 OUT_PARTS = os.path.join(OUT_CAD, "pieces")
-OUT_DOC = os.path.join(RACINE, "docs")
+OUT_DOC = os.path.join(RACINE, "docs (extra)")
 
 # ---------------------------------------------------------------------------
 # PARAMÈTRES DE CONCEPTION (mm, degrés)

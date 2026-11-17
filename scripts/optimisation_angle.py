@@ -17,7 +17,7 @@ Critère : masse et encombrement minimaux. Longueur, masse, poussée dans les
 entretoises, course de nivelage et emprise au sol augmentent toutes avec φ :
 l'optimum est donc le plus petit φ qui respecte C1, C2 et C3.
 
-Usage : python scripts/optimisation_angle.py   -> docs/optimisation_angle_jambes.md
+Usage : python scripts/optimisation_angle.py   -> docs (extra)/optimisation_angle_jambes.md
 """
 
 import math
@@ -27,7 +27,7 @@ import cadquery as cq
 
 import generate_tracker as G
 
-OUT = os.path.join(G.RACINE, "docs", "optimisation_angle_jambes.md")
+OUT = os.path.join(G.RACINE, "docs (extra)", "optimisation_angle_jambes.md")
 PHIS = [25.0 + 0.5 * i for i in range(71)]          # 25° à 60°
 
 

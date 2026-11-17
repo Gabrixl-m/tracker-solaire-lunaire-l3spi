@@ -1,6 +1,6 @@
-# 🌙 Modèle lunaire (cas réel)
+# 🌙 Cas lunaire
 
-[⬅ Retour au README principal](../../README.md) · [Modèle terrestre ➜](../Demo_Terre_PETG/README.md)
+[⬅ Retour au README principal](../../README.md) · [Cas terrestre ➜](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)
 
 Le tracker conçu pour la **surface de la Lune** : trépied déployable, tête rotative à vis sans
 fin en aluminium, bronze et inox, panneau de 356 × 253 mm avec son capteur solaire, faisceau de
@@ -22,17 +22,18 @@ dans le [README principal](../../README.md). Ce document traite de ce qui est pr
 8. [Vérifications effectuées par les scripts](#8-vérifications-effectuées-par-les-scripts)
 9. [Limites](#9-limites)
 10. [Fichiers de ce dossier](#10-fichiers-de-ce-dossier)
+11. [Questions pièges et leurs réponses](#11-questions-pièges-et-leurs-réponses)
 
 | Vue d'ensemble (panneau à 40°) | Tête rotative à vis sans fin |
 |---|---|
-| ![Vue d'ensemble](../../docs/apercu_latitudemoyenne_iso.png) | ![Tête à vis sans fin](../../docs/apercu_latitudemoyenne_detail_tete.png) |
-| ![Pôle Sud](../../docs/apercu_polesud_detail_tete_avant.png) | ![Pied et vis d'ancrage](../../docs/apercu_latitudemoyenne_detail_pied.png) |
+| ![Vue d'ensemble](../../docs%20%28extra%29/apercu_latitudemoyenne_iso.png) | ![Tête à vis sans fin](../../docs%20%28extra%29/apercu_latitudemoyenne_detail_tete.png) |
+| ![Pôle Sud](../../docs%20%28extra%29/apercu_polesud_detail_tete_avant.png) | ![Pied et vis d'ancrage](../../docs%20%28extra%29/apercu_latitudemoyenne_detail_pied.png) |
 
 ## 1. La tête en version lunaire
 
-| Coupe par les axes (cas réel) : roulements en rose (6806 dans le socle, 608 dans les bras) |
+| Coupe par les axes (cas lunaire) : roulements en rose (6806 dans le socle, 608 dans les bras) |
 |---|
-| ![Coupe des roulements](../../docs/tete_vis_sans_fin_coupe_roulements.png) |
+| ![Coupe des roulements](../../docs%20%28extra%29/tete_vis_sans_fin_coupe_roulements.png) |
 
 ### Roulements (en rose dans les fichiers 3D et les aperçus)
 
@@ -56,7 +57,7 @@ sur la flasque, ou bien une pièce fixe freinerait la bague qui tourne.
 | 608 (élévation) | Bossage de chaque flanc du chapeau : **Ø11,5**, à 0,1 mm de la bague | Épaulement du bras de la chape : alésage **Ø19,8** |
 | 685 (vis) | Épaulement de chaque moyeu de la vis : **Ø6,5**, à 0,15 mm de la bague | Lèvre de 1 mm de chaque joue du palier : alésage **Ø9,8** |
 
-`scripts/generate_tete_vis_sans_fin.py` le vérifie à chaque génération, pour le cas réel et
+`scripts/generate_tete_vis_sans_fin.py` le vérifie à chaque génération, pour le cas lunaire et
 pour la démonstration. Il contrôle les deux faces de chaque roulement : rien à moins de
 0,3 mm de la protection, et chaque bague n'est approchée que par ce qui tourne avec elle.
 
@@ -98,7 +99,7 @@ rapport × rendement de la vis. Le rendement d'une vis à un filet vaut 0,29 (é
 Calculé avec le panneau pesé (1,16 kg), les masses des pièces d'après leurs matériaux, le
 rendement des vis, les roulements et les câbles.
 
-| Ce qu'on regarde | Cas réel | Verdict |
+| Ce qu'on regarde | Cas lunaire | Verdict |
 |---|---|---|
 | Part du couple moteur utilisée, élévation | 38 % dehors (vent 10 m/s), 5 % sur la Lune, à 1,0 A | Bien dimensionné dehors ; ×21 de trop sur la Lune |
 | Part du couple moteur utilisée, azimut | 43 % dehors, 2 % sur la Lune | Dimensionné par le vent ; sans vent, ×40 à ×60 de trop |
@@ -124,7 +125,7 @@ rendement des vis, les roulements et les câbles.
 * **Énergie** : alimentés, les moteurs consomment environ 5,5 W (NEMA 17 à 1,0 A) et 6 W
   (NEMA 11). Comme les vis tiennent seules, les drivers sont coupés entre deux corrections.
   Avec une correction de 0,5° toutes les 2 minutes (cadence au
-  [README du modèle terrestre](../Demo_Terre_PETG/README.md), § 7), les moteurs sont alimentés
+  [README du cas terrestre](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 7), les moteurs sont alimentés
   moins de 1 % du temps, soit quelques dizaines de mW en moyenne au lieu de 12 W.
 
 ### Tenue moteurs coupés
@@ -162,7 +163,7 @@ planter les vis d'ancrage ou lester les pieds. Au-dessus de 10 m/s, mettre le pa
 Pour le vol, l'ESP32 et les drivers TMC2209 doivent être remplacés par des équivalents
 résistants aux rayonnements, dans l'unité de contrôle au sol, avec la batterie. Le principe
 de la commande est au [README principal](../../README.md) (§ 5), et le câblage détaillé, celui du
-modèle terrestre, dans le [README du modèle terrestre](../Demo_Terre_PETG/README.md).
+cas terrestre, dans le [README du cas terrestre](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md).
 
 ## 2. Suivi du Soleil sur la Lune
 
@@ -192,10 +193,10 @@ modèle terrestre, dans le [README du modèle terrestre](../Demo_Terre_PETG/READ
   bouge **une fois par heure** environ, et les moteurs restent coupés le reste du temps.
 
 Pour une version de vol, le capteur serait en aluminium anodisé noir (c'est déjà le
-matériau du cas réel dans la CAO), avec une **fenêtre en silice fondue** contre la poussière
+matériau du cas lunaire dans la CAO), avec une **fenêtre en silice fondue** contre la poussière
 de régolithe, et des photodiodes qualifiées pour le spatial (rayonnements, −173 à +127 °C).
 La BPW34, utilisée pour la démonstration
-([README du modèle terrestre](../Demo_Terre_PETG/README.md), § 7), est un composant du commerce.
+([README du cas terrestre](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 7), est un composant du commerce.
 
 ## 3. Conditions lunaires et réponses de conception
 
@@ -254,7 +255,7 @@ l'ont fait passer à 33,0°.
 
 L'optimum dépend des exigences. Par exemple, il passe à 38° pour une pente de 20° ou une
 marge de 10°. Le détail est dans
-[`docs/optimisation_angle_jambes.md`](../../docs/optimisation_angle_jambes.md). Si la masse
+[`docs (extra)/optimisation_angle_jambes.md`](../../docs%20%28extra%29/optimisation_angle_jambes.md). Si la masse
 de la tête ou du panneau change, relancer `python scripts/optimisation_angle.py`.
 
 ### Dimensions qui en découlent
@@ -274,7 +275,7 @@ Le trépied pèse 4,3 kg.
 
 ## 6. Matériaux
 
-| Élément | Matériau (cas réel) |
+| Élément | Matériau (cas lunaire) |
 |---|---|
 | Socle, fond, chape, chapeau en U, paliers et supports de moteurs | Al 6061-T6 anodisé |
 | Rondelle d'arrêt du moyeu | Inox 17-4PH |
@@ -310,7 +311,7 @@ Le trépied pèse 4,3 kg.
 | Masse du trépied | 4,3 kg |
 | Masse du tracker complet | 7,4 kg (poids lunaire ≈ 12 N) |
 
-Le détail pièce par pièce est dans `docs/bilan_masse.csv`. Les moteurs et l'unité au sol ont
+Le détail pièce par pièce est dans `docs (extra)/bilan_masse.csv`. Les moteurs et l'unité au sol ont
 une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 ## 8. Vérifications effectuées par les scripts
@@ -359,7 +360,7 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
   leur équivalent en version vide ou spatiale : même taille, même couple, même pilotage.
   De même, les photodiodes BPW34 du capteur solaire sont des composants du commerce
   ([README principal](../../README.md), § 4, et
-  [README du modèle terrestre](../Demo_Terre_PETG/README.md), § 7).
+  [README du cas terrestre](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 7).
 * Les roues des vis sont modélisées à dents droites. Les vraies roues sont taillées pour
   leur vis (dents inclinées et creusées), ce qui augmente la portée et la durée de vie.
 * Sur Terre, le trépied non ancré bascule vers 16 m/s de vent : l'ancrer pour les
@@ -379,10 +380,10 @@ une **masse forfaitaire**, car leur intérieur n'est pas modélisé.
 
 | Fichier | Contenu |
 |---|---|
-| `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step` | **Assemblage principal** : pose de fonctionnement au pôle Sud (site Artemis), Soleil à +1,5°, panneau quasi vertical |
-| `CAO/Cas_Reel/Tracker_Lunaire_LatitudeMoyenne.step` | Même assemblage, pose « sites Apollo » : Soleil à 50°, panneau incliné à 40° |
-| `CAO/Cas_Reel/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
-| `CAO/Cas_Reel/pieces/*.step` | Toutes les pièces seules (trépied, tête, panneau, unité au sol), chacune dans son repère de construction |
+| `Fichiers 3D (CAO)/Cas Lunaire/Tracker_Lunaire_PoleSud.step` | **Assemblage principal** : pose de fonctionnement au pôle Sud (site Artemis), Soleil à +1,5°, panneau quasi vertical |
+| `Fichiers 3D (CAO)/Cas Lunaire/Tracker_Lunaire_LatitudeMoyenne.step` | Même assemblage, pose « sites Apollo » : Soleil à 50°, panneau incliné à 40° |
+| `Fichiers 3D (CAO)/Cas Lunaire/Tete_Rotative_VisSansFin.step` | La tête rotative seule, avec le haut de la colonne et le panneau monté à 40° |
+| `Fichiers 3D (CAO)/Cas Lunaire/pieces/*.step` | Toutes les pièces seules (trépied, tête, panneau, unité au sol), chacune dans son repère de construction |
 
 Arborescence de l'assemblage principal dans SolidWorks (voir « Ouvrir dans SolidWorks » au
 [README principal](../../README.md)) :
@@ -398,3 +399,57 @@ Tracker_Lunaire_PoleSud
 ├── SA_Unite_Sol          unité de contrôle / batterie + radiateur
 └── SA_Faisceau           faisceau de câbles
 ```
+
+## 11. Questions pièges et leurs réponses
+
+Les questions qu'on peut nous poser pour nous faire dire une erreur sur le cas lunaire, avec
+la réponse courte et l'endroit où elle est détaillée. Dans presque tous les cas, le piège est
+de raisonner comme sur Terre.
+
+### Matériaux
+
+| Question piège | Réponse |
+|---|---|
+| « Pourquoi ne pas tout faire dans le même métal, vis et roues comprises ? » | **À cause du soudage à froid.** Dans le vide, deux pièces du même métal qui frottent perdent leur couche d'oxyde, et rien ne la reforme : elles se soudent. Chaque contact associe donc deux matériaux différents : vis en inox 17-4PH contre roue en bronze, roulements en acier 440C (§ 3 et § 6). |
+| « L'anodisation de l'aluminium, c'est contre la rouille ? » | **Non : il n'y a ni eau ni air.** Elle durcit la surface contre la poussière de régolithe, très abrasive, elle évite le contact métal nu contre métal nu (soudage à froid), et elle aide la pièce à rayonner sa chaleur. |
+| « Pourquoi pas la tête imprimée en plastique de la démonstration ? Elle est plus légère. » | **Elle ne survivrait pas.** Le PLA se ramollit vers 60 °C et le PETG vers 80 °C, alors que la surface passe de −173 à +127 °C. Ces plastiques dégazent dans le vide, deviennent cassants au froid et vieillissent sous les UV (§ 3). |
+| « Le titane est plus résistant : pourquoi pas tout en titane ? » | **La résistance n'est pas le problème.** Sous 1/6 de g et sans vent, les efforts sont très faibles. Le titane est cher, difficile à usiner, il grippe facilement et il conduit mal la chaleur, alors que les moteurs se refroidissent par conduction. On le garde là où il sert : ferrures, axes et vis d'ancrage (§ 6). |
+| « La chape et le chapeau sont dans le même alliage : par hasard ? » | **Non.** Sur 300 °C d'écart, 100 mm d'aluminium changent de 0,7 mm. Dans le même alliage, les deux pièces se dilatent ensemble, et le jeu de 0,1 mm par côté sur les roulements est conservé (§ 3). |
+| « Un roulement en acier dans un logement en aluminium, ça tient de −173 à +127 °C ? » | **Non, et c'est une limite connue du modèle.** L'aluminium se contracte deux fois plus que l'acier : le logement serre le 6806 de 0,11 mm de plus à froid et lui laisse 0,06 mm de jeu à chaud. Une version de vol a besoin de logements en titane ou de bagues en acier (§ 9). |
+| « Pourquoi du 7075 pour les tubes et du 6061 pour la tête ? » | Le **7075-T73** est plus résistant : il convient aux tubes minces du trépied. Le **6061-T6** s'usine et s'anodise mieux : il convient aux pièces massives de la tête (§ 6). |
+| « Votre panneau du commerce irait sur la Lune ? » | **Non.** Verre, EVA et boîte de jonction en plastique ne supportent ni le vide ni les cycles thermiques. Il est là pour ses dimensions et sa masse (§ 9). |
+| « L'ESP32, les TMC2209 et les moteurs NEMA voleraient ? » | **Non.** Ce sont des composants du commerce. Ils fixent la taille, le couple et le principe de commande. Le vol demande leurs équivalents qualifiés : rayonnements, vide, froid (§ 9). |
+
+### Lubrification
+
+| Question piège | Réponse |
+|---|---|
+| « Quelle graisse mettez-vous dans les roulements et sur les vis ? » | **Aucune.** Dans le vide, une graisse ou une huile s'évapore, se redépose sur les cellules et les capteurs, et elle fige à −173 °C. La lubrification est **sèche** : un film solide de MoS₂ (bisulfure de molybdène) (§ 1 et § 6). |
+| « Le graphite est aussi un lubrifiant sec : pourquoi pas lui ? » | **Le graphite ne lubrifie pas dans le vide.** Il a besoin de la vapeur d'eau de l'air pour glisser ; sans elle, il devient abrasif. Le MoS₂ fait l'inverse : il marche mieux dans le vide que dans l'air. |
+| « Donc vous pouvez essayer la tête lubrifiée au MoS₂ dans la salle de TP ? » | **Avec précaution.** L'humidité de l'air dégrade le MoS₂. Les essais d'un mécanisme de vol se font sous azote sec ou sous vide ; à l'air, on limite la durée de fonctionnement. |
+| « Et le Téflon (PTFE) ? » | Il flue sous charge et supporte mal les rayonnements. On le garde pour la démonstration sur Terre, sous forme de graisse. |
+| « Pourquoi des roulements ZZ et pas 2RS, qui sont plus étanches ? » | **Les joints en caoutchouc des 2RS dégazent dans le vide** et durcissent au froid. Les flasques métalliques des ZZ arrêtent la poussière sans frotter (§ 1). |
+| « Avec le MoS₂, le frottement est très faible : votre vis sans fin reste-t-elle irréversible ? » | **Non, et c'est prévu.** Avec un frottement de 0,02, l'angle de frottement (1,1°) est inférieur à la pente du filet (3,6°) : la vis devient réversible. Le panneau tient quand même : la gravité ne donne que 0,16 N·m, il n'y a pas de vent, et le couple résiduel du moteur coupé suffit, avec une marge de 7,5 (§ 1, « Tenue moteurs coupés »). |
+
+### Gravité, vent et stabilité
+
+| Question piège | Réponse |
+|---|---|
+| « Le tracker pèse 7,4 kg sur la Lune ? » | **Sa masse est de 7,4 kg partout.** Son poids est de 12 N sur la Lune, contre 73 N sur Terre (§ 7). |
+| « La gravité est six fois plus faible : vos moteurs sont donc six fois trop gros ? » | **Trop gros pour la Lune, oui, et c'est voulu.** Le même matériel doit être essayé sur Terre, à 1 g et dans le vent : c'est ce cas qui dimensionne (marges de 2,7 et 2,3). Sur la Lune, les marges montent à 21 et 61. Une version faite seulement pour le vol pourrait prendre un NEMA 8 (§ 1). |
+| « Le trépied est plus stable sur la Lune, puisque tout est plus léger ? » | **L'angle de basculement ne dépend pas de la gravité** : il ne dépend que de la position du centre de gravité par rapport aux pieds (25,2°). En revanche, une force extérieure (un câble tiré, un choc) le renverse six fois plus facilement. |
+| « Pas de vent, donc pas besoin d'ancrage ? » | **Si.** Il reste les pentes, les cailloux sous un pied et les chocs. Et le frottement au sol, six fois plus faible, fait qu'un piquet lisse tient mal : d'où des vis d'ancrage hélicoïdales (§ 5). |
+| « Pas de vent, donc pas de poussière ? » | **Si.** Le régolithe est soulevé par les astronautes, les roues et les moteurs des atterrisseurs, et il colle par électricité statique. Ses grains, jamais érodés, sont coupants. D'où les roulements protégés, les connecteurs vers le bas, et les capots à prévoir sur les engrenages (§ 3 et § 9). |
+| « Comment refroidissez-vous les moteurs ? Par un ventilateur ? » | **Il n'y a pas d'air, donc pas de convection.** La chaleur part par conduction vers la chape, puis par rayonnement. Surtout, les moteurs chauffent très peu : les vis tiennent le panneau, donc ils sont alimentés moins de 1 % du temps (§ 3). |
+| « Et le lancement ? » | **C'est une limite du modèle.** À 15 g, le panneau non équilibré ferait environ 13,5 N·m sur l'axe d'élévation, à la limite des dents en bronze. Il faut un verrou de lancement (§ 9). |
+
+### Soleil, suivi et énergie
+
+| Question piège | Réponse |
+|---|---|
+| « Le jour lunaire dure 24 heures ? » | **Non : 29,5 jours terrestres**, dont environ 14 de nuit. Le Soleil avance de 0,5° par heure, trente fois moins vite que sur Terre : une correction par heure suffit (§ 2). |
+| « Vous prenez la position par GPS pour calculer où est le Soleil ? » | **Il n'y a pas de GPS sur la Lune.** Les photodiodes pilotent le suivi, sans avoir besoin de la position ni du nord. Le calcul sert de secours, avec la position du site connue de la mission et l'horloge de bord (§ 2). |
+| « Au pôle Sud, le Soleil reste à l'horizon : l'axe d'élévation ne sert à rien ? » | **Il sert peu, mais il sert.** Le Soleil varie de ±1,5°, le trépied n'est jamais posé parfaitement de niveau, et la même tête doit convenir aux autres latitudes. C'est l'azimut qui travaille : un tour complet par jour lunaire (§ 4). |
+| « Un tour complet par jour, avec des câbles ? » | La boucle de câble limite l'azimut à ±180°. Il faut revenir en arrière une fois par jour lunaire, ou monter un collecteur tournant dans le moyeu (README principal, § 2). |
+| « Une vis sans fin n'a que 30 % de rendement : c'est du gaspillage ? » | **C'est le prix de l'irréversibilité.** La vis sert de frein, sans frein à acheter ni courant de maintien. Le suivi consomme moins de 0,5 Wh par jour (§ 1). |
+| « Votre démonstration sur Terre prouve que ça marcherait sur la Lune ? » | **Non.** Elle valide la cinématique, la commande et le suivi du Soleil. Elle ne valide ni les matériaux, ni le vide, ni la tenue thermique, ni la poussière. Le cas lunaire est une maquette de conception, pas un matériel qualifié (§ 9). |

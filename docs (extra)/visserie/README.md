@@ -1,9 +1,11 @@
 # Visserie : où va chaque vis
 
-Guide détaillé de la visserie de la tête rotative, pour le cas réel et pour la démonstration
+Guide détaillé de la visserie de la tête rotative, pour le cas lunaire et pour la démonstration
 PETG. Le résumé et l'ordre de montage complet sont dans le
-[README du modèle terrestre](../../CAO/Demo_Terre_PETG/README.md) (§ 3 « Pièces à acheter » et
+[README du cas terrestre](../../Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) (§ 3 « Pièces à acheter » et
 § 5 « Ordre de montage »). Les numéros d'étape ci-dessous sont ceux du § 5.
+
+Sur la planche ci-dessous, « réel » désigne le cas lunaire et « PETG » le cas terrestre.
 
 **Code couleur**, le même que dans les fichiers STEP et les rendus : les **vis sont en
 orange**, les **rondelles et les écrous en vert clair**. Dans les vues éclatées, chaque vis est
@@ -14,7 +16,7 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 
 ![Visserie à l'échelle](nomenclature.png)
 
-| Modèle | Où | Cas réel | PETG |
+| Modèle | Où | Cas lunaire | PETG |
 |---|---|---|---|
 | Vis CHC M2,5×6 | NEMA 11 d'azimut sur son support (ses taraudages ne font que 2,5 mm) | 4 | 4 |
 | Vis CHC M3×6 | Arrêt en rotation de la tête, à travers la colonne du trépied | 1 | 0 |
@@ -22,7 +24,7 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 | Vis CHC M3×10 | Capteur solaire (4) ; fond sous le socle dans la démonstration (3) | 4 | 7 |
 | Vis CHC M3×12 | Paliers et supports des deux vis sans fin sur la chape (8) ; chape sur le moyeu imprimé (3, démonstration) | 8 | 11 |
 | Vis CHC M3×14 | Rails sur le chapeau (4) ; cadre du panneau sur les rails (4) | 8 | 8 |
-| Vis CHC M3×25 | Fond sous le socle, têtes dans la colonne (cas réel) | 3 | 0 |
+| Vis CHC M3×25 | Fond sous le socle, têtes dans la colonne (cas lunaire) | 3 | 0 |
 | Vis fraisée M3×8 | Roue d'azimut sur le socle, têtes affleurantes | 3 | 3 |
 | Vis sans tête M3×4 | Blocage de chaque vis sans fin sur son arbre | 2 | 2 |
 | Rondelle M3 (3,2 × 7 × 0,5) | Sous les 4 vis posées sur les lumières de la chaîne d'azimut | 4 | 4 |
@@ -31,13 +33,13 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 
 La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied.
 
-## Vue d'ensemble de la tête (cas réel)
+## Vue d'ensemble de la tête (cas lunaire)
 
 ![Tête en vue éclatée](tete_eclatee.png)
 
 ## Étapes 2 à 4 : roue d'azimut, moyeu, fond
 
-| Dessous de la tête (cas réel) | Fond de la démonstration, en demi-coupe |
+| Dessous de la tête (cas lunaire) | Fond de la démonstration, en demi-coupe |
 |---|---|
 | ![Tête, vue de dessous](tete_dessous_eclatee.png) | ![Fond de la démonstration](demo_fond_eclate.png) |
 
@@ -45,7 +47,7 @@ La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied.
   d'azimut passe juste au-dessus.
 * **Rondelle d'arrêt du moyeu** : 2 × M3×8, par-dessous.
 * **Fond** :
-  * cas réel : 3 × M3×25 par-dessous, têtes dans la colonne, et une M3×6 à travers la
+  * cas lunaire : 3 × M3×25 par-dessous, têtes dans la colonne, et une M3×6 à travers la
     colonne qui empêche la tête de tourner sur elle ;
   * démonstration : poser l'écrou 1/4" dans son logement hexagonal, par le dessus, puis
     visser le fond sous le socle (3 × M3×10, têtes noyées). L'écrou est alors prisonnier ;

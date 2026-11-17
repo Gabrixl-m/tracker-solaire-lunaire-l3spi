@@ -1,7 +1,7 @@
 # Tracker solaire lunaire deux axes — maquette 3D à l'échelle 1:1
 
-**➜ [Modèle lunaire](CAO/Cas_Reel/README.md) · [Modèle terrestre, à construire](CAO/Demo_Terre_PETG/README.md) ·
-[Liste d'achats](LISTE_ACHATS.md)**
+**➜ [Cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md) · [Cas terrestre, à construire](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) ·
+[Liste des composants](Liste-composants.md)**
 
 Un **tracker solaire à deux axes** : une tête rotative oriente un panneau photovoltaïque vers le
 Soleil, en azimut et en élévation, grâce à deux petits moteurs pas à pas et à un **capteur
@@ -15,29 +15,29 @@ Terre comme sur la Lune. Toutes les cotes sont en **millimètres, à taille rée
 **Licence : [CC BY-NC-SA 4.0](LICENSE).** Libre pour un usage personnel, scolaire ou associatif,
 en citant l'auteur ; **usage commercial interdit** (§ 6).
 
-| Modèle lunaire (panneau à 40°) | Modèle terrestre, sur un trépied |
+| Cas lunaire (panneau à 40°) | Cas terrestre, sur un trépied |
 |---|---|
-| ![Vue d'ensemble du modèle lunaire](docs/apercu_latitudemoyenne_iso.png) | ![Modèle terrestre sur un trépied](docs/demo_trepied_iso.png) |
+| ![Vue d'ensemble du cas lunaire](docs%20%28extra%29/apercu_latitudemoyenne_iso.png) | ![Cas terrestre sur un trépied](docs%20%28extra%29/demo_trepied_iso.png) |
 
 ## 1. Deux modèles : choisir le sien
 
 Les deux modèles partagent la même tête, le même panneau, le même capteur solaire et la
-même commande (§ 2 à 5 ci-dessous). Chacun a ensuite son propre document. Dans tout le projet,
-le **« cas réel »** désigne le modèle lunaire (dossier `CAO/Cas_Reel/`), et la
-**« démonstration »** le modèle terrestre.
+même commande (§ 2 à 5 ci-dessous). Chacun a ensuite son propre document, dans son dossier :
+`Fichiers 3D (CAO)/Cas Lunaire/` et `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/`. Dans
+tout le projet, la **« démonstration »** désigne le cas terrestre.
 
-| | 🌙 **Modèle lunaire** (cas réel) | 🌍 **Modèle terrestre** (démonstration en PETG) |
+| | 🌙 **Cas lunaire** | 🌍 **Cas terrestre** (démonstration en PETG) |
 |---|---|---|
 | **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | La même tête, imprimée en PETG, vissée sur un trépied : **c'est celui qu'on construit** |
 | **Matériaux** | Aluminium, bronze, inox, titane ; roulements secs (MoS₂) pour le vide | PETG imprimé, roulements et visserie du commerce |
 | **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 758 mm |
 | **On y trouve** | Conditions lunaires, choix de l'angle, trépied, matériaux, couples et marges, vérifications, limites | Pièces à imprimer et à acheter, réglages, montage pas à pas, électronique complète, boîtier étanche, énergie, LoRa |
-| **Fichiers** | `CAO/Cas_Reel/` (STEP) | `CAO/Demo_Terre_PETG/` (STL et STEP), `Electronique/`, `LISTE_ACHATS.md` |
-| **Documentation** | **➜ [README du modèle lunaire](CAO/Cas_Reel/README.md)** | **➜ [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md)** |
+| **Fichiers** | `Fichiers 3D (CAO)/Cas Lunaire/` (STEP) | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/` (STL et STEP), `Electronique/`, `Liste-composants.md` |
+| **Documentation** | **➜ [README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md)** | **➜ [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)** |
 
 **Les chiffres, côte à côte :**
 
-| Grandeur | Modèle lunaire | Modèle terrestre |
+| Grandeur | Cas lunaire | Cas terrestre |
 |---|---|---|
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
 | Masse de la tête (hors panneau) | 1,86 kg | 1,20 kg |
@@ -54,9 +54,9 @@ le **« cas réel »** désigne le modèle lunaire (dossier `CAO/Cas_Reel/`), et
 
 | Tête seule | Coupe : vis et roue d'élévation |
 |---|---|
-| ![Tête seule](docs/tete_vis_sans_fin_iso.png) | ![Coupe élévation](docs/tete_vis_sans_fin_coupe_elevation.png) |
-| ![Côté moteurs](docs/tete_vis_sans_fin_cote_moteurs.png) | ![Coupe azimut](docs/tete_vis_sans_fin_coupe_azimut.png) |
-| ![Avec panneau, côté moteurs](docs/tete_vis_sans_fin_avec_panneau.png) | ![Avec panneau, côté cellules](docs/tete_vis_sans_fin_avec_panneau_face.png) |
+| ![Tête seule](docs%20%28extra%29/tete_vis_sans_fin_iso.png) | ![Coupe élévation](docs%20%28extra%29/tete_vis_sans_fin_coupe_elevation.png) |
+| ![Côté moteurs](docs%20%28extra%29/tete_vis_sans_fin_cote_moteurs.png) | ![Coupe azimut](docs%20%28extra%29/tete_vis_sans_fin_coupe_azimut.png) |
+| ![Avec panneau, côté moteurs](docs%20%28extra%29/tete_vis_sans_fin_avec_panneau.png) | ![Avec panneau, côté cellules](docs%20%28extra%29/tete_vis_sans_fin_avec_panneau_face.png) |
 
 ### Architecture
 
@@ -77,10 +77,10 @@ tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), 
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape, avec une rondelle sous chaque tête : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
-Le modèle terrestre reprend exactement cette architecture, imprimée en PETG. Seuls changent les
+Le cas terrestre reprend exactement cette architecture, imprimée en PETG. Seuls changent les
 pivots d'élévation (PETG Ø12 sur roulements **6801**, au lieu d'inox Ø8 sur **608**) et la
 fixation du socle, vissé sur la vis 1/4" d'un trépied
-([README du modèle terrestre](CAO/Demo_Terre_PETG/README.md)).
+([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)).
 
 **Roulements** : deux **6806** en azimut, deux **608** (lunaire) ou **6801** (terrestre) en
 élévation, quatre **685** sur les arbres des vis. Tous sont protégés (**ZZ**), et aucune pièce
@@ -105,7 +105,7 @@ coupure de courant. Les moteurs ne sont alimentés que pendant les mouvements.
 
 Ce sont des moteurs du commerce : ils donnent la taille et le couple de référence. Pour le
 vol, il faut leur équivalent en version vide ou spatiale, de même taille
-([README du modèle lunaire](CAO/Cas_Reel/README.md), § 9).
+([README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md), § 9).
 
 ### Résolution et vitesses (moteurs à 200 pas/tour, 1/16 de pas)
 
@@ -146,7 +146,7 @@ une remise en position prend quelques secondes.
 * **Électricité** : un câble souple 2 × AWG 20, soudé sur les cosses de la boîte de jonction,
   descend par la boucle de câble jusqu'au boîtier. Son + passe par le wattmètre A4, qui mesure
   ce que produit le panneau, puis va au régulateur de charge ; son − va droit au régulateur
-  ([README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 6). Ses 21,8 V à vide
+  ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 6). Ses 21,8 V à vide
   restent sous les 26 V que supporte A4.
 * Le dos du cadre est à **46 mm de l'axe d'élévation**. Ce décalage permet au panneau de
   passer à la verticale devant la chape. Son point le plus bas (≈ 571 mm du sol, à −2°)
@@ -158,7 +158,7 @@ une remise en position prend quelques secondes.
 
 | Le capteur sur le petit côté du cadre | Coupe par deux photodiodes |
 |---|---|
-| ![Capteur solaire](docs/explications/capteur_solaire.png) | ![Coupe du capteur solaire](docs/explications/capteur_solaire_coupe.png) |
+| ![Capteur solaire](docs%20%28extra%29/explications/capteur_solaire.png) | ![Coupe du capteur solaire](docs%20%28extra%29/explications/capteur_solaire_coupe.png) |
 
 ### Principe : 4 photodiodes et une croix d'ombre
 
@@ -215,7 +215,7 @@ erreur d'azimut    = (G − D) / S
 * Si l'erreur est sous 0,022 (≈ 0,25°), ne pas bouger, pour que le panneau n'oscille pas.
   Au-delà, corriger de 0,5° : le panneau se place 0,25° **en avance** sur le Soleil, qui le
   rattrape puis le dépasse. Sur Terre, cela fait une correction toutes les 2 minutes environ
-  (cadence détaillée au [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 7).
+  (cadence détaillée au [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 7).
 * En azimut, diviser l'erreur par cos(élévation) avant de la convertir en pas : près du
   zénith, l'azimut doit beaucoup tourner pour corriger une petite erreur (voir la
   bibliographie).
@@ -227,10 +227,10 @@ puissance du panneau, et 5° seulement 0,4 %.
 
 La **stratégie de suivi** diffère d'un modèle à l'autre :
 * **sur la Lune**, les photodiodes pilotent et le calcul sert de secours
-  ([README du modèle lunaire](CAO/Cas_Reel/README.md)) ;
+  ([README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md)) ;
 * **sur Terre**, le calcul fait le gros du pointage et les photodiodes corrigent ; la cadence
   des corrections, la fabrication et le branchement du capteur sont dans le
-  [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md).
+  [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md).
 
 ## 5. La commande
 
@@ -249,7 +249,7 @@ La **stratégie de suivi** diffère d'un modèle à l'autre :
 * **Suivi du Soleil** : capteur solaire et calcul de la position du Soleil (§ 4).
 
 Le câblage détaillé (carte Heltec, brochage, réglages, boîtier étanche, énergie, LoRa) est
-dans le [README du modèle terrestre](CAO/Demo_Terre_PETG/README.md), § 6. Le modèle lunaire reprend
+dans le [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 6. Le cas lunaire reprend
 le même principe.
 
 ## 6. Fichiers, scripts et licence
@@ -257,32 +257,35 @@ le même principe.
 ### Organisation du dépôt
 
 ```
-CAO/Cas_Reel/          modèle lunaire : assemblages et pièces seules (STEP), et son README
-CAO/Demo_Terre_PETG/   modèle terrestre : pièces à imprimer (STL + STEP), assemblages, et son README
-docs/                  rendus, images annotées, guide de la visserie, bilan de masse, optimisation des jambes
-Electronique/          schéma électrique (QElectroTech, PDF) et implantation du boîtier (Fritzing)
-scripts/               scripts Python qui génèrent la CAO, les contrôles et les rendus
-LISTE_ACHATS.md        liste d'achats du modèle terrestre
-requirements.txt       dépendances Python
-LICENSE                licence CC BY-NC-SA 4.0
+Fichiers 3D (CAO)/
+  Cas Lunaire/                     cas lunaire : assemblages et pièces seules (STEP), et son README
+  Cas Terrestre (démonstration)/   cas terrestre : pièces à imprimer (STL + STEP), assemblages, et son README
+docs (extra)/                      rendus, images annotées, guide de la visserie, bilan de masse, optimisation des jambes
+Electronique/                      schéma électrique (QElectroTech, PDF) et implantation du boîtier (Fritzing)
+scripts/                           scripts Python qui génèrent la CAO, les contrôles et les rendus
+Liste-composants.md                liste des composants à acheter pour le cas terrestre
+tracker_solaire_composants.pdf     liste des composants à commander, telle qu'elle a été envoyée au professeur
+requirements.txt                   dépendances Python
+LICENSE                            licence CC BY-NC-SA 4.0
 ```
 
 Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers communs :
 
 | Fichier | Contenu |
 |---|---|
-| `docs/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs/apercu_*.png`, `docs/tete_vis_sans_fin_*.png`, `docs/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
-| **`docs/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
-| `docs/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
+| `docs (extra)/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
+| `docs (extra)/apercu_*.png`, `docs (extra)/tete_vis_sans_fin_*.png`, `docs (extra)/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
+| **`docs (extra)/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
+| `docs (extra)/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
 | `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
-| `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité du modèle terrestre sur son trépied : vent de toutes les directions, glissement, planche lestée, incertitudes |
+| `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité du cas terrestre sur son trépied : vent de toutes les directions, glissement, planche lestée, incertitudes |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
 | `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py`, `scripts/render_visserie.py` | Génèrent les rendus PNG, les images annotées et les vues de la visserie |
+| [`tracker_solaire_composants.pdf`](tracker_solaire_composants.pdf) | Liste des composants à commander, telle qu'elle a été envoyée au professeur (15 références Gotronic) |
 | `requirements.txt` | Dépendances Python (CadQuery) |
 | `LICENSE` | Licence du projet : CC BY-NC-SA 4.0 (voir plus bas) |
 
@@ -309,7 +312,7 @@ n'apparaissent pas, cocher l'import des couleurs dans les options d'import STEP 
 SolidWorks.
 
 1. **Fichier › Ouvrir**, type *STEP AP203/214/242 (\*.step; \*.stp)*, puis choisir
-   `CAO/Cas_Reel/Tracker_Lunaire_PoleSud.step`.
+   `Fichiers 3D (CAO)/Cas Lunaire/Tracker_Lunaire_PoleSud.step`.
 2. Si SolidWorks demande un modèle de document, prendre l'assemblage et la pièce **en mm**.
 3. **Fichier › Enregistrer sous › Assemblage (\*.sldasm)**. Au premier enregistrement,
    SolidWorks crée les fichiers `.SLDPRT` de chaque pièce.
@@ -335,7 +338,7 @@ paramètres sont regroupés en tête de `scripts/generate_tracker.py` :
 * dans `POSES` : les deux poses exportées ;
 * dans les constantes de la tête : `Z_T`, `VIS_EL`, `VIS_AZ`, `MOT_EL`, `MOT_AZ`, et `PHASES`
   (calage des vis, donné par `scripts/generate_tete_vis_sans_fin.py`) ;
-* dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (modèle terrestre).
+* dans `AJUSTEMENTS` : les deux jeux de cotes de la tête, `"reel"` et `"petg"` (cas terrestre).
 
 Les cas de charge (`VENT_EL`, `VENT_AZ`, `K_RUN`, `MU_REPOS`…) sont en tête de
 `scripts/generate_tete_vis_sans_fin.py`. Ceux du trépied de la démonstration (`TREPIED_DEMO`, lests) sont en tête
@@ -348,15 +351,15 @@ python scripts/generate_tracker.py --balayage         # + garde sur toute la pla
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
 python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
 xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
-python scripts/verification_stabilite.py              # stabilité du modèle terrestre, calcul indépendant (vent, glissement, lest)
+python scripts/verification_stabilite.py              # stabilité du cas terrestre, calcul indépendant (vent, glissement, lest)
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
 python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau
-xvfb-run -a python scripts/render_explications.py                  # images annotées (docs/explications/)
-xvfb-run -a python scripts/render_visserie.py                      # visserie : planche et vues éclatées (docs/visserie/)
+xvfb-run -a python scripts/render_explications.py                  # images annotées (docs (extra)/explications/)
+xvfb-run -a python scripts/render_visserie.py                      # visserie : planche et vues éclatées (docs (extra)/visserie/)
 ```
 
 ### Licence
@@ -436,7 +439,7 @@ mécanisme léger, peu coûteux et sobre en énergie.
   moteurs coupés, sans contrepoids (voir § 2).
 * **Le verrou de lancement.** SSTL équilibre ses deux axes pour s'en passer. Ici, le
   panneau n'est pas équilibré : une version lunaire réelle aura besoin d'un verrou de
-  lancement ([README du modèle lunaire](CAO/Cas_Reel/README.md), § 9).
+  lancement ([README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md), § 9).
 * **La limite connue du schéma AE : le zénith.** Quand la cible passe près de la verticale,
   l'azimut doit tourner très vite pour la suivre.
   * Au pôle Sud lunaire, le Soleil reste à quelques degrés de l'horizon : le cas ne se

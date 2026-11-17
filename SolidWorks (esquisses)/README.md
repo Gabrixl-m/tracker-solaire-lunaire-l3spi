@@ -78,7 +78,11 @@ macro passe à la suite.
    d'échec, le cercle et le profil sont dans l'arbre : **Insertion ▸ Courbe ▸ Hélice/Spirale** sur
    le cercle (pas et hauteur dans `donnees/Vis_*.txt`, ligne `F ADD HEL`), puis **Bossage/Base balayé** avec le profil et
    l'hélice ; et les enlèvements de mise à longueur sont dans le fichier `donnees/Vis_*.txt`.
-3. Sinon, envoyer `journal.txt` : la macro se corrige à partir de son contenu.
+3. Sinon, envoyer `journal.txt` (les 40 premières lignes suffisent) : la macro se corrige à partir
+   de son contenu. À la première fonction qui échoue, elle note ce qui s'est passé : nombre d'entités
+   tracées ou refusées par SolidWorks, extrusions créées, variation de volume mesurée, dernière
+   erreur. Elle essaie deux modes de tracé (normal, puis direct) et **s'arrête sur la pièce fautive**
+   (laissée ouverte) ; si les deux premières pièces échouent, elle ne continue pas.
 
 ## Régénérer les données
 

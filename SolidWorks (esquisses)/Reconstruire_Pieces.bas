@@ -38,6 +38,9 @@ Dim gFlip As Object                        ' sens appris du decalage de depart
 Dim gHelice As Long                        ' reglage d'helice qui a marche (-1 : aucun)
 
 Dim gNbFonctions As Long, gNbEchecs As Long
+Dim gTraces As Long, gRefus As Long        ' entites tracees / refusees par SolidWorks dans la derniere esquisse
+Dim gDerDV As Double                       ' derniere variation de volume mesuree (mm3)
+Dim gDerErr As String                      ' derniere erreur VBA rencontree par Extruder
 
 ' ----------------------------------------------------------------------------------------------
 Sub main()
@@ -81,6 +84,12 @@ Sub main()
         Else
             nbKo = nbKo + 1
             bilan = bilan & vbCrLf & "   - " & Left$(noms(i), Len(noms(i)) - 4)
+            If nbOk = 0 And nbKo >= 2 Then
+                Print #gJournal, ""
+                Print #gJournal, "ARRET : les deux premieres pieces ont echoue, inutile de continuer (voir les lignes ci-dessus)."
+                bilan = bilan & vbCrLf & "   (arret apres deux echecs de suite)"
+                Exit For
+            End If
         End If
     Next i
 
@@ -162,8 +171,8 @@ Function TraiterPiece(fichier As String, dSortie As String) As Boolean
         Print #gJournal, "  ECHEC : plans de base introuvables"
         Exit Function
     End If
-    swSkMgr.AddToDB = True                 ' pas d'accrochage ni de relations automatiques
-    swSkMgr.DisplayWhenAdded = False
+    swSkMgr.AddToDB = False
+    swSkMgr.DisplayWhenAdded = True
 
     gVa = 0: gVe = 0
     For k = 0 To 2
@@ -191,6 +200,10 @@ Function TraiterPiece(fichier As String, dSortie As String) As Boolean
                 If Not swSkMgr.ActiveSketch Is Nothing Then swSkMgr.InsertSketch True
             End If
             On Error GoTo 0
+            If gNbEchecs > 0 Then
+                Print #gJournal, "  (les fonctions suivantes ne sont pas essayees : la piece reste ouverte pour examen)"
+                Exit Do
+            End If
             i = j
         Else
             i = i + 1
@@ -307,13 +320,10 @@ End Sub
 ' --- extrusion (ajout ou enlevement) de a0 a a1 le long de d, esquisse dans le plan passant par l'origine
 Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t() As String, _
                    o() As Double, n() As Double, estCut As Boolean)
-    Dim a0 As Double, a1 As Double, b0 As Double, b1 As Double
+    Dim a0 As Double, a1 As Double
     Dim Ve As Double, Ge(2) As Double, tolV As Double, tolG As Double
-    Dim q0 As Variant, q1 As Variant, s As Double
-    Dim sk As Object, f As Object, nomSk As String, nomF As String
-    Dim score As Long, q As Long, sens As Boolean, e As Integer, flip As Boolean
-    Dim c As Double, cle As String, sA As Long, sB As Long, idx As Long
-    Dim verifiable As Boolean, essais As Long, fait As Boolean
+    Dim nomSk As String, nomF As String, idx As Long, passe As Long, ok As Boolean
+    Dim detail As String
 
     a0 = Val(t(6)): a1 = Val(t(7))
     LireEtat t, 8, Ve, Ge, tolV, tolG
@@ -326,11 +336,42 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
         idx = 0
     End If
 
-    If Not OuvrirEsquisse(o, n, numero) Then
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC, plan d'esquisse impossible a creer"
+    ' passe 0 : trace normal ; passe 1 : trace "direct dans la base" (AddToDB), si la passe 0 echoue
+    For passe = 0 To 1
+        swSkMgr.AddToDB = (passe = 1)
+        ok = EssaiExtrusion(lignes, i0, i1, numero, o, n, a0, a1, Ve, Ge, tolV, tolG, nomSk, nomF, estCut, idx, passe, detail)
+        swSkMgr.AddToDB = False
+        If ok Then Exit For
+        Print #gJournal, "     " & detail
+        If passe = 0 Then Supprimer swModel.FeatureByName(nomSk)
+    Next passe
+
+    If Not ok Then
+        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC ; l'esquisse """ & nomSk & _
+                         "_A_REPRENDRE"" est restee dans l'arbre (de " & Format$(a0, "0.000") & " a " & _
+                         Format$(a1, "0.000") & " mm le long de " & t(3) & " " & t(4) & " " & t(5) & ")"
+        Renommer nomSk, nomSk & "_A_REPRENDRE"
         gNbEchecs = gNbEchecs + 1
-        AvancerAttendu Ve, Ge
-        Exit Sub
+    End If
+    AvancerAttendu Ve, Ge
+End Sub
+
+Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, o() As Double, n() As Double, _
+                        a0 As Double, a1 As Double, Ve As Double, Ge() As Double, tolV As Double, tolG As Double, _
+                        nomSk As String, nomF As String, estCut As Boolean, idx As Long, passe As Long, _
+                        ByRef detail As String) As Boolean
+    Dim b0 As Double, b1 As Double, q0 As Variant, q1 As Variant, s As Double
+    Dim sk As Object, f As Object
+    Dim score As Long, q As Long, sens As Boolean, e As Integer, flip As Boolean
+    Dim c As Double, cle As String, sA As Long, sB As Long
+    Dim verifiable As Boolean, essais As Long, crees As Long, fait As Boolean
+    Dim traces As Long, refus As Long, mesure As String
+
+    EssaiExtrusion = False
+    detail = "passe " & (passe + 1) & " (" & IIf(passe = 0, "trace normal", "trace direct") & ") : "
+    If Not OuvrirEsquisse(o, n, numero) Then
+        detail = detail & "plan d'esquisse impossible a creer"
+        Exit Function
     End If
     ' sens de la normale de l'esquisse par rapport a la direction d'extrusion
     q0 = VersEsquisse(o(0), o(1), o(2))
@@ -342,17 +383,15 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
         b0 = -a1: b1 = -a0
     End If
     Dessiner lignes, i0 + 2, i1
+    traces = gTraces: refus = gRefus
     Set sk = FermerEsquisse(nomSk)
     If sk Is Nothing Then
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC, esquisse vide"
-        gNbEchecs = gNbEchecs + 1
-        AvancerAttendu Ve, Ge
-        Exit Sub
+        detail = detail & "esquisse vide apres trace (" & traces & " entites tracees, " & refus & " refusees)"
+        Exit Function
     End If
 
     ' 8 reglages possibles (sens, hypothese sur le sens reel, inversion du decalage) : ceux qui
     ' ont deja marche sont essayes d'abord ; le controle volume + centre de gravite tranche
-    fait = False
     For score = 8 To 0 Step -1
         For q = 0 To 7
             sens = ((q And 1) <> 0)
@@ -380,6 +419,7 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
                 essais = essais + 1
                 Set f = Extruder(nomSk, estCut, b0, b1, sens, e, flip)
                 If Not f Is Nothing Then
+                    crees = crees + 1
                     If Conforme(Ve, Ge, tolV, tolG, verifiable) Then
                         f.Name = nomF
                         If verifiable Then
@@ -388,6 +428,7 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
                         End If
                         fait = True
                     Else
+                        mesure = "variation de volume mesuree " & Format$(gDerDV, "0.000") & " mm3"
                         Supprimer f
                     End If
                 End If
@@ -398,17 +439,16 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
     Next score
 
     If fait Then
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : OK (" & essais & " essai(s)) V = " & _
+        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : OK (" & essais & " essai(s), " & _
+                         IIf(passe = 0, "trace normal", "trace direct") & ") V = " & _
                          Format$(gVmes, "0.000") & " / " & Format$(Ve, "0.000") & IIf(verifiable, "", "  [petite fonction : sens non controle]")
+        EssaiExtrusion = True
     Else
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC apres " & essais & " essais ; l'esquisse """ & _
-                         nomSk & "_A_REPRENDRE"" est restee dans l'arbre (de " & Format$(a0, "0.000") & " a " & _
-                         Format$(a1, "0.000") & " mm le long de " & t(3) & " " & t(4) & " " & t(5) & ")"
-        Renommer nomSk, nomSk & "_A_REPRENDRE"
-        gNbEchecs = gNbEchecs + 1
+        detail = detail & traces & " entites tracees, " & refus & " refusees ; " & essais & " essais, " & crees & _
+                 " extrusion(s) creee(s)" & IIf(mesure <> "", " ; " & mesure & ", attendu " & Format$(Ve - gVe, "0.000") & " mm3", "") & _
+                 IIf(gDerErr <> "", " ; derniere erreur VBA : " & gDerErr, "")
     End If
-    AvancerAttendu Ve, Ge
-End Sub
+End Function
 
 Function Extruder(nomSk As String, estCut As Boolean, b0 As Double, b1 As Double, _
                   sens As Boolean, e As Integer, flip As Boolean) As Object
@@ -419,8 +459,11 @@ Function Extruder(nomSk As String, estCut As Boolean, b0 As Double, b1 As Double
     Set Extruder = Nothing
     Set sk = swModel.FeatureByName(nomSk)
     If sk Is Nothing Then Exit Function
+    gDerErr = ""
     swModel.ClearSelection2 True
-    sk.Select2 False, 0
+    If Not sk.Select2(False, 0) Then
+        swModel.Extension.SelectByID2 nomSk, "SKETCH", 0#, 0#, 0#, False, 0, Nothing, 0
+    End If
     On Error Resume Next
     If estCut Then
         Set f = swFeatMgr.FeatureCut4(True, False, sens, 0, 0, prof, 0#, False, False, False, False, 0#, 0#, _
@@ -441,6 +484,7 @@ Function Extruder(nomSk As String, estCut As Boolean, b0 As Double, b1 As Double
                                                 False, False, False, False, True, True, True, t0, Abs(c) * MM, flip)
         End If
     End If
+    If Err.Number <> 0 Then gDerErr = Err.Number & " " & Err.Description
     Err.Clear
     On Error GoTo 0
     swModel.ClearSelection2 True
@@ -822,6 +866,7 @@ End Function
 Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
     Dim i As Long, t() As String, a As Variant, b As Variant, c As Variant
     Dim n As Long, k As Long, pts() As Double, vp As Variant, seg As Object
+    gTraces = 0: gRefus = 0
     For i = i0 To i1
         If Len(lignes(i)) > 2 Then
             t = Split(lignes(i), " ")
@@ -829,15 +874,21 @@ Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
                 Case "L"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
                     b = VersEsquisse(Val(t(4)), Val(t(5)), Val(t(6)))
-                    swSkMgr.CreateLine a(0), a(1), 0#, b(0), b(1), 0#
+                    Set seg = Nothing
+                    Set seg = swSkMgr.CreateLine(a(0), a(1), 0#, b(0), b(1), 0#)
+                    Compter seg
                 Case "C"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
-                    swSkMgr.CreateCircleByRadius a(0), a(1), 0#, Val(t(4)) * MM
+                    Set seg = Nothing
+                    Set seg = swSkMgr.CreateCircleByRadius(a(0), a(1), 0#, Val(t(4)) * MM)
+                    Compter seg
                 Case "A"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
                     b = VersEsquisse(Val(t(4)), Val(t(5)), Val(t(6)))
                     c = VersEsquisse(Val(t(7)), Val(t(8)), Val(t(9)))
-                    swSkMgr.Create3PointArc a(0), a(1), 0#, b(0), b(1), 0#, c(0), c(1), 0#
+                    Set seg = Nothing
+                    Set seg = swSkMgr.Create3PointArc(a(0), a(1), 0#, b(0), b(1), 0#, c(0), c(1), 0#)
+                    Compter seg
                 Case "S"
                     n = CLng(Val(t(1)))
                     ReDim pts(3 * n - 1)
@@ -855,9 +906,14 @@ Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
                     End If
                     Err.Clear
                     On Error GoTo 0
+                    Compter seg
             End Select
         End If
     Next i
+End Sub
+
+Sub Compter(seg As Object)
+    If seg Is Nothing Then gRefus = gRefus + 1 Else gTraces = gTraces + 1
 End Sub
 
 ' Referme l'esquisse ouverte, la nomme et la renvoie (Nothing si elle est vide)
@@ -903,7 +959,12 @@ Sub Mesurer(ByRef v As Double, m() As Double)
         m(k) = 0
     Next k
     On Error Resume Next
-    Set mp = swModel.Extension.CreateMassProperty
+    Set mp = Nothing
+    Set mp = swModel.Extension.CreateMassProperty2
+    If mp Is Nothing Then
+        Err.Clear
+        Set mp = swModel.Extension.CreateMassProperty
+    End If
     If Not mp Is Nothing Then
         mp.UseSystemUnits = True
         v = mp.Volume * 1000000000#                ' m3 -> mm3
@@ -928,6 +989,7 @@ Function Conforme(Ve As Double, Ge() As Double, tolV As Double, tolG As Double, 
     Mesurer Va, Ma
     dVa = Va - gVa
     dVe = Ve - gVe
+    gDerDV = dVa
     verifiable = (tolV < 0.5 * Abs(dVe))
     If Abs(dVa - dVe) > tolV Then Exit Function
     If Abs(dVe) > 0.01 And (Abs(dVa) < 0.2 * Abs(dVe) Or dVa * dVe < 0) Then Exit Function

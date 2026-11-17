@@ -41,6 +41,8 @@ Dim gNbFonctions As Long, gNbEchecs As Long
 Dim gTraces As Long, gRefus As Long        ' entites tracees / refusees par SolidWorks dans la derniere esquisse
 Dim gDerDV As Double                       ' derniere variation de volume mesuree (mm3)
 Dim gDerErr As String                      ' derniere erreur VBA rencontree par Extruder
+Dim gAlerte As String                      ' observation sur la derniere esquisse (pour le journal)
+Dim gXinfo As String                       ' transformation modele -> esquisse de la derniere esquisse
 
 ' ----------------------------------------------------------------------------------------------
 Sub main()
@@ -446,7 +448,8 @@ Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Lo
     Else
         detail = detail & traces & " entites tracees, " & refus & " refusees ; " & essais & " essais, " & crees & _
                  " extrusion(s) creee(s)" & IIf(mesure <> "", " ; " & mesure & ", attendu " & Format$(Ve - gVe, "0.000") & " mm3", "") & _
-                 IIf(gDerErr <> "", " ; derniere erreur VBA : " & gDerErr, "")
+                 IIf(gDerErr <> "", " ; derniere erreur VBA : " & gDerErr, "") & vbCrLf & "        " & gAlerte & vbCrLf & _
+                 "        transformation modele->esquisse : " & gXinfo
     End If
 End Function
 
@@ -747,15 +750,25 @@ Function OuvrirSur(plan As Object, o() As Double, n() As Double) As Boolean
     Set gSk = swSkMgr.ActiveSketch
     If gSk Is Nothing Then Exit Function
     Set gXf = gSk.ModelToSketchTransform
-    bon = True
-    For k = 0 To 2
-        Select Case k
-            Case 0: q = VersEsquisse(o(0), o(1), o(2))
-            Case 1: q = VersEsquisse(o(0) + 10 * u(0), o(1) + 10 * u(1), o(2) + 10 * u(2))
-            Case 2: q = VersEsquisse(o(0) + 10 * v(0), o(1) + 10 * v(1), o(2) + 10 * v(2))
-        End Select
-        If Abs(q(2)) > 0.0000002 Then bon = False
+    gAlerte = ""
+    gXinfo = ""
+    On Error Resume Next
+    q = gXf.ArrayData
+    For k = LBound(q) To UBound(q)
+        gXinfo = gXinfo & Format$(q(k), "0.####") & " "
     Next k
+    On Error GoTo 0
+    bon = True
+    Dim q0 As Variant, qu As Variant, qv As Variant, du As Double, dv As Double
+    q0 = VersEsquisse(o(0), o(1), o(2))
+    qu = VersEsquisse(o(0) + 10 * u(0), o(1) + 10 * u(1), o(2) + 10 * u(2))
+    qv = VersEsquisse(o(0) + 10 * v(0), o(1) + 10 * v(1), o(2) + 10 * v(2))
+    If Abs(q0(2)) > 0.0000002 Or Abs(qu(2)) > 0.0000002 Or Abs(qv(2)) > 0.0000002 Then bon = False
+    du = Sqr((qu(0) - q0(0)) ^ 2 + (qu(1) - q0(1)) ^ 2) * 1000#
+    dv = Sqr((qv(0) - q0(0)) ^ 2 + (qv(1) - q0(1)) ^ 2) * 1000#
+    If Abs(du - 10#) > 0.01 Or Abs(dv - 10#) > 0.01 Then
+        gAlerte = "TRANSFORMATION SUSPECTE : 10 mm modele donnent " & Format$(du, "0.000") & " et " & Format$(dv, "0.000") & " mm dans l'esquisse. "
+    End If
     If bon Then
         OuvrirSur = True
         Exit Function
@@ -866,6 +879,7 @@ End Function
 Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
     Dim i As Long, t() As String, a As Variant, b As Variant, c As Variant
     Dim n As Long, k As Long, pts() As Double, vp As Variant, seg As Object
+    Dim x1 As Double, y1 As Double, x2 As Double, y2 As Double, x3 As Double, y3 As Double
     gTraces = 0: gRefus = 0
     For i = i0 To i1
         If Len(lignes(i)) > 2 Then
@@ -874,20 +888,30 @@ Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
                 Case "L"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
                     b = VersEsquisse(Val(t(4)), Val(t(5)), Val(t(6)))
+                    x1 = a(0): y1 = a(1): x2 = b(0): y2 = b(1)
                     Set seg = Nothing
-                    Set seg = swSkMgr.CreateLine(a(0), a(1), 0#, b(0), b(1), 0#)
+                    Set seg = swSkMgr.CreateLine(x1, y1, 0#, x2, y2, 0#)
+                    If seg Is Nothing And InStr(gAlerte, "ligne refusee") = 0 Then
+                        gAlerte = gAlerte & "ligne refusee : (" & Format$(x1 * 1000#, "0.000") & " ; " & Format$(y1 * 1000#, "0.000") & _
+                                  ") -> (" & Format$(x2 * 1000#, "0.000") & " ; " & Format$(y2 * 1000#, "0.000") & ") mm, donnees " & lignes(i) & ". "
+                    End If
                     Compter seg
                 Case "C"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
+                    x1 = a(0): y1 = a(1)
                     Set seg = Nothing
-                    Set seg = swSkMgr.CreateCircleByRadius(a(0), a(1), 0#, Val(t(4)) * MM)
+                    Set seg = swSkMgr.CreateCircleByRadius(x1, y1, 0#, Val(t(4)) * MM)
+                    If InStr(gAlerte, "cercle en") = 0 Then
+                        gAlerte = gAlerte & "cercle en (" & Format$(x1 * 1000#, "0.000") & " ; " & Format$(y1 * 1000#, "0.000") & ") mm, donnees " & lignes(i) & ". "
+                    End If
                     Compter seg
                 Case "A"
                     a = VersEsquisse(Val(t(1)), Val(t(2)), Val(t(3)))
                     b = VersEsquisse(Val(t(4)), Val(t(5)), Val(t(6)))
                     c = VersEsquisse(Val(t(7)), Val(t(8)), Val(t(9)))
+                    x1 = a(0): y1 = a(1): x2 = b(0): y2 = b(1): x3 = c(0): y3 = c(1)
                     Set seg = Nothing
-                    Set seg = swSkMgr.Create3PointArc(a(0), a(1), 0#, b(0), b(1), 0#, c(0), c(1), 0#)
+                    Set seg = swSkMgr.Create3PointArc(x1, y1, 0#, x2, y2, 0#, x3, y3, 0#)
                     Compter seg
                 Case "S"
                     n = CLng(Val(t(1)))

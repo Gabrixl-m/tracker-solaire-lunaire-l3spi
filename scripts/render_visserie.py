@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Images de la visserie (docs/visserie/, expliquées dans docs/visserie/README.md), avec le code
+Images de la visserie (docs (extra)/visserie/, expliquées dans docs (extra)/visserie/README.md), avec le code
 couleur des assemblages STEP : vis en orange, rondelles et écrous en vert clair. Dans les vues
 éclatées, chaque vis est sortie de son trou le long de son axe (trait gris), chaque rondelle et
 chaque écrou est écarté de son appui.
@@ -32,7 +32,7 @@ import generate_tracker as G
 import render_explications as E
 from render_apercu import build_renderer, legende
 
-OUT = os.path.join(G.RACINE, "docs", "visserie")
+OUT = os.path.join(G.RACINE, "docs (extra)", "visserie")
 GRIS = cq.Color(0.35, 0.35, 0.38)
 ECART = {"Rondelle_M3": 5.0, "Ecrou_M3": 9.0, "Ecrou_1_4_UNC": 14.0}
 MASQUE_TETE = ("Haut_Colonne_Trepied", "Rail_Panneau", "Vis_CHC_M3x14")   # rails : voir le panneau

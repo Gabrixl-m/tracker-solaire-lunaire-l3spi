@@ -20,7 +20,7 @@ from vtkmodules.vtkRenderingOpenGL2 import vtkOpenGLRenderer  # noqa: F401 (char
 
 import generate_tracker as G
 
-OUT = os.path.join(G.RACINE, "docs")
+OUT = os.path.join(G.RACINE, "docs (extra)")
 # code couleur de la visserie (comme dans les STEP) : vis en orange, rondelles et écrous en vert clair
 VISSERIE = (("Vis", G.COL["vis"]), ("Rondelles et écrous", G.COL["rondelle"]))
 RGB_VISSERIE = {tuple(round(v, 2) for v in c.toTuple()[:3]) for _t, c in VISSERIE}

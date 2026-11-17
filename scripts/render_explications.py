@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Images annotées pour le montage de la version PETG (docs/explications/) :
+Images annotées pour le montage de la version PETG (docs (extra)/explications/) :
   - palier_joues_roulements.png : le palier d'une vis sans fin (semelle, joues, roulements,
     arbre, vis) ;
   - vis_sans_fin_moyeux.png : la vis sans fin imprimée seule (filet, moyeux, épaulements,
@@ -25,7 +25,7 @@ from vtkmodules.vtkRenderingCore import vtkCoordinate, vtkRenderWindow, vtkWindo
 import generate_tracker as G
 from render_apercu import build_renderer, legende
 
-OUT = os.path.join(G.RACINE, "docs", "explications")
+OUT = os.path.join(G.RACINE, "docs (extra)", "explications")
 SUN = tuple(v / math.sqrt(0.5 ** 2 + 0.8 ** 2 + 0.6 ** 2) for v in (0.5, 0.8, 0.6))
 W, H = 1600, 1100
 ROUGE = (200, 0, 60)

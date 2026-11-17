@@ -1,14 +1,14 @@
-# 🌍 Modèle terrestre (démonstration en PETG)
+# 🌍 Cas terrestre (démonstration en PETG)
 
-[⬅ Retour au README principal](../../README.md) · [Modèle lunaire ➜](../Cas_Reel/README.md)
+[⬅ Retour au README principal](../../README.md) · [Cas lunaire ➜](../Cas%20Lunaire/README.md)
 
 La même tête, imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
 trépied (§ 8) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur un trépied](../../docs/demo_trepied_iso.png) | ![Côté moteurs](../../docs/demo_trepied_arriere.png) |
-| ![De profil](../../docs/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](../../docs/demo_trepied_detail.png) |
+| ![Sur un trépied](../../docs%20%28extra%29/demo_trepied_iso.png) | ![Côté moteurs](../../docs%20%28extra%29/demo_trepied_arriere.png) |
+| ![De profil](../../docs%20%28extra%29/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](../../docs%20%28extra%29/demo_trepied_detail.png) |
 
 C'est **le modèle qu'on construit** : ce document donne tout ce qu'il faut pour le fabriquer,
 de l'impression au boîtier électronique. La tête, le panneau, le capteur solaire et la
@@ -16,7 +16,7 @@ commande, communs aux deux modèles, sont décrits dans le [README principal](..
 
 **Sommaire**
 
-1. [Du modèle lunaire au modèle terrestre : ce qui change](#1-du-modèle-lunaire-au-modèle-terrestre--ce-qui-change)
+1. [Du cas lunaire au cas terrestre : ce qui change](#1-du-cas-lunaire-au-cas-terrestre--ce-qui-change)
 2. [Pièces à imprimer (`a_imprimer/`, déjà orientées sur le plateau)](#2-pièces-à-imprimer-a_imprimer-déjà-orientées-sur-le-plateau)
 3. [Pièces à acheter](#3-pièces-à-acheter)
 4. [Jeux d'ajustement et éprouvette](#4-jeux-dajustement-et-éprouvette)
@@ -26,15 +26,16 @@ commande, communs aux deux modèles, sont décrits dans le [README principal](..
 8. [Sur un trépied](#8-sur-un-trépied)
 9. [Couples, marges et tenue de la version PETG](#9-couples-marges-et-tenue-de-la-version-petg)
 10. [Fichiers de ce dossier et du boîtier électronique](#10-fichiers-de-ce-dossier-et-du-boîtier-électronique)
+11. [Questions pièges et leurs réponses](#11-questions-pièges-et-leurs-réponses)
 
-## 1. Du modèle lunaire au modèle terrestre : ce qui change
+## 1. Du cas lunaire au cas terrestre : ce qui change
 
 Pour la démonstration, toute la partie rotative est imprimée en PETG, **vis sans fin
 comprises**. Restent en métal : le trépied, les deux rails du panneau, et les pièces du
 commerce qu'on ne peut pas imprimer de façon fiable (roulements, arbres Ø5 des vis sans fin,
 moteurs, vis). Les **pivots d'élévation sont imprimés** eux aussi.
 
-Les fichiers sont dans **`CAO/Demo_Terre_PETG/`**. Ce sont les mêmes pièces que le cas réel,
+Les fichiers sont dans **`Fichiers 3D (CAO)/Cas Terrestre (démonstration)/`**. Ce sont les mêmes pièces que le cas lunaire,
 générées avec le jeu de cotes `"petg"` : les trous et les dentures ont des jeux qui
 compensent l'impression, et quelques formes sont adaptées pour s'imprimer sans support.
 L'assemblage imprimé complet, avec roulements, arbres, moteurs et toutes les vis, a été vérifié
@@ -45,7 +46,7 @@ par le script :
   plusieurs azimuts ;
 * garde de 2 mm de la partie basculante sur toute la course.
 
-![Pièces à imprimer](../../docs/demo_petg_pieces_a_imprimer.png)
+![Pièces à imprimer](../../docs%20%28extra%29/demo_petg_pieces_a_imprimer.png)
 
 **Ce qui ne change pas** (voir le [README principal](../../README.md)) : l'architecture de la
 tête (§ 2), les rapports 50:1 et 60:1, les moteurs, le panneau et sa fixation (§ 3), le capteur
@@ -53,7 +54,7 @@ solaire et son principe (§ 4), et le principe de la commande (§ 5).
 
 **Ce qui change, pièce par pièce :**
 
-| Élément | Cas réel (Lune) | Démonstration sur Terre |
+| Élément | Cas lunaire | Démonstration sur Terre |
 |---|---|---|
 | Socle, fond, chape, chapeau en U, paliers et supports de moteurs | Al 6061-T6 anodisé | **PETG imprimé** (le moyeu de la chape est imprimé à part) |
 | Rondelle d'arrêt du moyeu | Inox 17-4PH | **PETG imprimé** |
@@ -116,7 +117,7 @@ justes.
 
 La liste complète, avec les noms à chercher sur les sites marchands, les quantités, les prix
 indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
-**[`LISTE_ACHATS.md`](../../LISTE_ACHATS.md)**. En résumé, pour la mécanique :
+**[`Liste-composants.md`](../../Liste-composants.md)**. En résumé, pour la mécanique :
 
 | Article | Qté |
 |---|---|
@@ -145,7 +146,7 @@ Leur tête Ø18 de 2 mm sert d'épaulement contre le flanc du chapeau.
 
 ### Roulements de la démonstration
 
-Ce sont ceux du modèle lunaire ([README du modèle lunaire](../Cas_Reel/README.md), § 1), en
+Ce sont ceux du cas lunaire ([README du cas lunaire](../Cas%20Lunaire/README.md), § 1), en
 acier standard, sauf à l'élévation : les pivots imprimés
 Ø12 tournent dans des **6801** au lieu des 608.
 
@@ -180,7 +181,7 @@ font qu'environ 2,5 mm de profondeur : vis M2,5×6, pas plus longues.
 
 ## 4. Jeux d'ajustement et éprouvette
 
-| Ajustement | Cas réel | PETG | Pourquoi |
+| Ajustement | Cas lunaire | PETG | Pourquoi |
 |---|---|---|---|
 | Logements de roulements (608 / 6801, 685, 6806) | nominal | **+0,15 mm** | Les trous imprimés sortent plus petits ; on obtient un serrage léger du roulement |
 | Alésage d'un axe (Ø5 acier des vis ; pivot Ø8 acier ou Ø12 PETG dans le chapeau et la roue) | nominal | **+0,10 mm**, en D côté roue (méplat à 5,25 mm de l'axe pour le Ø12) | Serré. Le méplat transmet le couple de la roue au chapeau, et une vis de pression bloque chaque vis sans fin |
@@ -200,7 +201,7 @@ font qu'environ 2,5 mm de profondeur : vis M2,5×6, pas plus longues.
 **Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages
 que les pièces :
 
-![Éprouvette de réglage](../../docs/explications/eprouvette_ajustements.png)
+![Éprouvette de réglage](../../docs%20%28extra%29/explications/eprouvette_ajustements.png)
 
 * trois logements de 6801 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
 * un alésage Ø12 en D, un Ø5, un passage et un avant-trou M3 ;
@@ -235,11 +236,11 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 | Le palier d'une vis sans fin | La vis sans fin imprimée |
 |---|---|
-| ![Palier : joues, roulements, arbre](../../docs/explications/palier_joues_roulements.png) | ![Vis sans fin : filet, moyeux](../../docs/explications/vis_sans_fin_moyeux.png) |
+| ![Palier : joues, roulements, arbre](../../docs%20%28extra%29/explications/palier_joues_roulements.png) | ![Vis sans fin : filet, moyeux](../../docs%20%28extra%29/explications/vis_sans_fin_moyeux.png) |
 
 | L'axe d'élévation imprimé : pivots PETG Ø12, roulements 6801, roue |
 |---|
-| ![Axe d'élévation](../../docs/explications/axe_elevation.png) |
+| ![Axe d'élévation](../../docs%20%28extra%29/explications/axe_elevation.png) |
 
 * **Le palier** est la pièce en U qui porte une vis sans fin. Ses deux parois sont les
   **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse. Côté
@@ -299,7 +300,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 ### Visserie en bref
 
-![Visserie à l'échelle](../../docs/visserie/nomenclature.png)
+![Visserie à l'échelle](../../docs%20%28extra%29/visserie/nomenclature.png)
 
 * Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
   écrous en vert clair**.
@@ -310,7 +311,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
   Les 6 **écrous M3** sont dans le cadre du panneau (4 pour les rails, 2 pour le capteur
   solaire). L'**écrou 1/4"** de la démonstration est prisonnier dans le fond.
 * Le détail étape par étape, avec des vues éclatées de chaque endroit :
-  **[docs/visserie/](../../docs/visserie/README.md)**.
+  **[docs (extra)/visserie/](../../docs%20%28extra%29/visserie/README.md)**.
 
 ## 6. Commande : Heltec WiFi LoRa 32 V4
 
@@ -327,7 +328,7 @@ sa section (AWG), et l'épaisseur du trait suit cette section.
 
 | Folio 1 : schéma complet | Folio 2 : brochage et liaisons | Folio 3 : section des fils |
 |---|---|---|
-| ![Schéma électrique](../../docs/electronique/schema_electrique.png) | ![Brochage du Heltec V4](../../docs/electronique/brochage_heltec.png) | ![Section des fils](../../docs/electronique/cablage_sections.png) |
+| ![Schéma électrique](../../docs%20%28extra%29/electronique/schema_electrique.png) | ![Brochage du Heltec V4](../../docs%20%28extra%29/electronique/brochage_heltec.png) | ![Section des fils](../../docs%20%28extra%29/electronique/cablage_sections.png) |
 
 **Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
 7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
@@ -409,7 +410,7 @@ différent.
   | Moteur | Courant | Vref |
   |---|---|---|
   | NEMA 17, élévation, version PETG | 0,6 A, pour ne pas casser les dents si l'élévation bute | 0,85 V |
-  | NEMA 17, cas réel | 1,0 A | 1,41 V |
+  | NEMA 17, cas lunaire | 1,0 A | 1,41 V |
   | NEMA 11, azimut | 0,67 A | 0,95 V |
 
 * **À l'arrêt, EN = 1** : drivers coupés. R5 tient EN à 1 au démarrage et pendant un
@@ -621,7 +622,7 @@ des presse-étoupes (folio 2 du schéma : nombre de conducteurs par câble).
 ### Implantation du boîtier électronique
 
 L'électronique tient sur une **plaque à pastilles de 7 × 9 cm** (24 × 30 trous utilisés : une
-plaque d'essais ECS1/2 en époxy, coupée à 28 × 34 trous, voir la liste d'achats), tassée au
+plaque d'essais ECS1/2 en époxy, coupée à 28 × 34 trous, voir la liste des composants), tassée au
 plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, la batterie, les
 fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à
 l'échelle dans Fritzing :
@@ -629,11 +630,11 @@ l'échelle dans Fritzing :
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 `scripts/generate_implantation_fritzing.py`.
 
-![Implantation du boîtier électronique](../../docs/electronique/implantation_boitier.png)
+![Implantation du boîtier électronique](../../docs%20%28extra%29/electronique/implantation_boitier.png)
 
 | La plaque à pastilles, de plus près |
 |---|
-| ![Plaque à pastilles 7 × 9 cm](../../docs/electronique/plaque_pastilles.png) |
+| ![Plaque à pastilles 7 × 9 cm](../../docs%20%28extra%29/electronique/plaque_pastilles.png) |
 
 * **Organisation de la plaque** : chaque pièce est à côté de ce qu'elle dessert, ce qui
   raccourcit les fils.
@@ -833,7 +834,7 @@ avec les moteurs coupés entre deux corrections :
   le moteur quand il est coupé, il repart exactement de là où il s'était arrêté.
 
 **Pourquoi pas un suivi continu.** Il faudrait garder les moteurs alimentés en permanence :
-environ 12 W, plus que ce que produit le panneau (environ 10 W crête). Le NEMA 11 chaufferait
+environ 8 W (§ 9), autant que ce que produit le panneau en plein soleil. Le NEMA 11 chaufferait
 assez pour ramollir ses supports en PETG. Avec la cadence ci-dessus, les moteurs sont
 alimentés moins de 1 % du temps, et l'écart de pointage ne dépasse jamais 0,25°, soit
 0,001 % de puissance perdue.
@@ -844,11 +845,11 @@ mouvement paraît continu à l'écran. La consommation reste de quelques dizaine
 
 ## 8. Sur un trépied
 
-![Fond sur trépied](../../docs/explications/fond_trepied.png)
+![Fond sur trépied](../../docs%20%28extra%29/explications/fond_trepied.png)
 
 La version PETG se visse directement sur la **vis 1/4" du plateau d'un trépied**.
 Le fond contient un écrou 1/4"-20 pris dans un logement hexagonal. Les câbles sortent
-par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas réel garde sa
+par le passe-câble du socle, puisque le centre est occupé par la vis. Le cas lunaire garde sa
 colonne Ø50.
 
 * **Serrer fermement** la tête sur la vis. C'est ce serrage qui empêche la tête de tourner
@@ -866,7 +867,7 @@ colonne Ø50.
 
 Les images de la démonstration montée sur ce trépied sont en tête de ce document.
 
-L'assemblage complet est dans **`CAO/Demo_Terre_PETG/Demo_Trepied.step`** : tête
+L'assemblage complet est dans **`Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step`** : tête
 PETG, panneau, capteur solaire et trépied, posé sur le sol en y = 0. Il est généré par
 `scripts/generate_demo_trepied.py`.
 
@@ -904,7 +905,7 @@ toutes les directions), retrouve les mêmes valeurs à 1 km/h près.
 
 | Le lest sous le trépied | Vue d'ensemble |
 |---|---|
-| ![Lest sous le trépied](../../docs/demo_trepied_lest.png) | ![Sur un trépied](../../docs/demo_trepied_iso.png) |
+| ![Lest sous le trépied](../../docs%20%28extra%29/demo_trepied_lest.png) | ![Sur un trépied](../../docs%20%28extra%29/demo_trepied_iso.png) |
 
 Sans modifier le trépied, **seul le poids compte** : le vent qui renverse l'ensemble croît
 comme la racine carrée de la masse totale. Les autres leviers ont été chiffrés, et ils
@@ -1025,16 +1026,75 @@ roulements ZZ :
 
 | Fichier | Contenu |
 |---|---|
-| `CAO/Demo_Terre_PETG/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
-| `CAO/Demo_Terre_PETG/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
-| `CAO/Demo_Terre_PETG/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
-| `CAO/Demo_Terre_PETG/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 8) |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 8) |
 | **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
-| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs/electronique/` |
-| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs/electronique/implantation_boitier.png` et `docs/electronique/plaque_pastilles.png` |
-| **[`LISTE_ACHATS.md`](../../LISTE_ACHATS.md)** | **Liste d'achats** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
-| `docs/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
+| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
+| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs (extra)/electronique/implantation_boitier.png` et `docs (extra)/electronique/plaque_pastilles.png` |
+| **[`Liste-composants.md`](../../Liste-composants.md)** | **Liste des composants** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
+| `docs (extra)/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
 
-Arborescence de l'assemblage de la tête dans SolidWorks : celle du modèle lunaire
-([README du modèle lunaire](../Cas_Reel/README.md), § 10), sans trépied ni unité au sol, avec des
+Arborescence de l'assemblage de la tête dans SolidWorks : celle du cas lunaire
+([README du cas lunaire](../Cas%20Lunaire/README.md), § 10), sans trépied ni unité au sol, avec des
 `Roulement_6801` à la place des `Roulement_608`.
+
+## 11. Questions pièges et leurs réponses
+
+Les questions qu'on peut nous poser pour nous faire dire une erreur sur le cas terrestre, avec
+la réponse courte et l'endroit où elle est détaillée.
+
+### Matériaux et impression 3D
+
+| Question piège | Réponse |
+|---|---|
+| « Pourquoi du PETG et pas du PLA, plus facile à imprimer ? » | **Le PLA se ramollit vers 60 °C** : au soleil de La Réunion, une pièce sombre dépasse cette température. Le PETG tient jusqu'à environ 80 °C, il casse moins net et il supporte mieux l'humidité (§ 2). |
+| « Donc le PETG tient au soleil sans limite ? » | **Non.** Il faut une teinte claire : un PETG noir en plein soleil d'été approche sa température de ramollissement. Seul le boîtier du capteur solaire est noir, et il ne porte aucune charge. Les UV font aussi vieillir le PETG : c'est une démonstration, pas une installation permanente (§ 2 et § 7). |
+| « Des engrenages en plastique, c'est solide ? » | **Oui, parce que le courant du moteur est limité.** Les dents travaillent à 16 MPa en marche et à 37 MPa si le moteur d'élévation bute, pour environ 50 MPa de résistance. À 1,0 A au lieu de 0,6 A, elles monteraient à 60 MPa et casseraient (§ 9). |
+| « Vous perdez donc du couple en bridant le moteur à 0,6 A ? » | **Oui, exprès.** Il reste une marge de 1,6 dans un vent de 36 km/h. Le moteur n'est pas le maillon faible, ce sont les dents (§ 9). |
+| « Pourquoi des pivots de Ø12, alors que le cas lunaire a des axes de Ø8 ? » | **Un pivot en PETG de Ø8 travaillerait à 28 MPa en torsion, à la limite de la rupture** (30 MPa). En Ø12, il reste à 9 MPa moteur calé. D'où les roulements 6801 à la place des 608 (§ 9). |
+| « Peu importe le sens d'impression d'un pivot ? » | **Non.** Le pivot entraîné s'imprime couché, pour que les couches suivent l'axe. Debout, il casserait en torsion entre deux couches (§ 9). |
+| « Vous imprimez tout à 100 % de remplissage pour que ce soit solide ? » | **Non.** La résistance vient surtout des parois : 4 périmètres et 40 % de remplissage suffisent. Seuls les vis sans fin, les roues et les pivots sont pleins (§ 2). |
+| « Une pièce imprimée sort aux cotes du dessin ? » | **Non.** Les trous sortent trop petits et le haut d'un trou horizontal s'affaisse. D'où les jeux d'ajustement (+0,15 mm sur les logements de roulements), les trous en goutte, et l'éprouvette à imprimer en premier (§ 4). |
+| « Vous vissez directement dans le plastique ? » | **Oui**, dans des avant-trous de 2,8 mm, avec au moins 3,5 mm de prise, vérifiée vis par vis par le script. Cela convient pour quelques montages ; pour démonter souvent, il faudrait des inserts (§ 4). |
+| « Le plastique garde sa forme sous charge ? » | **Non, il flue** : sous une charge permanente, il se déforme lentement. Entre deux démonstrations, on gare le panneau à plat, où la pesanteur ne charge presque plus la denture (§ 9). |
+
+### Lubrification
+
+| Question piège | Réponse |
+|---|---|
+| « Vous lubrifiez au MoS₂, comme sur la Lune ? » | **Non : sur Terre, une graisse suffit.** On prend une graisse PTFE, prévue pour les plastiques (§ 1). |
+| « Graisser les vis sans fin, c'est facultatif ? » | **Non, c'est obligatoire.** À sec, le frottement double : la marge d'élévation tombe de 1,6 à 0,9 dans un vent de 36 km/h, et le moteur ne suit plus (§ 9). |
+| « Si vous graissez, le frottement baisse : la vis n'est plus irréversible ? » | **Elle le reste.** PETG graissé : frottement d'environ 0,15, soit un angle de frottement de 8,5°, plus du double de la pente du filet (3,6° et 3,8°). Le panneau tient moteurs coupés, même avec des vibrations (§ 9). |
+| « Il faut aussi graisser les roulements ? » | **Non.** Les roulements ZZ sont graissés à vie : on ne les ouvre pas (§ 3). |
+| « ZZ ou 2RS, c'est pareil ? » | **Non.** Les joints des 2RS frottent : la marge d'azimut dans le vent passe de 2,3 à 1,6 (§ 3). |
+
+### Mécanique, vent et stabilité
+
+| Question piège | Réponse |
+|---|---|
+| « La vis sans fin bloque le panneau : il ne risque donc rien dans le vent ? » | **Le panneau ne tourne pas, mais l'ensemble peut se renverser.** Les pieds du trépied ne sont qu'à 23 cm de l'axe : sans lest, il bascule à 26 km/h (§ 8). |
+| « Il suffit de l'alourdir un peu ? » | **Il en faut beaucoup.** Le vent de basculement croît comme la racine carrée de la masse : 37 km/h avec 3 kg de lest, 57 km/h avec 11 kg. D'où les consignes : à plat au-dessus de 45 km/h, rentré au-dessus de 70 km/h (§ 8). |
+| « Un moteur pas à pas tient sa position : pourquoi le couper ? » | **Le maintenir alimenté coûterait environ 8 W**, autant que ce que produit le panneau, et le NEMA 11 chaufferait assez pour ramollir son support. Les vis tiennent le panneau gratuitement (§ 9). |
+| « En coupant les moteurs, vous perdez la position ? » | **Non.** La vis bloque le moteur : il repart d'où il s'est arrêté, à un pas près (0,036° au panneau). |
+| « Sans codeur, comment savez-vous où est le panneau ? » | Par le **comptage des pas** depuis deux origines : un micro-rupteur en élévation, un capteur Hall en azimut. Les marges de couple évitent les pas perdus, et les photodiodes corrigent sur la vraie cible, le Soleil (§ 6 et § 7). |
+| « On peut bouger le panneau à la main pour le régler ? » | **Jamais.** On forcerait sur les dents en PETG. On alimente le moteur, ou on tourne l'arbre de la vis. |
+| « Votre tête est imprimée, donc elle tiendrait aussi sur la Lune ? » | **Non.** La démonstration valide la cinématique, la commande et le suivi, pas les matériaux (voir le README du cas lunaire, § 11). |
+
+### Énergie et électronique
+
+| Question piège | Réponse |
+|---|---|
+| « Votre panneau de 10 W produit 10 W ? » | **Non.** 10 W est une puissance de crête, à 25 °C sous 1000 W/m². Avec le régulateur PWM, le panneau travaille à la tension de la batterie (environ 13 V) : il donne environ 8 W en plein soleil, et environ 30 Wh par jour de beau temps (§ 6). |
+| « Le suivi deux axes rapporte donc plus d'énergie qu'il n'en coûte ? » | **Pas sur un panneau aussi petit.** Un suivi deux axes rapporte de l'ordre de 30 % de plus qu'un panneau fixe, soit une dizaine de Wh par jour ici. Or l'électronique, surtout la carte Heltec, consomme 5 à 20 Wh par jour. C'est un démonstrateur : le principe devient rentable sur de grands panneaux (§ 6, à confirmer avec les deux wattmètres). |
+| « Une erreur de pointage de 5° fait perdre 5 % ? » | **Non : 0,4 %.** La perte suit le cosinus de l'erreur. À 1°, elle n'est que de 0,015 %. Le suivi à 0,25° près sert à éviter que le panneau oscille, pas à gagner de la puissance (README principal, § 4). |
+| « Pourquoi un régulateur PWM et pas un MPPT ? » | Un MPPT tirerait environ 10 W au lieu de 8. Le PWM est plus simple et moins cher ; on accepte de perdre 20 % (§ 6). |
+| « Une batterie au lithium serait mieux ? » | **Pas avec ce régulateur** : le SOL10UC3 ne charge que le plomb, le gel et l'EFB (§ 6). |
+| « Le fusible protège la batterie ? » | **Il protège le fil qui le suit.** Il est donc au plus près de la source : à moins de 10 cm du + de la batterie (§ 6). |
+| « Tous les moins sont reliés ensemble ? » | **Pas celui du panneau.** Il va seulement au régulateur, qui peut couper le −. Le 0 V du boîtier vient de la sortie LOAD (§ 6). |
+| « L'ESP32 supporte le 5 V du capteur Hall ? » | **Non, ses broches s'arrêtent à 3,3 V.** Le capteur est alimenté en 5 V, mais sa sortie à collecteur ouvert est tirée au 3,3 V. D'où un A3144 nu, et pas un module qui tire sa sortie au 5 V (§ 6). |
+| « Vous pouvez émettre en LoRa en continu ? » | **Non.** Dans la bande 868 MHz, on n'occupe le canal que 1 % du temps : un message de 38 octets par minute en SF9 (§ 6). |
+| « Le capteur solaire marche par temps couvert ? » | **Non.** Quand le signal est trop faible, le tracker suit la position calculée du Soleil (§ 7). |
+| « À La Réunion, le Soleil est au sud à midi ? » | **Non, au nord presque toute l'année** (21° de latitude sud). En été austral, il passe presque au zénith : l'azimut doit alors tourner vite, mais un retard coûte très peu (bibliographie du README principal). |
+| « IP65, donc le boîtier peut aller sous l'eau ? » | **Non.** IP65 veut dire étanche à la poussière et aux jets d'eau, pas à l'immersion. L'aérateur à membrane évite la condensation (§ 6). |

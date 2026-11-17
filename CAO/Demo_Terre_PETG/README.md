@@ -734,8 +734,9 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 * **Chaleur** : un boîtier clair, à l'ombre (sous le trépied, par exemple). En plein soleil, un
   boîtier fermé dépasse vite 50 °C : la batterie s'use bien plus vite au chaud, et le
   régulateur, sur la porte, est prévu pour 55 °C au plus.
-* **Lest** : suspendu sous la colonne, juste au-dessus du sol, le boîtier sert aussi de lest
-  contre le vent (§ 8). Laisser alors du mou aux câbles.
+* **Lest** : posé à plat sous le trépied et sanglé au moyeu de la colonne, entre deux sacs de
+  sable, le boîtier sert aussi de lest contre le vent (§ 8). Laisser alors du mou aux câbles,
+  et tourner la paroi des presse-étoupes à l'opposé du vent dominant.
 
 ## 7. Capteur solaire de la démonstration
 
@@ -886,68 +887,79 @@ Le reste (tubes, corps, rotule) est estimé sur les photos.
 
 **Stabilité.** C'est le point faible : les pieds ne sont qu'à 23 cm de l'axe. Les bords du
 triangle d'appui sont donc à 11,5 cm du centre, alors que l'axe est à 76 cm du sol et que le
-panneau déporte son centre de gravité. Calcul fait dans toutes les orientations du panneau, avec
-un vent perpendiculaire au panneau (Cx 1,2, vent sur le trépied négligé) :
+panneau déporte son centre de gravité.
 
-| Lest suspendu sous le trépied | Pire orientation : pente de basculement | Pire orientation : vent de basculement | Panneau tourné vers une jambe |
+Le calcul est fait dans toutes les orientations du panneau, avec un vent perpendiculaire au
+panneau (coefficient de force 1,2) et la prise au vent de la tête et des jambes. Un second
+calcul, indépendant (`scripts/verification_stabilite.py` : CAO assemblée dans 48 poses, vent de
+toutes les directions), retrouve les mêmes valeurs à 1 km/h près.
+
+| Lest sous le trépied | Pente de basculement (pire orientation) | Vent de basculement (pire orientation) | Vent de basculement, panneau à plat |
 |---|---|---|---|
-| Aucun | 8,6° | **7,9 m/s (28 km/h)** | 9,2° ; 9,4 m/s (34 km/h) |
-| 2 kg | 14,0° | 10,4 m/s (37 km/h) | 14,6° ; 11,6 m/s (42 km/h) |
-| 3 kg | 16,5° | **11,4 m/s (41 km/h)** | 17,1° ; 12,6 m/s (45 km/h) |
+| Aucun | 8,6° | **7,1 m/s (26 km/h)** | 57 km/h |
+| Boîtier électronique seul (3 kg) | 16,5° | 10,3 m/s (37 km/h) | 81 km/h |
+| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 30,9° | **16,0 m/s (57 km/h)** | 123 km/h |
 
+### Version lestée, sans toucher au trépied
+
+| Le lest sous le trépied | Vue d'ensemble |
+|---|---|
+| ![Lest sous le trépied](../../docs/demo_trepied_lest.png) | ![Sur un trépied](../../docs/demo_trepied_iso.png) |
+
+Sans modifier le trépied, **seul le poids compte** : le vent qui renverse l'ensemble croît
+comme la racine carrée de la masse totale. Les autres leviers ont été chiffrés, et ils
+n'apportent presque rien :
+
+| Levier | Gain sur le vent de basculement |
+|---|---|
+| **Lest de 11 kg au lieu de 3 kg** | **+20 km/h** (37 → 57 km/h) |
+| Recentrer le centre de gravité de la tête (retouche de la chape) | +1 km/h |
+| Abaisser la tête de 30 mm, ou de 70 mm en retirant la rotule | +1 à +2 km/h |
+| Orienter une jambe selon le vent dominant | aucun : le panneau tourne toute la journée, et le vent le pousse toujours le long de sa normale |
+| Interdire au panneau de descendre sous 30° d'élévation | +1 km/h |
+| **Panneau à plat** (élévation 90°) | **le vent de basculement double** (57 → 123 km/h) |
+
+La tête imprimée reste donc telle qu'elle est. La version lestée ajoute seulement :
+
+* **Le boîtier électronique posé à plat sous le trépied**, porte vers le haut, au centre :
+  avec sa batterie, il pèse 3 kg. La batterie étanche accepte cette position.
+* **Deux sacs de sable de 4 kg**, un de chaque côté du boîtier (environ 26 × 10 × 10 cm
+  chacun). Le sable ne perce pas l'étanchéité d'un toit.
+* **Une sangle à boucle de 25 mm** : un tour autour du boîtier et des deux sacs, puis autour
+  du moyeu de la colonne centrale, **tendue à la main**. Le lest reste posé : il ne se balance
+  pas et ne charge pas le trépied en temps normal. Il ne tire sur le trépied que si une rafale
+  commence à le soulever.
+* Le lest est décalé de 20 mm, à l'opposé d'une jambe, pour laisser 20 mm au verrou de cette
+  jambe. Rien n'est fixé sur les jambes ni sur les pieds.
+
+**Consignes de vent** (rafales annoncées par Météo-France) :
+
+| Rafales | Quoi faire |
+|---|---|
+| Jusqu'à 45 km/h | Fonctionnement normal : il reste une marge de 1,5 sur l'effort du vent |
+| 45 à 70 km/h | Panneau à plat, moteurs coupés |
+| Plus de 70 km/h, ou toute vigilance | Rentrer le tracker |
+
+* **À vérifier sur le vrai trépied** : la charge qu'il supporte. Une forte rafale lui fait
+  porter jusqu'à 11 kg de lest en plus des 2,4 kg de la tête. Faire l'essai : soulever le
+  trépied lesté par sa colonne, les verrous des jambes ne doivent pas glisser. Rentrer les
+  tubes du bas à fond si possible.
+* **Sur un toit** : placer l'ensemble à 2 m au moins du bord (le vent y accélère) et
+  l'attacher par une longe à un point fixe, pour que rien ne puisse tomber du bâtiment.
+* **Mettre le panneau à plat** dès qu'on laisse le tracker sans surveillance, la nuit et par
+  ciel couvert : il ne produit rien, et il tient alors deux fois plus de vent.
 * **En intérieur, sans lest** : ça tient, sur un sol à peu près plat.
-* **Dehors, au sol et à l'abri, un lest de 2 à 3 kg est indispensable** : un sac de sable ou
-  une bouteille d'eau, suspendu sous la colonne, juste au-dessus du sol. Sans lest, une brise
-  de 28 km/h suffit à le renverser. **Sur un toit, ce lest ne suffit pas** : voir plus bas.
-* **Orienter une jambe vers le Soleil de midi** : le nord à La Réunion presque toute l'année
-  (le sud en métropole). Le panneau regarde alors vers
-  cette jambe la plus grande partie de la journée, et un vent de dos le pousse vers elle :
-  c'est l'orientation la plus favorable (colonne de droite).
-* Au-dessus d'environ 10 m/s de vent, ou en partant, mettre le panneau à plat (élévation 90°).
 * **Rotule** : serrer fermement les deux blocages (panoramique et inclinaison), mettre le
   plateau de niveau avec la bulle, et vérifier que le clip du plateau est bien verrouillé. Si
   la rotule se dévisse du trépied et que le filetage dessous est un 1/4", la tête PETG peut s'y
   visser directement : plus rigide, et 7 cm plus bas.
 
-### Sur un toit, à La Réunion : fixer le trépied sur une planche lestée
+### Pour aller plus loin : élargir la base
 
-Les chiffres du tableau ont été recoupés par un second calcul, indépendant
-(`scripts/verification_stabilite.py` : CAO assemblée dans 48 poses, vent de toutes les
-directions). Il retrouve les mêmes valeurs, puis ajoute ce que le premier néglige :
-
-| Cas (pire orientation du panneau et du vent) | Sans lest | Lest de 3 kg |
-|---|---|---|
-| Panneau seul, comme dans le tableau ci-dessus | 28 km/h | 41 km/h |
-| Avec la prise au vent de la tête et des jambes | **26 km/h** | **37 km/h** |
-| Avec les incertitudes (masse du trépied, écartement des pieds, coefficient de force) | 21 à 28 km/h | 31 à 39 km/h |
-| Glissement sur un sol lisse ou mouillé (frottement 0,3) | 37 km/h | 50 km/h |
-| Panneau à plat (élévation 90°) | 63 km/h | 88 km/h |
-
-**Un lest suspendu ne suffit donc pas sur un toit**, même par temps normal : une rafale
-d'alizé ordinaire dépasse 40 km/h, et il y a plus de vent sur un toit qu'au sol. Le défaut est
-l'écartement des pieds (23 cm), pas le poids : même 10 kg suspendus ne tiennent que 55 km/h.
-
-**La solution : élargir la base.**
-* Poser le trépied sur une **planche de 60 × 60 cm** (contreplaqué de 15 mm) et y fixer les
-  trois pieds (sangle, ou colliers vissés dans la planche).
-* Poser **10 kg de lest sur la planche** : deux dalles de béton, des sacs de sable, ou le
-  boîtier avec sa batterie (3 kg) plus 7 kg. L'ensemble ne bascule alors qu'à **89 km/h**
-  (103 km/h avec une planche de 80 × 80 cm).
-* Ne rien percer dans le toit, et glisser un tapis sous la planche pour protéger l'étanchéité.
-* **Attacher l'ensemble par une longe** à un point fixe du toit, et le placer **à 2 m au
-  moins du bord** : le vent accélère au bord d'un toit plat, et rien ne doit pouvoir tomber
-  du bâtiment.
-
-**Consignes de vent, avec la planche lestée :**
-
-| Rafales annoncées (Météo-France) | Quoi faire |
-|---|---|
-| Jusqu'à 50 km/h | Fonctionnement normal |
-| 50 à 70 km/h | Panneau à plat (élévation 90°), moteurs coupés |
-| Plus de 70 km/h, ou toute vigilance vent, forte pluie ou cyclone | Rentrer le tracker |
-
-Les 50 km/h gardent une marge de 3 sur l'effort du vent par rapport au basculement à 89 km/h,
-et ils restent sous les 55 km/h où le moteur d'azimut commence à perdre des pas.
+Le lest ne corrige pas le vrai défaut, l'écartement des pieds (23 cm). Pour tenir davantage,
+il faut fixer les trois pieds sur une **planche de 60 × 60 cm** qui porte 10 kg de lest :
+l'ensemble ne bascule alors qu'à 89 km/h (103 km/h avec une planche de 80 × 80 cm). Cette
+solution demande de sangler ou de visser les pieds du trépied sur la planche.
 
 ## 9. Couples, marges et tenue de la version PETG
 

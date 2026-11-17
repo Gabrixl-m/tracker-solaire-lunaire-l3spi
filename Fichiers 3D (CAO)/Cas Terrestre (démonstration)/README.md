@@ -46,6 +46,14 @@ par le script :
   plusieurs azimuts ;
 * garde de 2 mm de la partie basculante sur toute la course.
 
+**Une différence de fond : le contrepoids.** Dans le cas lunaire, le panneau est décalé au-dessus
+de l'axe d'élévation, et son centre de gravité reste à 55 à 62 mm de l'axe : son poids charge en
+permanence la denture, jusqu'à 0,9 N·m. En PETG, c'est ce que les dents supportent le moins
+bien (fluage). La démonstration ajoute donc, derrière l'axe, un **bloc d'acier de 0,9 kg** porté
+par une platine imprimée (`Support_Contrepoids`), vissée sur le flanc +X du chapeau. Le centre
+de gravité de la partie basculante tombe **sur l'axe d'élévation** (0,0 mm, calculé sur la CAO),
+et la pesanteur ne charge plus la denture dans aucune position. Détails et marges au § 9.
+
 ![Pièces à imprimer](../../docs%20%28extra%29/demo_petg_pieces_a_imprimer.png)
 
 **Ce qui ne change pas** (voir le [README principal](../../README.md)) : l'architecture de la
@@ -95,9 +103,10 @@ Les chiffres côte à côte (masses, marges, courant du moteur d'élévation) so
 | `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
 | `Capteur_Solaire_Boitier` | 1 | Croix en haut | **PETG noir**, 100 % de remplissage : il doit être opaque (§ 7) |
 | `Capteur_Solaire_Support` | 1 | Plaque sur le plateau, âme vers le haut | Équerre du capteur solaire, vissée sur le petit côté du cadre |
+| `Support_Contrepoids` | 1 | À plat, face extérieure sur le plateau | Platine de 4 mm, 164 × 52 mm : vissée sur le flanc +X du chapeau, elle porte le bloc d'acier (§ 9) |
 
-Environ 305 g de PETG pour la tête (406 g si tout était plein), plus 26 g pour le capteur
-solaire.
+Environ 340 g de PETG pour la tête, contrepoids compris (447 g si tout était plein), plus 26 g
+pour le capteur solaire.
 
 **Réglages conseillés** :
 * PETG, couches de 0,2 mm ;
@@ -127,7 +136,8 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
+| Vis CHC M3 : 10 × M3×8, 11 × M3×10, 11 × M3×12, 8 × M3×14 | 40 |
+| **Bloc d'acier doux 30 × 70 × 55 mm** (contrepoids, ≈ 0,9 kg ; plat ou tôles empilées), 4 trous M3 taraudés, profondeur 9 mm, sur une face de 70 × 55 | 1 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
 | Écrou 1/4"-20 UNC (filetage des trépieds, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
@@ -160,7 +170,7 @@ acier standard, sauf à l'élévation : les pivots imprimés
     l'azimut d'environ 0,15 N·m (estimation), soit le tiers du couple du vent de 10 m/s.
   * Avec des 2RS, la marge de l'azimut au vent passe de ×2,3 à ×1,6 (vis graissée), et
     au-dessous de ×1 si la vis tourne à sec.
-  * L'élévation n'est presque pas touchée : ×1,6 → ×1,5.
+  * L'élévation n'est presque pas touchée : ×5,8 → ×5,0.
 * **685** : prendre une version **protégée, ZZ ou 2RS**. Le 685 ouvert ne fait que 3 mm de
   large, alors que les paliers sont prévus pour 5 mm.
 * **Montage** : enfoncer un roulement en poussant sur la bague qu'on emmanche. Dans un
@@ -294,7 +304,11 @@ Toutes les pièces sont alors régénérées avec ce jeu.
     noyées dans les rails). Poser ensuite le panneau sur les rails. Dans chaque bout de rail,
     passer une vis M3×14 par-dessous à travers le rail et l'aile arrière du cadre, puis
     serrer un écrou M3 posé dans le cadre. On l'atteint par le dos ouvert du panneau.
-11. **Capteur solaire** (§ 7) : coller les 4 BPW34 dans le boîtier et les câbler, visser le
+11. **Contrepoids** (§ 9) : visser la platine sur la face extérieure du flanc +X du chapeau (4 × M3×8 ;
+    la tête du pivot libre passe dans le trou Ø20), puis le bloc d'acier sur la platine, par
+    l'intérieur (4 × M3×10, têtes dans les lamages, un point de frein-filet). Le bloc pend
+    derrière l'axe, du côté opposé au panneau. Peser le bloc avant : 905 g à ± 2 %.
+12. **Capteur solaire** (§ 7) : coller les 4 BPW34 dans le boîtier et les câbler, visser le
     boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le petit côté du
     cadre, côté du pivot libre (2 × M3×10, écrous M3 posés dans le cadre).
 
@@ -304,7 +318,8 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 * Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
   écrous en vert clair**.
-* Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. S'y
+* Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. Le
+  contrepoids ajoute 4 vis M3×8 et 4 vis M3×10 (pas encore sur l'image ci-dessus). S'y
   ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×8 sous la roue d'azimut et 2 vis
   sans tête M3×4 qui bloquent les vis sans fin sur leur arbre.
 * Les 4 **rondelles M3** vont sous les vis posées sur les lumières de la chaîne d'azimut.
@@ -859,7 +874,7 @@ colonne Ø50.
 * La vis du trépied doit dépasser du plateau d'au moins **4,5 mm**. Au-delà de 7 mm, elle
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
-  La tête et le panneau pèsent 2,4 kg : vérifier la charge maximale du trépied.
+  La tête et le panneau pèsent 3,3 kg : vérifier la charge maximale du trépied.
 * **Stabilité** : un trépied léger bascule bien plus tôt que le trépied du projet.
   Le calcul est fait ci-dessous pour un trépied courant.
 
@@ -882,8 +897,9 @@ Le reste (tubes, corps, rotule) est estimé sur les photos.
   0,89 m, et son point le plus bas à environ 0,63 m ;
 * **aucune interférence**. Le panneau passe à 33 mm au plus près du plateau du trépied (panneau
   vertical) : les molettes de la rotule restent en dessous ;
-* charge sur la rotule : tête et panneau font **2,4 kg**. Leur centre de gravité s'écarte
-  jusqu'à 29 mm de l'axe, ce qui fait 0,7 N·m que les blocages de la rotule doivent tenir ;
+* charge sur la rotule : tête et panneau font **3,3 kg**, contrepoids compris. Leur centre de
+  gravité s'écarte jusqu'à 18 mm de l'axe, ce qui fait 0,57 N·m que les blocages de la rotule
+  doivent tenir ;
 * masse du trépied estimée à 0,9 kg (à peser : plus lourd, il serait un peu plus stable).
 
 **Stabilité.** C'est le point faible : les pieds ne sont qu'à 23 cm de l'axe. Les bords du
@@ -897,9 +913,13 @@ toutes les directions), retrouve les mêmes valeurs à 1 km/h près.
 
 | Lest sous le trépied | Pente de basculement (pire orientation) | Vent de basculement (pire orientation) | Vent de basculement, panneau à plat |
 |---|---|---|---|
-| Aucun | 8,6° | **7,1 m/s (26 km/h)** | 57 km/h |
-| Boîtier électronique seul (3 kg) | 16,5° | 10,3 m/s (37 km/h) | 81 km/h |
-| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 30,9° | **16,0 m/s (57 km/h)** | 123 km/h |
+| Aucun | 8,8° | **8,6 m/s (31 km/h)** | 65 km/h |
+| Boîtier électronique seul (3 kg) | 14,9° | 11,4 m/s (41 km/h) | 87 km/h |
+| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 27,0° | **16,7 m/s (60 km/h)** | 127 km/h |
+
+Ces valeurs comptent le **contrepoids d'élévation** (§ 9). Il gagne 5, 4 et 3 km/h sur les trois
+lignes (26, 37 et 57 km/h avant lui). En revanche la pente de basculement sans vent baisse un
+peu : le bloc d'acier décale de 18 mm le centre de gravité de la tête.
 
 ### Version lestée, sans toucher au trépied
 
@@ -909,16 +929,16 @@ toutes les directions), retrouve les mêmes valeurs à 1 km/h près.
 
 Sans modifier le trépied, **seul le poids compte** : le vent qui renverse l'ensemble croît
 comme la racine carrée de la masse totale. Les autres leviers ont été chiffrés, et ils
-n'apportent presque rien :
+n'apportent presque rien, à part l'interdiction des basses élévations :
 
 | Levier | Gain sur le vent de basculement |
 |---|---|
-| **Lest de 11 kg au lieu de 3 kg** | **+20 km/h** (37 → 57 km/h) |
+| **Lest de 11 kg au lieu de 3 kg** | **+19 km/h** (41 → 60 km/h) |
 | Recentrer le centre de gravité de la tête (retouche de la chape) | +1 km/h |
-| Abaisser la tête de 30 mm, ou de 70 mm en retirant la rotule | +1 à +2 km/h |
+| Abaisser la tête de 30 mm, ou de 70 mm en retirant la rotule | +1 à +3 km/h |
 | Orienter une jambe selon le vent dominant | aucun : le panneau tourne toute la journée, et le vent le pousse toujours le long de sa normale |
-| Interdire au panneau de descendre sous 30° d'élévation | +1 km/h |
-| **Panneau à plat** (élévation 90°) | **le vent de basculement double** (57 → 123 km/h) |
+| Interdire au panneau de descendre sous 30° d'élévation | +3 km/h |
+| **Panneau à plat** (élévation 90°) | **le vent de basculement double** (60 → 127 km/h) |
 
 La tête imprimée reste donc telle qu'elle est. La version lestée ajoute seulement :
 
@@ -942,7 +962,7 @@ La tête imprimée reste donc telle qu'elle est. La version lestée ajoute seule
 | Plus de 70 km/h, ou toute vigilance | Rentrer le tracker |
 
 * **À vérifier sur le vrai trépied** : la charge qu'il supporte. Une forte rafale lui fait
-  porter jusqu'à 11 kg de lest en plus des 2,4 kg de la tête. Faire l'essai : soulever le
+  porter jusqu'à 11 kg de lest en plus des 3,3 kg de la tête. Faire l'essai : soulever le
   trépied lesté par sa colonne, les verrous des jambes ne doivent pas glisser. Rentrer les
   tubes du bas à fond si possible.
 * **Sur un toit** : placer l'ensemble à 2 m au moins du bord (le vent y accélère) et
@@ -965,36 +985,93 @@ solution demande de sangler ou de visser les pieds du trépied sur la planche.
 ## 9. Couples, marges et tenue de la version PETG
 
 Calculés par `scripts/generate_tete_vis_sans_fin.py`, avec la partie qui bascule de la
-démonstration : 1,50 kg, centre de gravité à 62,0 mm de l'axe. Vis et roues graissées,
+démonstration : 2,46 kg, centre de gravité sur l'axe (0,0 mm, grâce au contrepoids). Vis et roues graissées,
 roulements ZZ :
 
 | Marge = disponible / besoin | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
 |---|---|---|
-| Élévation, moteur limité à 0,6 A (2,08 N·m disponibles) | ×2,3 | **×1,6** |
+| Élévation, moteur limité à 0,6 A (2,08 N·m disponibles) | ×189 | **×5,8** |
 | Azimut (1,22 N·m disponibles) | ×41 | **×2,3** |
 
 | Ce qu'on regarde | Version PETG | Verdict |
 |---|---|---|
-| Part du couple moteur utilisée, élévation | 61 % dehors (vent 10 m/s), 44 % dedans, à 0,6 A | Bien dimensionné dehors |
+| Part du couple moteur utilisée, élévation | 17 % dehors (vent 10 m/s), 0,5 % dedans, à 0,6 A | Large : la pesanteur n'y compte plus |
 | Part du couple moteur utilisée, azimut | 43 % dehors, 2 % dedans | Dimensionné par le vent |
-| Dents en PETG, élévation | 16 MPa en marche dehors, 37 MPa moteur calé | C'est la vraie limite : d'où le courant limité à 0,6 A |
+| Dents en PETG, élévation | 5 MPa en marche dehors, 37 MPa moteur calé | La limite reste le blocage moteur : d'où le courant limité à 0,6 A |
 | Dents en PETG, azimut | 7 MPa en marche dehors, 22 MPa moteur calé | Large |
-| Pivot entraîné Ø12 en PETG | 4 MPa en marche, 9 MPa moteur calé | ×3 au calage, ×8 en marche |
+| Pivot entraîné Ø12 en PETG | 1 MPa en marche, 9 MPa moteur calé | ×3 au calage, ×30 en marche |
 
 * **Le cas qui dimensionne est la démonstration dehors, avec 10 m/s de vent.** Les marges y
-  sont de ×1,6 (élévation, à 0,6 A) à ×2,3 (azimut). Pour un moteur pas à pas, on vise ×1,5
-  à ×2 : l'élévation de la version PETG est donc au bas de la plage, pas au-dessus.
+  sont de ×5,8 (élévation, à 0,6 A) à ×2,3 (azimut). Pour un moteur pas à pas, on vise ×1,5
+  à ×2 : les deux axes sont dans la plage ou au-dessus, l'azimut étant désormais le plus juste.
 * **Énergie** : alimentés, les moteurs consomment environ 2 W (NEMA 17 à 0,6 A) et 6 W
   (NEMA 11). Les drivers sont coupés entre deux corrections : quelques dizaines de mW en
   moyenne au lieu de 8 W.
 
+### Le contrepoids de l'élévation
+
+**Le problème.** Le panneau doit passer devant la chape pour devenir vertical : son axe de
+pivot est donc *sous* le cadre, à 46 mm de son dos. Sur la CAO, le centre de gravité de la
+partie basculante (1,50 kg) était à **62,0 mm de l'axe**, presque entièrement dans la direction
+normale au panneau (1,8 mm seulement dans son plan). Son poids chargeait la denture en
+permanence, jusqu'à 0,9 N·m, ce qui était la moitié du couple du moteur et la principale
+contrainte sur les dents en PETG.
+
+**La solution.** Un **bloc d'acier** derrière l'axe, du côté opposé au panneau, pour que la
+somme des moments de pesanteur s'annule. Il est du côté **+X** seulement : le côté −X est
+occupé par le moteur d'azimut, et le bloc y gênerait la rotation (garde de 0 mm calculée sur
+la CAO).
+
+| Élément | Valeur |
+|---|---|
+| Bloc d'acier doux | 30 (X) × 70 (Y) × 55 (Z) mm, **905 g**, centré à 100 mm sous l'axe, décalé de 3 mm en Y |
+| Platine `Support_Contrepoids` | PETG, 4 mm, 41 g : 4 vis M3×8 dans le flanc du chapeau (4 avant-trous Ø2,8 borgnes déjà dans `Chapeau_U`), 4 vis M3×10 dans le bloc |
+| Partie qui bascule | 2,46 kg, centre de gravité à **(31 ; 0,0 ; 0,0) mm** : sur l'axe d'élévation |
+| Prise des vis | M3×8 dans le flanc : 4,2 mm. M3×10 dans le bloc : 8,6 mm (au moins 3,5 mm exigés) |
+| Garde mini de la partie basculante | 2 mm sur toute la course (flanc du chapeau contre la chape, comme avant) ; la tête de vis du flanc passe à 4 mm de la chape |
+| Interférences | aucune, ni dans la tête, ni sur le trépied (garde de 33 mm au plateau) |
+
+**À la pesée.** Le centre de gravité dépend de la masse du bloc : 1 % de masse (9 g) déplace
+le centre de gravité de 0,37 mm. Couper le bloc (plat ou tôles empilées, 30 × 70 × 55 mm
+environ), le peser, et le limer sur la hauteur de 55 mm jusqu'à **905 g à ± 2 %** : le défaut
+restant est alors au plus de 0,7 mm de bras, soit 0,02 N·m, négligeable devant les 0,36 N·m du
+vent de 10 m/s. Un bloc taraudé M3 (4 trous Ø2,5, profondeur 9 mm) se fait en quelques
+minutes à l'établi.
+
+**Vérification de l'équilibre.** Avant de monter la partie basculante sur la chape, la poser
+sur ses deux pivots, sur deux appuis de même hauteur (chapeau, panneau, rails et bloc montés) :
+elle doit rester **dans n'importe quelle position**, sans basculer d'un côté.
+
+**Ce que ça change :**
+
+| | Sans contrepoids | Avec contrepoids |
+|---|---|---|
+| Centre de gravité de la partie basculante | 62,0 mm de l'axe | **0,0 mm** |
+| Couple de pesanteur sur l'élévation, au pire | 0,91 N·m | **≈ 0** |
+| Marge du moteur d'élévation à 0,6 A, en intérieur | ×2,3 | ×189 |
+| … avec un vent de 10 m/s | ×1,6 | **×5,8** |
+| … à sec (non graissé), vent de 10 m/s | ×1,0 | ×3,3 |
+| Dents d'élévation en marche, vent de 10 m/s | 16 MPa | ≈ 5 MPa |
+| Fluage sous le poids du panneau | à craindre à tout angle sauf à plat | supprimé |
+| Masse de la partie basculante | 1,50 kg | 2,46 kg |
+| Vent de basculement du trépied (0 / 3 / 11 kg de lest) | 26 / 37 / 57 km/h | 31 / 41 / 60 km/h |
+
+* **Une réserve.** Le bloc étant d'un seul côté, le centre de gravité de la partie basculante
+  est décalé de 31 mm sur le côté (en X). Cela ne change rien pour l'élévation, mais cela
+  charge un peu plus la rotule du trépied (§ 8) : la pente de basculement sans vent baisse
+  de 2 à 4° (par exemple 30,9° → 27,0° avec 11 kg), alors que le vent de basculement monte.
+* **Les 0,95 kg ajoutés** (bloc et platine) font passer la charge sur la rotule de 2,4 à 3,3 kg :
+  à comparer à la charge admissible du trépied (§ 8).
+* **Sans moteur, la vis sans fin bloque** : l'équilibre ne sert donc pas à tenir le panneau
+  (la vis le fait déjà), mais à soulager les dents, les pivots et le moteur.
+
 ### Ce que change le PETG en fonctionnement
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
-  * Graissées (μ ≈ 0,15) : ×1,6 en élévation (moteur limité à 0,6 A, voir plus bas) et
-    ×2,3 en azimut avec un vent de 10 m/s ; ×2,3 et ×40 en intérieur.
-  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×1,0) et n'a plus que ×1,3 en
-    intérieur : **graisser**.
+  * Graissées (μ ≈ 0,15) : ×5,8 en élévation (moteur limité à 0,6 A, voir plus bas) et
+    ×2,3 en azimut avec un vent de 10 m/s ; ×189 et ×40 en intérieur.
+  * À sec (μ ≈ 0,30), l'élévation garde ×3,3 dans le vent et ×110 en intérieur, mais
+    l'azimut tombe à ×1,4 : **graisser**.
   * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : en
     azimut, ×1,6 graissé et moins de ×1 à sec (voir § 3).
 * **Tenue moteurs coupés** : encore plus sûre qu'avec acier et bronze, car le frottement du
@@ -1004,13 +1081,16 @@ roulements ZZ :
   * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
     3,0 N·m à la roue. Cela fait environ 37 MPa en pied de dent, soit 74 % de la résistance
     du PETG.
-  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,3 en intérieur.
+  * La marge d'élévation au vent de 10 m/s est de ×5,8, et de ×189 en intérieur. Le contrepoids
+    permettrait même de descendre à 0,4 A (×3,9, soit environ 25 MPa en pied de dent à
+    l'arrêt) : à envisager si l'on veut ménager encore les dents, mais il faut alors changer la
+    tension de référence du driver (§ 6).
   * À 1,0 A, ce moteur pousserait jusqu'à 5 N·m sur la roue en cas de blocage : environ
     60 MPa, les dents casseraient.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
 * **Pivots imprimés Ø12** : le pivot entraîné transmet le couple de la roue au chapeau.
-  * En marche (poids du panneau et vent de 10 m/s, ≈ 1,3 N·m), il travaille à environ
-    4 MPa en torsion. Moteur calé à 0,6 A (3,0 N·m), environ 9 MPa : le tiers de la
+  * En marche (vent de 10 m/s seul, ≈ 0,36 N·m : le contrepoids annule le poids), il travaille
+    à environ 1 MPa en torsion. Moteur calé à 0,6 A (3,0 N·m), environ 9 MPa : le tiers de la
     résistance au cisaillement du PETG (≈ 30 MPa).
   * Un pivot PETG de Ø8 monterait à 28 MPa, à la limite de la rupture : d'où le Ø12 et
     les roulements 6801.
@@ -1019,14 +1099,15 @@ roulements ZZ :
   * Le pivot libre ne porte que la moitié du poids de la partie basculante (≈ 7 N) : il
     peut s'imprimer debout.
 * **Fluage** : sous une charge permanente, le PETG se déforme lentement. Entre deux
-  démonstrations, garer le panneau **à plat (élévation 90°)**, où la pesanteur ne charge
-  presque plus la denture.
+  démonstrations, garer le panneau **à plat (élévation 90°)**. Avec le contrepoids, la
+  pesanteur ne charge plus la denture dans aucune position : le fluage sous le poids du panneau
+  n'est plus à craindre, seul reste le couple du vent. Garer à plat reste conseillé, pour le vent.
 
 ## 10. Fichiers de ce dossier et du boîtier électronique
 
 | Fichier | Contenu |
 |---|---|
-| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/*.stl` (et `.step`) | Les 19 pièces à imprimer (17 pour la tête, dont la platine du contrepoids, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 8) |
@@ -1051,8 +1132,8 @@ la réponse courte et l'endroit où elle est détaillée.
 |---|---|
 | « Pourquoi du PETG et pas du PLA, plus facile à imprimer ? » | **Le PLA se ramollit vers 60 °C** : au soleil de La Réunion, une pièce sombre dépasse cette température. Le PETG tient jusqu'à environ 80 °C, il casse moins net et il supporte mieux l'humidité (§ 2). |
 | « Donc le PETG tient au soleil sans limite ? » | **Non.** Il faut une teinte claire : un PETG noir en plein soleil d'été approche sa température de ramollissement. Seul le boîtier du capteur solaire est noir, et il ne porte aucune charge. Les UV font aussi vieillir le PETG : c'est une démonstration, pas une installation permanente (§ 2 et § 7). |
-| « Des engrenages en plastique, c'est solide ? » | **Oui, parce que le courant du moteur est limité.** Les dents travaillent à 16 MPa en marche et à 37 MPa si le moteur d'élévation bute, pour environ 50 MPa de résistance. À 1,0 A au lieu de 0,6 A, elles monteraient à 60 MPa et casseraient (§ 9). |
-| « Vous perdez donc du couple en bridant le moteur à 0,6 A ? » | **Oui, exprès.** Il reste une marge de 1,6 dans un vent de 36 km/h. Le moteur n'est pas le maillon faible, ce sont les dents (§ 9). |
+| « Des engrenages en plastique, c'est solide ? » | **Oui, parce que le courant du moteur est limité.** Les dents travaillent à environ 5 MPa en marche et à 37 MPa si le moteur d'élévation bute, pour environ 50 MPa de résistance. À 1,0 A au lieu de 0,6 A, elles monteraient à 60 MPa et casseraient (§ 9). |
+| « Vous perdez donc du couple en bridant le moteur à 0,6 A ? » | **Oui, exprès.** Il reste une marge de 5,8 dans un vent de 36 km/h. Le moteur n'est pas le maillon faible, ce sont les dents (§ 9). |
 | « Pourquoi des pivots de Ø12, alors que le cas lunaire a des axes de Ø8 ? » | **Un pivot en PETG de Ø8 travaillerait à 28 MPa en torsion, à la limite de la rupture** (30 MPa). En Ø12, il reste à 9 MPa moteur calé. D'où les roulements 6801 à la place des 608 (§ 9). |
 | « Peu importe le sens d'impression d'un pivot ? » | **Non.** Le pivot entraîné s'imprime couché, pour que les couches suivent l'axe. Debout, il casserait en torsion entre deux couches (§ 9). |
 | « Vous imprimez tout à 100 % de remplissage pour que ce soit solide ? » | **Non.** La résistance vient surtout des parois : 4 périmètres et 40 % de remplissage suffisent. Seuls les vis sans fin, les roues et les pivots sont pleins (§ 2). |
@@ -1074,8 +1155,10 @@ la réponse courte et l'endroit où elle est détaillée.
 
 | Question piège | Réponse |
 |---|---|
-| « La vis sans fin bloque le panneau : il ne risque donc rien dans le vent ? » | **Le panneau ne tourne pas, mais l'ensemble peut se renverser.** Les pieds du trépied ne sont qu'à 23 cm de l'axe : sans lest, il bascule à 26 km/h (§ 8). |
-| « Il suffit de l'alourdir un peu ? » | **Il en faut beaucoup.** Le vent de basculement croît comme la racine carrée de la masse : 37 km/h avec 3 kg de lest, 57 km/h avec 11 kg. D'où les consignes : à plat au-dessus de 45 km/h, rentré au-dessus de 70 km/h (§ 8). |
+| « La vis sans fin bloque le panneau : il ne risque donc rien dans le vent ? » | **Le panneau ne tourne pas, mais l'ensemble peut se renverser.** Les pieds du trépied ne sont qu'à 23 cm de l'axe : sans lest, il bascule à 31 km/h (§ 8). |
+| « Il suffit de l'alourdir un peu ? » | **Il en faut beaucoup.** Le vent de basculement croît comme la racine carrée de la masse : 41 km/h avec 3 kg de lest, 60 km/h avec 11 kg. D'où les consignes : à plat au-dessus de 45 km/h, rentré au-dessus de 70 km/h (§ 8). |
+| « Pourquoi un contrepoids d'un seul côté ? » | **Parce que l'autre côté est pris** par le moteur d'azimut, que le bloc heurterait en tournant. Un seul côté suffit pour l'élévation, puisque le panneau est centré dans son plan (1,8 mm). Il décale le centre de gravité de 31 mm sur le côté : la rotule du trépied le supporte (0,57 N·m), et le vent de basculement monte quand même de 3 à 5 km/h (§ 9). |
+| « Le centre de gravité est-il parfait ? » | **Sur la CAO, à 0,0 mm de l'axe d'élévation.** Sur la maquette, ce sera au mieux à 0,7 mm si le bloc pèse 905 g à ± 2 % : c'est à contrôler en posant la partie basculante sur ses pivots (§ 9). |
 | « Un moteur pas à pas tient sa position : pourquoi le couper ? » | **Le maintenir alimenté coûterait environ 8 W**, autant que ce que produit le panneau, et le NEMA 11 chaufferait assez pour ramollir son support. Les vis tiennent le panneau gratuitement (§ 9). |
 | « En coupant les moteurs, vous perdez la position ? » | **Non.** La vis bloque le moteur : il repart d'où il s'est arrêté, à un pas près (0,036° au panneau). |
 | « Sans codeur, comment savez-vous où est le panneau ? » | Par le **comptage des pas** depuis deux origines : un micro-rupteur en élévation, un capteur Hall en azimut. Les marges de couple évitent les pas perdus, et les photodiodes corrigent sur la vraie cible, le Soleil (§ 6 et § 7). |

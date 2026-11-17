@@ -123,6 +123,7 @@ MAT = {
     "Bronze CuSn12":       8800.0,
     "PETG":                1270.0,
     "Acier (visserie)":    7850.0,
+    "Acier doux S235":     7850.0,
     "Verre 3,2 mm + EVA + backsheet (eq)": 2500.0,
     "Silicium polycristallin": 2330.0,
     "PPO (boîte de jonction)": 1100.0,
@@ -536,6 +537,29 @@ U_TOP = (28.0, 33.0)                 # plaque du chapeau (distance à l'axe)
 U_Y = 22.0
 U_BAS = -25.0                        # bas des flancs (sous l'axe)
 RAIL_X = 44.0                        # rails du panneau
+# Contrepoids (version imprimée seulement) : un bloc d'acier, derrière l'axe d'élévation et du côté +X
+# (le côté -X est occupé par le moteur d'azimut), porté par une platine imprimée vissée sur la face
+# extérieure du flanc +X du chapeau. Il ramène le centre de gravité de la partie basculante sur
+# l'axe : sans lui, le panneau, décalé au-dessus de l'axe, laisse un CdG à 62 mm.
+CONTREPOIDS = dict(
+    ep=4.0,                          # épaisseur de la platine
+    demi_l=26.0,                     # demi-largeur de la platine (Y)
+    z_haut=27.0, z_bas=-137.0,       # étendue de la platine (Z)
+    trou_pivot=20.0,                 # passage de la tête Ø18 du pivot libre
+    vis_flanc=((-14.0, -17.0), (14.0, -17.0), (-14.0, 17.0), (14.0, 17.0)),   # (y, z) : M3x8 platine -> flanc
+    lamage=2.5,                      # lamage des têtes des vis du bloc, côté flanc
+    bloc_ep=30.0, bloc_l=70.0,       # bloc d'acier : épaisseur (X) et largeur (Y)
+    bloc_h=55.0, bloc_zb=-127.5,     # hauteur (Z) et cote basse
+    bloc_dy=-3.0,                    # décalage du bloc en Y (annule les 1,1 mm du reste de la partie basculante)
+    vis_y=22.0, vis_marge=12.0,      # vis du bloc : à ±vis_y, à vis_marge des bords haut et bas
+    taraud=2.5, prof_taraud=9.0,     # avant-trou M3 taraudé dans l'acier
+)
+
+
+def vis_bloc_pos():
+    c = CONTREPOIDS
+    return [(sy * c["vis_y"], z) for sy in (-1, 1)
+            for z in (c["bloc_zb"] + c["vis_marge"], c["bloc_zb"] + c["bloc_h"] - c["vis_marge"])]
 X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
 EL_REF = 40.0                        # élévation de référence du calage des vis
 # Roulements protégés (ZZ : flasques métal ; 2RS : joints caoutchouc), mêmes cotes que les ouverts
@@ -593,7 +617,7 @@ PIECES_IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Chape", "Moyeu_C
                     "Pivot_Entraine", "Pivot_Libre",
                     "Palier_Vis_Azimut", "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation",
                     "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation",
-                    "Capteur_Solaire_Boitier", "Capteur_Solaire_Support")
+                    "Capteur_Solaire_Boitier", "Capteur_Solaire_Support", "Support_Contrepoids")
 
 
 def entraxe_el():
@@ -986,7 +1010,38 @@ def p_chapeau_u():
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
+    if AJ["impression"]:            # contrepoids : 4 avant-trous M3, borgnes, dans la face extérieure du flanc +X
+        for y, z in CONTREPOIDS["vis_flanc"]:
+            u = u.cut(cyl_x(AJ["taraud_m3"], 4.5, U_X[1] - 4.5, y, z))
     return u
+
+
+def p_support_contrepoids():
+    """Platine du contrepoids, 4 mm : plaquée sur la face extérieure du flanc +X du chapeau (4 vis M3x8,
+    la tête de 2 mm du pivot libre passe dans un trou Ø20), elle descend derrière l'axe et porte le bloc
+    d'acier par 4 vis M3 (têtes dans des lamages, côté flanc). Imprimée à plat, face extérieure sur le plateau."""
+    c = CONTREPOIDS
+    x0, x1 = U_X[1], U_X[1] + c["ep"]
+    p = box_span(x0, x1, -c["demi_l"], c["demi_l"], c["z_bas"], c["z_haut"]).edges("|X").fillet(4)
+    p = p.cut(cyl_x(c["trou_pivot"], c["ep"] + 2, x0 - 1))
+    for y, z in c["vis_flanc"]:
+        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
+    for y, z in vis_bloc_pos():
+        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
+        p = p.cut(cyl_x(6.2, c["lamage"] + 1, x0 - 1, y, z))
+    return p
+
+
+def p_masse_contrepoids():
+    """Bloc d'acier doux (plat ou tôles empilées, ajusté à la pesée), 4 trous taraudés M3 dans sa face
+    contre la platine."""
+    c = CONTREPOIDS
+    xa = U_X[1] + c["ep"]
+    b = box_span(xa, xa + c["bloc_ep"], -c["bloc_l"] / 2 + c["bloc_dy"], c["bloc_l"] / 2 + c["bloc_dy"],
+                 c["bloc_zb"], c["bloc_zb"] + c["bloc_h"])
+    for y, z in vis_bloc_pos():
+        b = b.cut(cyl_x(c["taraud"], c["prof_taraud"], xa, y, z))
+    return b
 
 
 def p_pivot_entraine():
@@ -1122,6 +1177,12 @@ def visserie():
     for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
         for y in (-14, 14):
             v.append(("bascule", "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL), (0, 0, -1)))
+    if AJ["impression"]:                  # contrepoids : platine -> flanc, puis bloc -> platine
+        xp = U_X[1] + CONTREPOIDS["ep"]
+        for y, z in CONTREPOIDS["vis_flanc"]:
+            v.append(("bascule", "M3x8", (xp, y, z), (-1, 0, 0)))
+        for y, z in vis_bloc_pos():
+            v.append(("bascule", "M3x10", (U_X[1] + CONTREPOIDS["lamage"], y, z), (1, 0, 0)))
     for x in (-RAIL_X, RAIL_X):           # cadre du panneau -> rails : par-dessous, écrou dans le cadre
         for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
             v.append(("panneau", "M3x14", (x, y, U_TOP[1] + LAMAGE_RAIL), (0, 0, 1)))
@@ -1398,6 +1459,10 @@ def build_head_parts():
     reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
+    reg("Support_Contrepoids", p_support_contrepoids(), "PETG", COL["u"],
+        "Platine du contrepoids, vissée sur le flanc +X du chapeau (version imprimée)")
+    reg("Masse_Contrepoids", p_masse_contrepoids(), "Acier doux S235", COL["steel"],
+        "Bloc d'acier du contrepoids, ajusté à la pesée (version imprimée)")
     reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["rondelle"], "Écrou M3 (ISO 4032)")
     reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["rondelle"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
     for k, v in (("Az", VIS_AZ), ("El", VIS_EL)):
@@ -1500,6 +1565,9 @@ def build_panel(with_panel=True):
     add(p, "Roue_Elevation")
     add(p, "Rail_Panneau", trans(RAIL_X, 0, 0), "Rail_Panneau_1")
     add(p, "Rail_Panneau", trans(-RAIL_X, 0, 0), "Rail_Panneau_2")
+    if AJ["impression"]:
+        add(p, "Support_Contrepoids")
+        add(p, "Masse_Contrepoids")
     add_visserie(p, "bascule")
     if with_panel:
         for n in PANEL_PARTS:

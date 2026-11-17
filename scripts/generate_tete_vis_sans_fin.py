@@ -59,6 +59,7 @@ ORIENTATION = {
     "Pivot_Libre": [((0, 1, 0), 90)],            # debout, tête en bas
     "Capteur_Solaire_Boitier": [],               # croix en haut
     "Capteur_Solaire_Support": [((1, 0, 0), 180)],   # plaque sur le plateau
+    "Support_Contrepoids": [((0, 1, 0), 90)],    # à plat, face extérieure sur le plateau
 }
 
 

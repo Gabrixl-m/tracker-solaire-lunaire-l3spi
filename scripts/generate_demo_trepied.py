@@ -29,7 +29,10 @@ import generate_tete_vis_sans_fin as T
 import generate_tracker as G
 from generate_tracker import box_span, cyl_dir, cyl_z, rot, trans
 
-OUT_STEP = os.path.join(G.RACINE, "Fichiers 3D (CAO)", "Cas Terrestre (démonstration)", "Demo_Trepied.step")
+# variante 28BYJ-48 avec contrepoids (.variante_28BYJ-48/README.md) : VARIANTE_28BYJ=1 python scripts/generate_demo_trepied.py
+VARIANTE = os.environ.get("VARIANTE_28BYJ") == "1"
+OUT_STEP = (os.path.join(G.RACINE, ".variante_28BYJ-48", "Demo_Trepied_28BYJ.step") if VARIANTE else
+            os.path.join(G.RACINE, "Fichiers 3D (CAO)", "Cas Terrestre (démonstration)", "Demo_Trepied.step"))
 
 # Trépied (repère Z-up, origine au sol sur l'axe ; jambes vers 90°, 210° et 330°)
 TREPIED_DEMO = dict(
@@ -358,23 +361,30 @@ def garde(noms):
 
 
 def rendus(noms):
+    import render_apercu as RA
     from render_apercu import build_renderer, shoot
+    pre = "demo_trepied_"
+    if VARIANTE:
+        RA.OUT, pre = os.path.join(G.RACINE, ".variante_28BYJ-48", "apercus"), "variante_trepied_"
+        os.makedirs(RA.OUT, exist_ok=True)
     sun = tuple(v / math.sqrt(0.45 ** 2 + 0.75 ** 2 + 0.6 ** 2) for v in (0.45, 0.75, -0.6))
     assy = assemblage(0.0, 40.0, noms)
     r = build_renderer(assy, sun)
     r.SetBackground(0.80, 0.86, 0.93)                  # ciel de jour : démonstration sur Terre
     f0 = (0, 520, 0)
-    shoot(r, "demo_trepied_iso.png", (1350, 1050, -1500), focal=f0, angle=34)
-    shoot(r, "demo_trepied_profil.png", (2300, 560, 0), focal=f0, angle=30)
-    shoot(r, "demo_trepied_arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
+    shoot(r, pre + "iso.png", (1350, 1050, -1500), focal=f0, angle=34)
+    shoot(r, pre + "profil.png", (2300, 560, 0), focal=f0, angle=30)
+    shoot(r, pre + "arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
     r = build_renderer(assy, sun, ground=False)
     r.SetBackground(0.80, 0.86, 0.93)
-    shoot(r, "demo_trepied_detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
-    shoot(r, "demo_trepied_lest.png", (620, 420, -640), focal=(0, 90, 0), angle=30)
+    shoot(r, pre + "detail.png", (-560, 820, 520), focal=(0, 650, 0), angle=30, avec_legende=True)
+    shoot(r, pre + "lest.png", (620, 420, -640), focal=(0, 90, 0), angle=30)
 
 
 def main():
     G.set_ajustements("petg")
+    if VARIANTE:
+        G.set_variante("28byj")
     T.build_parts()
     noms = enregistrer_trepied()
     enregistrer_lest()
@@ -408,6 +418,7 @@ def main():
         print(f"  lest {lest:.0f} kg : pire cas : basculement sans vent à {ang:.1f}° de pente (az={az}°, "
               f"él={el:g}°), vent de basculement {v:.1f} m/s = {v * 3.6:.0f} km/h (vent {sens}, az={azv}°, "
               f"él={elv:g}°) ; panneau tourné vers une jambe : {ang_f:.1f}°, {v_f:.1f} m/s = {v_f * 3.6:.0f} km/h")
+    G.set_variante(None)
     G.set_ajustements("reel")
 
 

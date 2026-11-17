@@ -1,7 +1,8 @@
 # Tracker solaire lunaire deux axes — maquette 3D à l'échelle 1:1
 
 **➜ [Cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md) · [Cas terrestre, à construire](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) ·
-[Liste des composants](Liste-composants.md)**
+[Liste des composants](Liste-composants.md) ·
+[Variante 28BYJ-48](.variante_28BYJ-48/README.md)**
 
 Un **tracker solaire à deux axes** : une tête rotative oriente un panneau photovoltaïque vers le
 Soleil, en azimut et en élévation, grâce à deux petits moteurs pas à pas et à un **capteur

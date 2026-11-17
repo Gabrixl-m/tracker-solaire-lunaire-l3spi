@@ -123,6 +123,7 @@ MAT = {
     "Bronze CuSn12":       8800.0,
     "PETG":                1270.0,
     "Acier (visserie)":    7850.0,
+    "Acier doux S235":     7850.0,
     "Laiton":              8500.0,
     "Verre 3,2 mm + EVA + backsheet (eq)": 2500.0,
     "Silicium polycristallin": 2330.0,
@@ -134,6 +135,8 @@ MAT = {
 MASS_TARGET = {
     "Moteur_Elevation_NEMA17": 0.22,     # NEMA 17, 34 mm
     "Moteur_Azimut_NEMA11": 0.18,        # NEMA 11, 45 mm (11HS18-0674S : 180 g)
+    "Moteur_Elevation_28BYJ": 0.03,      # variante 28BYJ-48 (environ 30 g)
+    "Moteur_Azimut_28BYJ": 0.03,
     "Unite_Controle_Corps": 17.0,        # batteries Li-ion, MPPT, OBC, drivers, chauffage
 }
 
@@ -529,11 +532,19 @@ def set_ajustements(mode):
     _maj_inserts()
 
 
+def set_variante(nom):
+    """Variante terrestre : None (NEMA, sans contrepoids) ou "28byj" (28BYJ-48 avec contrepoids). Seulement avec
+    les inserts (jeu de cotes "petg") ; reconstruire les pièces ensuite."""
+    global VAR28
+    VAR28 = nom == "28byj"
+    _maj_inserts()
+
+
 def _maj_inserts():
     """Cotes qui changent quand les vis M3 se vissent dans des inserts à chaud (version imprimée) :
     un insert demande un perçage Ø4,0 entouré d'au moins 1,6 mm de matière et 6,5 mm de profondeur (long)
     ou 3,8 mm (court). On déplace les trous qui n'ont pas la place, voir README du cas terrestre."""
-    global EP_SEMELLE, U_TOP, LEVRE_EXTRA, R_VIS_ROUE, TROUS_SUPPORT_AZ, TROUS_SUPPORT_EL, TROUS_MOYEU, TROUS_BAGUE, LAMAGE_RAIL_CH, D_PASSAGE_MOYEU, X_PALIER_AZ
+    global COUPLEUR, EP_SEMELLE, U_TOP, LEVRE_EXTRA, R_VIS_ROUE, TROUS_SUPPORT_AZ, TROUS_SUPPORT_EL, TROUS_MOYEU, TROUS_BAGUE, LAMAGE_RAIL_CH, D_PASSAGE_MOYEU, X_PALIER_AZ
     ins = AJ["inserts"]
     # lèvre des paliers de 1,6 mm au lieu de 1,0 (poussée de la vis au blocage du moteur, voir README) : les joues
     # s'épaississent de 0,6 mm vers l'extérieur, et les moteurs, leurs accouplements et la tige reculent d'autant
@@ -552,11 +563,19 @@ def _maj_inserts():
     TROUS_BAGUE = ((r_bague, 0.0), (-r_bague, 0.0))
     LAMAGE_RAIL_CH = 4.5 if ins else 3.5                 # lamage des vis rail -> chapeau (M3x12 en insert court)
     X_PALIER_AZ = 14.5 if ins else 16.5                  # vis du palier d'azimut, 2,5 mm de matière au bord
+    COUPLEUR.update(d=14.0, L=19.0) if VAR28 else COUPLEUR.update(d=19.0, L=25.0)
+    if VAR28:                       # 28BYJ-48 : l'arbre est court (7,5 mm), la face du moteur se rapproche de l'accouplement
+        dec = COUPLEUR["L"] / 2 + 1.9                    # accouplement jusqu'à 0,3 mm du fond du lamage (1,6 mm)
+        AZ_VIS["x_face"] = AZ_VIS["x_joint"] - dec
+        EL_VIS["y_face"] = EL_VIS["y_joint"] - dec
+        TROUS_SUPPORT_AZ = ((AZ_VIS["x_face"] + 3.7, -27.0), (AZ_VIS["x_face"] + 12.3, -27.0))
+        TROUS_SUPPORT_EL = ((-37.0, -52.0), (-23.0, -52.0))   # têtes de vis sous la chape : hors de la plaque du support d'azimut
 
 
 # Inserts filetés à chaud en laiton, pour les vis M3 de la version imprimée. Perçage Ø4,0 dans les deux cas ;
 # long : M3 x 5,7 (Ø ext. 4,6), court : M3 x 3 (pour les semelles de 5 mm et les parois de 6 mm).
-INSERT = {"L": dict(long=5.7, d_trou=4.0, prof=6.5), "C": dict(long=3.0, d_trou=4.0, prof=3.8)}
+INSERT = {"L": dict(long=5.7, d_trou=4.0, prof=6.5), "C": dict(long=3.0, d_trou=4.0, prof=3.8),
+          "D": dict(long=3.0, d_trou=4.0, prof=4.2)}   # D : court, perçage plus profond (vis M3x8 à travers une platine de 4 mm)
 D_INSERT_MODELE = 4.0                # modélisé dans son perçage, une fois fondu dans le plastique
 D_INSERT_FILET = 2.5                 # fond de filet M3
 
@@ -615,6 +634,31 @@ MOT_EL = dict(c=42.3, L=34.0, pilot=22.0, holes=31.0, hole_d=3.0, prof=4.5, shaf
 MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, prof=2.5, shaft=20.0, hold=0.095,
               detent=0.005, amp=0.67, ohm=6.8, masse=0.18, conn=None,
               nom="NEMA 11 28 x 28 x 45 mm (11HS18-0674S, 0,10 N·m, 0,67 A)")
+# Variante terrestre à moteurs 28BYJ-48 (5 V, réducteur 1/64 intégré), voir .variante_28BYJ-48/README.md.
+# Repère du moteur : origine sur l'axe de l'arbre, sur la face avant ; arbre vers +Z, corps vers -Z ; oreilles
+# selon X ; le corps est décentré de `decal` vers -Y (l'arbre est excentré de 8 mm). Cotes de fiches techniques
+# courantes, à vérifier au pied à coulisse sur les moteurs reçus.
+MOT_28 = dict(d=28.0, L=19.0, decal=8.0, boss_d=9.0, boss_h=1.5, arbre=7.5, meplat=3.0, l_meplat=6.0,
+              entraxe=35.0, oreille_l=7.0, oreille_ep=0.8, oreille_trou=4.2, conn=(17.0, 5.0, 8.0),
+              nom="28BYJ-48 5 V (couple de sortie 34,3 mN·m, réducteur 63,68:1)")
+VAR28 = False                        # variante 28BYJ-48 : voir set_variante()
+COUPLEUR = dict(d=19.0, L=25.0)      # accouplement flexible Ø5 / Ø5 (variante : Ø14 x 19, arbre de moteur court)
+# contrepoids de la variante (même étude que le commit 3cdd766, adaptée aux inserts) : bloc d'acier derrière
+# l'axe d'élévation, côté +X, porté par une platine imprimée vissée sur le flanc +X du chapeau
+CONTREPOIDS = dict(
+    ep=4.0, demi_l=27.0, z_haut=27.0, z_bas=-137.0, trou_pivot=20.0,
+    vis_flanc=((-14.0, -17.0), (14.0, -17.0), (-14.0, 17.0), (14.0, 17.0)),   # (y, z) : M3x8 platine -> insert du flanc
+    lamage=2.5, bloc_ep=30.0, bloc_l=70.0, bloc_h=55.0, bloc_zb=-127.5, bloc_dy=-3.0,
+    vis_y=22.0, vis_marge=12.0, taraud=2.5, prof_taraud=9.0,
+)
+
+
+def vis_bloc_pos():
+    c = CONTREPOIDS
+    return [(sy * c["vis_y"], z) for sy in (-1, 1)
+            for z in (c["bloc_zb"] + c["vis_marge"], c["bloc_zb"] + c["bloc_h"] - c["vis_marge"])]
+
+
 # vis : module, nombre de dents de la roue, Ø primitif, longueur filetée, début du moyeu
 VIS_EL = dict(m=1.0, z=50, dp=16.0, L=10.0, moyeu=5.0)       # vis m1 Ø16 + roue Z50
 VIS_AZ = dict(m=0.8, z=60, dp=12.0, L=9.0, moyeu=8.0)        # vis m0,8 Ø12 + roue fixe Z60
@@ -696,6 +740,9 @@ def table_inserts():
     for x in (-RAIL_X, RAIL_X):                                  # rails -> plaque du chapeau, par-dessus
         for y in (-14, 14):
             t.append(("bascule", "Chapeau_U", "C", (x, y, U_TOP[1]), (0, 0, -1)))
+    if VAR28:                                                    # contrepoids : platine -> flanc +X du chapeau
+        for y, z in CONTREPOIDS["vis_flanc"]:
+            t.append(("bascule", "Chapeau_U", "D", (U_X[1], y, z), (-1, 0, 0)))
     for x in (-CAPTEUR["vis_x"], CAPTEUR["vis_x"]):              # boîtier du capteur solaire, par-dessous
         t.append(("panneau", "Capteur_Solaire_Boitier", "L",           # repère panneau
                   (X_CAPTEUR + x, 0, CAPTEUR["z"] - CAPTEUR["corps"]), (0, 0, 1)))
@@ -737,6 +784,26 @@ def p_nema(m):
         w, lg, sa = m["conn"]
         body = body.union(box_span(-w / 2, w / 2, c / 2 - 1, c / 2 + sa, -L, -L + lg))
     return body
+
+
+def p_28byj():
+    """Moteur 28BYJ-48 : face avant en z = 0, arbre Ø5 à méplats vers +Z (origine sur l'arbre), corps Ø28 vers -Z,
+    décentré de 8 mm vers -Y, deux oreilles de 0,8 mm à 35 mm d'entraxe (selon X), bloc de connexion à l'arrière."""
+    m = MOT_28
+    yc, d, L = -m["decal"], m["d"], m["L"]
+    corps = cyl_z(d, L, 0, yc, -L)
+    corps = corps.union(cq.Workplane("XY").workplane(offset=-m["oreille_ep"]).center(0, yc)
+                        .slot2D(m["entraxe"] + m["oreille_l"], m["oreille_l"]).extrude(m["oreille_ep"]))
+    for sx in (-1, 1):
+        corps = corps.cut(cyl_z(m["oreille_trou"], 2.0, sx * m["entraxe"] / 2, yc, -m["oreille_ep"] - 0.5))
+    w, sa, h = m["conn"]                 # bloc de connexion (approximation) : côté -Y, au ras de l'arrière
+    corps = corps.union(box_span(-w / 2, w / 2, yc - d / 2 - sa, yc - d / 2 + 6.0, -L, -L + h))
+    corps = corps.union(cyl_z(m["boss_d"], m["boss_h"]))
+    arbre = cyl_z(5, m["arbre"])
+    for sx in (-1, 1):                   # deux méplats à 3 mm l'un de l'autre
+        x0, x1 = sorted((sx * m["meplat"] / 2, sx * 3.0))
+        arbre = arbre.cut(box_span(x0, x1, -3, 3, m["arbre"] - m["l_meplat"], m["arbre"] + 1))
+    return corps.union(arbre)
 
 
 def p_vis(v):
@@ -787,9 +854,10 @@ def p_vis_pression(v):
 
 
 def p_accouplement():
-    a = cyl_z(19, 25).cut(cyl_z(5, 27, z=-1))
-    for z0 in (8.0, 15.0):
-        a = a.cut(ring_z(20, 15, 1.2, z0))                  # fentes (accouplement flexible)
+    d, L = COUPLEUR["d"], COUPLEUR["L"]
+    a = cyl_z(d, L).cut(cyl_z(5, L + 2, z=-1))
+    for z0 in (0.32 * L, 0.6 * L):
+        a = a.cut(ring_z(d + 1, d - 4, 1.2, z0))            # fentes (accouplement flexible)
     return a
 
 
@@ -1006,7 +1074,44 @@ def p_palier_vis_az():
     return b
 
 
+def _porte_moteur_28(s, axe, p0, haut, e0):
+    """Passage du bossage (Ø9,6) dans le fond de 1,6 mm, et lamage Ø17 du côté de l'accouplement qui entre de
+    2,1 mm dans le support. axe : sens du moteur vers l'accouplement ; p0 : point de la face du moteur ; e0 :
+    épaisseur du support (4 mm)."""
+    ax = Vector(*axe)
+    s = s.cut(goutte(MOT_28["boss_d"] + 0.6, 3.0, tuple(Vector(*p0) - ax), axe, haut))
+    return s.cut(goutte(17.0, e0 - 1.6 + 1.0, tuple(Vector(*p0) + ax * 1.6), axe, haut))
+
+
+def p_support_moteur_az_28():
+    """Support du 28BYJ-48 d'azimut : plaque de 4 mm (oreilles horizontales, 2 vis M3x8 + écrous derrière les
+    oreilles), semelle sous la chape avec 2 inserts courts."""
+    m = MOT_28
+    y, z, zc, xf = y_vis_az(), AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
+    s = box_span(xf, xf + 4, y - 22, y + 22, z - 16, zc)
+    s = s.union(box_span(xf, xf + 16.5, y - 16, y + 7, zc - EP_SEMELLE, zc))
+    s = _porte_moteur_28(s, (1, 0, 0), (xf, y, z), (0, 0, -1), 4.0)
+    for sy in (-1, 1):
+        s = s.cut(cyl_x(AJ["passage_m3"], 6, xf - 1, y + sy * m["entraxe"] / 2, z - m["decal"]))
+    return trous_inserts(s, "Support_Moteur_Azimut")
+
+
+def p_support_moteur_el_28():
+    """Support du 28BYJ-48 d'élévation : plaque de 4 mm (oreilles horizontales), semelle de 16 mm avec 2 inserts, du
+    côté du moteur (sous son corps) : le côté de l'accouplement est occupé sous la chape par les pièces d'azimut."""
+    m = MOT_28
+    zv, zb, yf = z_vis_el(), Z_CHAPE + 8, EL_VIS["y_face"]
+    s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
+    s = s.union(box_span(-54, -6, yf - 12, yf + 4, zb, zb + EP_SEMELLE))
+    s = _porte_moteur_28(s, (0, 1, 0), (-30, yf, zv), (0, 0, 1), 4.0)
+    for sx in (-1, 1):
+        s = s.cut(cyl_y(AJ["passage_m3"], 6, -30 + sx * m["entraxe"] / 2, yf - 1, zv + m["decal"]))
+    return trous_inserts(s, "Support_Moteur_Elevation")
+
+
 def p_support_moteur_az():
+    if VAR28:
+        return p_support_moteur_az_28()
     m = MOT_AZ
     y, z, zc, xf = y_vis_az(), AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
     s = box_span(xf, xf + 4, y - 16, y + 16, z - 16, zc)
@@ -1051,6 +1156,8 @@ def p_palier_vis_el():
 
 
 def p_support_moteur_el():
+    if VAR28:
+        return p_support_moteur_el_28()
     m = MOT_EL
     zv, zb, yf = z_vis_el(), Z_CHAPE + 8, EL_VIS["y_face"]
     s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
@@ -1102,6 +1209,34 @@ def p_chapeau_u():
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
     return u
+
+
+def p_support_contrepoids():
+    """Platine du contrepoids, 4 mm : plaquée sur la face extérieure du flanc +X du chapeau (4 vis M3x8 dans des
+    inserts courts, la tête de 2 mm du pivot libre passe dans un trou Ø20), elle descend derrière l'axe et porte
+    le bloc d'acier par 4 vis M3 (têtes dans des lamages, côté flanc). Imprimée à plat, face extérieure sur le plateau."""
+    c = CONTREPOIDS
+    x0, x1 = U_X[1], U_X[1] + c["ep"]
+    p = box_span(x0, x1, -c["demi_l"], c["demi_l"], c["z_bas"], c["z_haut"]).edges("|X").fillet(4)
+    p = p.cut(cyl_x(c["trou_pivot"], c["ep"] + 2, x0 - 1))
+    for y, z in c["vis_flanc"]:
+        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
+    for y, z in vis_bloc_pos():
+        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
+        p = p.cut(cyl_x(6.2, c["lamage"] + 1, x0 - 1, y, z))
+    return p
+
+
+def p_masse_contrepoids():
+    """Bloc d'acier doux (plat ou tôles empilées, ajusté à la pesée), 4 trous taraudés M3 dans sa face
+    contre la platine."""
+    c = CONTREPOIDS
+    xa = U_X[1] + c["ep"]
+    b = box_span(xa, xa + c["bloc_ep"], -c["bloc_l"] / 2 + c["bloc_dy"], c["bloc_l"] / 2 + c["bloc_dy"],
+                 c["bloc_zb"], c["bloc_zb"] + c["bloc_h"])
+    for y, z in vis_bloc_pos():
+        b = b.cut(cyl_x(c["taraud"], c["prof_taraud"], xa, y, z))
+    return b
 
 
 def p_pivot_entraine():
@@ -1228,8 +1363,16 @@ def visserie():
     for x, y in trous_palier_az() + TROUS_SUPPORT_AZ:     # par-dessus la chape, rondelle sur la lumière
         v.append(("chape", "M3x12", (x, y, Z_CHAPE + 8 + E_RONDELLE), (0, 0, -1)))
     zv, yf = z_vis_el(), EL_VIS["y_face"]
+    if VAR28:                             # 28BYJ-48 : 2 vis M3x8 par moteur, à travers support et oreille, écrou derrière
+        e = MOT_28["entraxe"] / 2
+        for sx in (-1, 1):
+            v.append(("chape", "M3x8", (-30 + sx * e, yf + 4, zv + MOT_28["decal"]), (0, -1, 0)))
+            v.append(("chape", "M3x8", (AZ_VIS["x_face"] + 4, y_vis_az() + sx * e, AZ_VIS["z"] - MOT_28["decal"]),
+                      (-1, 0, 0)))
     for sx in (-1, 1):                    # moteurs sur leurs supports
         for sz in (-1, 1):
+            if VAR28:
+                continue
             v.append(("chape", "M3x8", (-30 + sx * MOT_EL["holes"] / 2, yf + 4, zv + sz * MOT_EL["holes"] / 2),
                       (0, -1, 0)))
             v.append(("chape", "M2.5x6", (AZ_VIS["x_face"] + 4, y_vis_az() + sx * MOT_AZ["holes"] / 2,
@@ -1237,6 +1380,12 @@ def visserie():
     for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
         for y in (-14, 14):
             v.append(("bascule", "M3x12" if AJ["inserts"] else "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL_CH), (0, 0, -1)))
+    if VAR28:                             # contrepoids : platine -> flanc, puis bloc -> platine
+        xp = U_X[1] + CONTREPOIDS["ep"]
+        for y, z in CONTREPOIDS["vis_flanc"]:
+            v.append(("bascule", "M3x8", (xp, y, z), (-1, 0, 0)))
+        for y, z in vis_bloc_pos():
+            v.append(("bascule", "M3x10", (U_X[1] + CONTREPOIDS["lamage"], y, z), (1, 0, 0)))
     for x in (-RAIL_X, RAIL_X):           # cadre du panneau -> rails : par-dessous, écrou dans le cadre
         for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
             v.append(("panneau", "M3x14", (x, y, U_TOP[1] + LAMAGE_RAIL), (0, 0, 1)))
@@ -1510,7 +1659,16 @@ def build_head_parts():
         "Support du moteur d'élévation")
     reg("Moteur_Elevation_NEMA17", p_nema(MOT_EL), "moteur", COL["nema"],
         f"Moteur pas à pas d'élévation : {MOT_EL['nom']}")
-    reg("Accouplement", p_accouplement(), "Al 7075-T73", COL["coupler"], "Accouplement flexible 5/5")
+    reg("Accouplement", p_accouplement(), "Al 7075-T73", COL["coupler"],
+        f"Accouplement flexible 5/5, Ø{COUPLEUR['d']:g} x {COUPLEUR['L']:g}")
+    if VAR28:
+        c28 = cq.Color(0.74, 0.75, 0.78)                # carter métallique du 28BYJ-48
+        reg("Moteur_Azimut_28BYJ", p_28byj(), "moteur", c28, f"Moteur pas à pas d'azimut : {MOT_28['nom']}")
+        reg("Moteur_Elevation_28BYJ", p_28byj(), "moteur", c28, f"Moteur pas à pas d'élévation : {MOT_28['nom']}")
+        reg("Support_Contrepoids", p_support_contrepoids(), "PETG", COL["u"],
+            "Platine du contrepoids, vissée sur le flanc +X du chapeau (variante 28BYJ-48)")
+        reg("Masse_Contrepoids", p_masse_contrepoids(), "Acier doux S235", COL["steel"],
+            "Bloc d'acier du contrepoids, ajusté à la pesée (variante 28BYJ-48)")
     reg("Chapeau_U", p_chapeau_u(), mat("Al 6061-T6"), COL["u"], "Chapeau en U renversé porte-panneau")
     reg("Pivot_Entraine", p_pivot_entraine(), mat("Acier inox 17-4PH"), COL["steel"],
         f"Pivot Ø{PV()['d']:g} portant la roue d'élévation" + (" (en D)" if imp else ""))
@@ -1519,7 +1677,7 @@ def build_head_parts():
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
     reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["rondelle"], "Écrou M3 (ISO 4032)")
-    for g, ds in (("L", "M3 x 5,7"), ("C", "M3 x 3")):
+    for g, ds in (("L", "M3 x 5,7"), ("C", "M3 x 3")) + ((("D", "M3 x 3"),) if VAR28 else ()):
         reg(f"Insert_M3_{g}", p_insert(g), "Laiton", COL["brass"], f"Insert fileté à chaud {ds} (laiton), version imprimée")
     reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["rondelle"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
     for k, v in (("Az", VIS_AZ), ("El", VIS_EL)):
@@ -1622,6 +1780,9 @@ def build_panel(with_panel=True):
     add(p, "Roue_Elevation")
     add(p, "Rail_Panneau", trans(RAIL_X, 0, 0), "Rail_Panneau_1")
     add(p, "Rail_Panneau", trans(-RAIL_X, 0, 0), "Rail_Panneau_2")
+    if VAR28:
+        add(p, "Support_Contrepoids")
+        add(p, "Masse_Contrepoids")
     add_visserie(p, "bascule")
     if with_panel:
         for n in PANEL_PARTS:
@@ -1652,9 +1813,16 @@ def build_head(az, el, with_panel=True):
     loc_vis_az = trans(0, ya, a["z"]) * rot((0, 1, 0), 90) * rot((0, 0, 1), PHASES[MODE]["az"] + VIS_AZ["z"] * az)
     add(h, "Vis_Azimut", loc_vis_az)
     add(h, "Vis_STHC_M3x4_Az", loc_vis_az)
-    add(h, "Accouplement", trans(a["x_joint"] - 12.5, ya, a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
+    add(h, "Accouplement", trans(a["x_joint"] - COUPLEUR["L"] / 2, ya, a["z"]) * rot((0, 1, 0), 90), "Accouplement_Az")
     add(h, "Support_Moteur_Azimut")
-    add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], ya, a["z"]) * rot((0, 1, 0), 90))
+    if VAR28:
+        add(h, "Moteur_Azimut_28BYJ", trans(a["x_face"], ya, a["z"]) * rot((0, 1, 0), 90) * rot((0, 0, 1), 90))
+        e = MOT_28["entraxe"] / 2
+        for i, sy in enumerate((-1, 1), 1):          # écrous M3 derrière les oreilles
+            add(h, "Ecrou_M3", trans(a["x_face"] - MOT_28["oreille_ep"], ya + sy * e, a["z"] - MOT_28["decal"])
+                * rot((0, 1, 0), -90) * rot((0, 0, 1), 30), f"Ecrou_M3_Moteur_Az_{i}")
+    else:
+        add(h, "Moteur_Azimut_NEMA11", trans(a["x_face"], ya, a["z"]) * rot((0, 1, 0), 90))
     # élévation : vis le long de Y sous la roue, NEMA 17 court à l'arrière (côté opposé au panneau)
     zv = z_vis_el()
     add(h, "Palier_Vis_Elevation")
@@ -1665,9 +1833,16 @@ def build_head(az, el, with_panel=True):
                   * rot((0, 0, 1), PHASES[MODE]["el"] - VIS_EL["z"] * (el - EL_REF)))
     add(h, "Vis_Elevation", loc_vis_el)
     add(h, "Vis_STHC_M3x4_El", loc_vis_el)
-    add(h, "Accouplement", trans(-30, EL_VIS["y_joint"] - 12.5, zv) * rot((1, 0, 0), -90), "Accouplement_El")
+    add(h, "Accouplement", trans(-30, EL_VIS["y_joint"] - COUPLEUR["L"] / 2, zv) * rot((1, 0, 0), -90), "Accouplement_El")
     add(h, "Support_Moteur_Elevation")
-    add(h, "Moteur_Elevation_NEMA17", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))
+    if VAR28:
+        add(h, "Moteur_Elevation_28BYJ", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))
+        e = MOT_28["entraxe"] / 2
+        for i, sx in enumerate((-1, 1), 1):
+            add(h, "Ecrou_M3", trans(-30 + sx * e, EL_VIS["y_face"] - MOT_28["oreille_ep"], zv + MOT_28["decal"])
+                * rot((1, 0, 0), 90) * rot((0, 0, 1), 30), f"Ecrou_M3_Moteur_El_{i}")
+    else:
+        add(h, "Moteur_Elevation_NEMA17", trans(-30, EL_VIS["y_face"], zv) * rot((1, 0, 0), -90))
     add_visserie(h, "chape")
     h.add(build_panel(with_panel), name="SA_Panneau", loc=trans(0, 0, Z_T) * rot((1, 0, 0), el - 90.0))
     return h

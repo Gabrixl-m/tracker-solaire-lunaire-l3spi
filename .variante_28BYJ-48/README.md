@@ -1,15 +1,19 @@
 # Variante terrestre avec deux moteurs 28BYJ-48 (contrepoids obligatoire)
 
-> **Document caché.** Il n'est lié depuis aucun autre README. Il décrit une **variante** de la
-> démonstration terrestre dont les deux moteurs pas à pas (NEMA 17 et NEMA 11) sont remplacés par
-> deux petits **28BYJ-48**. La version principale du projet (NEMA, sans contrepoids) n'est pas
-> modifiée. **Cette variante est la seule du projet qui utilise un contrepoids.**
+> **Document caché**, lié seulement depuis la première phrase du README principal. Il décrit une
+> **variante** de la démonstration terrestre dont les deux moteurs pas à pas (NEMA 17 et NEMA 11)
+> sont remplacés par deux petits **28BYJ-48**. La version principale du projet (NEMA, sans
+> contrepoids) n'est pas modifiée. **Cette variante est la seule du projet qui utilise un
+> contrepoids.**
 >
-> **État : étude et calculs.** Les pièces 3D de cette variante (supports de moteur, platine du
-> contrepoids avec inserts) ne sont pas encore modélisées : la liste de ce qui change est au § 5.
-> Les marges du § 3 sont calculées par [`calcul_marges.py`](calcul_marges.py), avec le modèle de
-> couples du projet (`scripts/generate_tete_vis_sans_fin.py`) : mêmes vis sans fin, mêmes
-> frottements, mêmes couples de vent.
+> **État : modélisée et vérifiée sur la CAO.** Supports de moteur, accouplements, platine du
+> contrepoids et assemblage complets (§ 5 et § 10). Les marges de couple du § 3 sont calculées
+> par [`calcul_marges.py`](calcul_marges.py), avec le modèle de couples du projet
+> (`scripts/generate_tete_vis_sans_fin.py`) : mêmes vis sans fin, mêmes frottements, mêmes
+> couples de vent. Les cotes du 28BYJ-48 viennent de fiches techniques courantes : **à vérifier
+> au pied à coulisse sur les moteurs reçus** (§ 8).
+
+![Variante 28BYJ-48 : tête vue du côté des moteurs](apercus/variante_cote_moteurs.png)
 
 ## 1. Verdict
 
@@ -117,42 +121,87 @@ coupés. Garer alors le panneau à plat (élévation 90°).
 ## 4. Le contrepoids
 
 Le contrepoids est **celui qui avait été étudié pour la version NEMA** (commit `3cdd766` de
-l'historique git, retiré ensuite de la version principale) : il n'est pas à redessiner, seulement
-à adapter aux inserts.
+l'historique git, retiré ensuite de la version principale), repris tel quel et adapté aux inserts.
+Il est modélisé : platine imprimée `Support_Contrepoids` et bloc d'acier `Masse_Contrepoids`.
+
+![Contrepoids : bloc d'acier derrière l'axe, côté +X](apercus/variante_contrepoids.png)
 
 | Élément | Valeur |
 |---|---|
 | Bloc d'acier doux | 30 × 70 × 55 mm, **905 g**, centré à 100 mm sous l'axe d'élévation, décalé de 3 mm en Y, côté +X (le côté −X est pris par le moteur d'azimut) |
-| Partie qui bascule | 2,46 kg, centre de gravité à (31 ; 0,0 ; 0,0) mm : **sur l'axe d'élévation** |
-| Platine imprimée | PETG, 4 mm, 41 g, vissée sur le flanc +X du chapeau (4 vis M3×8) ; le bloc est vissé sur la platine (4 vis M3×10, taraudages M3 de 9 mm dans le bloc) |
-| Garde mini | 2 mm sur toute la course ; aucune interférence (vérifié sur la CAO du commit `3cdd766`) |
+| Partie qui bascule | **2,46 kg, centre de gravité à (31 ; 0,0 ; 0,0) mm** (calculé sur la CAO) : sur l'axe d'élévation |
+| Platine `Support_Contrepoids` | PETG, 4 mm, 54 × 164 mm : plaquée sur la face extérieure du flanc +X du chapeau par **4 vis M3×8 dans 4 inserts M3×3** (perçage Ø4,0 × 4,2 mm, 1,8 mm de matière derrière) ; la tête du pivot libre passe dans un trou Ø20 |
+| Bloc sur la platine | 4 vis M3×10, têtes dans des lamages de la platine, **8,6 mm de prise** dans des trous Ø2,5 taraudés M3 de 9 mm dans l'acier |
+| Garde mini de la partie basculante | **2,0 mm** sur toute la course, comme dans la version principale |
+| Interférences | **aucune**, ni dans la tête, ni sur le trépied (garde de 32,6 mm au plateau) |
 
 **Réglage à la pesée.** 1 % de masse du bloc (9 g) déplace le centre de gravité de 0,37 mm. Couper
 le bloc, le peser et le limer sur sa hauteur jusqu'à **905 g à ± 2 %** : l'erreur restante est de
 0,02 N·m au plus. Contrôle : poser la partie basculante sur ses deux pivots, sur deux appuis de
 même hauteur : elle doit rester dans **n'importe quelle position**.
 
-**À adapter dans cette variante** : les inserts à chaud. Dans le flanc du chapeau, les 4 trous de
-la platine deviennent des trous d'insert M3×3 (Ø4,0 × 3,8 mm, flanc de 6 mm donc 2,2 mm de
-matière derrière).
+**Effet sur le trépied**, calculé sur la CAO assemblée (`Demo_Trepied_28BYJ.step`, qui contient
+aussi le lest) :
+* charge sur la rotule : **3,00 kg** (tête et panneau, contrepoids compris). Le centre de gravité
+  s'écarte jusqu'à 24 mm de l'axe, soit **0,70 N·m** à tenir par les blocages de la rotule ;
+* vent de basculement avec 0, 3 et 11 kg de lest : **30, 41 et 60 km/h** ; pente de basculement
+  sans vent : 8,5°, 15,1° et 28,1° ; panneau à plat : 61, 85 et 127 km/h (second calcul
+  indépendant, `scripts/verification_stabilite.py`, qui donne 31, 41 et 60 km/h).
 
-**Effet sur le trépied.** Charge sur la rotule : environ 3,3 kg dans la version NEMA, avec le
-contrepoids. Les moteurs 28BYJ-48 pèsent environ 0,34 kg de moins que les NEMA, donc la
-stabilité est un peu meilleure que les valeurs de la version à contrepoids (vent de basculement
-de 31, 41 et 60 km/h avec 0, 3 et 11 kg de lest, pente de 8,8°, 14,9° et 27,0°). **À recalculer
-avec `scripts/verification_stabilite.py` une fois la CAO faite.** Le lest et le trépied ne sont
-pas modifiés.
+| Vent de basculement (0 / 3 / 11 kg de lest) | Version principale (NEMA, sans contrepoids) | NEMA avec contrepoids (commit `3cdd766`) | **Cette variante** |
+|---|---|---|---|
+| Pire orientation | 26 / 37 / 57 km/h | 31 / 41 / 60 km/h | **30 / 41 / 60 km/h** |
+
+Le contrepoids rend le trépied un peu plus stable au vent (le panneau est moins déporté) ; les 28BYJ-48,
+plus légers de 0,34 kg que les NEMA, compensent presque la masse ajoutée. Le trépied et le lest ne
+sont pas modifiés.
 
 ## 5. Ce qui change dans la mécanique
 
+Cinq pièces imprimées changent. Elles sont dans [`a_imprimer/`](a_imprimer) (STL et STEP, déjà
+orientées sur le plateau). **Les 14 autres pièces imprimées sont celles de la version principale** :
+roues, vis sans fin, paliers, pivots, socle, moyeu, bague d'arrêt, fond, capteur solaire.
+
+![Les cinq pièces propres à la variante](apercus/variante_pieces_a_imprimer.png)
+
 | Pièce | Changement |
 |---|---|
-| `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | **À redessiner** pour un moteur de Ø28 mm : deux oreilles à 35 mm d'entraxe, trous Ø3,4 (M3 passent dans les trous Ø4,2 des oreilles), corps Ø28 mm dans un logement, arbre décentré de 8 mm sur l'axe de la vis. La face avant du moteur est plus proche de l'accouplement que celle d'un NEMA (arbre de 6 mm au lieu de 23,5 et 20 mm). |
-| Accouplement | Celui du projet (Ø19 × 25, alésage 12,5 mm de chaque côté) convient mal : l'arbre du 28BYJ-48 est court. Prendre un accouplement flexible **plus petit, Ø5 / Ø5, environ Ø14 × 25 mm** (`flexible shaft coupling 5mm 5mm D14 L25`), vis de serrage sur un méplat de l'arbre. À défaut, accouplement imprimé à alésage en D côté moteur, mais il tolère moins le défaut d'alignement. |
-| `Chapeau_U` | 4 trous d'insert M3×3 dans le flanc +X pour la platine du contrepoids. |
-| `Support_Contrepoids` | Pièce du commit `3cdd766`, à reprendre avec ses inserts. |
-| Vis des moteurs | 2 vis M3 par moteur dans les oreilles (4 en tout), contre 4 M3×8 et 4 M2,5×6 dans la version NEMA. Longueur à fixer à la modélisation. |
-| Reste | Roues, vis sans fin, paliers, pivots, roulements, chape, socle, fond, capteur solaire : **inchangés**. |
+| `Support_Moteur_Elevation` | Plaque de 4 mm pour un 28BYJ-48 (deux oreilles à 35 mm d'entraxe, **2 vis M3×8 + écrous derrière les oreilles**), passage du bossage Ø9,6 dans un fond de 1,6 mm, **lamage Ø17** du côté de l'accouplement. Semelle de 16 mm **du côté du moteur** (sous son corps), avec 2 inserts M3×3 à (−37 ; −52) et (−23 ; −52) : de l'autre côté, sous la chape, la place est prise par les pièces d'azimut. |
+| `Support_Moteur_Azimut` | Même principe : plaque de 4 mm, 42 mm de large, oreilles horizontales, lamage Ø17, semelle sous la chape avec 2 inserts M3×3 à x = −40,8 et −32,2. |
+| `Chape` | Lumières de l'azimut déplacées avec les inserts du support, queue qui porte les moteurs inchangée. |
+| `Chapeau_U` | 4 inserts M3×3 (perçage Ø4,2 × 4,2 mm) dans la face extérieure du flanc +X, pour la platine du contrepoids. |
+| `Support_Contrepoids` | Nouvelle pièce (§ 4). |
+
+**Moteur et accouplement**
+
+![Moteur d'élévation : plaque, oreilles, écrous, accouplement](apercus/variante_detail_moteur_elevation.png)
+
+* Le **28BYJ-48** modélisé : corps Ø28 × 19 mm décentré de 8 mm par rapport à l'arbre, bossage de
+  Ø9 × 1,5 mm, arbre Ø5 à deux méplats de 3 mm, 7,5 mm au-dessus de la face, deux oreilles de
+  0,8 mm à 35 mm d'entraxe (trous Ø4,2), bloc de connexion à l'arrière (approximation). En
+  élévation, le corps est **au-dessus** de l'arbre ; en azimut, **au-dessous**.
+* **Accouplement flexible Ø14 × 19 mm** (au lieu de Ø19 × 25) : l'arbre du 28BYJ-48 est court. Il
+  entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans le lamage du support, à 0,3 mm
+  du fond. La face du moteur est **12,6 mm plus près** de l'accouplement qu'avec un NEMA. Les
+  arbres Ø5 des vis sans fin, les paliers et les vis sans fin ne bougent pas.
+
+| Coupe dans l'axe de l'élévation | Coupe dans l'axe de l'azimut |
+|---|---|
+| ![Coupe élévation](apercus/variante_coupe_elevation.png) | ![Coupe azimut](apercus/variante_coupe_azimut.png) |
+
+![Moteur d'azimut](apercus/variante_detail_moteur_azimut.png)
+
+**Vérifications sur la CAO** (`scripts/generate_variante_28byj.py`) :
+* **aucune interférence** entre pièces, vis, écrous et inserts ;
+* prise des vis : **au moins 3,5 mm** dans le plastique, au moins 3 mm dans les inserts
+  courts ; M3×10 dans le bloc d'acier : 8,6 mm ; M3×8 des oreilles : écrou complet ;
+* appuis sur les roulements corrects, vis et roues **engrènent sans chevauchement** à plusieurs poses ;
+* **29 inserts** (7 longs M3×5,7, 18 courts, 4 dans le flanc du chapeau) : de la matière sur 1,6 mm
+  autour de chaque perçage, et de 1,5 à 3,0 mm derrière le fond (`scripts/verifier_inserts.py`) ;
+* épaisseurs de paroi (`scripts/verifier_parois.py`) : **aucune zone sous 1,6 mm** dans les deux
+  supports et dans la platine. Un premier essai avait trouvé 4 zones de 1,2 mm au bord de la
+  platine, près des lamages : la platine a été élargie de 52 à 54 mm. Le chapeau garde les trois
+  collerettes de pivot de la version principale.
 
 ## 6. Électronique
 
@@ -215,15 +264,19 @@ changement**.
 |---|---|
 | NEMA 17 (Usongshine 17HS3401), NEMA 11 (11HS18-0674S) | 2 × **28BYJ-48 5 V**, avec leurs cartes ULN2003 |
 | 2 × driver TMC2209 | 1 × **MCP23017** (module ou composant) + 8 × 10 kΩ |
-| 2 × accouplement flexible 5 mm / 5 mm, Ø19 × 25 | 2 × accouplement flexible **Ø5 / Ø5, Ø14 × 25 mm** (ou imprimé) |
-| 4 × M3×8 + 4 × M2,5×6 (moteurs) | 4 × M3 (oreilles des moteurs) |
-| | **Contrepoids** : bloc d'acier doux 30 × 70 × 55 mm (≈ 0,9 kg), platine imprimée, 4 × M3×8, 4 × M3×10, 4 inserts M3×3 |
+| 2 × accouplement flexible 5 mm / 5 mm, Ø19 × 25 | 2 × accouplement flexible **Ø5 / Ø5, Ø14 × 19 mm** (ou Ø14 × 25 si le 19 n'existe pas : la CAO est faite pour 19) |
+| 4 × M3×8 + 4 × M2,5×6 (moteurs) | 4 × M3×8 + **4 écrous M3** (oreilles des moteurs) |
+| | **Contrepoids** : bloc d'acier doux 30 × 70 × 55 mm (≈ 0,9 kg), 4 × M3×8 (platine) et 4 × M3×10 (bloc), 4 inserts M3×3 |
+
+Visserie de la variante, en tout : **M3×8 : 10 ; M3×10 : 11 ; M3×12 : 15 ; M3×14 : 4 ; fraisées
+M3×6 : 3** (43 vis, contre 39 dans la version principale, qui compte aussi 4 M2,5×6). Écrous M3 :
+**10** (6 + 4). Inserts à chaud : **7 × M3×5,7 et 22 × M3×3**. Rondelles M3 : 4.
 
 Le coût des moteurs et des drivers baisse nettement (deux 28BYJ-48 avec cartes valent quelques
 euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature est celui de
 [`Liste-composants.md`](../Liste-composants.md).
 
-## 8. À valider sur le banc avant de modéliser
+## 8. À valider avant de commander et d'imprimer
 
 1. **Mesurer le couple réel de chaque moteur**, avant tout montage : arbre horizontal, un bras
    de 100 mm fixé sur l'arbre, une masse accrochée au bout. À 5 V et 120 phases/s, le moteur doit
@@ -233,7 +286,11 @@ euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature es
    une masse de 300 g à 100 mm de l'axe d'élévation (0,29 N·m, ce que le moteur doit encore
    vaincre à sec) ; le moteur doit faire tourner la roue.
 3. **Vérifier l'équilibre** du contrepoids (pesée, puis les deux appuis, § 4).
-4. **Mesurer l'arbre du 28BYJ-48** (longueur, méplats, décentrage) avant de dessiner les supports.
+4. **Mesurer le 28BYJ-48 reçu** avant d'imprimer les supports : arbre (7,5 mm au-dessus de la face,
+   méplats de 3 mm), bossage (Ø9 × 1,5 mm), décentrage de 8 mm, entraxe des oreilles (35 mm), trous
+   Ø4,2. Les supports sont modélisés sur ces cotes (§ 5) ; une différence de 0,5 mm se rattrape au
+   lamage, pas davantage. L'éprouvette d'ajustements de la version principale permet de régler la
+   température de pose des inserts.
 5. **Tester la fréquence maximale** : monter peu à peu de 120 à 300 phases/s. Le couple baisse
    avec la fréquence : si le moteur décroche à 200, ne pas aller au-delà de 120.
 
@@ -247,3 +304,29 @@ euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature es
   dents). Cela coûte en vitesse et en place.
 * **Garer à plat** (élévation 90°) dès que le vent dépasse la limite de 6 m/s : le panneau
   prend alors beaucoup moins le vent, et la version à contrepoids reste stable (voir § 4).
+
+## 10. Fichiers et régénération
+
+| Fichier | Contenu |
+|---|---|
+| [`Tete_Rotative_PETG_28BYJ.step`](Tete_Rotative_PETG_28BYJ.step) | Assemblage de la tête : moteurs, accouplements, contrepoids, vis, écrous et inserts |
+| [`Demo_Trepied_28BYJ.step`](Demo_Trepied_28BYJ.step) | La même tête sur le trépied, avec le lest |
+| [`a_imprimer/`](a_imprimer) | Les 5 pièces propres à la variante (STL + STEP) |
+| [`apercus/`](apercus) | Les images de ce document, et 5 vues de la tête sur le trépied (`variante_trepied_*.png`) |
+| [`calcul_marges.py`](calcul_marges.py) | Couples et marges, avec et sans contrepoids |
+
+Régénération, depuis la racine du dépôt :
+
+```
+python scripts/generate_variante_28byj.py                     # CAO, STEP, STL et contrôles
+xvfb-run -a python scripts/render_variante_28byj.py           # images
+VARIANTE_28BYJ=1 python scripts/generate_demo_trepied.py      # tête sur le trépied : STEP, stabilité
+VARIANTE_28BYJ=1 python scripts/verification_stabilite.py     # second calcul de stabilité
+VARIANTE_28BYJ=1 python scripts/verifier_inserts.py           # inserts
+VARIANTE_28BYJ=1 python scripts/verifier_parois.py 0.15 1.6 Support_Contrepoids
+```
+
+La variante est un **mode** du générateur (`set_variante("28byj")` dans `scripts/generate_tracker.py`),
+désactivé par défaut : la version principale est inchangée.
+
+![La variante sur le trépied](apercus/variante_trepied_detail.png)

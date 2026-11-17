@@ -21,6 +21,8 @@ def poses_cao():
     import generate_tete_vis_sans_fin as T
     import generate_tracker as G
     G.set_ajustements("petg")
+    if D.VARIANTE:                      # VARIANTE_28BYJ=1 : variante 28BYJ-48 avec contrepoids
+        G.set_variante("28byj")
     T.build_parts()
     noms = D.enregistrer_trepied()
     out = []
@@ -36,6 +38,7 @@ def poses_cao():
                             tete=grp(lambda n: "/SA_Trepied/" not in n and "/SA_Panneau/" not in n),
                             bascule=grp(lambda n: "/SA_Panneau/" in n),
                             tout=grp(lambda n: True)))
+    G.set_variante(None)
     G.set_ajustements("reel")
     return out
 

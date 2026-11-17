@@ -63,7 +63,10 @@ def analyser(nom, Tmm):
             out.append((ep, v, c, (xx.max() - xx.min() + 1) * PX, (yy.max() - yy.min() + 1) * PX, (zz.max() - zz.min() + 1) * PX))
     return sorted(out, key=lambda t: (round(t[0], 1), -t[1]))
 if __name__ == "__main__":
-    G.set_ajustements("petg"); T.build_parts()
+    G.set_ajustements("petg")
+    if os.environ.get("VARIANTE_28BYJ") == "1":      # variante 28BYJ-48 avec contrepoids
+        G.set_variante("28byj")
+    T.build_parts()
     Tmm = float(sys.argv[2])
     for nom in sys.argv[3:]:
         r = analyser(nom, Tmm)

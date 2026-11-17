@@ -8,7 +8,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cadquery as cq
 from cadquery import Vector
 import generate_tracker as G, generate_tete_vis_sans_fin as T
-G.set_ajustements("petg"); T.build_parts()
+G.set_ajustements("petg")
+if os.environ.get("VARIANTE_28BYJ") == "1":      # variante 28BYJ-48 avec contrepoids
+    G.set_variante("28byj")
+T.build_parts()
 res = []
 for rep, piece, genre, pt, d in G.table_inserts():
     i = G.INSERT[genre]
@@ -29,7 +32,7 @@ for rep, piece, genre, pt, d in G.table_inserts():
         lo_, hi_ = (mid, hi_) if plein_sur(mid) else (lo_, mid)
     manque_fond = lo_
     res.append((piece, genre, tuple(round(c,1) for c in pt), manque, manque_fond))
-FOND_MINI = {"L": 1.2, "C": 1.6}      # insert long : 1,2 mm (piliers) ; insert court : 1,6 mm
+FOND_MINI = {"L": 1.2, "C": 1.6, "D": 1.6}      # insert long : 1,2 mm (piliers) ; insert court : 1,6 mm
 mal = [r for r in res if r[3] > 0.01 or r[4] < FOND_MINI[r[1]] - 0.05]
 for r in res:
     flag = "  <-- A SURVEILLER" if (r[3] > 0.01 or r[4] < FOND_MINI[r[1]] - 0.05) else ""

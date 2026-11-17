@@ -31,7 +31,7 @@ des arbres des vis sans fin.
 | **Roulement 6801ZZ** (ISO 61801-2Z) | 12 × 21 × 5 mm | 2 | `6801ZZ bearing 12x21x5` (ou `61801ZZ`) | Élévation : dans les bras de la chape, sur les pivots imprimés Ø12 | 1–2 € |
 | **Roulement 685ZZ** | 5 × 11 × **5** mm | 4 | `685ZZ bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
 | **Accouplement flexible 5 mm / 5 mm** | Alésages Ø5 des deux côtés, Ø19 × 25 mm, alu | 2 | `flexible shaft coupling 5mm x 5mm D19 L25` | Relie l'axe de chaque moteur à l'arbre de sa vis sans fin (la pièce bleue) | 2–4 € |
-| **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 52,5 mm** : les arbres des deux vis sans fin | 3–5 € |
+| **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 53 mm** : les arbres des deux vis sans fin | 3–5 € |
 | *ou* **Rond plein acier Ø5** (en magasin) | Acier laminé à chaud, Ø5 mm, 1 m (par exemple STANDERS chez Leroy Merlin) | 1 | `rond plein acier 5 mm` | Moins précis : voir « Pièges à éviter » | 4–5 € |
 
 **Pièges à éviter** :
@@ -134,23 +134,25 @@ l'acier zingué classe 8.8.
 La longueur d'une vis CHC se mesure sous la tête ; celle d'une vis fraisée, hors tout. Chaque
 longueur a été vérifiée dans la CAO par `scripts/generate_tete_vis_sans_fin.py` : la vis traverse
 les pièces et mord dans la dernière sur la longueur indiquée (« prise »), sans toucher le fond
-de son avant-trou ni dépasser là où quelque chose tourne.
+de son trou ni dépasser là où quelque chose tourne. Dans le PETG, **les vis se vissent dans des
+inserts filetés en laiton, posés à chaud** (§ 3 bis) : 25 inserts, aucun filet n'est taillé
+dans le plastique (sauf les 2 vis sans tête des moyeux de vis sans fin, voir plus bas).
 
 **Vis**
 
 | Vis (norme) | Qté | Où | Traverse | Se visse dans | Prise | Clé |
 |---|---|---|---|---|---|---|
-| **CHC M3 × 8** (ISO 4762 / DIN 912) | 2 | Rondelle d'arrêt sous le moyeu, par-dessous | Rondelle d'arrêt (3 mm) | Moyeu de la chape (avant-trou Ø2,8) | 5 mm | 2,5 mm |
+| **CHC M3 × 8** (ISO 4762 / DIN 912) | 2 | Rondelle d'arrêt sous le moyeu, par-dessous | Rondelle d'arrêt (3 mm) | Insert M3 × 5,7 du moyeu de la chape | 5,2 mm | 2,5 mm |
 | **CHC M3 × 8** | 4 | NEMA 17 sur son support | Support (4 mm) | Taraudages du moteur (4,5 mm de profondeur) | 4 mm | 2,5 mm |
-| **CHC M3 × 10** | 3 | Fond sous le socle, par-dessous, têtes noyées | Fond (3,9 mm sous le lamage) | Socle | 6 mm | 2,5 mm |
+| **CHC M3 × 10** | 3 | Fond sous le socle, par-dessous, têtes noyées | Fond (3,9 mm sous le lamage) | Insert M3 × 5,7 du socle | 5,6 mm | 2,5 mm |
 | **CHC M3 × 10** | 2 | Équerre du capteur solaire contre le petit côté du cadre | Équerre (4 mm) + paroi du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 2 mm | 2,5 mm |
-| **CHC M3 × 10** | 2 | Boîtier du capteur sur son équerre, par-dessous | Équerre (4 mm) | Boîtier du capteur | 6 mm | 2,5 mm |
-| **CHC M3 × 12** | 3 | Chape sur le moyeu, par-dessus | Chape (8 mm) | Moyeu de la chape | 4 mm | 2,5 mm |
-| **CHC M3 × 12** | 4 | Palier et support moteur d'élévation, par-dessous la chape | Chape (8 mm) | Palier / support | 4 mm | 2,5 mm |
-| **CHC M3 × 12** + rondelle | 4 | Palier et support moteur d'azimut, par-dessus la chape, dans les **lumières** | Rondelle (0,5 mm) + chape (8 mm) | Palier / support | 3,5 mm | 2,5 mm |
-| **CHC M3 × 14** | 4 | Rails sur le chapeau, par-dessus, têtes noyées dans les rails | Rail (9,5 mm sous le lamage) | Chapeau en U | 4,5 mm | 2,5 mm |
+| **CHC M3 × 10** | 2 | Boîtier du capteur sur son équerre, par-dessous | Équerre (4 mm) | Insert M3 × 5,7 du boîtier du capteur | 5,6 mm | 2,5 mm |
+| **CHC M3 × 12** | 3 | Chape sur le moyeu, par-dessus | Chape (8 mm) | Insert M3 × 3 du moyeu de la chape | 3 mm (insert complet) | 2,5 mm |
+| **CHC M3 × 12** | 4 | Palier et support moteur d'élévation, par-dessous la chape | Chape (8 mm) | Insert M3 × 3 du palier / du support | 3 mm (insert complet) | 2,5 mm |
+| **CHC M3 × 12** + rondelle | 4 | Palier et support moteur d'azimut, par-dessus la chape, dans les **lumières** | Rondelle (0,5 mm) + chape (8 mm) | Insert M3 × 3 du palier / du support | 3 mm (insert complet) | 2,5 mm |
+| **CHC M3 × 12** | 4 | Rails sur le chapeau, par-dessus, têtes noyées dans les rails | Rail (8,5 mm sous le lamage) | Insert M3 × 3 du chapeau en U | 3 mm (insert complet) | 2,5 mm |
 | **CHC M3 × 14** | 4 | Cadre du panneau sur les rails, par-dessous, têtes noyées | Bout du rail (9,5 mm) + aile du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 0,6 mm | 2,5 mm |
-| **Tête fraisée M3 × 8** (ISO 10642 / DIN 7991) | 3 | Roue d'azimut sur le socle : elles doivent affleurer | Roue (fraisure) | Socle | 5,5 mm | 2 mm |
+| **Tête fraisée M3 × 6** (ISO 10642 / DIN 7991) | 3 | Roue d'azimut sur le socle : elles doivent affleurer | Roue (fraisure) | Insert M3 × 3 du socle | 3 mm (insert complet) | 2 mm |
 | **CHC M2,5 × 6** (ISO 4762) | 4 | NEMA 11 sur son support. Pas plus longues : ses taraudages ne font que 2,5 mm | Support (4 mm) | Taraudages du moteur | 2 mm | 2 mm |
 | **Sans tête M3 × 4, bout plat** (ISO 4026 / DIN 913) | 2 | Une par vis sans fin, dans le trou radial du moyeu, serrée sur le méplat de l'arbre Ø5 | — | Moyeu de la vis sans fin | — | 1,5 mm |
 
@@ -171,10 +173,13 @@ l'aluminium. Pas de rondelle fendue (Grower) : elle marquerait le PETG.
 
 **Serrage**
 
-* **Dans le PETG** (avant-trous Ø2,8, sans taraudage) : la vis taille son filet la première fois.
-  Visser doucement, en revenant d'un demi-tour à chaque tour pour dégager, et s'arrêter dès que
-  la tête touche, plus 1/8 de tour. Environ 0,3 à 0,4 N·m : la clé Allen tenue par le petit
-  bras, entre deux doigts. Trop serrer arrache le filet.
+* **Dans un insert en laiton** : serrer normalement, environ 0,8 N·m (petit bras de la clé,
+  fermement à la main), et on peut démonter autant de fois qu'on veut. Le filet est en laiton,
+  pas en PETG : il ne s'arrache pas. Un insert bien posé résiste à plus de 100 N à l'arrachement.
+* **Les 2 vis sans tête M3 × 4** des moyeux de vis sans fin (moyeu de seulement 4,35 mm) restent
+  **taillées directement dans le PETG** (trou Ø2,8) : un insert n'y tiendrait pas, et la vis ne
+  fait que serrer sur le méplat de l'arbre. Visser doucement, en revenant d'un demi-tour à
+  chaque tour, et serrer légèrement (0,3 à 0,4 N·m, jusqu'à ce que le bout plat touche le méplat).
 * **Dans un écrou ou dans un moteur** : M3 environ 0,8 N·m (petit bras de la clé, serré
   fermement à la main) ; M2,5 environ 0,4 N·m.
 * **Frein-filet** (Loctite 243, moyen, facultatif) : une goutte sur les 2 vis sans tête, qui
@@ -182,20 +187,55 @@ l'aluminium. Pas de rondelle fendue (Grower) : elle marquerait le PETG.
 
 **Clés Allen** : 1,5 mm (vis sans tête), 2 mm (M2,5 et vis fraisées M3), 2,5 mm (vis CHC M3).
 
-**Récapitulatif à acheter** : CHC M3 × 8 : 6 ; M3 × 10 : 7 ; M3 × 12 : 11 ; M3 × 14 : 8 ;
-fraisées M3 × 8 : 3 ; CHC M2,5 × 6 : 4 ; sans tête M3 × 4 : 2 ; écrous M3 : 6 ; écrou
+**Récapitulatif à acheter** : CHC M3 × 8 : 6 ; M3 × 10 : 7 ; M3 × 12 : 15 ; M3 × 14 : 4 ;
+fraisées M3 × 6 : 3 ; inserts à chaud M3 × 5,7 : 7 ; inserts à chaud M3 × 3 : 18 ; CHC M2,5 × 6 : 4 ; sans tête M3 × 4 : 2 ; écrous M3 : 6 ; écrou
 1/4"-20 UNC : 1 ; rondelles M3 : 4 (12 avec des rails en 12 × 12). Prendre quelques vis de
 rechange de chaque taille.
 
 Le plus simple est d'acheter des coffrets en inox A2 :
-* **vis CHC M3** (`M3 socket head screw assortment A2`), avec au moins 11 vis de 12 mm ;
+* **vis CHC M3** (`M3 socket head screw assortment A2`), avec au moins 15 vis de 12 mm ;
 * **vis CHC M2,5** (`M2.5 socket head screw`) ;
-* **vis fraisées M3 × 8** (`M3x8 countersunk screw ISO 10642`) ;
+* **vis fraisées M3 × 6** (`M3x6 countersunk screw ISO 10642`) ;
+* **inserts filetés laiton à chaud**, deux tailles (§ 3 bis) ;
 * **vis sans tête M3 × 4** (`M3x4 set screw flat point`) ;
 * **écrous M3** (`M3 hex nut DIN 934`) et **rondelles M3** (`M3 washer DIN 125`) ;
 * un **écrou 1/4"-20 UNC** (`1/4-20 UNC hex nut`).
 
 Compter 10 à 15 € en tout.
+
+## 3 bis. Inserts filetés à chaud (laiton)
+
+Les vis M3 ne se vissent **pas** dans le plastique : elles se vissent dans des **inserts en
+laiton moleté**, enfoncés à chaud dans des trous imprimés (le plastique fond autour du moletage
+puis se fige). Le filet est en laiton : on peut démonter autant de fois qu'on veut.
+
+| Insert | Qté | À chercher | Trou imprimé | Où |
+|---|---|---|---|---|
+| **M3 × 5,7 mm** (Ø extérieur ≈ 4,6 mm, moleté) | 7 | `M3 heat set insert 5.7mm` (ou `M3x5.7x4.6`) | **Ø4,0 × 6,5 mm** de profondeur | 3 dans les piliers du socle (fond), 2 dans le moyeu de la chape (rondelle d'arrêt), 2 dans le boîtier du capteur solaire |
+| **M3 × 3 mm** (même diamètre extérieur) | 18 | `M3 heat set insert 3mm` (ou `M3x3x4.6`) | **Ø4,0 × 3,8 mm** de profondeur | 3 dans la roue d'azimut (socle), 3 dans la chape (moyeu), 4 + 4 dans les paliers et supports moteurs, 4 dans le chapeau en U (rails) |
+
+**Dans la CAO**, les inserts sont modélisés (cylindres creux, Ø4,0 / Ø2,5) dans leurs trous :
+c'est ce qui permet de contrôler la prise de chaque vis. **Autour de chaque trou** il y a au
+moins **1,6 mm** de matière (4 périmètres) et **au moins 1,6 mm sous le fond** du trou, pour que
+le plastique refoulé par le moletage ne perce pas la pièce.
+
+**Pose** (pièces imprimées en PETG, trou d'insert tourné vers le haut si possible) :
+1. Fer à souder réglé vers **220 à 250 °C**, avec une **pointe d'insert** (`heat set insert tip
+   M3`, 5–8 €, souvent fournie en coffret avec les inserts) : la pointe a le même filet que
+   l'insert et se retire sans l'entraîner. Température à valider sur l'éprouvette
+   d'ajustements avant de poser les 25 inserts : trop froid, l'insert se coince ; trop chaud, le
+   plastique coule et marque la surface.
+2. Poser l'insert sur la pointe, l'engager droit dans le trou, et **laisser le fer descendre
+   sous son propre poids** jusqu'à ce que l'insert affleure la surface (quelques secondes).
+3. **Retirer le fer** en gardant l'insert droit, et poser tout de suite à plat une surface propre
+   (une règle, une vis M3 vissée et dévissée) pour le dresser avant que le plastique ne fige.
+4. Attendre le refroidissement complet (1 min) avant de visser.
+
+**Exception** : les 2 vis sans tête M3 × 4 des moyeux de vis sans fin restent **dans le PETG**
+(moyeu de 4,35 mm de long, trop court pour un insert, effort faible : elles ne font que serrer
+sur le méplat de l'arbre).
+
+**Outillage en plus** : une pointe d'insert M3 (voir ci-dessus). Le fer à souder réglable (en température) sert aussi à l'électronique.
 
 ## 4. Pièces métalliques non imprimées
 
@@ -213,6 +253,7 @@ Compter 10 à 15 € en tout.
 | Colle chaude ou colle époxy (bloque les photodiodes dans leurs logements) | 1 | `hot glue` | 3 € |
 | **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG ; pas les roulements, graissés d'origine) | 1 tube | `PTFE grease` | 8 € |
 | Colle cyanoacrylate (optionnel : vis sans fin sur leur arbre, pivots imprimés dans le chapeau) | 1 | `super glue` | 3 € |
+| **Pointe d'insert M3** pour fer à souder (pose des inserts à chaud, § 3 bis) | 1 | `heat set insert tip M3` | 5–8 € |
 | Colle à roulements, type Loctite 641 (seulement si les arbres font moins de 4,98 mm) | 1 | `Loctite 641` | 8–12 € |
 
 ## 6. Optionnel

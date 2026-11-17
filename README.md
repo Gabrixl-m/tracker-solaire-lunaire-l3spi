@@ -9,9 +9,8 @@ solaire** (4 photodiodes sous une croix d'ombre). Le projet a été conçu pour 
 Lune**, puis décliné en une **maquette à construire sur Terre**, imprimée en 3D.
 
 Le cœur du projet est la **tête à vis sans fin** : ses deux vis sont **irréversibles**, si bien
-qu'elle tient le panneau dans toutes les positions **moteurs coupés**, sur Terre comme sur la
-Lune. Le cas lunaire n'a pas de contrepoids ; la démonstration terrestre en ajoute un, qui
-soulage les dents en PETG. Toutes les cotes sont en **millimètres, à taille réelle**.
+qu'elle tient le panneau dans toutes les positions **moteurs coupés**, sans contrepoids, sur
+Terre comme sur la Lune. Toutes les cotes sont en **millimètres, à taille réelle**.
 
 **Licence : [CC BY-NC-SA 4.0](LICENSE).** Libre pour un usage personnel, scolaire ou associatif,
 en citant l'auteur ; **usage commercial interdit** (§ 6).
@@ -41,10 +40,10 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 | Grandeur | Cas lunaire | Cas terrestre |
 |---|---|---|
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
-| Masse de la tête (hors panneau) | 1,86 kg | 2,16 kg, dont 0,95 kg de contrepoids |
-| Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 2,46 kg, centre de gravité **sur l'axe** (contrepoids d'acier de 0,9 kg) |
+| Masse de la tête (hors panneau) | 1,86 kg | 1,22 kg |
+| Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,51 kg, centre de gravité à 61,9 mm de l'axe |
 | Courant du moteur d'élévation | 1,0 A | 0,6 A, pour ménager les dents en PETG |
-| Marge d'élévation, vent de 10 m/s | ×2,7 | ×5,8 |
+| Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 |
 | Marge d'azimut, vent de 10 m/s | ×2,3 | ×2,3 |
 | Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE (obligatoire) |
 | Roulements | Acier 440C, ZZ, MoS₂ | Acier standard, ZZ (ou 2RS), graissés d'origine |

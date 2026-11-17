@@ -59,7 +59,6 @@ ORIENTATION = {
     "Pivot_Libre": [((0, 1, 0), 90)],            # debout, tête en bas
     "Capteur_Solaire_Boitier": [],               # croix en haut
     "Capteur_Solaire_Support": [((1, 0, 0), 180)],   # plaque sur le plateau
-    "Support_Contrepoids": [((0, 1, 0), 90)],    # à plat, face extérieure sur le plateau
 }
 
 
@@ -288,32 +287,44 @@ def verifier_prise(flat, pas=0.2):
         e1 = e1.normalized()
         e2 = u.cross(e1).normalized()
         rr = 2.0 if noyau._geomAdaptor().Cylinder().Radius() > 1.1 else 1.7
+        rayons = (rr, 1.7, 2.3) if G.AJ["inserts"] and rr == 2.0 else (rr,)   # laiton de l'insert, puis plastique
         tranches = []
         for i in range(int((bout - tete).Length / pas) + 1):
             c = tete + u * (i * pas)
             noms = set()
-            for j in range(4):
-                ang = j * math.pi / 2
-                noms |= dans(c + e1 * (rr * math.cos(ang)) + e2 * (rr * math.sin(ang)))
+            for rj in rayons:
+                for j in range(4):
+                    ang = j * math.pi / 2
+                    noms |= dans(c + e1 * (rj * math.cos(ang)) + e2 * (rj * math.sin(ang)))
             tranches.append(noms)
         while tranches and not tranches[-1]:
             tranches.pop()                              # bout libre après un écrou
         if not tranches:
             continue
-        derniere = sorted(tranches[-1])[-1]
-        prise = 0
-        for t in reversed(tranches):
-            if derniere not in t:
-                break
-            prise += 1
-        prise *= pas
-        if derniere.startswith("Ecrou"):
+        noms_ins = sorted({n for tr in tranches for n in tr if n.startswith("Insert")})
+        if noms_ins:                                    # la prise est la longueur dans l'insert, même si le bout
+            derniere = noms_ins[0]                      # de la vis dépasse un peu dans le fond du perçage
+            prise = sum(1 for tr in tranches if any(n.startswith("Insert") for n in tr)) * pas
+        else:
+            derniere = sorted(tranches[-1])[-1]
+            prise = 0
+            for t in reversed(tranches):
+                if derniere not in t:
+                    break
+                prise += 1
+            prise *= pas
+        if derniere.startswith("Insert"):
+            mini_i = 4.5 if "_L" in derniere else 2.5          # insert long M3x5,7 / court M3x3
+            ok, seuil = prise >= mini_i, f"{mini_i:g} mm (insert)"
+        elif derniere.startswith("Ecrou"):
             ok, seuil = prise >= 2.3, "écrou complet"
         elif derniere.startswith("Moteur"):
             ok, seuil = prise >= PRISE_MOTEUR, f"{PRISE_MOTEUR:g} mm"
         else:
             ok, seuil = prise >= PRISE_MINI, f"{PRISE_MINI:g} mm"
         cle = (k, G.part_key(derniere) if not derniere.startswith("Ecrou") else "Ecrou_M3")
+        if derniere.startswith("Insert"):
+            cle = (k, "Insert_M3_" + ("L" if "_L" in derniere else "C"))
         if cle not in mini or prise < mini[cle]:
             mini[cle] = prise
         if not ok:
@@ -398,7 +409,8 @@ def eprouvette():
     dp = pv["d"] + aj["serrage"]
     e = e.cut(cyl_z(dp, 8, 57, 46, -1).cut(box_span(45, 70, 46 + pv["meplat"] + aj["serrage"] / 2, 60, -2, 8)))
     e = e.cut(cyl_z(5 + aj["serrage"], 8, 71, 46, -1))
-    e = e.cut(cyl_z(aj["passage_m3"], 8, 83, 46, -1)).cut(cyl_z(aj["taraud_m3"], 8, 93, 46, -1))
+    e = e.cut(cyl_z(aj["passage_m3"], 8, 83, 46, -1)).cut(cyl_z(G.INSERT["C"]["d_trou"], 5, 93, 46, 6 - G.INSERT["C"]["prof"]) if aj["inserts"]
+                                                                  else cyl_z(aj["taraud_m3"], 8, 93, 46, -1))
     e = e.union(cyl_z(30 + aj["moyeu"], 8, 95, 16, 6))   # téton du moyeu dans le 6806
     e = e.union(cyl_z(pv["d"] + aj["axe_imprime"], 8, 104, 46, 6))   # téton de pivot dans le 6801
     # paroi debout : trous d'axe horizontal, en goutte comme sur les pièces (centrage moteur Ø22,

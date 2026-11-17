@@ -123,7 +123,7 @@ MAT = {
     "Bronze CuSn12":       8800.0,
     "PETG":                1270.0,
     "Acier (visserie)":    7850.0,
-    "Acier doux S235":     7850.0,
+    "Laiton":              8500.0,
     "Verre 3,2 mm + EVA + backsheet (eq)": 2500.0,
     "Silicium polycristallin": 2330.0,
     "PPO (boîte de jonction)": 1100.0,
@@ -507,6 +507,7 @@ AJUSTEMENTS = {
         entraxe=0.0,            # augmentation des entraxes vis / roue (mm)
         jeu_bossage=0.10,       # jeu axial entre un bossage du chapeau et la bague intérieure (par côté)
         trepied_1_4=False,    # fond : téton dans la colonne Ø50 du trépied du projet
+        inserts=False,        # vis taraudées directement dans la pièce (cas lunaire : métal)
     ),
     "petg": dict(
         impression=True,
@@ -514,6 +515,7 @@ AJUSTEMENTS = {
         passage_m3=3.5, taraud_m3=2.8, passage_m25=3.0, pilote=22.4, axe_imprime=-0.05,
         jeu_denture=(0.30, 0.30), jeu_filet=0.0, tete_filet=0.85, entraxe=0.15, jeu_bossage=0.25,
         trepied_1_4=True,     # fond vissé sur la vis 1/4"-20 d'un trépied (écrou captif)
+        inserts=True,         # vis M3 dans des inserts filetés à chaud (laiton), sauf les vis de pression
     ),
 }
 MODE = "reel"
@@ -524,6 +526,39 @@ def set_ajustements(mode):
     """Choisit le jeu de cotes ("reel" ou "petg") ; reconstruire ensuite les pièces."""
     global MODE, AJ
     MODE, AJ = mode, AJUSTEMENTS[mode]
+    _maj_inserts()
+
+
+def _maj_inserts():
+    """Cotes qui changent quand les vis M3 se vissent dans des inserts à chaud (version imprimée) :
+    un insert demande un perçage Ø4,0 entouré d'au moins 1,6 mm de matière et 6,5 mm de profondeur (long)
+    ou 3,8 mm (court). On déplace les trous qui n'ont pas la place, voir README du cas terrestre."""
+    global EP_SEMELLE, U_TOP, LEVRE_EXTRA, R_VIS_ROUE, TROUS_SUPPORT_AZ, TROUS_SUPPORT_EL, TROUS_MOYEU, TROUS_BAGUE, LAMAGE_RAIL_CH, D_PASSAGE_MOYEU, X_PALIER_AZ
+    ins = AJ["inserts"]
+    # lèvre des paliers de 1,6 mm au lieu de 1,0 (poussée de la vis au blocage du moteur, voir README) : les joues
+    # s'épaississent de 0,6 mm vers l'extérieur, et les moteurs, leurs accouplements et la tige reculent d'autant
+    LEVRE_EXTRA = 0.6 if ins else 0.0
+    EP_SEMELLE = 5.4 if ins else 5.0                     # semelles des inserts courts : 3,8 mm de perçage + 1,6 mm de fond
+    U_TOP = (27.6 if ins else 28.0, 33.0)                # plaque du chapeau, idem
+    AZ_VIS["x_joint"], AZ_VIS["x_face"] = -32.5 - LEVRE_EXTRA, -52.5 - LEVRE_EXTRA
+    EL_VIS["y_joint"], EL_VIS["y_face"] = -32.5 - LEVRE_EXTRA, -56.5 - LEVRE_EXTRA
+    R_VIS_ROUE = 27.0 if ins else 28.0                   # roue d'azimut : 2 mm de matière jusqu'au bord du socle
+    TROUS_SUPPORT_AZ = ((-48.5, -27.0), (-41.0, -27.0)) if ins else ((-49.0, -27.0), (-41.0, -27.0))
+    TROUS_SUPPORT_EL = ((-40.0, -52.0), (-20.0, -52.0)) if ins else ((-46.0, -52.0), (-14.0, -52.0))   # hors des lamages du moteur
+    r_moyeu = 17.2 if ins else 18.0                      # semelle du moyeu Ø42 : 1,8 mm de matière au bord
+    TROUS_MOYEU = tuple((r_moyeu * math.cos(math.radians(a)), r_moyeu * math.sin(math.radians(a))) for a in (30, 150, 270))
+    D_PASSAGE_MOYEU = 15.0 if ins else 20.0              # passage des câbles dans le moyeu et la bague d'arrêt
+    r_bague = 11.2 if ins else 12.5                      # 1,7 mm de matière de chaque côté du perçage
+    TROUS_BAGUE = ((r_bague, 0.0), (-r_bague, 0.0))
+    LAMAGE_RAIL_CH = 4.5 if ins else 3.5                 # lamage des vis rail -> chapeau (M3x12 en insert court)
+    X_PALIER_AZ = 14.5 if ins else 16.5                  # vis du palier d'azimut, 2,5 mm de matière au bord
+
+
+# Inserts filetés à chaud en laiton, pour les vis M3 de la version imprimée. Perçage Ø4,0 dans les deux cas ;
+# long : M3 x 5,7 (Ø ext. 4,6), court : M3 x 3 (pour les semelles de 5 mm et les parois de 6 mm).
+INSERT = {"L": dict(long=5.7, d_trou=4.0, prof=6.5), "C": dict(long=3.0, d_trou=4.0, prof=3.8)}
+D_INSERT_MODELE = 4.0                # modélisé dans son perçage, une fois fondu dans le plastique
+D_INSERT_FILET = 2.5                 # fond de filet M3
 
 
 COL_ID = P["col_od"] - 2 * P["col_t"]
@@ -537,29 +572,6 @@ U_TOP = (28.0, 33.0)                 # plaque du chapeau (distance à l'axe)
 U_Y = 22.0
 U_BAS = -25.0                        # bas des flancs (sous l'axe)
 RAIL_X = 44.0                        # rails du panneau
-# Contrepoids (version imprimée seulement) : un bloc d'acier, derrière l'axe d'élévation et du côté +X
-# (le côté -X est occupé par le moteur d'azimut), porté par une platine imprimée vissée sur la face
-# extérieure du flanc +X du chapeau. Il ramène le centre de gravité de la partie basculante sur
-# l'axe : sans lui, le panneau, décalé au-dessus de l'axe, laisse un CdG à 62 mm.
-CONTREPOIDS = dict(
-    ep=4.0,                          # épaisseur de la platine
-    demi_l=26.0,                     # demi-largeur de la platine (Y)
-    z_haut=27.0, z_bas=-137.0,       # étendue de la platine (Z)
-    trou_pivot=20.0,                 # passage de la tête Ø18 du pivot libre
-    vis_flanc=((-14.0, -17.0), (14.0, -17.0), (-14.0, 17.0), (14.0, 17.0)),   # (y, z) : M3x8 platine -> flanc
-    lamage=2.5,                      # lamage des têtes des vis du bloc, côté flanc
-    bloc_ep=30.0, bloc_l=70.0,       # bloc d'acier : épaisseur (X) et largeur (Y)
-    bloc_h=55.0, bloc_zb=-127.5,     # hauteur (Z) et cote basse
-    bloc_dy=-3.0,                    # décalage du bloc en Y (annule les 1,1 mm du reste de la partie basculante)
-    vis_y=22.0, vis_marge=12.0,      # vis du bloc : à ±vis_y, à vis_marge des bords haut et bas
-    taraud=2.5, prof_taraud=9.0,     # avant-trou M3 taraudé dans l'acier
-)
-
-
-def vis_bloc_pos():
-    c = CONTREPOIDS
-    return [(sy * c["vis_y"], z) for sy in (-1, 1)
-            for z in (c["bloc_zb"] + c["vis_marge"], c["bloc_zb"] + c["bloc_h"] - c["vis_marge"])]
 X_ROUE = (-34.0, -26.0)              # roue d'élévation sur le pivot gauche
 EL_REF = 40.0                        # élévation de référence du calage des vis
 # Roulements protégés (ZZ : flasques métal ; 2RS : joints caoutchouc), mêmes cotes que les ouverts
@@ -617,7 +629,7 @@ PIECES_IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Chape", "Moyeu_C
                     "Pivot_Entraine", "Pivot_Libre",
                     "Palier_Vis_Azimut", "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation",
                     "Support_Moteur_Elevation", "Vis_Elevation", "Chapeau_U", "Roue_Elevation",
-                    "Capteur_Solaire_Boitier", "Capteur_Solaire_Support", "Support_Contrepoids")
+                    "Capteur_Solaire_Boitier", "Capteur_Solaire_Support")
 
 
 def entraxe_el():
@@ -654,6 +666,62 @@ def lumiere_y(d, x, y, z0, z1, course=0.6):
     """Trou oblong selon Y (±course) : réglage de l'entraxe de la vis d'azimut."""
     return (cq.Workplane("XY").center(x, y).slot2D(d + 2 * course, d, 90).extrude(z1 - z0)
             .translate((0, 0, z0)))
+
+
+def table_inserts():
+    """[(repère, pièce, genre, point d'entrée, direction vers l'intérieur de la matière)] : tous les inserts
+    de la version imprimée. Les vis de pression des vis sans fin (moyeu de 4,35 mm de long) restent taraudées
+    dans le plastique : un insert n'y tient pas."""
+    if not AJ["inserts"]:
+        return []
+    t = []
+    for k in range(3):                                           # fond -> socle, par-dessous
+        a = math.radians(120 * k)
+        t.append(("fixe", "Socle", "L", (R_FOND * math.cos(a), R_FOND * math.sin(a), 5.0), (0, 0, 1)))
+    for a in ANGLES_ROUE:                                        # roue d'azimut -> socle, par-dessus
+        c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
+        t.append(("fixe", "Socle", "C", (R_VIS_ROUE * c, R_VIS_ROUE * sn, 65.0), (0, 0, -1)))
+    for x, y in TROUS_BAGUE:                                     # bague d'arrêt -> moyeu, par-dessous
+        t.append(("chape", "Moyeu_Chape", "L", (x, y, 45.0), (0, 0, 1)))
+    for x, y in TROUS_MOYEU:                                     # chape -> semelle du moyeu, par-dessus
+        t.append(("chape", "Moyeu_Chape", "C", (x, y, Z_CHAPE), (0, 0, -1)))
+    for x, y in trous_palier_az():
+        t.append(("chape", "Palier_Vis_Azimut", "C", (x, y, Z_CHAPE), (0, 0, -1)))
+    for x, y in TROUS_SUPPORT_AZ:
+        t.append(("chape", "Support_Moteur_Azimut", "C", (x, y, Z_CHAPE), (0, 0, -1)))
+    for x, y in TROUS_PALIER_EL:
+        t.append(("chape", "Palier_Vis_Elevation", "C", (x, y, Z_CHAPE + 8), (0, 0, 1)))
+    for x, y in TROUS_SUPPORT_EL:
+        t.append(("chape", "Support_Moteur_Elevation", "C", (x, y, Z_CHAPE + 8), (0, 0, 1)))
+    for x in (-RAIL_X, RAIL_X):                                  # rails -> plaque du chapeau, par-dessus
+        for y in (-14, 14):
+            t.append(("bascule", "Chapeau_U", "C", (x, y, U_TOP[1]), (0, 0, -1)))
+    for x in (-CAPTEUR["vis_x"], CAPTEUR["vis_x"]):              # boîtier du capteur solaire, par-dessous
+        t.append(("panneau", "Capteur_Solaire_Boitier", "L",           # repère panneau
+                  (X_CAPTEUR + x, 0, CAPTEUR["z"] - CAPTEUR["corps"]), (0, 0, 1)))
+    return t
+
+
+def trous_inserts(wp, piece):
+    """Perçages des inserts d'une pièce (ouverts de 1 mm vers l'extérieur)."""
+    decal = Vector(X_CAPTEUR, 0, CAPTEUR["z"]) if piece == "Capteur_Solaire_Boitier" else Vector(0, 0, 0)
+    for _rep, pc, genre, pt, d in table_inserts():
+        if pc == piece:
+            i, v = INSERT[genre], Vector(*d)
+            wp = wp.cut(cyl_dir(i["d_trou"], i["prof"] + 1.0, tuple(Vector(*pt) - decal - v), d))
+    return wp
+
+
+def p_insert(genre):
+    """Insert M3 laiton, modélisé dans son perçage : base en z = 0, filet vers +Z."""
+    L = INSERT[genre]["long"]
+    return cyl_z(D_INSERT_MODELE, L).cut(cyl_z(D_INSERT_FILET, L + 2, z=-1))
+
+
+def loc_insert(pt, d):
+    n = Vector(*d)
+    xd = Vector(1, 0, 0) if abs(n.x) < 0.9 else Vector(0, 1, 0)
+    return Location(cq.Plane(origin=Vector(*pt), xDir=xd.cross(n).cross(n) * -1, normal=n))
 
 
 def p_nema(m):
@@ -787,15 +855,18 @@ def p_socle():
         a = math.radians(120 * k)
         x, y = R_FOND * math.cos(a), R_FOND * math.sin(a)
         rib = box_span(R_FOND, SOCLE_ID / 2 + 0.5, -2, 2, 5, 13).rotate((0, 0, 0), (0, 0, 1), 120 * k)
-        s = s.union(cyl_z(8, 8, x, y, 5)).union(rib).cut(cyl_z(AJ["taraud_m3"], 9, x, y, 4))
-    for a in ANGLES_ROUE:                                               # fixation de la roue d'azimut
-        c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
-        s = s.cut(trou_z(AJ["taraud_m3"], R_VIS_ROUE * c, R_VIS_ROUE * sn, 58.5, 66))
-    return s
+        s = s.union(cyl_z(8, 8, x, y, 5)).union(rib)
+        if not AJ["inserts"]:
+            s = s.cut(cyl_z(AJ["taraud_m3"], 9, x, y, 4))
+    if not AJ["inserts"]:
+        for a in ANGLES_ROUE:                                           # fixation de la roue d'azimut
+            c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
+            s = s.cut(trou_z(AJ["taraud_m3"], R_VIS_ROUE * c, R_VIS_ROUE * sn, 58.5, 66))
+    return trous_inserts(s, "Socle")
 
 
 ANGLES_ROUE = (90.0, 210.0, 330.0)   # vis de la roue d'azimut
-R_VIS_ROUE = 28.0                    # hors de la denture, dans la collerette du socle
+R_VIS_ROUE = 28.0                    # hors de la denture, dans la collerette du socle (27,0 avec inserts)
 Z_VOILE = 67.5                       # dessus du voile de la roue d'azimut (vis fraisées affleurantes)
 
 
@@ -819,19 +890,25 @@ def p_roue_azimut():
 TROUS_PALIER_EL = ((-30.0, -9.0), (-30.0, 9.0))          # vis par-dessous, taraudées dans le palier
 TROUS_SUPPORT_EL = ((-46.0, -52.0), (-14.0, -52.0))      # vis par-dessous, taraudées dans le support
 TROUS_SUPPORT_AZ = ((-49.0, -27.0), (-41.0, -27.0))      # vis par-dessus (lumières dans la chape)
+D_PASSAGE_MOYEU = 20.0
+X_PALIER_AZ = 16.5
+LEVRE_EXTRA = 0.0
+EP_SEMELLE = 5.0
+LAMAGE_RAIL_CH = 3.5
 TROUS_MOYEU = tuple((18 * math.cos(math.radians(a)), 18 * math.sin(math.radians(a))) for a in (30, 150, 270))
 TROUS_BAGUE = ((12.5, 0.0), (-12.5, 0.0))                # bague d'arrêt vissée en bout de moyeu
 
 
 def trous_palier_az():
-    return tuple((x, y_vis_az()) for x in (-16.5, 16.5))  # vis par-dessus (lumières dans la chape)
+    return tuple((x, y_vis_az()) for x in (-X_PALIER_AZ, X_PALIER_AZ))  # vis par-dessus (lumières dans la chape)
 
 
 def _moyeu(z_top):
     """Moyeu d'azimut : Ø30 dans les 6806, collerette Ø bi sur la bague intérieure du 6806 haut."""
     m = cyl_z(30 + AJ["moyeu"], z_top - 45, z=45).union(cyl_z(ROULEMENTS["6806"]["bi"], 2, z=65))
-    for x, y in TROUS_BAGUE:
-        m = m.cut(cyl_z(AJ["taraud_m3"], 8, x, y, 44))
+    if not AJ["inserts"]:
+        for x, y in TROUS_BAGUE:
+            m = m.cut(cyl_z(AJ["taraud_m3"], 8, x, y, 44))
     return m
 
 
@@ -872,8 +949,10 @@ def p_chape():
 def p_moyeu_chape():
     """Version imprimée : moyeu d'azimut séparé, vissé sous la plaque de la chape (3 x M3)."""
     zc = Z_CHAPE
-    m = _moyeu(zc - 5).union(cyl_z(42, 5, z=zc - 5))
-    m = m.cut(cyl_z(20, zc + 2 - 40, z=40))
+    m = _moyeu(zc - EP_SEMELLE).union(cyl_z(42, EP_SEMELLE, z=zc - EP_SEMELLE))
+    m = m.cut(cyl_z(D_PASSAGE_MOYEU, zc + 2 - 40, z=40))
+    if AJ["inserts"]:
+        return trous_inserts(m, "Moyeu_Chape")
     for x, y in TROUS_MOYEU:
         m = m.cut(trou_z(AJ["taraud_m3"], x, y, zc - 6, zc + 1))
     return m
@@ -881,7 +960,7 @@ def p_moyeu_chape():
 
 def p_bague_arret():
     """Rondelle d'arrêt sous le 6806 bas (sur sa bague intérieure), vissée en bout de moyeu (2 x M3)."""
-    b = ring_z(ROULEMENTS["6806"]["bi"], 20, 3, 42)
+    b = ring_z(ROULEMENTS["6806"]["bi"], D_PASSAGE_MOYEU, 3, 42)
     for x, y in TROUS_BAGUE:
         b = b.cut(trou_z(AJ["passage_m3"], x, y, 41, 46))
     return b
@@ -892,12 +971,12 @@ def p_arbre_vis_az():
     return cyl_x(5, x1 - AZ_VIS["x_joint"], AZ_VIS["x_joint"], y_vis_az(), AZ_VIS["z"])
 
 
-def logement_685(a0, a1, cyl):
+def logement_685(a0, a1, cyl, extra=0.0):
     """Logement d'un 685 dans une joue qui va de a0 à a1 le long de l'axe de la vis, avec une
     lèvre côté extérieur (loin de la vis) qui retient la bague extérieure contre la poussée de la
     vis, sans toucher la protection. Le roulement dépasse de LEVRE_685 côté vis.
     cyl(d, début, longueur) : cylindre le long de l'axe de la vis."""
-    r, lv = ROULEMENTS["685"], LEVRE_685
+    r, lv = ROULEMENTS["685"], LEVRE_685 + extra         # extra : lèvre épaissie vers l'extérieur
     d = r["D"] + AJ["roulement"]
     if a0 > 0:
         return cyl(d, a0 - 1, a1 - lv - a0 + 1).union(cyl(r["be"], a1 - lv - 0.5, lv + 1.5))
@@ -913,12 +992,15 @@ def p_palier_vis_az():
     p0, p1 = AZ_VIS["palier"]
     y, z, zc = y_vis_az(), AZ_VIS["z"], Z_CHAPE
     b = None
-    for x0, x1 in ((p0, p1), (-p1, -p0)):
+    ex = LEVRE_EXTRA
+    for x0, x1 in ((p0, p1 + ex), (-p1 - ex, -p0)):          # joues épaissies de ex vers l'extérieur : lèvre de 1 + ex
         pl = box_span(x0, x1, y - 9, y + 8, z - 7.5, zc).cut(
             logement_685(x0, x1, (lambda d, u, L: goutte(d, L, (u, y, z), (1, 0, 0), (0, 0, -1)))
-                         if AJ["impression"] else (lambda d, u, L: cyl_x(d, L, u, y, z))))   # imprimé à l'envers
+                         if AJ["impression"] else (lambda d, u, L: cyl_x(d, L, u, y, z)), ex))   # imprimé à l'envers
         b = pl if b is None else b.union(pl)
-    b = b.union(box_span(-p1, p1, y - 9, y + 8, zc - 5, zc))
+    b = b.union(box_span(-p1 - ex, p1 + ex, y - 9, y + 8, zc - EP_SEMELLE, zc))
+    if AJ["inserts"]:
+        return trous_inserts(b, "Palier_Vis_Azimut")
     for x, yy in trous_palier_az():                       # taraudages, vis par-dessus la chape
         b = b.cut(trou_z(AJ["taraud_m3"], x, yy, zc - 4.5, zc + 1))
     return b
@@ -928,7 +1010,7 @@ def p_support_moteur_az():
     m = MOT_AZ
     y, z, zc, xf = y_vis_az(), AZ_VIS["z"], Z_CHAPE, AZ_VIS["x_face"]
     s = box_span(xf, xf + 4, y - 16, y + 16, z - 16, zc)
-    s = s.union(box_span(xf, xf + 15, y - 16, y + 7, zc - 5, zc))
+    s = s.union(box_span(xf, -37.0 if AJ["inserts"] else xf + 15, y - 16, y + 7, zc - EP_SEMELLE, zc))
     if AJ["impression"]:            # imprimé à l'envers : goutte vers -Z
         s = s.cut(goutte(AJ["pilote"], 10, (xf - 1, y, z), (1, 0, 0), (0, 0, -1)))
     else:
@@ -938,6 +1020,8 @@ def p_support_moteur_az():
             s = s.cut(cyl_x(AJ["passage_m25"], 10, xf - 1, y + sy * m["holes"] / 2, z + sz * m["holes"] / 2))
     for sy in (-1, 1):                                    # lamages des têtes M2,5 sous la patte
         s = s.cut(cyl_x(6, 4, xf + 4, y + sy * m["holes"] / 2, z + m["holes"] / 2))
+    if AJ["inserts"]:
+        return trous_inserts(s, "Support_Moteur_Azimut")
     for x, yy in TROUS_SUPPORT_AZ:                        # taraudages, vis par-dessus la chape
         s = s.cut(trou_z(AJ["taraud_m3"], x, yy, zc - 4.5, zc + 1))
     return s
@@ -952,12 +1036,15 @@ def p_palier_vis_el():
     p0, p1 = EL_VIS["palier"]
     zv, zb = z_vis_el(), Z_CHAPE + 8
     b = None
-    for y0, y1 in ((p0, p1), (-p1, -p0)):
+    ex = LEVRE_EXTRA
+    for y0, y1 in ((p0, p1 + ex), (-p1 - ex, -p0)):
         pl = box_span(-38, -22, y0, y1, zb, Z_T - 24.5).cut(
             logement_685(y0, y1, (lambda d, u, L: goutte(d, L, (-30, u, zv), (0, 1, 0), (0, 0, 1)))
-                         if AJ["impression"] else (lambda d, u, L: cyl_y(d, L, -30, u, zv))))
+                         if AJ["impression"] else (lambda d, u, L: cyl_y(d, L, -30, u, zv)), ex))
         b = pl if b is None else b.union(pl)
-    b = b.union(box_span(-38, -22, -p1, p1, zb, zb + 5))
+    b = b.union(box_span(-38, -22, -p1 - ex, p1 + ex, zb, zb + EP_SEMELLE))
+    if AJ["inserts"]:
+        return trous_inserts(b, "Palier_Vis_Elevation")
     for x, y in TROUS_PALIER_EL:
         b = b.cut(trou_z(AJ["taraud_m3"], x, y, zb - 1, zb + 4.5))
     return b
@@ -967,7 +1054,7 @@ def p_support_moteur_el():
     m = MOT_EL
     zv, zb, yf = z_vis_el(), Z_CHAPE + 8, EL_VIS["y_face"]
     s = box_span(-54, -6, yf, yf + 4, zb, zv + 24)
-    s = s.union(box_span(-54, -6, yf, yf + 22, zb, zb + 5))
+    s = s.union(box_span(-54, -6, yf, yf + 22, zb, zb + EP_SEMELLE))
     if AJ["impression"]:
         s = s.cut(goutte(AJ["pilote"], 6, (-30, yf - 1, zv), (0, 1, 0), (0, 0, 1)))
     else:
@@ -977,6 +1064,8 @@ def p_support_moteur_el():
             s = s.cut(cyl_y(AJ["passage_m3"], 6, -30 + sx * m["holes"] / 2, yf - 1, zv + sz * m["holes"] / 2))
     for sx in (-1, 1):                                    # lamages des têtes M3 basses dans la semelle
         s = s.cut(cyl_y(7, 5, -30 + sx * m["holes"] / 2, yf + 4, zv - m["holes"] / 2))
+    if AJ["inserts"]:
+        return trous_inserts(s, "Support_Moteur_Elevation")
     for x, y in TROUS_SUPPORT_EL:
         s = s.cut(trou_z(AJ["taraud_m3"], x, y, zb - 1, zb + 4.5))
     return s
@@ -1007,41 +1096,12 @@ def p_chapeau_u():
         dp = PV()["d"] + AJ["serrage"]   # le méplat reste en bas
         for x0 in (-xo - 1, xa):
             u = u.cut(goutte(dp, xo - xa + 1, (x0, 0, 0), (1, 0, 0), (0, 0, -1), cercle=False))
+    if AJ["inserts"]:               # rails : inserts courts
+        return trous_inserts(u, "Chapeau_U")
     for x in (-RAIL_X, RAIL_X):
         for y in (-14, 14):
             u = u.cut(cyl_z(AJ["taraud_m3"], 10, x, y, U_TOP[0] - 1))
-    if AJ["impression"]:            # contrepoids : 4 avant-trous M3, borgnes, dans la face extérieure du flanc +X
-        for y, z in CONTREPOIDS["vis_flanc"]:
-            u = u.cut(cyl_x(AJ["taraud_m3"], 4.5, U_X[1] - 4.5, y, z))
     return u
-
-
-def p_support_contrepoids():
-    """Platine du contrepoids, 4 mm : plaquée sur la face extérieure du flanc +X du chapeau (4 vis M3x8,
-    la tête de 2 mm du pivot libre passe dans un trou Ø20), elle descend derrière l'axe et porte le bloc
-    d'acier par 4 vis M3 (têtes dans des lamages, côté flanc). Imprimée à plat, face extérieure sur le plateau."""
-    c = CONTREPOIDS
-    x0, x1 = U_X[1], U_X[1] + c["ep"]
-    p = box_span(x0, x1, -c["demi_l"], c["demi_l"], c["z_bas"], c["z_haut"]).edges("|X").fillet(4)
-    p = p.cut(cyl_x(c["trou_pivot"], c["ep"] + 2, x0 - 1))
-    for y, z in c["vis_flanc"]:
-        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
-    for y, z in vis_bloc_pos():
-        p = p.cut(cyl_x(AJ["passage_m3"], c["ep"] + 2, x0 - 1, y, z))
-        p = p.cut(cyl_x(6.2, c["lamage"] + 1, x0 - 1, y, z))
-    return p
-
-
-def p_masse_contrepoids():
-    """Bloc d'acier doux (plat ou tôles empilées, ajusté à la pesée), 4 trous taraudés M3 dans sa face
-    contre la platine."""
-    c = CONTREPOIDS
-    xa = U_X[1] + c["ep"]
-    b = box_span(xa, xa + c["bloc_ep"], -c["bloc_l"] / 2 + c["bloc_dy"], c["bloc_l"] / 2 + c["bloc_dy"],
-                 c["bloc_zb"], c["bloc_zb"] + c["bloc_h"])
-    for y, z in vis_bloc_pos():
-        b = b.cut(cyl_x(c["taraud"], c["prof_taraud"], xa, y, z))
-    return b
 
 
 def p_pivot_entraine():
@@ -1076,7 +1136,7 @@ def p_rail():
     cadre du panneau, avec un écrou M3 dans le cadre."""
     r = box_span(-6, 6, -P["pan_H"] / 2, P["pan_H"] / 2, U_TOP[1], P["pan_back"])
     for y in (-14, 14):
-        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, 4, 0, y, P["pan_back"] - LAMAGE_RAIL))
+        r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, LAMAGE_RAIL_CH + 0.5, 0, y, P["pan_back"] - LAMAGE_RAIL_CH))
     for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
         r = r.cut(cyl_z(3.4, 20, 0, y, U_TOP[1] - 1)).cut(cyl_z(6.2, LAMAGE_RAIL + 0.5, 0, y, U_TOP[1] - 0.5))
     return r
@@ -1155,7 +1215,7 @@ def visserie():
             v.append(("fixe", "M3x25", (R_FOND * math.cos(a), R_FOND * math.sin(a), -15), (0, 0, 1)))
     for a in ANGLES_ROUE:                 # roue d'azimut -> socle, vis fraisées affleurantes
         c, sn = math.cos(math.radians(a)), math.sin(math.radians(a))
-        v.append(("fixe", "M3x8F", (R_VIS_ROUE * c, R_VIS_ROUE * sn, Z_VOILE), (0, 0, -1)))
+        v.append(("fixe", "M3x6F" if AJ["inserts"] else "M3x8F", (R_VIS_ROUE * c, R_VIS_ROUE * sn, Z_VOILE), (0, 0, -1)))
     if not AJ["trepied_1_4"]:
         v.append(("fixe", "M3x6", (0, -P["col_od"] / 2, -8), (0, 1, 0)))     # anti-rotation, à travers la colonne
     for x, y in TROUS_BAGUE:              # rondelle d'arrêt -> moyeu
@@ -1176,13 +1236,7 @@ def visserie():
                                           AZ_VIS["z"] + sz * MOT_AZ["holes"] / 2), (-1, 0, 0)))
     for x in (-RAIL_X, RAIL_X):           # rails -> chapeau, têtes noyées
         for y in (-14, 14):
-            v.append(("bascule", "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL), (0, 0, -1)))
-    if AJ["impression"]:                  # contrepoids : platine -> flanc, puis bloc -> platine
-        xp = U_X[1] + CONTREPOIDS["ep"]
-        for y, z in CONTREPOIDS["vis_flanc"]:
-            v.append(("bascule", "M3x8", (xp, y, z), (-1, 0, 0)))
-        for y, z in vis_bloc_pos():
-            v.append(("bascule", "M3x10", (U_X[1] + CONTREPOIDS["lamage"], y, z), (1, 0, 0)))
+            v.append(("bascule", "M3x12" if AJ["inserts"] else "M3x14", (x, y, P["pan_back"] - LAMAGE_RAIL_CH), (0, 0, -1)))
     for x in (-RAIL_X, RAIL_X):           # cadre du panneau -> rails : par-dessous, écrou dans le cadre
         for y in (-Y_FIX_PANNEAU, Y_FIX_PANNEAU):
             v.append(("panneau", "M3x14", (x, y, U_TOP[1] + LAMAGE_RAIL), (0, 0, 1)))
@@ -1219,6 +1273,9 @@ def add_visserie(assy, repere):
     for i, (rp, p, d) in enumerate(rondelles()):
         if rp == repere:
             add(assy, "Rondelle_M3", loc_vis(p, d), f"Rondelle_M3_{i}")
+    for i, (rp, _pc, g, pt, d) in enumerate(table_inserts()):
+        if rp == repere:
+            add(assy, f"Insert_M3_{g}", loc_insert(pt, d), f"Insert_M3_{g}_{i}")
 
 
 # ---------------------------------------------------------------------------
@@ -1281,6 +1338,8 @@ def p_capteur_boitier():
     for x, y in xy_photodiodes():
         b = b.cut(box_span(x - lx, x + lx, y - ly, y + ly, -c["corps"] - 1, 0))
         b = b.cut(box_span(x - f, x + f, y - f, y + f, -1, e + 0.01))
+    if AJ["inserts"]:
+        return trous_inserts(b, "Capteur_Solaire_Boitier")
     for x in (-c["vis_x"], c["vis_x"]):
         b = b.cut(trou_z(AJ["taraud_m3"], x, 0, -c["corps"] - 1, -1))
     return b
@@ -1459,11 +1518,9 @@ def build_head_parts():
     reg("Roue_Elevation", p_roue_elevation(), mat("Bronze CuSn12"), COL["brass"],
         f"Roue d'élévation m{format(VIS_EL['m'], 'g').replace('.', ',')} Z{VIS_EL['z']}")
     reg("Rail_Panneau", p_rail(), "Al 6061-T6", COL["alu_d"], "Rail 12 x 13 vissé sur le cadre du panneau")
-    reg("Support_Contrepoids", p_support_contrepoids(), "PETG", COL["u"],
-        "Platine du contrepoids, vissée sur le flanc +X du chapeau (version imprimée)")
-    reg("Masse_Contrepoids", p_masse_contrepoids(), "Acier doux S235", COL["steel"],
-        "Bloc d'acier du contrepoids, ajusté à la pesée (version imprimée)")
     reg("Ecrou_M3", p_ecrou_m3(), "Acier (visserie)", COL["rondelle"], "Écrou M3 (ISO 4032)")
+    for g, ds in (("L", "M3 x 5,7"), ("C", "M3 x 3")):
+        reg(f"Insert_M3_{g}", p_insert(g), "Laiton", COL["brass"], f"Insert fileté à chaud {ds} (laiton), version imprimée")
     reg("Rondelle_M3", p_rondelle_m3(), "Acier (visserie)", COL["rondelle"], "Rondelle M3 (ISO 7089), 3,2 x 7 x 0,5")
     for k, v in (("Az", VIS_AZ), ("El", VIS_EL)):
         reg(f"Vis_STHC_M3x4_{k}", p_vis_pression(v), "Acier (visserie)", COL["vis"],
@@ -1565,9 +1622,6 @@ def build_panel(with_panel=True):
     add(p, "Roue_Elevation")
     add(p, "Rail_Panneau", trans(RAIL_X, 0, 0), "Rail_Panneau_1")
     add(p, "Rail_Panneau", trans(-RAIL_X, 0, 0), "Rail_Panneau_2")
-    if AJ["impression"]:
-        add(p, "Support_Contrepoids")
-        add(p, "Masse_Contrepoids")
     add_visserie(p, "bascule")
     if with_panel:
         for n in PANEL_PARTS:

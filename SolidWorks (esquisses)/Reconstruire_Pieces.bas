@@ -43,6 +43,9 @@ Dim gDerDV As Double                       ' derniere variation de volume mesure
 Dim gDerErr As String                      ' derniere erreur VBA rencontree par Extruder
 Dim gAlerte As String                      ' observation sur la derniere esquisse (pour le journal)
 Dim gXinfo As String                       ' transformation modele -> esquisse de la derniere esquisse
+Dim gR(8) As Double, gT(2) As Double, gS As Double   ' matrice, translation et echelle de cette transformation
+Dim gRow As Boolean                        ' convention de la matrice (False : colonnes, True : lignes)
+Dim gCalibre As Boolean                    ' la convention a-t-elle ete calibree ?
 
 ' ----------------------------------------------------------------------------------------------
 Sub main()
@@ -173,6 +176,7 @@ Function TraiterPiece(fichier As String, dSortie As String) As Boolean
         Print #gJournal, "  ECHEC : plans de base introuvables"
         Exit Function
     End If
+    Calibrer
     swSkMgr.AddToDB = False
     swSkMgr.DisplayWhenAdded = True
 
@@ -751,13 +755,7 @@ Function OuvrirSur(plan As Object, o() As Double, n() As Double) As Boolean
     If gSk Is Nothing Then Exit Function
     Set gXf = gSk.ModelToSketchTransform
     gAlerte = ""
-    gXinfo = ""
-    On Error Resume Next
-    q = gXf.ArrayData
-    For k = LBound(q) To UBound(q)
-        gXinfo = gXinfo & Format$(q(k), "0.####") & " "
-    Next k
-    On Error GoTo 0
+    LireTransformation
     bon = True
     Dim q0 As Variant, qu As Variant, qv As Variant, du As Double, dv As Double
     q0 = VersEsquisse(o(0), o(1), o(2))
@@ -865,14 +863,90 @@ Function CreerPlan(o() As Double, n() As Double, k As Long, numero As Long) As B
     Next methode
 End Function
 
-' Point du modele (mm) -> coordonnees dans l'esquisse ouverte (m)
+' Lit la transformation modele -> esquisse de l'esquisse ouverte (gXf)
+Sub LireTransformation()
+    Dim q As Variant, k As Long
+    gXinfo = ""
+    For k = 0 To 8
+        gR(k) = 0
+    Next k
+    gR(0) = 1: gR(4) = 1: gR(8) = 1
+    For k = 0 To 2
+        gT(k) = 0
+    Next k
+    gS = 1
+    On Error Resume Next
+    q = gXf.ArrayData
+    If Err.Number = 0 Then
+        For k = 0 To 8
+            gR(k) = q(k)
+        Next k
+        For k = 0 To 2
+            gT(k) = q(9 + k)
+        Next k
+        If q(12) <> 0 Then gS = q(12)
+        For k = LBound(q) To UBound(q)
+            gXinfo = gXinfo & Format$(q(k), "0.####") & " "
+        Next k
+    End If
+    Err.Clear
+    On Error GoTo 0
+End Sub
+
+' Calibre une fois la convention de la matrice sur le plan de dessus : l'esquisse y a pour axes
+' x = X du modele et y = -Z du modele (le Z du modele pointe vers le bas dans la vue de dessus)
+Sub Calibrer()
+    Dim f As Object, colonne As Boolean, ligne As Boolean
+    If gCalibre Then Exit Sub
+    gCalibre = True
+    gRow = False
+    If gPlan(2) Is Nothing Then Exit Sub
+    swModel.ClearSelection2 True
+    gPlan(2).Select2 False, 0
+    swSkMgr.InsertSketch True
+    Set gSk = swSkMgr.ActiveSketch
+    If gSk Is Nothing Then
+        Print #gJournal, "  calibration impossible (esquisse non creee sur le plan de dessus)"
+        Exit Sub
+    End If
+    Set gXf = gSk.ModelToSketchTransform
+    LireTransformation
+    swSkMgr.InsertSketch True
+    Set gSk = Nothing
+    Set f = swModel.FeatureByPositionReverse(0)
+    If Not f Is Nothing Then
+        If f.GetTypeName2 = "ProfileFeature" Then Supprimer f
+    End If
+    colonne = (Abs(gR(0) - 1) < 0.000001 And Abs(gR(3)) < 0.000001 And Abs(gR(2)) < 0.000001 And Abs(gR(5) + 1) < 0.000001)
+    ligne = (Abs(gR(0) - 1) < 0.000001 And Abs(gR(1)) < 0.000001 And Abs(gR(6)) < 0.000001 And Abs(gR(7) + 1) < 0.000001)
+    If colonne Then
+        gRow = False
+        Print #gJournal, "  calibration : matrice par colonnes (plan de dessus : " & gXinfo & ")"
+    ElseIf ligne Then
+        gRow = True
+        Print #gJournal, "  calibration : matrice par lignes (plan de dessus : " & gXinfo & ")"
+    Else
+        Print #gJournal, "  calibration : AUCUNE convention ne correspond au plan de dessus attendu (" & gXinfo & "), convention par colonnes gardee"
+    End If
+End Sub
+
+' Point du modele (mm) -> coordonnees dans l'esquisse ouverte (m), calcule avec la matrice de gXf
 Function VersEsquisse(x As Double, y As Double, z As Double) As Variant
-    Dim a(2) As Double, va As Variant, p As Object
-    a(0) = x * MM: a(1) = y * MM: a(2) = z * MM
-    va = a
-    Set p = swMath.CreatePoint(va)
-    Set p = p.MultiplyTransform(gXf)
-    VersEsquisse = p.ArrayData
+    Dim px As Double, py As Double, pz As Double, r(2) As Double
+    px = x * MM: py = y * MM: pz = z * MM
+    If gRow Then
+        r(0) = gR(0) * px + gR(3) * py + gR(6) * pz
+        r(1) = gR(1) * px + gR(4) * py + gR(7) * pz
+        r(2) = gR(2) * px + gR(5) * py + gR(8) * pz
+    Else
+        r(0) = gR(0) * px + gR(1) * py + gR(2) * pz
+        r(1) = gR(3) * px + gR(4) * py + gR(5) * pz
+        r(2) = gR(6) * px + gR(7) * py + gR(8) * pz
+    End If
+    r(0) = r(0) * gS + gT(0)
+    r(1) = r(1) * gS + gT(1)
+    r(2) = r(2) * gS + gT(2)
+    VersEsquisse = r
 End Function
 
 ' Trace les contours : L segment, C cercle, A arc par trois points, S courbe passant par des points

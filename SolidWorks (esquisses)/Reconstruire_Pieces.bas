@@ -46,6 +46,7 @@ Dim gXinfo As String                       ' transformation modele -> esquisse d
 Dim gR(8) As Double, gT(2) As Double, gS As Double   ' matrice, translation et echelle de cette transformation
 Dim gRow As Boolean                        ' convention de la matrice (False : colonnes, True : lignes)
 Dim gCalibre As Boolean                    ' la convention a-t-elle ete calibree ?
+Dim gVolVu As Boolean                      ' un essai a donne le bon volume mais un mauvais centre de gravite
 
 ' ----------------------------------------------------------------------------------------------
 Sub main()
@@ -58,6 +59,9 @@ Sub main()
     Set gFlip = CreateObject("Scripting.Dictionary")
     gHelice = -1
     gSens(0) = 0: gSens(1) = 0
+    gCalibre = False
+    gRow = True
+    gVolVu = False
 
     If Not TrouverDossiers(dDon, dSortie) Then
         MsgBox "Dossier ""donnees"" introuvable : rien n'a ete fait.", vbExclamation
@@ -328,8 +332,8 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
                    o() As Double, n() As Double, estCut As Boolean)
     Dim a0 As Double, a1 As Double
     Dim Ve As Double, Ge(2) As Double, tolV As Double, tolG As Double
-    Dim nomSk As String, nomF As String, idx As Long, passe As Long, ok As Boolean
-    Dim detail As String
+    Dim nomSk As String, nomF As String, idx As Long, passe As Long, tour As Long, ok As Boolean
+    Dim detail As String, rowDepart As Boolean
 
     a0 = Val(t(6)): a1 = Val(t(7))
     LireEtat t, 8, Ve, Ge, tolV, tolG
@@ -342,24 +346,50 @@ Sub FaireExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, t
         idx = 0
     End If
 
-    ' passe 0 : trace normal ; passe 1 : trace "direct dans la base" (AddToDB), si la passe 0 echoue
-    For passe = 0 To 1
-        swSkMgr.AddToDB = (passe = 1)
-        ok = EssaiExtrusion(lignes, i0, i1, numero, o, n, a0, a1, Ve, Ge, tolV, tolG, nomSk, nomF, estCut, idx, passe, detail)
-        swSkMgr.AddToDB = False
+    rowDepart = gRow
+    gVolVu = False
+    ' tour 0 : convention courante ; tour 1 (si le volume etait juste mais pas le centre de gravite,
+    ' c'est-a-dire une esquisse en miroir) : l'autre convention de matrice
+    For tour = 0 To 1
+        ' passe 0 : trace normal ; passe 1 : trace "direct dans la base" (AddToDB), si la passe 0 echoue
+        For passe = 0 To 1
+            swSkMgr.AddToDB = (passe = 1)
+            ok = EssaiExtrusion(lignes, i0, i1, numero, o, n, a0, a1, Ve, Ge, tolV, tolG, nomSk, nomF, estCut, idx, passe, detail)
+            swSkMgr.AddToDB = False
+            If ok Then Exit For
+            Print #gJournal, "     " & detail
+            Supprimer swModel.FeatureByName(nomSk)
+        Next passe
         If ok Then Exit For
-        Print #gJournal, "     " & detail
-        If passe = 0 Then Supprimer swModel.FeatureByName(nomSk)
-    Next passe
+        If tour = 0 And gVolVu Then
+            gRow = Not gRow
+            gVolVu = False
+            Print #gJournal, "     volume juste mais centre de gravite faux : nouvel essai avec l'autre convention de matrice"
+        Else
+            Exit For
+        End If
+    Next tour
 
-    If Not ok Then
+    If ok Then
+        If gRow <> rowDepart Then Print #gJournal, "     (la convention de matrice a ete changee pour la suite)"
+    Else
+        gRow = rowDepart
+        Redessiner lignes, i0, i1, o, n, nomSk
         Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC ; l'esquisse """ & nomSk & _
                          "_A_REPRENDRE"" est restee dans l'arbre (de " & Format$(a0, "0.000") & " a " & _
                          Format$(a1, "0.000") & " mm le long de " & t(3) & " " & t(4) & " " & t(5) & ")"
-        Renommer nomSk, nomSk & "_A_REPRENDRE"
         gNbEchecs = gNbEchecs + 1
     End If
     AvancerAttendu Ve, Ge
+End Sub
+
+' Refait l'esquisse d'une fonction echouee, pour qu'elle reste dans l'arbre sous le nom ..._A_REPRENDRE
+Sub Redessiner(lignes() As String, i0 As Long, i1 As Long, o() As Double, n() As Double, nomSk As String)
+    Dim sk As Object
+    If Not OuvrirEsquisse(o, n, 0) Then Exit Sub
+    Dessiner lignes, i0 + 2, i1
+    Set sk = FermerEsquisse(nomSk)
+    Renommer nomSk, nomSk & "_A_REPRENDRE"
 End Sub
 
 Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Long, o() As Double, n() As Double, _
@@ -371,7 +401,7 @@ Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Lo
     Dim score As Long, q As Long, sens As Boolean, e As Integer, flip As Boolean
     Dim c As Double, cle As String, sA As Long, sB As Long
     Dim verifiable As Boolean, essais As Long, crees As Long, fait As Boolean
-    Dim traces As Long, refus As Long, mesure As String
+    Dim traces As Long, refus As Long, mesure As String, nbContours As Long
 
     EssaiExtrusion = False
     detail = "passe " & (passe + 1) & " (" & IIf(passe = 0, "trace normal", "trace direct") & ") : "
@@ -395,6 +425,15 @@ Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Lo
         detail = detail & "esquisse vide apres trace (" & traces & " entites tracees, " & refus & " refusees)"
         Exit Function
     End If
+    nbContours = -1
+    On Error Resume Next
+    Dim cts As Variant
+    cts = sk.GetSpecificFeature2.GetSketchContours
+    If Err.Number = 0 Then
+        If IsArray(cts) Then nbContours = UBound(cts) + 1 Else nbContours = 0
+    End If
+    Err.Clear
+    On Error GoTo 0
 
     ' 8 reglages possibles (sens, hypothese sur le sens reel, inversion du decalage) : ceux qui
     ' ont deja marche sont essayes d'abord ; le controle volume + centre de gravite tranche
@@ -450,7 +489,7 @@ Function EssaiExtrusion(lignes() As String, i0 As Long, i1 As Long, numero As Lo
                          Format$(gVmes, "0.000") & " / " & Format$(Ve, "0.000") & IIf(verifiable, "", "  [petite fonction : sens non controle]")
         EssaiExtrusion = True
     Else
-        detail = detail & traces & " entites tracees, " & refus & " refusees ; " & essais & " essais, " & crees & _
+        detail = detail & traces & " entites tracees, " & refus & " refusees, " & nbContours & " contour(s) reconnu(s) ; " & essais & " essais, " & crees & _
                  " extrusion(s) creee(s)" & IIf(mesure <> "", " ; " & mesure & ", attendu " & Format$(Ve - gVe, "0.000") & " mm3", "") & _
                  IIf(gDerErr <> "", " ; derniere erreur VBA : " & gDerErr, "") & vbCrLf & "        " & gAlerte & vbCrLf & _
                  "        transformation modele->esquisse : " & gXinfo
@@ -503,8 +542,7 @@ Sub FaireRevolution(lignes() As String, i0 As Long, i1 As Long, numero As Long, 
                     o() As Double, n() As Double, estCut As Boolean)
     Dim px As Double, py As Double, pz As Double, dx As Double, dy As Double, dz As Double
     Dim Ve As Double, Ge(2) As Double, tolV As Double, tolG As Double
-    Dim a As Variant, b As Variant, axe As Object, sk As Object, f As Object, sd As Object
-    Dim nomSk As String, nomF As String, essai As Long, verifiable As Boolean, fait As Boolean
+    Dim nomSk As String, nomF As String, tour As Long, ok As Boolean, rowDepart As Boolean
 
     px = Val(t(3)): py = Val(t(4)): pz = Val(t(5))
     dx = Val(t(6)): dy = Val(t(7)): dz = Val(t(8))
@@ -512,19 +550,56 @@ Sub FaireRevolution(lignes() As String, i0 As Long, i1 As Long, numero As Long, 
     nomSk = "Esquisse_" & Format$(numero, "00")
     If estCut Then nomF = "Enlevement_revolution_" & Format$(numero, "00") Else nomF = "Revolution_" & Format$(numero, "00")
 
-    If Not OuvrirEsquisse(o, n, numero) Then
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC, plan d'esquisse impossible a creer"
+    rowDepart = gRow
+    gVolVu = False
+    For tour = 0 To 1
+        ok = EssaiRevolution(lignes, i0, i1, numero, o, n, px, py, pz, dx, dy, dz, Ve, Ge, tolV, tolG, nomSk, nomF, estCut)
+        If ok Then Exit For
+        Supprimer swModel.FeatureByName(nomSk)
+        If tour = 0 And gVolVu Then
+            gRow = Not gRow
+            gVolVu = False
+            Print #gJournal, "     volume juste mais centre de gravite faux : nouvel essai avec l'autre convention de matrice"
+        Else
+            Exit For
+        End If
+    Next tour
+
+    If ok Then
+        If gRow <> rowDepart Then Print #gJournal, "     (la convention de matrice a ete changee pour la suite)"
+        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : OK V = " & Format$(gVmes, "0.000") & " / " & Format$(Ve, "0.000")
+    Else
+        gRow = rowDepart
+        Redessiner lignes, i0, i1, o, n, nomSk
+        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC ; l'esquisse """ & nomSk & _
+                         "_A_REPRENDRE"" est restee dans l'arbre (revolution de 360 deg autour d'une ligne de construction sur l'axe)"
         gNbEchecs = gNbEchecs + 1
-        AvancerAttendu Ve, Ge
-        Exit Sub
+    End If
+    AvancerAttendu Ve, Ge
+End Sub
+
+Function EssaiRevolution(lignes() As String, i0 As Long, i1 As Long, numero As Long, o() As Double, n() As Double, _
+                         px As Double, py As Double, pz As Double, dx As Double, dy As Double, dz As Double, _
+                         Ve As Double, Ge() As Double, tolV As Double, tolG As Double, nomSk As String, nomF As String, _
+                         estCut As Boolean) As Boolean
+    Dim a As Variant, b As Variant, axe As Object, sk As Object, f As Object, sd As Object
+    Dim essai As Long, verifiable As Boolean
+
+    EssaiRevolution = False
+    If Not OuvrirEsquisse(o, n, numero) Then
+        Print #gJournal, "     revolution : plan d'esquisse impossible a creer"
+        Exit Function
     End If
     Dessiner lignes, i0 + 2, i1
     a = VersEsquisse(px - 80 * dx, py - 80 * dy, pz - 80 * dz)
     b = VersEsquisse(px + 80 * dx, py + 80 * dy, pz + 80 * dz)
     Set axe = swSkMgr.CreateCenterLine(a(0), a(1), 0#, b(0), b(1), 0#)
     Set sk = FermerEsquisse(nomSk)
+    If sk Is Nothing Then
+        Print #gJournal, "     revolution : esquisse vide (" & gTraces & " entites tracees, " & gRefus & " refusees)"
+        Exit Function
+    End If
 
-    fait = False
     For essai = 0 To 1
         Set sk = swModel.FeatureByName(nomSk)
         swModel.ClearSelection2 True
@@ -538,30 +613,25 @@ Sub FaireRevolution(lignes() As String, i0 As Long, i1 As Long, numero As Long, 
         Set f = Nothing
         Set f = swFeatMgr.FeatureRevolve2(True, True, False, estCut, False, False, 0, 0, 2 * PI, 0#, _
                                           False, False, 0#, 0#, 0, 0#, 0#, True, True, True)
+        If Err.Number <> 0 Then gDerErr = Err.Number & " " & Err.Description
         Err.Clear
         On Error GoTo 0
         swModel.ClearSelection2 True
         If Not f Is Nothing Then
             If Conforme(Ve, Ge, tolV, tolG, verifiable) Then
                 f.Name = nomF
-                fait = True
-                Exit For
+                EssaiRevolution = True
+                Exit Function
             Else
+                Print #gJournal, "     revolution essai " & (essai + 1) & " : variation de volume " & Format$(gDerDV, "0.000") & _
+                                 " mm3, attendu " & Format$(Ve - gVe, "0.000")
                 Supprimer f
             End If
+        Else
+            Print #gJournal, "     revolution essai " & (essai + 1) & " : fonction non creee " & gDerErr
         End If
     Next essai
-
-    If fait Then
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : OK V = " & Format$(gVmes, "0.000") & " / " & Format$(Ve, "0.000")
-    Else
-        Print #gJournal, "  " & Format$(numero, "00") & " " & nomF & " : ECHEC ; l'esquisse """ & nomSk & _
-                         "_A_REPRENDRE"" est restee dans l'arbre (revolution de 360 deg autour de sa ligne de construction)"
-        Renommer nomSk, nomSk & "_A_REPRENDRE"
-        gNbEchecs = gNbEchecs + 1
-    End If
-    AvancerAttendu Ve, Ge
-End Sub
+End Function
 
 ' --- filet : profil balaye le long d'une helice d'axe Z qui part du point (rayon, 0, 0) et monte a droite
 Sub FaireHelice(lignes() As String, i0 As Long, i1 As Long, numero As Long, t() As String, _
@@ -899,7 +969,7 @@ Sub Calibrer()
     Dim f As Object, colonne As Boolean, ligne As Boolean
     If gCalibre Then Exit Sub
     gCalibre = True
-    gRow = False
+    gRow = True
     If gPlan(2) Is Nothing Then Exit Sub
     swModel.ClearSelection2 True
     gPlan(2).Select2 False, 0
@@ -926,7 +996,8 @@ Sub Calibrer()
         gRow = True
         Print #gJournal, "  calibration : matrice par lignes (plan de dessus : " & gXinfo & ")"
     Else
-        Print #gJournal, "  calibration : AUCUNE convention ne correspond au plan de dessus attendu (" & gXinfo & "), convention par colonnes gardee"
+        gRow = True
+        Print #gJournal, "  calibration : AUCUNE convention ne correspond au plan de dessus attendu (" & gXinfo & "), convention par lignes gardee"
     End If
 End Sub
 
@@ -1004,6 +1075,14 @@ Sub Dessiner(lignes() As String, i0 As Long, i1 As Long)
                     End If
                     Err.Clear
                     On Error GoTo 0
+                    If seg Is Nothing Then            ' courbe refusee : on la remplace par de petits segments
+                        If InStr(gAlerte, "spline remplacee") = 0 Then gAlerte = gAlerte & "spline remplacee par des segments. "
+                        For k = 0 To n - 2
+                            Set seg = Nothing
+                            Set seg = swSkMgr.CreateLine(pts(3 * k), pts(3 * k + 1), 0#, pts(3 * k + 3), pts(3 * k + 4), 0#)
+                            If k < n - 2 Then Compter seg
+                        Next k
+                    End If
                     Compter seg
             End Select
         End If
@@ -1091,10 +1170,12 @@ Function Conforme(Ve As Double, Ge() As Double, tolV As Double, tolG As Double, 
     verifiable = (tolV < 0.5 * Abs(dVe))
     If Abs(dVa - dVe) > tolV Then Exit Function
     If Abs(dVe) > 0.01 And (Abs(dVa) < 0.2 * Abs(dVe) Or dVa * dVe < 0) Then Exit Function
+    gVolVu = True
     For k = 0 To 2
         ecart = (Ma(k) - gMa(k)) - (Ve * Ge(k) - gMe(k))
         If Abs(ecart) > tolG * Ve + 0.001 Then Exit Function
     Next k
+    gVolVu = False
     Conforme = True
     gVa = Va
     gVmes = Va

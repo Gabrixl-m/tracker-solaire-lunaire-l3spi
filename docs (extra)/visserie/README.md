@@ -1,11 +1,9 @@
 # Visserie : où va chaque vis
 
-Guide détaillé de la visserie de la tête rotative, pour le cas lunaire et pour la démonstration
-PETG. Le résumé et l'ordre de montage complet sont dans le
+Guide détaillé de la visserie de la tête rotative, pour le cas lunaire et pour le cas
+terrestre. Le résumé et l'ordre de montage complet sont dans le
 [README du cas terrestre](../../Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) (§ 3 « Pièces à acheter » et
 § 5 « Ordre de montage »). Les numéros d'étape ci-dessous sont ceux du § 5.
-
-Sur la planche ci-dessous, « réel » désigne le cas lunaire et « PETG » le cas terrestre.
 
 **Code couleur**, le même que dans les fichiers STEP et les rendus : les **vis sont en
 orange**, les **rondelles et les écrous en vert clair**. Dans les vues éclatées, chaque vis est
@@ -14,9 +12,11 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 
 ## Les modèles et leurs quantités
 
-![Visserie à l'échelle](nomenclature.png)
+| Cas lunaire | Cas terrestre |
+|---|---|
+| ![Visserie du cas lunaire](nomenclature_cas_lunaire.png) | ![Visserie du cas terrestre](nomenclature_cas_terrestre.png) |
 
-| Modèle | Où | Cas lunaire | PETG |
+| Modèle | Où | Cas lunaire | Cas terrestre |
 |---|---|---|---|
 | Vis CHC M2,5×6 | NEMA 11 d'azimut sur son support (ses taraudages ne font que 2,5 mm) | 4 | 4 |
 | Vis CHC M3×6 | Arrêt en rotation de la tête, à travers la colonne du trépied | 1 | 0 |

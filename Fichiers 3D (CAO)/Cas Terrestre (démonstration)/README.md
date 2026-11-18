@@ -358,7 +358,7 @@ des vis et des roues exclues, elles sont minces par nature). Bilan :
 
 ### Visserie en bref
 
-![Visserie à l'échelle](../../docs%20%28extra%29/visserie/nomenclature.png)
+![Visserie du cas terrestre, à l'échelle](../../docs%20%28extra%29/visserie/nomenclature_cas_terrestre.png)
 
 * Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
   écrous en vert clair**.

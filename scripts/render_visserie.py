@@ -4,8 +4,8 @@ Images de la visserie (docs (extra)/visserie/, expliquées dans docs (extra)/vis
 couleur des assemblages STEP : vis en orange, rondelles et écrous en vert clair. Dans les vues
 éclatées, chaque vis est sortie de son trou le long de son axe (trait gris), chaque rondelle et
 chaque écrou est écarté de son appui.
-  - nomenclature.png : chaque modèle de vis, de rondelle et d'écrou, à la même échelle, avec sa
-    quantité dans le cas réel et dans la démonstration PETG ;
+  - nomenclature_cas_lunaire.png, nomenclature_cas_terrestre.png : chaque modèle de vis, de rondelle
+    et d'écrou, à la même échelle, avec sa quantité dans le cas lunaire, puis dans le cas terrestre ;
   - tete_eclatee.png : la tête du cas réel, vue d'ensemble ;
   - chape_dessus_eclatee.png : paliers et supports sur la chape, rondelles sur les lumières ;
   - tete_dessous_eclatee.png : fond, roue d'azimut, vis posées par-dessous la chape ;
@@ -13,7 +13,7 @@ chaque écrou est écarté de son appui.
   - panneau_eclate.png, panneau_rail_eclate.png : rails sur le chapeau, cadre du panneau sur les
     rails (laminé, cellules et boîte de jonction masqués pour voir les écrous) ;
   - capteur_eclate.png : capteur solaire sur le petit côté du cadre, coupé par l'axe d'une vis ;
-  - demo_fond_eclate.png : fond de la démonstration PETG sur le trépied, en demi-coupe.
+  - demo_fond_eclate.png : fond du cas terrestre sur le trépied, en demi-coupe.
 Sur serveur : xvfb-run -a python scripts/render_visserie.py
 """
 
@@ -213,29 +213,30 @@ def nomenclature(q_reel, q_petg):
             loc = cq.Location()
         a.add(s.moved(G.TO_YUP * G.trans(i * pas, 0, 0) * loc), name=k, color=col)
     xm = (len(ordre) - 1) * pas / 2
-    path = os.path.join(OUT, "nomenclature.png")
+    base = os.path.join(OUT, "nomenclature_base.png")
     W, H = 1800, 660
-    ecran = photo(a, path, (xm, 22, 310), (xm, -17, 0), 21.2, [(i * pas, -29.0, 0.0) for i in range(len(ordre))],
+    ecran = photo(a, base, (xm, 22, 310), (xm, -17, 0), 21.2, [(i * pas, -29.0, 0.0) for i in range(len(ordre))],
                   (W, H))
-    im = Image.open(path).convert("RGB")
-    d = ImageDraw.Draw(im)
     f = ImageFont.truetype("DejaVuSans-Bold.ttf", 20)
-    f2 = ImageFont.truetype("DejaVuSans.ttf", 19)
+    fq = ImageFont.truetype("DejaVuSans-Bold.ttf", 24)
     ft = ImageFont.truetype("DejaVuSans-Bold.ttf", 34)
-    d.text((40, 30), f"Visserie de la tête, à la même échelle ({pas:g} mm d'une pièce à l'autre)",
-           fill=(20, 20, 20), font=ft)
-    for k, (x0, y0) in zip(ordre, ecran):
-        txt = nom(k)
-        bb = d.multiline_textbbox((0, 0), txt, font=f, align="center")
-        d.multiline_text((x0 - (bb[2] - bb[0]) / 2, y0), txt, fill=(20, 20, 20), font=f, align="center",
-                         spacing=6)
-        y1 = y0 + bb[3] + 16
-        for t in (f"réel : {q_reel.get(k, 0)}", f"PETG : {q_petg.get(k, 0)}"):
-            d.text((x0 - d.textlength(t, font=f2) / 2, y1), t, fill=(70, 70, 70), font=f2)
-            y1 += 27
-    im.save(path)
-    legende(path)
-    print("->", path)
+    for cas, q in (("cas lunaire", q_reel), ("cas terrestre", q_petg)):
+        path = os.path.join(OUT, f"nomenclature_{cas.replace(' ', '_')}.png")
+        im = Image.open(base).convert("RGB")
+        d = ImageDraw.Draw(im)
+        d.text((40, 30), f"Visserie de la tête, {cas}, à la même échelle ({pas:g} mm d'une pièce à l'autre)",
+               fill=(20, 20, 20), font=ft)
+        for k, (x0, y0) in zip(ordre, ecran):
+            txt = nom(k)
+            bb = d.multiline_textbbox((0, 0), txt, font=f, align="center")
+            d.multiline_text((x0 - (bb[2] - bb[0]) / 2, y0), txt, fill=(20, 20, 20), font=f, align="center",
+                             spacing=6)
+            t = f"× {q.get(k, 0)}"                 # quantité dans le cas du titre
+            d.text((x0 - d.textlength(t, font=fq) / 2, y0 + bb[3] + 16), t, fill=(70, 70, 70), font=fq)
+        im.save(path)
+        legende(path)
+        print("->", path)
+    os.remove(base)
 
 
 def rendu(assy, fname, cam, focal, angle, etiquettes):

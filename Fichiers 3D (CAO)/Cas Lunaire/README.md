@@ -165,6 +165,19 @@ résistants aux rayonnements, dans l'unité de contrôle au sol, avec la batteri
 de la commande est au [README principal](../../README.md) (§ 5), et le câblage détaillé, celui du
 cas terrestre, dans le [README du cas terrestre](../Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md).
 
+### Visserie en bref
+
+![Visserie du cas lunaire, à l'échelle](../../docs%20%28extra%29/visserie/nomenclature_cas_lunaire.png)
+
+* Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
+  écrous en vert clair**.
+* Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. S'y
+  ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×8 sous la roue d'azimut et 2 vis
+  sans tête M3×4 qui bloquent les vis sans fin sur leur arbre.
+* 4 **rondelles M3** et 6 **écrous M3** (dans le cadre du panneau).
+* Le détail étape par étape, avec des vues éclatées de chaque endroit :
+  **[docs (extra)/visserie/](../../docs%20%28extra%29/visserie/README.md)**.
+
 ## 2. Suivi du Soleil sur la Lune
 
 * **Il n'y a pas de GPS sur la Lune**, et le trépied posé par un astronaute n'est ni orienté

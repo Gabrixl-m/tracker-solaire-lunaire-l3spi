@@ -84,15 +84,15 @@ Les chiffres côte à côte (masses, marges, courant du moteur d'élévation) so
 | `Fond_Socle` | 1 | Dessus sur le plateau | Se visse sur la vis 1/4" d'un trépied : écrou 1/4" pris dans un logement hexagonal |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | Denture m0,8 : buse 0,25 mm conseillée (voir réglages) |
 | `Chape` | 1 | Plaque sur le plateau, bras vers le haut | Plus grande pièce : 108 × 84 × 88 mm |
-| `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) |
+| `Moyeu_Chape` | 1 | Collerette sur le plateau | Imprimé à part pour que la chape tienne à plat ; vissé sous la chape (3 × M3) ; 2 inserts M3×5,7 (rondelle d'arrêt) et 3 inserts M3×3 (chape) |
 | `Bague_Arret_Moyeu` | 1 | À plat | |
 | `Chapeau_U` | 1 | Plaque sur le plateau, flancs vers le haut | Alésage Ø12 en D côté roue ; un bossage Ø14,2 sur la face intérieure de chaque flanc |
 | `Roue_Elevation` | 1 | À plat, moyeu en haut | Alésage Ø12 en D |
 | `Pivot_Entraine` | 1 | Couché sur son méplat | Ø12 en D, 34 mm tête comprise ; porte la roue. 100 % de remplissage |
 | `Pivot_Libre` | 1 | Debout, tête en bas | Ø12, 19 mm tête comprise. 100 % de remplissage |
 | `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
-| `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | Lèvre de 1 mm côté extérieur de chaque joue : le 685 s'enfonce depuis l'intérieur du U |
-| `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | |
+| `Palier_Vis_Elevation`, `Palier_Vis_Azimut` | 1 + 1 | Semelle sur le plateau | Lèvre de **1,6 mm** côté extérieur de chaque joue : le 685 s'enfonce depuis l'intérieur du U ; 2 inserts M3×3 dans la semelle |
+| `Support_Moteur_Elevation`, `Support_Moteur_Azimut` | 1 + 1 | Semelle sur le plateau | 2 inserts M3×3 dans chaque semelle |
 | `Capteur_Solaire_Boitier` | 1 | Croix en haut | **PETG noir**, 100 % de remplissage : il doit être opaque (§ 7) |
 | `Capteur_Solaire_Support` | 1 | Plaque sur le plateau, âme vers le haut | Équerre du capteur solaire, vissée sur le petit côté du cadre |
 
@@ -124,14 +124,16 @@ indicatifs et l'électronique (Heltec V4, drivers, alimentation), est dans
 | Roulement **6806ZZ** (ISO 61806-2Z ; ou 6806-2RS), 30 × 42 × 7 mm | 2 |
 | Roulement **6801ZZ** (ISO 61801-2Z ; ou 6801-2RS), 12 × 21 × 5 mm | 2 |
 | Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
-| Tige acier rectifiée Ø5, coupée à 52,5 mm (arbres des vis) : **le seul axe acier** | 2 |
+| Tige acier rectifiée Ø5, coupée à 53 mm (arbres des vis) : **le seul axe acier** | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, Ø19 × 25 mm (à chercher : `flexible shaft coupling 5mm x 5mm D19 L25`) | 2 |
 | NEMA 17 34 mm (Usongshine 17HS3401, 0,34 N·m) et NEMA 11 45 mm (11HS18-0674S) | 1 + 1 |
-| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 11 × M3×12, 8 × M3×14 | 32 |
+| Vis CHC M3 : 6 × M3×8, 7 × M3×10, 15 × M3×12, 4 × M3×14 | 32 |
+| **Insert fileté laiton à chaud** M3 × 5,7 mm (trou imprimé Ø4,0 × 6,5) | 7 |
+| **Insert fileté laiton à chaud** M3 × 3 mm (trou imprimé Ø4,0 × 3,8) | 18 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
 | Écrou 1/4"-20 UNC (filetage des trépieds, 7/16" sur plats) | 1 |
 | Écrou M3 (panneau sur les rails, équerre du capteur solaire) | 6 |
-| Vis à tête fraisée M3×8 (roue d'azimut) | 3 |
+| Vis à tête fraisée M3×6 (roue d'azimut) | 3 |
 | Vis CHC M2,5×6 (NEMA 11 : ses taraudages ne font que 2,5 mm) | 4 |
 | Vis sans tête M3×4 (blocage des vis sans fin sur leur arbre) | 2 |
 | Graisse PTFE (vis, roues) | 1 |
@@ -189,7 +191,8 @@ font qu'environ 2,5 mm de profondeur : vis M2,5×6, pas plus longues.
 | Moyeu de la chape dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
 | Fixation sur le trépied | Téton Ø45,5 dans la colonne Ø46 | **Écrou 1/4" captif**, logement de 11,4 mm sur plats (écrou de 11,1) | La vis du trépied tire l'écrou sur un plancher de 1,6 mm et serre le fond sur le plateau |
 | Trous de passage M3 / M2,5 | 3,4 / 2,9 | **3,5 / 3,0** | |
-| Avant-trous M3 | 2,5 (taraudés) | **2,8** | Vis auto-taraudées dans le PETG, 3,5 mm de prise au moins (vérifié par le script) |
+| Trous des **inserts à chaud** M3 | Ø4,0 (insert de 4,6 mm moleté) | **Ø4,0** × 6,5 mm (long) ou × 3,8 mm (court) | Le plastique fond autour du moletage : pas de jeu à ajouter. 1,6 mm de matière autour et sous chaque trou (§ 4, « Inserts à chaud et épaisseurs de paroi ») |
+| Avant-trous M3 des 2 vis sans tête | 2,5 (taraudés) | **2,8** | Seules vis auto-taraudées dans le PETG : elles ne font que serrer sur le méplat de l'arbre |
 | Centrage Ø22 des moteurs | 22,5 | **22,4** | |
 | Jeu de denture des roues | 0,10 / 0,12 mm | **0,30 mm** | Imprécision des dents imprimées |
 | Filet des vis | aminci de 0,15 m | **non aminci, tête raccourcie (0,85 m)** | Tout le jeu est pris sur la roue, et le filet reste assez épais pour l'impression |
@@ -204,7 +207,7 @@ que les pièces :
 ![Éprouvette de réglage](../../docs%20%28extra%29/explications/eprouvette_ajustements.png)
 
 * trois logements de 6801 et trois de 685 : le jeu retenu, −0,1 mm et +0,1 mm ;
-* un alésage Ø12 en D, un Ø5, un passage et un avant-trou M3 ;
+* un alésage Ø12 en D, un Ø5, un passage M3, un **trou d'insert Ø4,0 × 3,8 mm** (poser un insert M3×3 pour régler la température du fer) et un avant-trou M3 ;
 * un téton Ø29,95 pour le 6806 et un téton Ø11,95 pour le 6801 (essayer un vrai roulement
   dessus : il doit entrer en forçant légèrement) ;
 * sur la paroi debout, les **trous horizontaux en goutte**, imprimés comme sur les pièces :
@@ -232,6 +235,58 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 * un pivot entre trop dur dans le chapeau : passer un foret Ø12 à la main, sans perceuse ;
 * engrènements : réglés au montage (lumières en azimut, cales en élévation), voir l'étape 9.
 
+### Inserts à chaud et épaisseurs de paroi
+
+**Les vis M3 ne sont pas vissées dans le plastique** : elles se vissent dans des **inserts filetés
+en laiton, posés à chaud** dans des trous imprimés. Le fer à souder fait fondre le PETG autour du
+moletage de l'insert, qui se fige ensuite : le filet est en laiton, donc on peut monter et
+démonter sans abîmer la pièce. Il y en a **25** :
+
+| Insert | Qté | Trou imprimé | Où |
+|---|---|---|---|
+| **M3 × 5,7 mm** (long) | 7 | Ø4,0 × 6,5 mm | 3 dans les piliers du socle (fond), 2 dans le moyeu de la chape (rondelle d'arrêt), 2 dans le boîtier du capteur solaire |
+| **M3 × 3 mm** (court) | 18 | Ø4,0 × 3,8 mm | 3 dans le socle (roue d'azimut), 3 dans le moyeu (chape), 4 dans les paliers et 4 dans les supports moteur, 4 dans le chapeau en U (rails) |
+
+Le script modélise chaque insert dans son trou et **mesure la prise de chaque vis dans l'insert** :
+M3×10 et M3×8 dans un insert long : 5,6 et 5,2 mm ; M3×12 et M3×6 dans un insert court :
+3,0 mm, c'est-à-dire l'insert complet. Les longueurs de vis ont été raccourcies en conséquence
+(M3×8 → M3×6 pour la roue d'azimut, M3×14 → M3×12 pour les rails).
+
+**Règle de conception** : chaque insert est entouré d'au moins **1,6 mm de plastique** (4
+périmètres de 0,4 mm) et a au moins **1,6 mm de matière sous le fond du trou**, pour que le
+plastique refoulé par le moletage ne perce pas la pièce. Pour tenir cette règle, les semelles
+qui portent des inserts courts ont été épaissies de 0,4 mm, et le passage du moyeu a été ramené
+à Ø15 pour garder de la matière entre l'alésage et les trous. `scripts/verifier_inserts.py`
+mesure les 25 inserts : de la matière pleine sur 1,6 mm autour de tous les trous ; derrière le
+fond, de 1,5 à 3,0 mm pour les inserts longs (1,2 mm demandé) et de 1,6 à 2,2 mm pour les
+courts. **Une seule exception** : le trou extérieur du support moteur d'azimut, à 1,36 mm
+derrière le fond. Il est gardé tel quel : ce support ne porte qu'un NEMA 11 de quelques
+centaines de grammes, sans effort d'arrachement.
+
+**Pose** : fer à souder à **220-250 °C** avec une pointe d'insert M3 (température à valider sur
+l'éprouvette, qui a un trou d'insert Ø4,0 × 3,8 mm). Poser l'insert sur la pointe, l'engager droit
+dans le trou, laisser le fer descendre jusqu'à ce que l'insert affleure, retirer le fer en
+gardant l'insert droit, puis le dresser avec une surface plane avant refroidissement. Poser les
+25 inserts **avant** l'assemblage.
+
+**Exception** : les 2 vis sans tête M3×4 des vis sans fin restent taillées dans le PETG (moyeu
+de 4,35 mm, trop court pour un insert ; elles ne font que serrer sur le méplat de l'arbre).
+
+**Épaisseurs de paroi.** Avec une buse de 0,4 mm et 4 périmètres, une paroi pleine fait
+1,6 mm : en dessous, elle n'a plus que 3 périmètres ou moins, ou n'est plus faite que de
+remplissage. `scripts/verifier_parois.py` repère tout ce qui est plus mince (matière qu'une sphère de 1,6 mm ne peut pas parcourir ; dents
+des vis et des roues exclues, elles sont minces par nature). Bilan :
+
+| Endroit | Avant | Décision |
+|---|---|---|
+| **Lèvre des paliers** (retient la bague extérieure du 685 contre la poussée de la vis) | 1,0 mm | **Portée à 1,6 mm** (les joues sont épaissies vers l'extérieur, le roulement ne bouge pas). À moteur calé, la poussée de la vis atteint environ 120 N (élévation) et 70 N (azimut) : à 1,0 mm, la flexion de la lèvre donnait une marge d'environ 1,7 seulement, jugée trop juste dans l'usage réel. À 1,6 mm, la flexion est divisée par 4 environ |
+| **Fond des trous d'inserts courts** | 1,2 mm | **Portée à 1,6 mm** : semelles épaissies de 0,4 mm |
+| **Couronne entre l'alésage du moyeu et les trous de vis** (moyeu, bague d'arrêt) | moins de 1,6 mm | **Alésage Ø15 et trous rapprochés** (rayon 11,2 et 17,2 mm) : plus de 1,6 mm partout |
+| Collerette de l'alésage de pivot sur chaque flanc du chapeau (3 zones) | environ 1,3 mm | **Conservée** : elle est doublée par le flanc du chapeau, et le pivot ne la sollicite qu'en appui axial léger |
+| Dessous du boîtier du capteur solaire, sous chaque photodiode (4 zones de 3 × 3 mm) | 1,2 mm | **Conservé** : le boîtier ne porte aucun effort, et il est imprimé en PETG noir à 100 % de remplissage |
+| Deux petites zones de 1,4 mm sur le palier d'azimut (7 mm³ chacune) | 1,4 mm | **Conservées** : quelques mm³, hors des zones chargées |
+| Toutes les autres pièces (socle, chape, moyeu, pivots, bague, fond, supports d'élévation, équerre) | | **Aucune zone sous 1,6 mm** |
+
 ## 5. Ordre de montage
 
 | Le palier d'une vis sans fin | La vis sans fin imprimée |
@@ -244,8 +299,9 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 * **Le palier** est la pièce en U qui porte une vis sans fin. Ses deux parois sont les
   **joues** : chacune tient un roulement 685, et l'arbre acier Ø5 les traverse. Côté
-  extérieur, une **lèvre** de 1 mm retient la bague extérieure du roulement : le 685
+  extérieur, une **lèvre** de **1,6 mm** retient la bague extérieure du roulement : le 685
   s'enfonce depuis l'intérieur du U jusqu'à cette lèvre, et dépasse de 1 mm côté vis.
+  Elle encaisse la poussée axiale de la vis sans fin (jusqu'à environ 120 N moteur calé) : voir § 4, « Inserts à chaud et épaisseurs de paroi », pour la tenue de cette lèvre.
 * **La vis sans fin imprimée** a, de chaque côté du filet, un **moyeu Ø12**. Les moyeux
   viennent en appui sur les bagues intérieures des 685 par un épaulement Ø6,5, qui ne
   touche pas la flasque. Ils calent la vis entre les joues.
@@ -255,13 +311,15 @@ Toutes les pièces sont alors régénérées avec ce jeu.
     deux bouts ;
   * sa vis de serrage se serre sur le méplat de l'axe du moteur.
 
+0. **Inserts** : poser à chaud les 25 inserts M3 dans leurs trous (§ 4), sur toutes les pièces
+   qui en portent, avant tout assemblage.
 1. **Socle** : presser le 6806 bas par-dessous, jusqu'à l'épaulement, puis le 6806 haut
    par-dessus. Pousser sur la bague extérieure (douille ou tube de Ø40 à 42), jamais sur la
    flasque.
-2. **Roue d'azimut** : la poser à plat sur le socle et la fixer par 3 vis fraisées M3×8, qui
-   doivent affleurer : la vis d'azimut passe juste au-dessus.
+2. **Roue d'azimut** : la poser à plat sur le socle et la fixer par 3 vis fraisées M3×6, qui
+   se vissent dans 3 inserts M3×3 du socle et doivent affleurer : la vis d'azimut passe juste au-dessus.
 3. **Moyeu** : l'enfiler par le haut, à travers la roue et les deux roulements. Visser la
-   rondelle d'arrêt par-dessous (2 × M3×8).
+   rondelle d'arrêt par-dessous (2 × M3×8, dans 2 inserts M3×5,7 du moyeu).
 4. **Fond** : poser l'écrou 1/4" dans son logement hexagonal, par le dessus. Visser ensuite
    le fond sous le socle avec 3 × M3×10, têtes noyées par-dessous : l'écrou est alors
    prisonnier. Poser la tête sur le trépied et la visser sur la vis 1/4" du plateau.
@@ -290,7 +348,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
      point dur sur un tour complet ;
    * en élévation, caler le palier par des rondelles ou du clinquant de 0,1 à 0,3 mm
      s'il y a trop de jeu.
-10. **Rails et panneau** : les rails se vissent par-dessus le chapeau (4 × M3×14, têtes
+10. **Rails et panneau** : les rails se vissent par-dessus le chapeau (4 × M3×12 dans des inserts du chapeau, têtes
     noyées dans les rails). Poser ensuite le panneau sur les rails. Dans chaque bout de rail,
     passer une vis M3×14 par-dessous à travers le rail et l'aile arrière du cadre, puis
     serrer un écrou M3 posé dans le cadre. On l'atteint par le dos ouvert du panneau.
@@ -305,7 +363,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 * Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
   écrous en vert clair**.
 * Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 6 à 25 mm. S'y
-  ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×8 sous la roue d'azimut et 2 vis
+  ajoutent 4 vis M2,5×6 pour le NEMA 11, 3 vis fraisées M3×6 sous la roue d'azimut et 2 vis
   sans tête M3×4 qui bloquent les vis sans fin sur leur arbre.
 * Les 4 **rondelles M3** vont sous les vis posées sur les lumières de la chaîne d'azimut.
   Les 6 **écrous M3** sont dans le cadre du panneau (4 pour les rails, 2 pour le capteur
@@ -898,8 +956,8 @@ toutes les directions), retrouve les mêmes valeurs à 1 km/h près.
 | Lest sous le trépied | Pente de basculement (pire orientation) | Vent de basculement (pire orientation) | Vent de basculement, panneau à plat |
 |---|---|---|---|
 | Aucun | 8,6° | **7,1 m/s (26 km/h)** | 57 km/h |
-| Boîtier électronique seul (3 kg) | 16,5° | 10,3 m/s (37 km/h) | 81 km/h |
-| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 30,9° | **16,0 m/s (57 km/h)** | 123 km/h |
+| Boîtier électronique seul (3 kg) | 16,4° | 10,3 m/s (37 km/h) | 81 km/h |
+| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 30,8° | **16,0 m/s (57 km/h)** | 123 km/h |
 
 ### Version lestée, sans toucher au trépied
 
@@ -965,17 +1023,17 @@ solution demande de sangler ou de visser les pieds du trépied sur la planche.
 ## 9. Couples, marges et tenue de la version PETG
 
 Calculés par `scripts/generate_tete_vis_sans_fin.py`, avec la partie qui bascule de la
-démonstration : 1,50 kg, centre de gravité à 62,0 mm de l'axe. Vis et roues graissées,
+démonstration : 1,51 kg, centre de gravité à 61,9 mm de l'axe. Vis et roues graissées,
 roulements ZZ :
 
 | Marge = disponible / besoin | Terre, intérieur | Terre, extérieur (vent 10 m/s) |
 |---|---|---|
-| Élévation, moteur limité à 0,6 A (2,08 N·m disponibles) | ×2,3 | **×1,6** |
+| Élévation, moteur limité à 0,6 A (2,08 N·m disponibles) | ×2,2 | **×1,6** |
 | Azimut (1,22 N·m disponibles) | ×41 | **×2,3** |
 
 | Ce qu'on regarde | Version PETG | Verdict |
 |---|---|---|
-| Part du couple moteur utilisée, élévation | 61 % dehors (vent 10 m/s), 44 % dedans, à 0,6 A | Bien dimensionné dehors |
+| Part du couple moteur utilisée, élévation | 61 % dehors (vent 10 m/s), 45 % dedans, à 0,6 A | Bien dimensionné dehors |
 | Part du couple moteur utilisée, azimut | 43 % dehors, 2 % dedans | Dimensionné par le vent |
 | Dents en PETG, élévation | 16 MPa en marche dehors, 37 MPa moteur calé | C'est la vraie limite : d'où le courant limité à 0,6 A |
 | Dents en PETG, azimut | 7 MPa en marche dehors, 22 MPa moteur calé | Large |
@@ -992,8 +1050,8 @@ roulements ZZ :
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
   * Graissées (μ ≈ 0,15) : ×1,6 en élévation (moteur limité à 0,6 A, voir plus bas) et
-    ×2,3 en azimut avec un vent de 10 m/s ; ×2,3 et ×40 en intérieur.
-  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×1,0) et n'a plus que ×1,3 en
+    ×2,3 en azimut avec un vent de 10 m/s ; ×2,2 et ×40 en intérieur.
+  * À sec (μ ≈ 0,30), l'élévation ne suit plus dans le vent (×0,9) et n'a plus que ×1,3 en
     intérieur : **graisser**.
   * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : en
     azimut, ×1,6 graissé et moins de ×1 à sec (voir § 3).
@@ -1004,7 +1062,7 @@ roulements ZZ :
   * Si l'élévation se bloque (butée, fin de course raté), le moteur calé donne alors au plus
     3,0 N·m à la roue. Cela fait environ 37 MPa en pied de dent, soit 74 % de la résistance
     du PETG.
-  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,3 en intérieur.
+  * La marge au vent de 10 m/s reste de ×1,6, et de ×2,2 en intérieur.
   * À 1,0 A, ce moteur pousserait jusqu'à 5 N·m sur la roue en cas de blocage : environ
     60 MPa, les dents casseraient.
   * Le NEMA 11 d'azimut peut rester à 0,67 A : en butée, sa roue voit au plus 22 MPa.
@@ -1057,7 +1115,7 @@ la réponse courte et l'endroit où elle est détaillée.
 | « Peu importe le sens d'impression d'un pivot ? » | **Non.** Le pivot entraîné s'imprime couché, pour que les couches suivent l'axe. Debout, il casserait en torsion entre deux couches (§ 9). |
 | « Vous imprimez tout à 100 % de remplissage pour que ce soit solide ? » | **Non.** La résistance vient surtout des parois : 4 périmètres et 40 % de remplissage suffisent. Seuls les vis sans fin, les roues et les pivots sont pleins (§ 2). |
 | « Une pièce imprimée sort aux cotes du dessin ? » | **Non.** Les trous sortent trop petits et le haut d'un trou horizontal s'affaisse. D'où les jeux d'ajustement (+0,15 mm sur les logements de roulements), les trous en goutte, et l'éprouvette à imprimer en premier (§ 4). |
-| « Vous vissez directement dans le plastique ? » | **Oui**, dans des avant-trous de 2,8 mm, avec au moins 3,5 mm de prise, vérifiée vis par vis par le script. Cela convient pour quelques montages ; pour démonter souvent, il faudrait des inserts (§ 4). |
+| « Vous vissez directement dans le plastique ? » | **Non**, sauf deux petites vis sans tête : toutes les autres se vissent dans des **inserts filetés en laiton, posés à chaud** (25 au total, § 5 bis). Le filet est en laiton, donc on démonte autant qu'on veut ; chaque vis a au moins 3 mm de prise dans l'insert (vérifié par le script), et chaque insert est entouré de 1,6 mm de plastique au moins. |
 | « Le plastique garde sa forme sous charge ? » | **Non, il flue** : sous une charge permanente, il se déforme lentement. Entre deux démonstrations, on gare le panneau à plat, où la pesanteur ne charge presque plus la denture (§ 9). |
 
 ### Lubrification

@@ -1,7 +1,8 @@
 # Tracker solaire lunaire deux axes — maquette 3D à l'échelle 1:1
 
 **➜ [Cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md) · [Cas terrestre, à construire](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) ·
-[Liste des composants](Liste-composants.md)**
+[Liste des composants](Liste-composants.md) ·
+[Variante 28BYJ-48](.variante_28BYJ-48/README.md)**
 
 Un **tracker solaire à deux axes** : une tête rotative oriente un panneau photovoltaïque vers le
 Soleil, en azimut et en élévation, grâce à deux petits moteurs pas à pas et à un **capteur
@@ -40,8 +41,8 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 | Grandeur | Cas lunaire | Cas terrestre |
 |---|---|---|
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
-| Masse de la tête (hors panneau) | 1,86 kg | 1,20 kg |
-| Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,50 kg, centre de gravité à 62,0 mm de l'axe |
+| Masse de la tête (hors panneau) | 1,86 kg | 1,22 kg |
+| Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,51 kg, centre de gravité à 61,9 mm de l'axe |
 | Courant du moteur d'élévation | 1,0 A | 0,6 A, pour ménager les dents en PETG |
 | Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 |
 | Marge d'azimut, vent de 10 m/s | ×2,3 | ×2,3 |

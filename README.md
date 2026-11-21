@@ -391,6 +391,8 @@ appartiennent à leurs propriétaires. Les logiciels utilisés par les scripts, 
 
 ## Choix du mode de rotation : le schéma azimut-élévation (AE)
 
+Lien de l'article : <https://scispace.com/pdf/follow-that-ground-station-and-double-the-data-throughput-12phqvc5d9.pdf>
+
 **[1]** P. Garner, N. Phillips, A. Cawthorne, A. da Silva Curiel, P. Davies, L. Boland
 (Surrey Satellite Technology Ltd, SSTL), *« Follow that Ground Station! And double the data
 throughput using polarization diversity »*, 23rd Annual AIAA/USU Conference on Small

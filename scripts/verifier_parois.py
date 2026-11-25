@@ -6,6 +6,7 @@ vives et les zones de moins de 1 mm3.
 
 Utilisation : python scripts/verifier_parois.py <pas en mm> <T en mm> <pièce> [<pièce> ...]
 Exemple     : python scripts/verifier_parois.py 0.15 1.6 Palier_Vis_Azimut Socle
+              FOURCHE=1 python scripts/verifier_parois.py 0.2 1.6 Bras_Droit Ferrure_Droite   (pièces de la fourche)
 Les pièces dentées (Vis_*, Roue_*) sont à exclure : leurs dents sont minces par nature. Pas de
 0,1 à 0,2 mm ; lancer les grosses pièces une par une (mémoire).
 """
@@ -66,7 +67,11 @@ if __name__ == "__main__":
     G.set_ajustements("petg")
     if os.environ.get("VARIANTE_28BYJ") == "1":      # variante 28BYJ-48 avec contrepoids
         G.set_variante("28byj")
-    T.build_parts()
+    if os.environ.get("FOURCHE") == "1":             # cas terrestre : tête à fourche (generate_fourche.py)
+        import generate_fourche as F
+        F.construire()
+    else:
+        T.build_parts()
     Tmm = float(sys.argv[2])
     for nom in sys.argv[3:]:
         r = analyser(nom, Tmm)

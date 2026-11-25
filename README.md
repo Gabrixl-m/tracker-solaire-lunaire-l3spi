@@ -2,6 +2,7 @@
 
 **➜ [Cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md) · [Cas terrestre, à construire](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) ·
 [Liste des composants](Liste-composants.md) ·
+[Modèle idéal personnel](.modele_ideal_personnel/README.md) ·
 [Variante 28BYJ-48](.variante_28BYJ-48/README.md)**
 
 Un **tracker solaire à deux axes** : une tête rotative oriente un panneau photovoltaïque vers le
@@ -22,17 +23,20 @@ en citant l'auteur ; **usage commercial interdit** (§ 6).
 
 ## 1. Deux modèles : choisir le sien
 
-Les deux modèles partagent la même tête, le même panneau, le même capteur solaire et la
-même commande (§ 2 à 5 ci-dessous). Chacun a ensuite son propre document, dans son dossier :
+Les deux modèles partagent le même principe (deux axes, deux vis sans fin irréversibles, sans
+contrepoids), le même panneau, le même capteur solaire et le même principe de commande (§ 2 à 5
+ci-dessous). Le cas terrestre a cependant une **tête à fourche**, redessinée pour des moteurs
+**28BYJ-48** imposés : la tête décrite au § 2 est celle du cas lunaire, et les différences du cas
+terrestre sont dans son README. Chacun a son propre document, dans son dossier :
 `Fichiers 3D (CAO)/Cas Lunaire/` et `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/`. Dans
 tout le projet, la **« démonstration »** désigne le cas terrestre.
 
 | | 🌙 **Cas lunaire** | 🌍 **Cas terrestre** (démonstration en PETG) |
 |---|---|---|
-| **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | La même tête, imprimée en PETG, vissée sur un trépied : **c'est celui qu'on construit** |
-| **Matériaux** | Aluminium, bronze, inox, titane ; roulements secs (MoS₂) pour le vide | PETG imprimé, roulements et visserie du commerce |
-| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 758 mm |
-| **On y trouve** | Conditions lunaires, choix de l'angle, trépied, matériaux, couples et marges, vérifications, limites | Pièces à imprimer et à acheter, réglages, montage pas à pas, électronique complète, boîtier étanche, énergie, LoRa |
+| **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | Une tête **à fourche** à moteurs 28BYJ-48, imprimée en PETG (avec un plateau d'aluminium et des tiges d'acier), vissée sur un trépied : **c'est celui qu'on construit** |
+| **Matériaux** | Aluminium, bronze, inox, titane ; roulements secs (MoS₂) pour le vide | PETG imprimé, plateau d'aluminium, tiges d'acier, roulements et visserie du commerce |
+| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 842 mm |
+| **On y trouve** | Conditions lunaires, choix de l'angle, trépied, matériaux, couples et marges, vérifications, limites | Principe de la fourche, pièces à imprimer et à acheter, réglages, montage pas à pas, électronique complète, boîtier étanche, énergie, LoRa |
 | **Fichiers** | `Fichiers 3D (CAO)/Cas Lunaire/` (STEP) | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/` (STL et STEP), `Electronique/`, `Liste-composants.md` |
 | **Documentation** | **➜ [README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md)** | **➜ [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)** |
 
@@ -40,18 +44,26 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 
 | Grandeur | Cas lunaire | Cas terrestre |
 |---|---|---|
-| Pivots d'élévation | Inox Ø8 sur roulements 608 | PETG Ø12 sur roulements 6801 |
-| Masse de la tête (hors panneau) | 1,86 kg | 1,22 kg |
-| Partie qui bascule (panneau, chapeau, roue, rails, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,51 kg, centre de gravité à 61,9 mm de l'axe |
-| Courant du moteur d'élévation | 1,0 A | 0,6 A, pour ménager les dents en PETG |
-| Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 |
-| Marge d'azimut, vent de 10 m/s | ×2,3 | ×2,3 |
+| Support du panneau | Chape et chapeau en U, panneau sur deux rails | **Fourche** : panneau pivotant autour de son plan médian, sur deux tiges d'acier Ø8 |
+| Pivots d'élévation | Inox Ø8 sur roulements 608 | Tiges d'acier Ø8 sur roulements 608 |
+| Moteurs | NEMA 17 (élévation) et NEMA 11 (azimut) | **2 × 28BYJ-48** (5 V), cartes ULN2003 et MCP23017 |
+| Roues des vis sans fin | Bronze, 50 et 60 dents | PETG, **100 et 120 dents** |
+| Masse de la tête (hors panneau) | 1,86 kg | 1,65 kg |
+| Partie qui bascule (panneau, ferrures, tiges, roue, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,33 kg, centre de gravité à **8,2 mm** de l'axe |
+| Alimentation des moteurs | 12 V, 1,0 A (NEMA 17) | 5 V, environ 0,2 A, un seul moteur à la fois |
+| Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 (moteur prudent) ; suivi limité à 8 m/s (×2,2) |
+| Marge d'azimut, vent de 10 m/s | ×2,3 | ×1,7 (moteur prudent) |
 | Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE (obligatoire) |
 | Roulements | Acier 440C, ZZ, MoS₂ | Acier standard, ZZ (ou 2RS), graissés d'origine |
 
 ---
 
-## 2. La tête rotative à vis sans fin (commune aux deux modèles)
+## 2. La tête rotative à vis sans fin (cas lunaire ; principe commun aux deux modèles)
+
+> Ce paragraphe décrit la tête du **cas lunaire**, à chape en U. La tête du **cas terrestre** est
+> une **fourche** : mêmes vis sans fin, mêmes paliers, même socle et mêmes roulements d'azimut,
+> mais le panneau pivote autour de son plan médian sur deux tiges d'acier, et les roues sont plus
+> grandes (100 et 120 dents). Voir le [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 1.
 
 | Tête seule | Coupe : vis et roue d'élévation |
 |---|---|
@@ -78,18 +90,20 @@ tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), 
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape, avec une rondelle sous chaque tête : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
-Le cas terrestre reprend exactement cette architecture, imprimée en PETG. Seuls changent les
-pivots d'élévation (PETG Ø12 sur roulements **6801**, au lieu d'inox Ø8 sur **608**) et la
-fixation du socle, vissé sur la vis 1/4" d'un trépied
+Le cas terrestre garde le socle, la roue d'azimut fixe, le moyeu, les paliers et les vis sans
+fin, imprimés en PETG et fixés sur la vis 1/4" d'un trépied, mais **remplace la chape, le chapeau
+et les rails par une fourche** (plateau d'aluminium, deux bras imprimés, panneau sur deux tiges
+d'acier) : le panneau y est équilibré par sa géométrie, ce qui permet d'utiliser des moteurs
+28BYJ-48
 ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)).
 
-**Roulements** : deux **6806** en azimut, deux **608** (lunaire) ou **6801** (terrestre) en
+**Roulements** : deux **6806** en azimut, deux **608** (lunaire) ou trois **608** (terrestre, fourche) en
 élévation, quatre **685** sur les arbres des vis. Tous sont protégés (**ZZ**), et aucune pièce
 ne touche leurs flasques : le détail est dans chaque README de modèle.
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
-d'élévation, jusqu'à 0,95 N·m sur Terre. La vis sans fin est **irréversible** :
+d'élévation, jusqu'à 0,95 N·m sur Terre (la fourche du cas terrestre supprime ce décentrage : 0,11 N·m). La vis sans fin est **irréversible** :
 * le moteur fait tourner la roue ;
 * la roue ne peut pas faire tourner la vis, parce que la pente du filet (3,6°) est plus
   faible que l'angle de frottement (environ 6°). C'est le principe du cric de voiture à vis.
@@ -99,7 +113,7 @@ coupure de courant. Les moteurs ne sont alimentés que pendant les mouvements.
 
 ### Moteurs
 
-| Axe | Moteur | Caractéristiques |
+| Axe | Moteur (cas lunaire) | Caractéristiques |
 |---|---|---|
 | Élévation | **NEMA 17, 42 × 42 × 34 mm** (type 17HS3401) | 0,34 N·m, 1,0 A, axe Ø5 × 23,5 à méplat, ≈ 0,22 kg |
 | Azimut | **NEMA 11, 28 × 28 × 45 mm** (type 11HS18-0674S) | 0,10 N·m (0,095 retenu dans les calculs, par prudence), 0,67 A, 6,8 Ω, 0,18 kg, axe Ø5 × 20 à méplat |
@@ -108,7 +122,11 @@ Ce sont des moteurs du commerce : ils donnent la taille et le couple de référe
 vol, il faut leur équivalent en version vide ou spatiale, de même taille
 ([README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md), § 9).
 
-### Résolution et vitesses (moteurs à 200 pas/tour, 1/16 de pas)
+**Cas terrestre : deux 28BYJ-48** (5 V, réducteur intégré 63,68:1, 34,3 mN·m à l'arbre, 25
+retenu par prudence, environ 30 g), un par axe. Ils sont imposés, et c'est pour eux que la tête
+a été refaite en fourche ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 1, § 3 et § 9).
+
+### Résolution et vitesses (cas lunaire : moteurs à 200 pas/tour, 1/16 de pas)
 
 | | Élévation | Azimut |
 |---|---|---|
@@ -118,7 +136,11 @@ vol, il faut leur équivalent en version vide ou spatiale, de même taille
 | Vitesse des corrections de suivi | 0,5°/s | 0,5°/s |
 
 Le Soleil se déplace d'environ 0,5°/h sur la Lune et 15°/h sur Terre : un retour à plat ou
-une remise en position prend quelques secondes.
+une remise en position prend quelques secondes avec les NEMA du cas lunaire.
+
+**Cas terrestre** (28BYJ-48 : 4076 demi-pas par tour, roues de 100 et 120 dents, 120 demi-pas
+par seconde) : 0,0009° et 0,0007° par demi-pas, 0,5° en 5 à 6 s, **90° en 14 min (élévation) et
+17 min (azimut)**. C'est lent, sans importance pour le suivi.
 
 **Plages de mouvement** :
 * élévation de −2° à +92° (butées). Le panneau peut ainsi passer à la verticale au lever et
@@ -138,12 +160,16 @@ une remise en position prend quelques secondes.
 * Monté en **format paysage** : l'axe d'élévation est parallèle au côté de 356 mm.
 * **Masse : 1,16 kg (pesée)**. Le modèle en tient compte (`P["pan_masse"]` dans
   `scripts/generate_tracker.py`) : couples, stabilité et angle des jambes sont calculés avec.
-* **Fixation** : 4 vis M3×14 par-dessous traversent les bouts des rails (têtes noyées) et
-  l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
+* **Fixation, cas lunaire** : 4 vis M3×14 par-dessous traversent les bouts des rails (têtes
+  noyées) et l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
   dans l'aile arrière des grands côtés : à 44 mm de part et d'autre du milieu, à 6 mm du bord
   extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
-* **Capteur solaire** sur le petit côté du pivot libre (§ 4) : percer 2 trous Ø3,4 dans ce
-  petit côté, à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre.
+* **Fixation, cas terrestre** : le panneau est pris par **deux ferrures imprimées** sur ses petits
+  côtés (4 vis M3×12 par ferrure, écrous dans le cadre) : percer 8 trous Ø3,4 dans les petits
+  côtés ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 3).
+* **Capteur solaire** (§ 4) : sur le petit côté du pivot libre dans le cas lunaire (2 trous Ø3,4,
+  à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre) ; **sur le long côté −Y dans le
+  cas terrestre**, les petits côtés étant pris par les ferrures.
 * **Électricité** : un câble souple 2 × AWG 20, soudé sur les cosses de la boîte de jonction,
   descend par la boucle de câble jusqu'au boîtier. Son + passe par le wattmètre A4, qui mesure
   ce que produit le panneau, puis va au régulateur de charge ; son − va droit au régulateur
@@ -235,12 +261,15 @@ La **stratégie de suivi** diffère d'un modèle à l'autre :
 
 ## 5. La commande
 
-* **Électronique** : un ESP32 et deux drivers **TMC2209** (16 micro-pas, StealthChop), dans
-  l'unité de contrôle au sol, avec la batterie. Pour le vol, il faudrait leurs équivalents
-  résistants aux rayonnements.
-* **Courants de marche** : 1,0 A pour le NEMA 17, 0,67 A pour le NEMA 11.
-* **À l'arrêt, les drivers sont coupés** : les vis tiennent seules, donc ni courant ni
-  échauffement entre deux mouvements.
+* **Électronique** : un ESP32 dans l'unité de contrôle au sol, avec la batterie. **Cas
+  lunaire** : deux drivers **TMC2209** (16 micro-pas, StealthChop) ; pour le vol, il faudrait leurs
+  équivalents résistants aux rayonnements. **Cas terrestre** : les deux **28BYJ-48** se pilotent par
+  des cartes **ULN2003** commandées par un **MCP23017** sur l'I²C (le Heltec n'a pas assez de
+  broches libres), en 5 V.
+* **Courants de marche** : 1,0 A pour le NEMA 17 et 0,67 A pour le NEMA 11 (cas lunaire) ;
+  environ 0,2 A à 5 V pour un 28BYJ-48 (cas terrestre), **un seul moteur à la fois**.
+* **À l'arrêt, les moteurs sont coupés** (drivers coupés, ou sorties du MCP23017 à 0) : les vis
+  tiennent seules, donc ni courant ni échauffement entre deux mouvements.
 * **Origines** :
   * un micro-switch en butée basse d'élévation (−2°) ;
   * un capteur à effet Hall et un aimant sur la roue fixe pour l'azimut.
@@ -260,11 +289,11 @@ le même principe.
 ```
 Fichiers 3D (CAO)/
   Cas Lunaire/                     cas lunaire : assemblages et pièces seules (STEP), et son README
-  Cas Terrestre (démonstration)/   cas terrestre : pièces à imprimer (STL + STEP), assemblages, et son README
+  Cas Terrestre (démonstration)/   cas terrestre (fourche, 28BYJ-48) : pièces à imprimer (STL + STEP), plateau d'aluminium (DXF), assemblages, et son README
 docs (extra)/                      rendus, images annotées, guide de la visserie, bilan de masse, optimisation des jambes
 Electronique/                      schéma électrique (QElectroTech, PDF) et implantation du boîtier (Fritzing)
 scripts/                           scripts Python qui génèrent la CAO, les contrôles et les rendus
-Liste-composants.md                liste des composants à acheter pour le cas terrestre
+Liste-composants.md                liste des composants à acheter pour le cas terrestre (fourche, 28BYJ-48)
 tracker_solaire_composants.pdf     liste des composants à commander, telle qu'elle a été envoyée au professeur
 requirements.txt                   dépendances Python
 LICENSE                            licence CC BY-NC-SA 4.0
@@ -279,12 +308,14 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | **`docs (extra)/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
 | `docs (extra)/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
-| `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule, cale les vis, calcule les couples et la tenue moteurs coupés |
-| `scripts/generate_demo_trepied.py` | Monte la tête PETG sur un trépied, vérifie les interférences et calcule la stabilité (basculement, vent) |
-| `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité du cas terrestre sur son trépied : vent de toutes les directions, glissement, planche lestée, incertitudes |
+| `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule du cas lunaire, cale les vis, calcule les couples et la tenue moteurs coupés ; écrit aussi la tête NEMA en PETG du modèle idéal personnel (`.modele_ideal_personnel/`) |
+| **`scripts/generate_fourche.py`** | **Génère le cas terrestre** (tête à fourche, 28BYJ-48) : CAO complète avec tiges, visserie et inserts, pièces à imprimer, plateau d'aluminium (DXF), éprouvette, contrôles (interférences, prise des vis, garde, couples, stabilité), et sa tête sur le trépied |
+| `scripts/render_fourche.py` | Rendus du cas terrestre (`docs (extra)/fourche_*.png`, `demo_trepied_*.png`) |
+| `scripts/generate_demo_trepied.py` | Trépied et lest de la démonstration, vérification des interférences et calcul de la stabilité (basculement, vent) ; utilisé par `generate_fourche.py`, et seul pour la tête du modèle idéal personnel |
+| `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité sur le trépied de la tête du modèle idéal personnel (vent de toutes les directions, glissement, planche lestée, incertitudes) ; **non relancé pour la fourche** |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
-| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle) |
+| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle ; version NEMA, pas encore refaite pour les 28BYJ-48) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py`, `scripts/render_visserie.py` | Génèrent les rendus PNG, les images annotées et les vues de la visserie |
 | [`tracker_solaire_composants.pdf`](tracker_solaire_composants.pdf) | Liste des composants à commander, telle qu'elle a été envoyée au professeur (15 références Gotronic) |
 | `requirements.txt` | Dépendances Python (CadQuery) |
@@ -325,8 +356,8 @@ Repère : **Y vertical**, c'est-à-dire que le plan de dessus de SolidWorks corr
   Le sommet de la colonne, sur lequel repose la tête, est à Y = 544 mm.
 * Les pièces arrivent fixes, sans contraintes. Pour animer le tracker :
   * libérer `SA_Tete_Orientable` et ajouter une contrainte coaxiale entre le moyeu de la `Chape` et les `Roulement_6806` ;
-  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre les pivots (`Pivot_Entraine`, `Pivot_Libre`) et les `Roulement_608` (`Roulement_6801` dans la version PETG) ;
-  * ajouter des contraintes d'engrenage entre `Vis_Azimut` et `Roue_Azimut_Fixe` (rapport 1:60), puis entre `Vis_Elevation` et `Roue_Elevation` (1:50).
+  * libérer `SA_Panneau` et ajouter une contrainte coaxiale entre les pivots (`Pivot_Entraine`, `Pivot_Libre`) et les `Roulement_608` (cas terrestre : `Tige_Gauche` et `Tige_Droite`) ;
+  * ajouter des contraintes d'engrenage entre `Vis_Azimut` et `Roue_Azimut_Fixe` (rapport 1:60), puis entre `Vis_Elevation` et `Roue_Elevation` (1:50 ; cas terrestre : 1:120 et 1:100).
 
 L'arborescence des assemblages est dans chaque README de modèle.
 
@@ -350,9 +381,10 @@ pip install -r requirements.txt
 python scripts/generate_tracker.py                    # STEP + bilan de masse + contrôle d'interférences
 python scripts/generate_tracker.py --balayage         # + garde sur toute la plage az/él
 python scripts/generate_tete_vis_sans_fin.py          # tête seule (réel + PETG), fichiers à imprimer, couples, contrôles
-python scripts/generate_demo_trepied.py               # démonstration sur trépied : STEP, contrôles, stabilité
-xvfb-run -a python scripts/generate_demo_trepied.py --rendus   # ses rendus
-python scripts/verification_stabilite.py              # stabilité du cas terrestre, calcul indépendant (vent, glissement, lest)
+python scripts/generate_fourche.py                    # cas terrestre (fourche, 28BYJ-48) : CAO, STEP, STL, DXF, contrôles, tête sur trépied
+python scripts/generate_demo_trepied.py               # tête NEMA (modèle idéal personnel) sur trépied : STEP, contrôles, stabilité
+xvfb-run -a python scripts/render_fourche.py                       # rendus du cas terrestre (fourche)
+python scripts/verification_stabilite.py              # stabilité de la tête NEMA (modèle idéal personnel), calcul indépendant
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
 python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
 python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
@@ -431,7 +463,7 @@ mécanisme léger, peu coûteux et sobre en énergie.
 | Schéma **azimut-élévation** plutôt que X-Y, pour le débattement | Azimut sur ±180° et élévation de −2° à +92° : tout le ciel est couvert. Au pôle Sud lunaire, le Soleil fait le tour de l'horizon en un jour lunaire : l'azimut le suit naturellement |
 | Un axe par coordonnée de la cible | Les deux coordonnées du Soleil (azimut, hauteur), calculées par l'ESP32, donnent directement les angles des deux moteurs : commande simple. Les deux erreurs du capteur solaire (haut / bas, gauche / droite) corrigent chacune un moteur (§ 4) |
 | Boucle de câble plutôt qu'un collecteur tournant | Câbles par le moyeu creux de la chape, boucle dans le socle, azimut limité à ±180° puis retour |
-| Composants du commerce | Moteurs NEMA 17 et 11, roulements standard (6806, 6801, 685), accouplements, ESP32 |
+| Composants du commerce | Moteurs NEMA 17 et 11 (cas lunaire) ou 28BYJ-48 (cas terrestre), roulements standard (6806, 608, 685), accouplements, ESP32 |
 | Même module d'entraînement sur les deux axes | Chaque axe : moteur, accouplement, vis sans fin sur 2 roulements 685 dans un palier, roue |
 | Orientation mécanique pour la faible consommation | Moteurs coupés entre deux corrections |
 

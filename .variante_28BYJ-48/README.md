@@ -1,10 +1,13 @@
 # Variante terrestre avec deux moteurs 28BYJ-48 (contrepoids obligatoire)
 
-> **Document caché**, lié seulement depuis la première phrase du README principal. Il décrit une
-> **variante** de la démonstration terrestre dont les deux moteurs pas à pas (NEMA 17 et NEMA 11)
-> sont remplacés par deux petits **28BYJ-48**. La version principale du projet (NEMA, sans
-> contrepoids) n'est pas modifiée. **Cette variante est la seule du projet qui utilise un
-> contrepoids.**
+> **Document caché, archivé.** Il décrit une **variante** de l'ancienne démonstration terrestre
+> (tête à chape) dont les deux moteurs pas à pas (NEMA 17 et NEMA 11) sont remplacés par deux petits
+> **28BYJ-48**, avec un **contrepoids**. **Elle n'est plus retenue** : le cas terrestre est
+> désormais une **tête à fourche à moteurs 28BYJ-48 sans contrepoids**
+> ([README du cas terrestre](../Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)),
+> et l'ancien modèle NEMA est conservé dans le [modèle idéal personnel](../.modele_ideal_personnel/README.md).
+> Dans ce document, la « version principale » désigne ce modèle NEMA (le modèle idéal personnel).
+> **Cette variante est la seule du projet qui utilise un contrepoids.**
 >
 > **État : modélisée et vérifiée sur la CAO.** Supports de moteur, accouplements, platine du
 > contrepoids et assemblage complets (§ 5 et § 10). Les marges de couple du § 3 sont calculées
@@ -274,7 +277,7 @@ M3×6 : 3** (43 vis, contre 39 dans la version principale, qui compte aussi 4 M2
 
 Le coût des moteurs et des drivers baisse nettement (deux 28BYJ-48 avec cartes valent quelques
 euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature est celui de
-[`Liste-composants.md`](../Liste-composants.md).
+[`Liste-composants.md`](../.modele_ideal_personnel/Liste-composants.md).
 
 ## 8. À valider avant de commander et d'imprimer
 

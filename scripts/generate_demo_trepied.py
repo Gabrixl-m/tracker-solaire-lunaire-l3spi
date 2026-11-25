@@ -9,7 +9,8 @@ Le trépied est modélisé simplement, d'après des photos et deux cotes mesuré
 Les autres cotes du trépied (tubes, corps, rotule) sont estimées sur les photos.
 
 Ce script :
-  - exporte l'assemblage Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step (Y-up, sol en y = 0) ;
+  - exporte l'assemblage 
+    .modele_ideal_personnel/Demo_Trepied.step (Y-up, sol en y = 0) ;
   - vérifie les interférences et la garde entre la partie qui tourne et le trépied ;
   - calcule la stabilité : angle de basculement et vent de basculement, dans la pire
     orientation du panneau, sans lest et avec un lest suspendu sous le trépied ;
@@ -32,7 +33,7 @@ from generate_tracker import box_span, cyl_dir, cyl_z, rot, trans
 # variante 28BYJ-48 avec contrepoids (.variante_28BYJ-48/README.md) : VARIANTE_28BYJ=1 python scripts/generate_demo_trepied.py
 VARIANTE = os.environ.get("VARIANTE_28BYJ") == "1"
 OUT_STEP = (os.path.join(G.RACINE, ".variante_28BYJ-48", "Demo_Trepied_28BYJ.step") if VARIANTE else
-            os.path.join(G.RACINE, "Fichiers 3D (CAO)", "Cas Terrestre (démonstration)", "Demo_Trepied.step"))
+            os.path.join(G.RACINE, ".modele_ideal_personnel", "Demo_Trepied.step"))
 
 # Trépied (repère Z-up, origine au sol sur l'axe ; jambes vers 90°, 210° et 330°)
 TREPIED_DEMO = dict(

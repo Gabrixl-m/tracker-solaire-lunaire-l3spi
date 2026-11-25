@@ -7,8 +7,9 @@ de cotes (generate_tracker.AJUSTEMENTS). Ce script :
   - cas réel : exporte la tête seule, panneau monté à 40°,
     Fichiers 3D (CAO)/Cas Lunaire/Tete_Rotative_VisSansFin.step ;
   - démonstration sur Terre (impression 3D PETG) : exporte l'assemblage imprimé
-    Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Tete_Rotative_PETG.step, les pièces à imprimer orientées pour
-    l'impression (STL + STEP) dans Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/, et une éprouvette
+    
+    .modele_ideal_personnel/Tete_Rotative_PETG.step, les pièces à imprimer orientées pour
+    l'impression (STL + STEP) dans .modele_ideal_personnel/a_imprimer/, et une éprouvette
     de réglage des ajustements ;
   - cale les vis par rapport aux roues pour chaque jeu de cotes ;
   - calcule les couples nécessaires et disponibles (Lune, Terre intérieur, Terre avec
@@ -29,7 +30,7 @@ import generate_tracker as G
 from generate_tracker import box_span, cyl_y, cyl_z, ring_z, rot
 
 OUT_REEL = os.path.join(G.RACINE, "Fichiers 3D (CAO)", "Cas Lunaire", "Tete_Rotative_VisSansFin.step")
-OUT_PETG = os.path.join(G.RACINE, "Fichiers 3D (CAO)", "Cas Terrestre (démonstration)")
+OUT_PETG = os.path.join(G.RACINE, ".modele_ideal_personnel")          # version NEMA, cachée
 OUT_IMPR = os.path.join(OUT_PETG, "a_imprimer")
 
 # Cas de charge

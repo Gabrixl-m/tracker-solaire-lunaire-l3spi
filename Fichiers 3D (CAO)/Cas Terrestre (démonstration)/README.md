@@ -7,8 +7,8 @@ trépied (§ 8) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
 |---|---|
-| ![Sur un trépied](../../docs%20%28extra%29/demo_trepied_iso.png) | ![Côté moteurs](../../docs%20%28extra%29/demo_trepied_arriere.png) |
-| ![De profil](../../docs%20%28extra%29/demo_trepied_profil.png) | ![La tête sur la rotule du trépied](../../docs%20%28extra%29/demo_trepied_detail.png) |
+| ![Sur un trépied](../../docs%20%28extra%29/trepied_fourche_iso.png) | ![Côté moteurs](../../docs%20%28extra%29/trepied_fourche_arriere.png) |
+| ![De profil](../../docs%20%28extra%29/trepied_fourche_profil.png) | ![La tête sur la rotule du trépied](../../docs%20%28extra%29/trepied_fourche_detail.png) |
 
 C'est **le modèle qu'on construit** : ce document donne tout ce qu'il faut pour le fabriquer,
 de l'impression au boîtier électronique. Le panneau, le capteur solaire et le principe de la
@@ -1072,7 +1072,7 @@ tenu même sans lest** (basculement à 7,5 m/s : un vent 2,3 fois plus fort en e
 
 | Le lest sous le trépied | Vue d'ensemble |
 |---|---|
-| ![Lest sous le trépied](../../docs%20%28extra%29/demo_trepied_lest.png) | ![Sur un trépied](../../docs%20%28extra%29/demo_trepied_iso.png) |
+| ![Lest sous le trépied](../../docs%20%28extra%29/trepied_fourche_lest.png) | ![Sur un trépied](../../docs%20%28extra%29/trepied_fourche_iso.png) |
 
 Sans modifier le trépied, **seul le poids compte** : le vent qui renverse l'ensemble croît
 comme la racine carrée de la masse totale. **Un lest de 11 kg au lieu de 3 kg gagne 19 km/h** (38 → 57 km/h). Mettre le **panneau à plat** (élévation 90°) double environ le vent de basculement (chiffre de l'ancienne tête, **non recalculé** pour celle-ci). Les autres leviers (recentrer le centre de gravité, abaisser la tête, orienter une jambe, limiter la course) avaient été chiffrés sur l'ancienne tête : ils n'apportaient que 1 à 2 km/h, et n'ont pas été recalculés.
@@ -1228,7 +1228,7 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante (§ 4) |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire, trépied et lest (§ 8) |
 | `scripts/generate_fourche.py` | **Génère tout ce qui précède** (CAO, STEP, STL, DXF) et fait les contrôles : interférences, prise des vis, garde, couples et marges, stabilité |
-| `scripts/render_fourche.py` | Les images de ce document (`docs (extra)/fourche_*.png` et `demo_trepied_*.png`) |
+| `scripts/render_fourche.py` | Les images de ce document (`docs (extra)/fourche_*.png` et `trepied_fourche_*.png`) |
 | **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | Schéma électrique, projet QElectroTech, **version NEMA / TMC2209 : à redessiner pour les 28BYJ-48** (§ 6) |
 | [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
 | **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | Implantation du boîtier électronique dans Fritzing, **version NEMA / TMC2209** (§ 6) |

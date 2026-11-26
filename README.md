@@ -19,7 +19,7 @@ en citant l'auteur ; **usage commercial interdit** (§ 6).
 
 | Cas lunaire (panneau à 40°) | Cas terrestre, sur un trépied |
 |---|---|
-| ![Vue d'ensemble du cas lunaire](docs%20%28extra%29/apercu_latitudemoyenne_iso.png) | ![Cas terrestre sur un trépied](docs%20%28extra%29/demo_trepied_iso.png) |
+| ![Vue d'ensemble du cas lunaire](docs%20%28extra%29/apercu_latitudemoyenne_iso.png) | ![Cas terrestre sur un trépied](docs%20%28extra%29/trepied_fourche_iso.png) |
 
 ## 1. Deux modèles : choisir le sien
 
@@ -308,13 +308,13 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | Fichier | Contenu |
 |---|---|
 | `docs (extra)/bilan_masse.csv` | Bilan de masse pièce par pièce (séparateur `;`, s'ouvre dans Excel) |
-| `docs (extra)/apercu_*.png`, `docs (extra)/tete_vis_sans_fin_*.png`, `docs (extra)/demo_trepied_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
+| `docs (extra)/apercu_*.png`, `docs (extra)/tete_vis_sans_fin_*.png`, `docs (extra)/trepied_fourche_*.png` | Rendus du tracker (iso, face, profil, arrière, détails), de la tête seule (dont deux coupes) et de la démonstration sur trépied |
 | **`docs (extra)/visserie/`** | **Guide de la visserie** (`README.md`) : planche de tous les modèles à l'échelle avec leurs quantités, puis vues éclatées de la tête, du panneau, du capteur solaire et du fond de la démonstration, étape par étape (vis en orange, rondelles et écrous en vert clair) |
 | `docs (extra)/optimisation_angle_jambes.md` | Optimisation de l'angle φ des jambes : exigences, résultats angle par angle, sensibilité |
 | `scripts/generate_tracker.py` | Script paramétrique qui génère toute la CAO, le bilan de masse et les contrôles |
 | `scripts/generate_tete_vis_sans_fin.py` | Exporte la tête seule du cas lunaire, cale les vis, calcule les couples et la tenue moteurs coupés ; écrit aussi la tête NEMA en PETG du modèle idéal personnel (`.modele_ideal_personnel/`) |
 | **`scripts/generate_fourche.py`** | **Génère le cas terrestre** (tête à fourche, 28BYJ-48) : CAO complète avec tiges, visserie et inserts, pièces à imprimer, plateau d'aluminium (DXF), éprouvette, contrôles (interférences, prise des vis, garde, couples, stabilité), et sa tête sur le trépied |
-| `scripts/render_fourche.py` | Rendus du cas terrestre (`docs (extra)/fourche_*.png`, `demo_trepied_*.png`) |
+| `scripts/render_fourche.py` | Rendus du cas terrestre (`docs (extra)/fourche_*.png`, `trepied_fourche_*.png`) |
 | `scripts/generate_demo_trepied.py` | Trépied et lest de la démonstration, vérification des interférences et calcul de la stabilité (basculement, vent) ; utilisé par `generate_fourche.py`, et seul pour la tête du modèle idéal personnel |
 | `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité sur le trépied de la tête du modèle idéal personnel (vent de toutes les directions, glissement, planche lestée, incertitudes) ; **non relancé pour la fourche** |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |

@@ -97,7 +97,7 @@ def trepied(zv, zb, ph):
     G.build_panel = lambda with_panel=True: F.panneau_assy(True, False)
     G.P["pan_back"] = -G.P["pan_T"] / 2
     try:
-        pre = "demo_trepied_"
+        pre = "trepied_fourche_"
         sun = tuple(v / math.sqrt(0.45 ** 2 + 0.75 ** 2 + 0.6 ** 2) for v in (0.45, 0.75, -0.6))
         assy = assemblage(0.0, 40.0, noms)
         r = build_renderer(assy, sun)

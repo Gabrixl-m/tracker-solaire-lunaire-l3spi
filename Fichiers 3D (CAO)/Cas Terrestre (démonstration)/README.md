@@ -202,7 +202,7 @@ En résumé, pour la mécanique :
 | Article | Qté |
 |---|---|
 | Roulement **6806ZZ** (ISO 61806-2Z ; ou 6806-2RS), 30 × 42 × 7 mm | 2 |
-| Roulement **608ZZ** (ou 608-2RS), 8 × 22 × 7 mm | 3 |
+| Roulement **608ZZ** (ou 608-2RS), 8 × 22 × 7 mm | 2 (un de plus, de rechange, pour essayer sur l'éprouvette) |
 | Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
 | **Tige d'acier rectifiée Ø8**, coupée à **46 mm** (côté roue) et **25 mm** (côté gauche) : 71 mm en tout, prendre 100 mm | 1 |
 | Tige acier rectifiée Ø5, coupée à 53 mm (arbres des vis) | 2 |

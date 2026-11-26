@@ -56,17 +56,17 @@ def main():
     ph, _a, _b = F.calage(zv)
     zt = F.ZT
     plateau()
-    F0 = (0, zt - 20, 0)
+    F0 = (0, zt - 40, 0)
     r = build_renderer(tete(zv, zb, ph, 40.0), SUN, ground=False)
     shoot(r, "fourche_iso.png", cam(F0, (900, 280, 1000), 0.55), focal=F0, angle=34)
     shoot(r, "fourche_arriere.png", cam(F0, (-850, 240, -950), 0.55), focal=F0, angle=34)
     shoot(r, "fourche_cote.png", cam(F0, (1300, 20, 80), 0.5), focal=F0, angle=34)
-    F1 = (225, zt - 30, -10)
+    F1 = (165, zt - 50, -10)
     shoot(r, "fourche_detail_elevation.png", cam(F1, (330, 60, 360), 0.8), focal=F1, angle=34, avec_legende=True)
     F2 = (-45, 80, 45)
     shoot(r, "fourche_detail_azimut.png", cam(F2, (-300, 70, 280), 0.8), focal=F2, angle=34, avec_legende=True)
     r = build_renderer(tete(zv, zb, ph, 40.0, False), SUN, ground=False)
-    shoot(r, "fourche_structure.png", cam((0, zt - 70, 0), (780, 190, 900), 0.55), focal=(0, zt - 70, 0), angle=34, avec_legende=True)
+    shoot(r, "fourche_structure.png", cam((0, zt - 90, 0), (780, 190, 900), 0.55), focal=(0, zt - 90, 0), angle=34, avec_legende=True)
     for el, nom in ((-2.0, "vertical"), (92.0, "a_plat")):
         r = build_renderer(tete(zv, zb, ph, el), SUN, ground=False)
         shoot(r, f"fourche_{nom}.png", cam(F0, (900, 280, 1000), 0.55), focal=F0, angle=34)
@@ -108,7 +108,7 @@ def trepied(zv, zb, ph):
         shoot(r, pre + "arriere.png", (-1200, 1000, 1500), focal=f0, angle=34)
         r = build_renderer(assy, sun, ground=False)
         r.SetBackground(0.80, 0.86, 0.93)
-        shoot(r, pre + "detail.png", (-560, 900, 520), focal=(0, 720, 0), angle=30, avec_legende=True)
+        shoot(r, pre + "detail.png", (-600, 960, 560), focal=(0, 780, 0), angle=30, avec_legende=True)
         shoot(r, pre + "lest.png", (620, 420, -640), focal=(0, 90, 0), angle=30)
     finally:
         G.build_panel, G.P["pan_back"] = bp0, pb0

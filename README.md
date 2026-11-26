@@ -35,7 +35,7 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 |---|---|---|
 | **Ce que c'est** | L'étude de conception du tracker pour la Lune : pôle Sud (programme Artemis) ou sites Apollo | Une tête **à fourche** à moteurs 28BYJ-48, imprimée en PETG (avec un plateau d'aluminium et des tiges d'acier), vissée sur un trépied : **c'est celui qu'on construit** |
 | **Matériaux** | Aluminium, bronze, inox, titane ; roulements secs (MoS₂) pour le vide | PETG imprimé, plateau d'aluminium, tiges d'acier, roulements et visserie du commerce |
-| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 842 mm |
+| **Support** | Trépied déployable du projet, axe d'élévation à 700 mm | Trépied (vis 1/4"), axe à 902 mm |
 | **On y trouve** | Conditions lunaires, choix de l'angle, trépied, matériaux, couples et marges, vérifications, limites | Principe de la fourche, pièces à imprimer et à acheter, réglages, montage pas à pas, électronique complète, boîtier étanche, énergie, LoRa |
 | **Fichiers** | `Fichiers 3D (CAO)/Cas Lunaire/` (STEP) | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/` (STL et STEP), `Electronique/`, `Liste-composants.md` |
 | **Documentation** | **➜ [README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md)** | **➜ [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md)** |
@@ -44,12 +44,12 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 
 | Grandeur | Cas lunaire | Cas terrestre |
 |---|---|---|
-| Support du panneau | Chape et chapeau en U, panneau sur deux rails | **Fourche** : panneau pivotant autour de son plan médian, sur deux tiges d'acier Ø8 |
-| Pivots d'élévation | Inox Ø8 sur roulements 608 | Tiges d'acier Ø8 sur roulements 608 |
+| Support du panneau | Chape et chapeau en U, panneau sur deux rails | **Fourche étroite** : panneau tourné de 90°, pivotant autour de son plan médian sur deux tiges d'acier Ø8 ; structure de 344 × 139 × 343 mm |
+| Pivots d'élévation | Inox Ø8 sur roulements 608 | Tiges d'acier Ø8, un roulement 608 par bras |
 | Moteurs | NEMA 17 (élévation) et NEMA 11 (azimut) | **2 × 28BYJ-48** (5 V), cartes ULN2003 et MCP23017 |
 | Roues des vis sans fin | Bronze, 50 et 60 dents | PETG, **100 et 120 dents** |
-| Masse de la tête (hors panneau) | 1,86 kg | 1,65 kg |
-| Partie qui bascule (panneau, ferrures, tiges, roue, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,33 kg, centre de gravité à **8,2 mm** de l'axe |
+| Masse de la tête (hors panneau) | 1,86 kg | 1,51 kg |
+| Partie qui bascule (panneau, ferrures, tiges, roue, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,32 kg, centre de gravité à **9,4 mm** de l'axe |
 | Alimentation des moteurs | 12 V, 1,0 A (NEMA 17) | 5 V, environ 0,2 A, un seul moteur à la fois |
 | Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 (moteur prudent) ; suivi limité à 8 m/s (×2,2) |
 | Marge d'azimut, vent de 10 m/s | ×2,3 | ×1,7 (moteur prudent) |
@@ -90,6 +90,10 @@ tourner (azimut), un axe horizontal porté par lui pour incliner (élévation), 
 | **Passage des câbles** | Les câbles descendent par le moyeu creux de la chape, font une boucle dans le socle et sortent par le passe-câble |
 | **Fixations** | Vis CHC M3 (M2,5 pour le NEMA 11), toutes modélisées. Chaque tête de vis est accessible, et aucune n'est sur le passage d'une pièce mobile. Le palier et le support du moteur d'azimut sont vissés à travers des **lumières** de la chape, avec une rondelle sous chaque tête : on règle l'engrènement de la vis d'azimut en les faisant glisser |
 
+**Le cahier des charges L3 impose une structure de 350 × 350 × 350 mm au plus** (panneau excepté) : la fourche du cas
+terrestre mesure 344 × 139 × 343 mm, parce que le panneau y est monté dans le sens de sa largeur (axe
+d'élévation le long du côté de 253 mm).
+
 Le cas terrestre garde le socle, la roue d'azimut fixe, le moyeu, les paliers et les vis sans
 fin, imprimés en PETG et fixés sur la vis 1/4" d'un trépied, mais **remplace la chape, le chapeau
 et les rails par une fourche** (plateau d'aluminium, deux bras imprimés, panneau sur deux tiges
@@ -103,7 +107,7 @@ ne touche leurs flasques : le détail est dans chaque README de modèle.
 
 **Pourquoi une vis sans fin.** Sans contrepoids, le panneau est forcément décentré : il doit
 passer devant la chape pour devenir vertical. Son poids crée donc un couple sur l'axe
-d'élévation, jusqu'à 0,95 N·m sur Terre (la fourche du cas terrestre supprime ce décentrage : 0,11 N·m). La vis sans fin est **irréversible** :
+d'élévation, jusqu'à 0,95 N·m sur Terre (la fourche du cas terrestre supprime ce décentrage : 0,13 N·m). La vis sans fin est **irréversible** :
 * le moteur fait tourner la roue ;
 * la roue ne peut pas faire tourner la vis, parce que la pente du filet (3,6°) est plus
   faible que l'angle de frottement (environ 6°). C'est le principe du cric de voiture à vis.
@@ -164,12 +168,12 @@ par seconde) : 0,0009° et 0,0007° par demi-pas, 0,5° en 5 à 6 s, **90° en 1
   noyées) et l'aile arrière du cadre, avec un écrou M3 posé dans le cadre. Il faut percer 4 trous Ø3,4
   dans l'aile arrière des grands côtés : à 44 mm de part et d'autre du milieu, à 6 mm du bord
   extérieur. Vérifier que l'aile arrière du vrai cadre fait au moins 10 mm.
-* **Fixation, cas terrestre** : le panneau est pris par **deux ferrures imprimées** sur ses petits
-  côtés (4 vis M3×12 par ferrure, écrous dans le cadre) : percer 8 trous Ø3,4 dans les petits
+* **Fixation, cas terrestre** : le panneau est pris par **deux ferrures imprimées** sur ses grands
+  côtés (4 vis M3×12 par ferrure, écrous dans le cadre) : percer 8 trous Ø3,4 dans les grands
   côtés ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 3).
 * **Capteur solaire** (§ 4) : sur le petit côté du pivot libre dans le cas lunaire (2 trous Ø3,4,
-  à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre) ; **sur le long côté −Y dans le
-  cas terrestre**, les petits côtés étant pris par les ferrures.
+  à 9 mm de part et d'autre du milieu et à 12 mm du dos du cadre) ; **sur le petit côté haut dans le
+  cas terrestre**, les grands côtés étant pris par les ferrures.
 * **Électricité** : un câble souple 2 × AWG 20, soudé sur les cosses de la boîte de jonction,
   descend par la boucle de câble jusqu'au boîtier. Son + passe par le wattmètre A4, qui mesure
   ce que produit le panneau, puis va au régulateur de charge ; son − va droit au régulateur

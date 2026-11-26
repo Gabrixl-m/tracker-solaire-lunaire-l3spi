@@ -35,16 +35,23 @@ OUT_IMPR = os.path.join(OUT, "a_imprimer")
 OUT_METAL = os.path.join(OUT, "pieces_metal")
 
 Z_EL, Z_AZ = 100, 120                    # dents des roues d'élévation et d'azimut (module 0,8)
-ZT = 240.0                               # hauteur de l'axe d'élévation (repère tête)
+ZT = 300.0                               # hauteur de l'axe d'élévation (repère tête) : le panneau, long de 356 mm,
+                                         # pend de 178 mm sous l'axe et doit passer au-dessus du plateau
 PLAQUE = (92.0, 97.0)                    # plateau en aluminium de 5 mm, sous lequel passent les vis des bras
-X_I, E_B = 197.0, 8.0                    # face intérieure des bras (x = ±197) et épaisseur de la plaque
-X_E = X_I + E_B
-DX_EL = 261.0                            # le bloc d'élévation du projet (x = -30) est décalé à x = 231
+HW = 126.5                               # demi-largeur du panneau le long de l'axe d'élévation (côté de 253 mm)
+E_FERR, E_MOY = 10.0, 8.0                # ferrure : plaque de 10 mm sur le cadre, moyeu de 8 mm
+E_B = 9.0                                # épaisseur des bras
+X_I = HW + E_FERR + E_MOY + 0.5          # face intérieure des bras (x = ±145) : 0,5 mm de jeu axial de chaque côté
+X_E = X_I + E_B                          # face extérieure (x = ±154)
+XC_EL = 163.0                            # centre de la roue d'élévation (x), à 1 mm du palier de la vis
+DX_EL = XC_EL + 30.0                     # le bloc d'élévation du projet (x = -30) est décalé à x = XC_EL
+X_SH = XC_EL + 24.0                      # fin de l'étagère (semelle du support moteur : ±24 mm)
 D_TIGE = 8.0                             # tiges d'acier Ø8, roulements 608
+Y_ARM = (-35.0, 42.0)                    # largeur des bras (le support moteur d'élévation passe à y < -40)
 Y_FERR, Z_FERR = (-15.0, 15.0), (-7.0, 3.0)      # vis des ferrures dans le cadre (y, z, repère panneau)
-CAPTEUR = -1                             # capteur solaire sur le long côté -Y
+CAPTEUR = -1                             # capteur solaire sur le petit côté haut (x local -1 du cadre)
 DEC_PAN = -(G.P["pan_back"] + G.P["pan_T"] / 2)  # centre du cadre -> axe d'élévation
-ECROU_X = G.P["pan_L"] / 2 - 1.5         # face extérieure des écrous, dans le cadre
+ECROU_X = HW - 1.5                       # face extérieure des écrous, dans le cadre
 X_GRAIN = 4.0                            # moyeux : vis de pression à r = 10 (rayon du moyeu)
 
 
@@ -67,41 +74,29 @@ def trou_insert(wp, pt, d, genre="C"):
 
 
 def p_ferrure(sg):
-    """Ferrure du panneau (repère panneau) : plaque de 10 mm sur le petit côté du cadre, 4 vis M3 noyées,
-    moyeu Ø20 pour la tige Ø8 (collée, bloquée par une vis de pression)."""
-    x0, x1 = sorted((sg * 178.0, sg * 188.0))
+    """Ferrure du panneau (repère panneau) : plaque de 10 mm sur le grand côté du cadre, 4 vis M3 noyées,
+    moyeu Ø20 pour la tige Ø8 (collée si on veut, bloquée par une vis de pression)."""
+    x0, x1 = sorted((sg * HW, sg * (HW + E_FERR)))
     f = box_span(x0, x1, -22, 22, -14.5, 14.5).edges("|X").fillet(4)
-    h0, h1 = sorted((sg * 188.0, sg * 196.0))
+    h0, h1 = sorted((sg * (HW + E_FERR), sg * (HW + E_FERR + E_MOY)))
     f = f.union(cyl_x(20.0, h1 - h0, h0, 0, 0))
-    f = f.cut(cyl_x(D_TIGE + 0.1, 40, min(sg * 177, sg * 200), 0, 0))
+    f = f.cut(cyl_x(D_TIGE + 0.1, 40, min(sg * (HW - 1), sg * (HW + 25)), 0, 0))
     for y in Y_FERR:
         for z in Z_FERR:
-            xs = sg * 185.0                       # fond du lamage : tête noyée dans la plaque
-            a, b = sorted((sg * 177.0, xs))
+            xs = sg * (HW + 7.0)                  # fond du lamage : tête noyée dans la plaque
+            a, b = sorted((sg * (HW - 1.0), xs))
             f = f.cut(cyl_x(G.AJ["passage_m3"], b - a + 1, a - 1, y, z))
-            a2, b2 = sorted((xs, sg * 189.0))
+            a2, b2 = sorted((xs, sg * (HW + E_FERR + 1.0)))
             f = f.cut(cyl_x(6.2, b2 - a2 + 1, a2, y, z))
-    xg = sg * 192.0                               # vis de pression sur le moyeu
+    xg = sg * (HW + E_FERR + E_MOY / 2)           # vis de pression sur le moyeu
     f = trou_insert(f, (xg, 0, 10.0), (0, 0, -1))
     f = f.cut(G.cyl_dir(3.2, 4.0, (xg, 0, 10.0 - 3.8), (0, 0, -1)))
     return f
 
 
-def p_collier():
-    """Collier d'arrêt de la tige gauche, côté extérieur du bras (repère tête), Ø20 x 8 (comme les moyeux : l'insert de
-    la vis de pression y garde plus de 1,6 mm de matière de chaque côté)."""
-    x0 = -(X_E + 8.0 + 0.3)
-    c = cyl_x(20.0, -8.0, x0, 0, ZT)
-    c = c.cut(cyl_x(D_TIGE + 0.1, -10.0, x0 + 1, 0, ZT))
-    xg = x0 - 4.0
-    c = trou_insert(c, (xg, 0, ZT + 10.0), (0, 0, -1))
-    c = c.cut(G.cyl_dir(3.2, 4.0, (xg, 0, ZT + 10.0 - 3.8), (0, 0, -1)))
-    return c
-
-
 def p_roue_el():
-    """Roue d'élévation Z100 (module 0,8), en x = 227..235, moyeu Ø20 jusqu'à 243 avec vis de pression."""
-    xr = X_I + E_B + 21.0 + 1.0                  # fin du boss + 1 mm de jeu
+    """Roue d'élévation Z100 (module 0,8), en x = 159..167, moyeu Ø20 jusqu'à 175 avec vis de pression."""
+    xr = XC_EL - 4.0                             # roue de 8 mm centrée sur XC_EL
     g = G.gear_x(Z_EL, 0.8, 8.0, xr, backlash=G.AJ["jeu_denture"][0] / 0.8)
     g = g.union(cyl_x(20.0, 16.0, xr, 0, 0))
     g = g.cut(cyl_x(D_TIGE + 0.1, 20.0, xr - 1, 0, 0))
@@ -114,42 +109,50 @@ def p_roue_el():
     return g, xr
 
 
+def colonnes_pied(sg):
+    """x (en valeur absolue) des deux colonnes de vis qui fixent un bras sur le plateau.
+    Bras gauche : semelle vers l'intérieur (il s'imprime sur sa face extérieure) ; bras droit : vers l'extérieur
+    (il s'imprime sur sa face intérieure, comme son étagère)."""
+    return (X_I - 8.0, X_I + 4.5) if sg < 0 else (X_E - 5.0, X_E + 8.0)
+
+
+def positions_pied(sg):
+    return [(sg * x, y) for x in colonnes_pied(sg) for y in (-17.0, 17.0)]
+
+
 def rainure_foot(wp, sg, positions):
     for x, y in positions:
-        wp = trou_insert(wp, (sg * x, y, PLAQUE[1]), (0, 0, 1))
+        wp = trou_insert(wp, (x, y, PLAQUE[1]), (0, 0, 1))
     return wp
 
 
 def p_bras(sg, zb):
-    """Bras de la fourche (sg = +1 : droit, avec boss, étagère de l'entraînement d'élévation et nervures ;
-    -1 : gauche, avec boss). Plaque de 8 mm, boss pour deux roulements 608 (droit) ou un (gauche)."""
-    zh = ZT + 30
+    """Bras de la fourche (sg = +1 : droit, avec l'étagère de l'entraînement d'élévation ; -1 : gauche). Plaque de
+    9 mm avec un seul roulement 608, comme à gauche : montage symétrique. Semelle de 6 mm vissée sur le plateau."""
+    zh = ZT + 22
     xa, xb = sorted((sg * X_I, sg * X_E))
-    haut = box_span(xa, xb, -35 if sg < 0 else -62, 35 if sg < 0 else 30, PLAQUE[1], zh).edges("|X and >Z").fillet(20)
-    b = haut
-    # semelle de fixation sur le plateau : vers l'extérieur, pour s'imprimer à plat sur la face intérieure
-    xf0, xf1 = sorted((sg * X_I, sg * 245.0))
+    b = box_span(xa, xb, Y_ARM[0], Y_ARM[1], PLAQUE[1], zh).edges("|X and >Z").fillet(20)
+    if sg < 0:
+        xf0, xf1 = sorted((sg * (X_I - 16.0), sg * X_E))          # semelle vers l'intérieur
+    else:
+        xf0, xf1 = sorted((sg * X_I, sg * (X_E + 15.0)))          # semelle vers l'extérieur
     b = b.union(box_span(xf0, xf1, -26, 26, PLAQUE[1], PLAQUE[1] + 6))
-    pos_vis = [(209.0, -17.0), (209.0, 17.0), (233.0, -17.0), (233.0, 17.0)]
-    b = rainure_foot(b, sg, pos_vis)
-    long_boss = 21.0 if sg > 0 else 8.0
-    bx0, bx1 = sorted((sg * X_E - 0.0, sg * (X_E + long_boss)))
-    b = b.union(cyl_x(34.0 if sg < 0 else 32.0, bx1 - bx0, bx0, 0, ZT))
-    # alésages : tige Ø8 (Ø9 de jeu) et logements de roulements 608 (Ø22 + jeu d'impression)
+    b = rainure_foot(b, sg, positions_pied(sg))
+    # alésages : tige Ø8 (Ø9 de jeu) et logement du roulement 608 (Ø22 + jeu d'impression), enfoncé depuis l'intérieur
     r608 = G.ROULEMENTS["608"]
     dr = r608["D"] + G.AJ["roulement"]
-    xin0, xin1 = sorted((sg * (X_I - 1.0), sg * (X_E + long_boss + 1.0)))
+    xin0, xin1 = sorted((sg * (X_I - 1.0), sg * (X_E + 1.0)))
     b = b.cut(cyl_x(D_TIGE + 1.0, xin1 - xin0, xin0, 0, ZT))
     a, c = sorted((sg * (X_I - 0.5), sg * (X_I + r608["B"] + 0.3)))
     b = b.cut(cyl_x(dr, c - a, a, 0, ZT))
-    if sg > 0:                                   # second roulement, côté extérieur du boss
-        a, c = sorted((sg * (X_E + long_boss - r608["B"] - 0.3), sg * (X_E + long_boss + 0.5)))
-        b = b.cut(cyl_x(dr, c - a, a, 0, ZT))
-        # étagère portant le palier et le support moteur d'élévation, nervures
+    if sg > 0:
+        # étagère portant le palier et le support moteur d'élévation : de l'arm à y = -35, puis une avancée jusqu'à
+        # y = -62 sous le support (qui est hors du bras), avec deux nervures contre le bras
         e = 7.0
-        b = b.union(box_span(X_E, 266.0, -62.0, 30.0, zb - e, zb))
-        for yy in (-62.0, 24.0):
-            nerv = (cq.Workplane("XZ").polyline([(X_E, zb - e), (X_E, zb - e - 50), (X_E + 50, zb - e)]).close()
+        b = b.union(box_span(X_E, X_SH, -35.0, 30.0, zb - e, zb))
+        b = b.union(box_span(XC_EL - 24.0, X_SH, -62.0, -35.0, zb - e, zb))
+        for yy in (-35.0, 24.0):
+            nerv = (cq.Workplane("XZ").polyline([(X_E, zb - e), (X_E, zb - e - 45), (X_E + 30, zb - e)]).close()
                     .extrude(-6).translate((0, yy, 0)))
             b = b.union(nerv)
         for x, y in G.TROUS_PALIER_EL + G.TROUS_SUPPORT_EL:
@@ -158,24 +161,26 @@ def p_bras(sg, zb):
 
 
 def p_plateau():
-    """Plateau d'aluminium de 5 mm (découpe laser) : bloc central (moyeu et entraînement d'azimut) et barre."""
+    """Plateau d'aluminium de 5 mm (découpe laser) : bloc central (moyeu et entraînement d'azimut) et barre qui porte les
+    deux bras, de x = -157 à +171 (le reste de la structure est dans 350 mm de large)."""
     z0, z1 = PLAQUE
     pl = box_span(-80, 80, -90, 48, z0, z1).edges("|Z").fillet(6).union(
-        box_span(-253, 253, -30, 30, z0, z1).edges("|Z").fillet(6))
+        box_span(-157, 171, -30, 30, z0, z1).edges("|Z").fillet(6))
     pl = pl.cut(cyl_z(G.D_PASSAGE_MOYEU, 10, 0, 0, z0 - 1))
     for x, y in G.TROUS_MOYEU:
         pl = pl.cut(cyl_z(G.AJ["passage_m3"], 10, x, y, z0 - 1))
     for x, y in G.trous_palier_az() + G.TROUS_SUPPORT_AZ:
         pl = pl.cut(G.lumiere_y(G.AJ["passage_m3"], x, y, z0 - 1, z1 + 1))
     for sg in (-1, 1):
-        for x, y in ((209.0, -17.0), (209.0, 17.0), (233.0, -17.0), (233.0, 17.0)):
-            pl = pl.cut(cyl_z(G.AJ["passage_m3"], 10, sg * x, y, z0 - 1))
+        for x, y in positions_pied(sg):
+            pl = pl.cut(cyl_z(G.AJ["passage_m3"], 10, x, y, z0 - 1))
     return pl
 
 
 def p_cadre():
-    """Cadre du panneau (celui de generate_tracker.py, sans les trous des rails ni du petit côté), avec les 8
-    trous Ø3,4 des ferrures dans les petits côtés et 2 trous pour l'équerre du capteur dans le long côté -Y."""
+    """Cadre du panneau (celui de generate_tracker.py, sans les trous des rails), avec les 8 trous Ø3,4 des ferrures
+    dans les grands côtés (le cadre est ensuite tourné de 90° : l'axe d'élévation suit le côté de 253 mm) et les 2
+    trous de l'équerre du capteur dans le petit côté x = -L/2."""
     L, H, T_, z0 = G.P["pan_L"], G.P["pan_H"], G.P["pan_T"], G.P["pan_back"]
     lip, w = 12.0, 1.5
     f = box_span(-L / 2, L / 2, -H / 2, H / 2, z0, z0 + T_)
@@ -183,12 +188,13 @@ def p_cadre():
     f = f.cut(box_span(-L / 2 + lip, L / 2 - lip, -H / 2 + lip, H / 2 - lip, z0 + T_ - w - 1, z0 + T_ + 1))
     f = f.cut(box_span(-L / 2 + lip, L / 2 - lip, -H / 2 + lip, H / 2 - lip, z0 - 1, z0 + w + 1))
     zc = z0 + T_ / 2
-    for sg in (-1, 1):
-        for y in Y_FERR:
+    for sg in (-1, 1):                              # grands côtés y = ±H/2 : vue du cadre tourné, x = ∓H/2
+        for xl in Y_FERR:
             for z in Z_FERR:
-                f = f.cut(cyl_x(3.4, w + 2, (L / 2 - w - 1) if sg > 0 else -(L / 2 + 1), y, zc + z))
-    for x in (-G.CAPTEUR["vis_y"], G.CAPTEUR["vis_y"]):
-        f = f.cut(G.cyl_y(3.4, w + 2, x, -H / 2 - 1, zc + (G.CAPTEUR["z_vis"] - zc)))
+                y0 = (H / 2 - w - 1) if sg > 0 else -(H / 2 + 1)
+                f = f.cut(G.cyl_y(3.4, w + 2, xl, y0, zc + z))
+    for y in (-G.CAPTEUR["vis_y"], G.CAPTEUR["vis_y"]):
+        f = f.cut(cyl_x(3.4, w + 2, -L / 2 - 1, y, G.CAPTEUR["z_vis"]))
     return f
 
 
@@ -214,12 +220,15 @@ def construire():
     G.reg("Bras_Droit", p_bras(1, zb), "PETG", G.COL["u"], "Bras droit de la fourche, avec l'étagère de l'élévation")
     G.reg("Ferrure_Gauche", p_ferrure(-1), "PETG", G.COL["u"], "Ferrure gauche du panneau")
     G.reg("Ferrure_Droite", p_ferrure(1), "PETG", G.COL["u"], "Ferrure droite du panneau")
-    G.reg("Collier_Axe", p_collier(), "PETG", G.COL["u"], "Collier d'arrêt de la tige gauche")
     G.reg("Cadre_Panneau", p_cadre(), "Al 6063-T5", G.COL["alu"], "Cadre du panneau, percé pour les ferrures")
-    tg = cq.Workplane().add(cq.Solid.makeCylinder(D_TIGE / 2, 40.0, Vector(-221.0, 0, 0), Vector(1, 0, 0)))
-    td = cq.Workplane().add(cq.Solid.makeCylinder(D_TIGE / 2, 62.0, Vector(181.0, 0, 0), Vector(1, 0, 0)))
-    G.reg("Tige_Gauche", tg, "Acier (visserie)", G.COL["steel"], "Tige acier rectifiée Ø8 x 40")
-    G.reg("Tige_Droite", td, "Acier (visserie)", G.COL["steel"], "Tige acier rectifiée Ø8 x 62")
+    xg0, xg1 = HW + 2.0, X_E - 0.5                 # tige gauche : de l'intérieur de la ferrure au bout du bras
+    xd1 = XC_EL - 4.0 + 16.0 - 0.5                 # tige droite : jusqu'au bout du moyeu de la roue
+    tg = cq.Workplane().add(cq.Solid.makeCylinder(D_TIGE / 2, xg1 - xg0, Vector(-xg1, 0, 0), Vector(1, 0, 0)))
+    td = cq.Workplane().add(cq.Solid.makeCylinder(D_TIGE / 2, xd1 - xg0, Vector(xg0, 0, 0), Vector(1, 0, 0)))
+    global LG_TIGE_G, LG_TIGE_D
+    LG_TIGE_G, LG_TIGE_D = xg1 - xg0, xd1 - xg0
+    G.reg("Tige_Gauche", tg, "Acier (visserie)", G.COL["steel"], f"Tige acier rectifiée Ø8 x {LG_TIGE_G:.0f}")
+    G.reg("Tige_Droite", td, "Acier (visserie)", G.COL["steel"], f"Tige acier rectifiée Ø8 x {LG_TIGE_D:.0f}")
     G.reg("Roulement_608", G.roulement_x("608"), "Acier 440C", G.COL["roulement"], "Roulement 608ZZ 8 x 22 x 7")
     gr = cq.Workplane("XY").add(cq.Solid.makeCylinder(1.2, 6.0, Vector(0, 0, -6.0), Vector(0, 0, 1)))
     gr = gr.cut(cq.Workplane("XY").polygon(6, 1.5 / math.cos(math.radians(30))).extrude(1.6).translate((0, 0, -1.6)))
@@ -241,8 +250,8 @@ def visserie_tete(zb):
     for x, y in G.trous_palier_az() + G.TROUS_SUPPORT_AZ:           # paliers d'azimut, sur les lumières
         v.append(("M3x8", (x, y, z_top + G.E_RONDELLE), (0, 0, -1)))
     for sg in (-1, 1):                                              # bras -> plateau, par-dessous
-        for x, y in ((209.0, -17.0), (209.0, 17.0), (233.0, -17.0), (233.0, 17.0)):
-            v.append(("M3x8", (sg * x, y, PLAQUE[0]), (0, 0, 1)))
+        for x, y in positions_pied(sg):
+            v.append(("M3x8", (x, y, PLAQUE[0]), (0, 0, 1)))
     e = 7.0
     for x, y in G.TROUS_PALIER_EL + G.TROUS_SUPPORT_EL:             # palier et support d'élévation, par-dessous l'étagère
         v.append(("M3x10", (x + DX_EL, y, zb - e), (0, 0, 1)))
@@ -265,8 +274,8 @@ def inserts_tete(zb):
     for x, y in G.trous_palier_az() + G.TROUS_SUPPORT_AZ:
         t.append(("C", (x, y, z0), (0, 0, -1)))
     for sg in (-1, 1):
-        for x, y in ((209.0, -17.0), (209.0, 17.0), (233.0, -17.0), (233.0, 17.0)):
-            t.append(("C", (sg * x, y, PLAQUE[1]), (0, 0, 1)))
+        for x, y in positions_pied(sg):
+            t.append(("C", (x, y, PLAQUE[1]), (0, 0, 1)))
     for x, y in G.TROUS_PALIER_EL + G.TROUS_SUPPORT_EL:
         t.append(("C", (x + DX_EL, y, zb), (0, 0, 1)))
     return t
@@ -308,8 +317,7 @@ def assembler(zv, zb, el=40.0, az=0.0, avec_panneau=True, avec_visserie=True, ph
         G.add(h, "Ecrou_M3", trans(a["x_face"] - me["oreille_ep"], ya + sx * me["entraxe"] / 2, a["z"] - me["decal"])
               * rot((0, 1, 0), -90) * rot((0, 0, 1), 30), f"Ecrou_M3_Moteur_Az_{i}")
     B = G.ROULEMENTS["608"]["B"]
-    G.add(h, "Roulement_608", trans(X_I, 0, ZT), "Roulement_608_D1")
-    G.add(h, "Roulement_608", trans(X_E + 21.0 - B, 0, ZT), "Roulement_608_D2")
+    G.add(h, "Roulement_608", trans(X_I, 0, ZT), "Roulement_608_D")
     G.add(h, "Roulement_608", trans(-X_I - B, 0, ZT), "Roulement_608_G")
     if avec_visserie:
         for i, (t, p, dd) in enumerate(visserie_tete(zb)):
@@ -330,25 +338,22 @@ def panneau_assy(avec_panneau=True, avec_visserie=True):
     G.add(p, "Ferrure_Gauche")
     G.add(p, "Ferrure_Droite")
     G.add(p, "Roue_Elevation")
-    G.add(p, "Tige_Gauche")                                          # les deux tiges et le collier tournent avec le panneau
+    G.add(p, "Tige_Gauche")                                          # les deux tiges tournent avec le panneau
     G.add(p, "Tige_Droite")
-    G.add(p, "Collier_Axe", trans(0, 0, -ZT))
-    xr = X_I + E_B + 21.0 + 1.0
+    xr = XC_EL - 4.0
     if avec_visserie:
         xg = xr + 12.0
-        xg_col = -(X_E + 8.0 + 0.3) - 4.0
-        G.add(p, "Insert_M3_C", G.loc_insert((xg_col, 0, 10.0), (0, 0, -1)), "Insert_M3_C_collier")
-        G.add(p, "Vis_STHC_M3x6", G.loc_vis((xg_col, 0, 10.0), (0, 0, -1)), "Vis_STHC_M3x6_collier")
         G.add(p, "Insert_M3_C", G.loc_insert((xg, 0, 10.0), (0, 0, -1)), "Insert_M3_C_roue")
         G.add(p, "Vis_STHC_M3x6", G.loc_vis((xg, 0, 10.0), (0, 0, -1)), "Vis_STHC_M3x6_roue")
         for sg in (-1, 1):
-            G.add(p, "Insert_M3_C", G.loc_insert((sg * 192.0, 0, 10.0), (0, 0, -1)), f"Insert_M3_C_ferrure_{sg}")
-            G.add(p, "Vis_STHC_M3x6", G.loc_vis((sg * 192.0, 0, 10.0), (0, 0, -1)), f"Vis_STHC_M3x6_ferrure_{sg}")
+            xgf = sg * (HW + E_FERR + E_MOY / 2)
+            G.add(p, "Insert_M3_C", G.loc_insert((xgf, 0, 10.0), (0, 0, -1)), f"Insert_M3_C_ferrure_{sg}")
+            G.add(p, "Vis_STHC_M3x6", G.loc_vis((xgf, 0, 10.0), (0, 0, -1)), f"Vis_STHC_M3x6_ferrure_{sg}")
             i = 0
             for y in Y_FERR:
                 for z in Z_FERR:
                     i += 1
-                    G.add(p, "Vis_CHC_M3x12", G.loc_vis((sg * 185.0, y, z), (-sg, 0, 0)), f"Vis_CHC_M3x12_ferrure_{sg}_{i}")
+                    G.add(p, "Vis_CHC_M3x12", G.loc_vis((sg * (HW + 7.0), y, z), (-sg, 0, 0)), f"Vis_CHC_M3x12_ferrure_{sg}_{i}")
                     G.add(p, "Ecrou_M3", trans(sg * ECROU_X, y, z) * rot((0, 1, 0), -90 * sg), f"Ecrou_M3_ferrure_{sg}_{i}")
     if avec_panneau:
         pan = cq.Assembly(name="Panneau")
@@ -363,8 +368,8 @@ def panneau_assy(avec_panneau=True, avec_visserie=True):
             for rp, _pc, g, pt, dd in G.table_inserts():
                 if rp == "panneau":
                     G.add(cap, f"Insert_M3_{g}", G.loc_insert(pt, dd), f"Insert_M3_{g}_capteur_{len(cap.children)}")
-        pan.add(cap, name="Capteur", loc=trans(0, CAPTEUR * (126.5 - 178.0), 0) * rot((0, 0, 1), CAPTEUR * 90))
-        p.add(pan, name="SA_Cadre", loc=trans(0, 0, DEC_PAN))
+        pan.add(cap, name="Capteur", loc=rot((0, 0, 1), 180))        # capteur sur le petit côté x local = -L/2
+        p.add(pan, name="SA_Cadre", loc=trans(0, 0, DEC_PAN) * rot((0, 0, 1), 90))   # cadre tourné : axe le long de 253 mm
     return p
 
 
@@ -421,14 +426,13 @@ def couples(M_t, r):
 
 ORIENT = {
     # rotations (axe, angle) puis pose sur le plateau : bras et ferrures sur leur face intérieure (x vers le haut)
-    "Bras_Droit": [((0, 1, 0), -90)], "Bras_Gauche": [((0, 1, 0), 90)],
+    "Bras_Droit": [((0, 1, 0), -90)], "Bras_Gauche": [((0, 1, 0), -90)],      # le gauche sur sa face extérieure (semelle vers l'intérieur)
     "Ferrure_Droite": [((0, 1, 0), -90)], "Ferrure_Gauche": [((0, 1, 0), 90)],
-    "Collier_Axe": [((0, 1, 0), 90)],
     "Roue_Elevation": [((0, 1, 0), -90)],
 }
 IMPRIMEES = ("Fond_Socle", "Socle", "Roue_Azimut_Fixe", "Moyeu_Chape", "Bague_Arret_Moyeu", "Palier_Vis_Azimut",
              "Support_Moteur_Azimut", "Vis_Azimut", "Palier_Vis_Elevation", "Support_Moteur_Elevation", "Vis_Elevation",
-             "Roue_Elevation", "Bras_Droit", "Bras_Gauche", "Ferrure_Droite", "Ferrure_Gauche", "Collier_Axe",
+             "Roue_Elevation", "Bras_Droit", "Bras_Gauche", "Ferrure_Droite", "Ferrure_Gauche",
              "Capteur_Solaire_Boitier", "Capteur_Solaire_Support")
 
 
@@ -443,7 +447,7 @@ def eprouvette():
         e = e.cut(cyl_z(G.ROULEMENTS["608"]["D"] + aj["roulement"] + dj, 8, 16 + 26 * i, 16, -1))
     for i, dj in enumerate((-0.10, 0.0, 0.10)):           # 685 : Ø11
         e = e.cut(cyl_z(11 + aj["roulement"] + dj, 8, 10 + 15 * i, 46, -1))
-    e = e.cut(cyl_z(D_TIGE + 0.1, 8, 57, 46, -1))          # tige Ø8 dans un moyeu, ferrure ou collier
+    e = e.cut(cyl_z(D_TIGE + 0.1, 8, 57, 46, -1))          # tige Ø8 dans un moyeu ou une ferrure
     e = e.cut(cyl_z(D_TIGE + 1.0, 8, 70, 46, -1))          # tige Ø8 dans un bras (jeu de 0,5 mm)
     e = e.cut(cyl_z(aj["passage_m3"], 8, 83, 46, -1)).cut(cyl_z(G.INSERT["C"]["d_trou"], 5, 93, 46, 6 - G.INSERT["C"]["prof"]))
     e = e.union(cyl_z(30 + aj["moyeu"], 8, 95, 16, 6))     # téton du moyeu dans le 6806
@@ -543,7 +547,7 @@ def main():
     print(f"  interférences (pose 40°) : {'aucune' if not hits else hits}")
     T.verifier_prise(flat)
     pire = (1e9,)
-    for el in (-2.0, 0.0, 20.0, 40.0, 60.0, 80.0, 92.0):
+    for el in (10.0, 15.0, 30.0, 40.0, 60.0, 80.0, 92.0):          # le cahier des charges demande 15° à 90°
         for az in (0.0, 90.0):
             fl = G.flatten(assembler(zv, zb, el, az, True, True, ph))
             h2 = G.interference(fl)
@@ -562,6 +566,15 @@ def main():
     _r, M_t, cg_t = G.mass_properties([x for x in f90 if "/SA_Panneau/" in x[0]])
     _r, M_h, cg_h = G.mass_properties(f90)
     r = math.hypot(cg_t.y, cg_t.z - ZT)
+    xs, ys, zs = [], [], []
+    for n, sh in f90:
+        if any(k in n for k in ("Cadre_Panneau", "Lamine_PV", "Cellules_PV", "Boite_Jonction", "/Capteur")):
+            continue
+        b_ = sh.BoundingBox()
+        xs += [b_.xmin, b_.xmax]; ys += [b_.ymin, b_.ymax]; zs += [b_.zmin, b_.zmax]
+    print(f"  enveloppe de la structure hors panneau (cahier des charges : 350 x 350 x 350) : "
+          f"{max(xs) - min(xs):.0f} x {max(ys) - min(ys):.0f} x {max(zs) - min(zs):.0f} mm "
+          f"(x de {min(xs):.0f} à {max(xs):.0f}, y de {min(ys):.0f} à {max(ys):.0f}, z de {min(zs):.0f} à {max(zs):.0f})")
     print(f"  partie qui bascule : {M_t:.2f} kg, CdG à {r:.1f} mm de l'axe ; tête complète {M_h:.2f} kg, CdG à z = {cg_h.z:.0f} mm")
     for l in couples(M_t, r):
         print("  " + l)

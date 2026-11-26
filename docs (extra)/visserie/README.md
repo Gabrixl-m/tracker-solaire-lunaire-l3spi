@@ -30,16 +30,16 @@ sortie de son trou le long de son axe (trait gris) ; chaque rondelle et chaque �
 | Vis CHC M3×6 | Arrêt en rotation de la tête, à travers la colonne du trépied | 1 | 0 |
 | Vis CHC M3×8 | Bague d'arrêt sous le moyeu (2) ; plateau sur le moyeu (3) ; palier et support d'azimut sur le plateau (4) ; bras sur le plateau (8) ; oreilles des deux 28BYJ-48 (4). Cas lunaire : NEMA 17 (4) et bague (2) | 6 | 21 |
 | Vis CHC M3×10 | Capteur solaire (4) ; fond sous le socle dans la démonstration (3) ; palier et support d'élévation sous l'étagère du bras droit (4, cas terrestre) | 4 | 11 |
-| Vis CHC M3×12 | Ferrures sur le cadre du panneau (8, cas terrestre). Cas lunaire : paliers et supports sur la chape (8) | 8 | 8 |
+| Vis CHC M3×12 | Ferrures sur les grands côtés du cadre du panneau (8, cas terrestre). Cas lunaire : paliers et supports sur la chape (8) | 8 | 8 |
 | Vis CHC M3×14 | Rails sur le chapeau (4) ; cadre du panneau sur les rails (4) | 8 | 0 |
 | Vis CHC M3×25 | Fond sous le socle, têtes dans la colonne (cas lunaire) | 3 | 0 |
 | Vis fraisée M3×8 (cas terrestre : M3×6) | Roue d'azimut sur le socle, têtes affleurantes | 3 | 3 |
 | Vis sans tête M3×4 | Blocage de chaque vis sans fin sur son arbre | 2 | 2 |
-| Vis sans tête M3×6 | Blocage des tiges Ø8 : roue d'élévation, collier, deux ferrures (cas terrestre) | 0 | 4 |
+| Vis sans tête M3×6 | Blocage des tiges Ø8 : roue d'élévation et deux ferrures (cas terrestre) | 0 | 3 |
 | Rondelle M3 (3,2 × 7 × 0,5) | Sous les 4 vis posées sur les lumières de la chaîne d'azimut | 4 | 4 |
 | Écrou M3 | Cas terrestre : ferrures (8), oreilles des moteurs (4), équerre du capteur (2). Cas lunaire : rails (4) et capteur (2) | 6 | 14 |
 | Écrou 1/4"-20 | Prisonnier dans le fond, pour le trépied | 0 | 1 |
-| Insert à chaud M3 × 5,7 / M3 × 3 | Cas terrestre seulement (le PETG se visse dans des inserts) | 0 | 7 / 26 |
+| Insert à chaud M3 × 5,7 / M3 × 3 | Cas terrestre seulement (le PETG se visse dans des inserts) | 0 | 7 / 25 |
 
 Les chiffres du cas terrestre sont ceux de `scripts/generate_fourche.py`. La planche à l'échelle du
 cas terrestre n'est pas régénérée pour la fourche.
@@ -101,14 +101,14 @@ La vis 1/4" n'est pas à acheter : c'est celle du plateau du trépied.
   du cadre. Un écrou M3 posé sur l'aile, dans le cadre, la serre ; on l'atteint par le dos
   ouvert du panneau.
 
-## Étape 11 : capteur solaire (dans la fourche : sur le long côté −Y du cadre)
+## Étape 11 : capteur solaire (dans la fourche : sur le petit côté haut du cadre)
 
 ![Capteur solaire](capteur_eclate.png)
 
 * Le boîtier se visse sur son équerre par 2 × M3×10, par-dessous.
 * L'équerre se visse contre le petit côté du cadre (côté du pivot libre) par 2 × M3×10, avec
-  un écrou M3 à l'intérieur du cadre pour chacune. **Dans la fourche, elle va sur le long côté −Y**
-  du cadre (les petits côtés portent les ferrures) : même équerre, mêmes vis.
+  un écrou M3 à l'intérieur du cadre pour chacune. **Dans la fourche, elle va sur le petit côté haut**
+  du cadre (les grands côtés portent les ferrures) : même équerre, mêmes vis.
 
 ## Régénérer ces images
 

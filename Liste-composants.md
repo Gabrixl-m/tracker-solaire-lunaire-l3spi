@@ -10,7 +10,7 @@ Tout ce qu'il faut acheter pour **une tête rotative à fourche et vis sans fin*
 **capteur solaire** (4 photodiodes sous une croix d'ombre, [README principal](README.md) § 4 et
 [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md) § 7), en plus des pièces imprimées de
 `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/` (voir le [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 2).
-L'élévation tourne sur **deux tiges d'acier Ø8** (62 et 40 mm), et les vis sans fin sur deux
+L'élévation tourne sur **deux tiges d'acier Ø8** (46 et 25 mm), et les vis sans fin sur deux
 arbres d'acier Ø5. Le plateau qui porte les bras est une **plaque d'aluminium de 5 mm** à faire
 découper (§ 4).
 
@@ -31,13 +31,13 @@ découper (§ 4).
 | Article | Caractéristiques | Qté | À chercher | Où il va | ≈ Prix |
 |---|---|---|---|---|---|
 | **Roulement 6806ZZ** (ISO 61806-2Z) | 30 × 42 × 7 mm | 2 | `6806ZZ bearing 30x42x7` (ou `61806ZZ`) | Azimut : dans le socle, autour du moyeu | 3 € |
-| **Roulement 608ZZ** (ISO 60-2Z) | 8 × 22 × 7 mm | 3 | `608ZZ bearing 8x22x7` | Élévation : deux dans le boss du bras droit, un dans le boss du bras gauche ; les tiges Ø8 tournent dedans | 1 € |
+| **Roulement 608ZZ** (ISO 60-2Z) | 8 × 22 × 7 mm | 2 | `608ZZ bearing 8x22x7` | Élévation : un dans chaque bras (montage symétrique) ; les tiges Ø8 tournent dedans | 1 € |
 | **Roulement 685ZZ** | 5 × 11 × **5** mm | 4 | `685ZZ bearing 5x11x5` | Deux par vis sans fin, dans les joues des paliers | 1 € |
 | **Accouplement flexible 5 mm / 5 mm**, **Ø14 × 19 mm** | Alésages Ø5 des deux côtés, alu. L'arbre du 28BYJ-48 est court : un Ø19 × 25 ne convient pas | 2 | `flexible shaft coupling 5mm x 5mm D14 L19` | Relie l'axe de chaque moteur à l'arbre de sa vis sans fin | 2–4 € |
 | **Tige acier rectifiée Ø5** | Ø5 mm, au moins 110 mm | 1 | `linear shaft 5mm 150mm` (ou `5mm chrome steel rod`) | À couper en **2 × 53 mm** : les arbres des deux vis sans fin | 3–5 € |
-| **Tige acier rectifiée Ø8** | Ø8 mm (tolérance h6 si possible), 102 mm au moins : prendre 150 mm | 1 | `linear shaft 8mm 150mm` (ou `8mm chrome steel rod`) | À couper en **62 mm** (tige droite, porte la roue d'élévation) et **40 mm** (tige gauche) : l'axe d'élévation | 3–5 € |
+| **Tige acier rectifiée Ø8** | Ø8 mm (tolérance h6 si possible), 71 mm au moins : prendre 100 mm | 1 | `linear shaft 8mm 100mm` (ou `8mm chrome steel rod`) | À couper en **46 mm** (tige droite, porte la roue d'élévation) et **25 mm** (tige gauche) : l'axe d'élévation | 3–5 € |
 | *ou* **Rond plein acier Ø5** (en magasin) | Acier laminé à chaud, Ø5 mm, 1 m (par exemple STANDERS chez Leroy Merlin) | 1 | `rond plein acier 5 mm` | Pour les arbres des vis seulement, moins précis : voir « Pièges à éviter ». **Pas pour l'axe Ø8** : il porte des roulements 608 | 4–5 € |
-| Rondelle de calage 8 × 14 × 0,5 mm (DIN 988) | Inox ou acier | 2 | `DIN 988 shim washer 8x14x0.5` | Entre le boss droit et la roue d'élévation : réduisent le jeu axial du panneau à environ 0,3 mm | 1 € |
+| Rondelle de calage 8 × 14 × 0,5 mm (DIN 988) | Inox ou acier | 2 | `DIN 988 shim washer 8x14x0.5` | Entre le moyeu de chaque ferrure et son bras : réduisent le jeu axial du panneau de 1 mm à environ 0,3 mm | 1 € |
 
 **Pièges à éviter** :
 * **Axe d'élévation** : une tige **rectifiée Ø8** (acier ou inox), lisse : les bagues intérieures des
@@ -143,7 +143,7 @@ La longueur d'une vis CHC se mesure sous la tête ; celle d'une vis fraisée, ho
 longueur a été vérifiée dans la CAO par `scripts/generate_fourche.py` : la vis traverse
 les pièces et mord dans la dernière sur la longueur indiquée (« prise »), sans toucher le fond
 de son trou ni dépasser là où quelque chose tourne. Dans le PETG, **les vis se vissent dans des
-inserts filetés en laiton, posés à chaud** (§ 3 bis) : 33 inserts, aucun filet n'est taillé
+inserts filetés en laiton, posés à chaud** (§ 3 bis) : 32 inserts, aucun filet n'est taillé
 dans le plastique (sauf les 2 vis sans tête M3×4 des moyeux de vis sans fin, voir plus bas).
 Longueurs choisies pour le plateau d'aluminium de 5 mm, l'étagère de 7 mm du bras et les parois de 1,5 mm du cadre.
 
@@ -158,12 +158,12 @@ Longueurs choisies pour le plateau d'aluminium de 5 mm, l'étagère de 7 mm du b
 | **CHC M3 × 8** | 4 | Les deux 28BYJ-48 sur leur support, par les oreilles (2 par moteur) | Oreille (0,8 mm) + support (4 mm) | **Écrou M3** derrière l'oreille | Écrou complet | 2,5 mm |
 | **CHC M3 × 10** | 3 | Fond sous le socle, par-dessous, têtes noyées | Fond (3,9 mm sous le lamage) | Insert M3 × 5,7 du socle | 5,6 mm | 2,5 mm |
 | **CHC M3 × 10** | 4 | Palier et support moteur d'élévation, par-dessous l'étagère du bras droit | Étagère (7 mm) | Insert M3 × 3 du palier / du support | 3 mm (insert complet) | 2,5 mm |
-| **CHC M3 × 10** | 2 | Équerre du capteur solaire contre le **long côté −Y** du cadre | Équerre (4 mm) + paroi du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 2 mm | 2,5 mm |
+| **CHC M3 × 10** | 2 | Équerre du capteur solaire contre le **petit côté haut** du cadre | Équerre (4 mm) + paroi du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 2 mm | 2,5 mm |
 | **CHC M3 × 10** | 2 | Boîtier du capteur sur son équerre, par-dessous | Équerre (4 mm) | Insert M3 × 5,7 du boîtier du capteur | 5,6 mm | 2,5 mm |
-| **CHC M3 × 12** | 8 | Ferrures sur les petits côtés du cadre, depuis l'extérieur, têtes noyées dans la ferrure (4 par ferrure) | Ferrure + paroi du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 2 mm | 2,5 mm |
+| **CHC M3 × 12** | 8 | Ferrures sur les grands côtés du cadre, depuis l'extérieur, têtes noyées dans la ferrure (4 par ferrure) | Ferrure + paroi du cadre (1,5 mm) | Écrou M3 posé dans le cadre | Écrou complet, dépasse de 2 mm | 2,5 mm |
 | **Tête fraisée M3 × 6** (ISO 10642 / DIN 7991) | 3 | Roue d'azimut sur le socle : elles doivent affleurer | Roue (fraisure) | Insert M3 × 3 du socle | 3 mm (insert complet) | 2 mm |
 | **Sans tête M3 × 4, bout plat** (ISO 4026 / DIN 913) | 2 | Une par vis sans fin, dans le trou radial du moyeu, serrée sur le méplat de l'arbre Ø5 | — | Moyeu de la vis sans fin (PETG, avant-trou Ø2,8) | — | 1,5 mm |
-| **Sans tête M3 × 6, bout plat** | 4 | Blocage sur la tige Ø8 (limée d'un méplat de 0,5 mm) de la roue d'élévation, du collier et des deux ferrures | — | Insert M3 × 3 du moyeu / du collier | 3 mm | 1,5 mm |
+| **Sans tête M3 × 6, bout plat** | 3 | Blocage sur la tige Ø8 (limée d'un méplat de 0,5 mm) de la roue d'élévation et des deux ferrures | — | Insert M3 × 3 du moyeu | 3 mm | 1,5 mm |
 
 Les vis de serrage des accouplements flexibles sont fournies avec eux. Il n'y a **plus de vis M2,5** : les 28BYJ-48 se fixent par leurs oreilles, avec des vis M3 et des écrous.
 
@@ -171,7 +171,7 @@ Les vis de serrage des accouplements flexibles sont fournies avec eux. Il n'y a 
 
 | Article (norme) | Dimensions | Qté | Où |
 |---|---|---|---|
-| **Écrou hexagonal M3** (ISO 4032 / DIN 934) | 5,5 mm sur plats, 2,4 mm d'épaisseur | 14 | 8 dans le cadre du panneau, un par vis de ferrure ; 4 derrière les oreilles des deux moteurs ; 2 contre le long côté −Y, pour l'équerre du capteur |
+| **Écrou hexagonal M3** (ISO 4032 / DIN 934) | 5,5 mm sur plats, 2,4 mm d'épaisseur | 14 | 8 dans le cadre du panneau, un par vis de ferrure ; 4 derrière les oreilles des deux moteurs ; 2 contre le petit côté haut, pour l'équerre du capteur |
 | **Écrou hexagonal 1/4"-20 UNC** (filetage des trépieds) | 7/16" = 11,1 mm sur plats, 7/32" = 5,6 mm d'épaisseur (un contre-écrou de 4 mm convient aussi) | 1 | Pris dans le fond : la tête se visse sur la vis 1/4" du trépied. Ce n'est pas un écrou M6 : le pas est différent |
 | **Rondelle plate M3** (ISO 7089 / DIN 125-A) | 3,2 × 7 × 0,5 mm | 4 | Sous la tête des 4 vis d'azimut posées sur les lumières du plateau. Sans elle, la tête Ø5,5 ne porterait que sur 0,4 mm aux deux bouts d'une lumière de 4,7 mm et s'enfoncerait dans le PETG |
 
@@ -189,7 +189,7 @@ l'aluminium. Pas de rondelle fendue (Grower) : elle marquerait le PETG.
   fait que serrer sur le méplat de l'arbre. Visser doucement, en revenant d'un demi-tour à
   chaque tour, et serrer légèrement (0,3 à 0,4 N·m, jusqu'à ce que le bout plat touche le méplat).
 * **Dans un écrou** : M3 environ 0,8 N·m (petit bras de la clé, serré fermement à la main).
-* **Vis de pression sur les tiges Ø8** (roue d'élévation, collier, ferrures) : limer d'abord sur la
+* **Vis de pression sur les tiges Ø8** (roue d'élévation, ferrures) : limer d'abord sur la
   tige un méplat de 0,5 mm, puis serrer à fond. Une goutte de **frein-filet moyen** (Loctite 243)
   est conseillée sur ces quatre vis : elles transmettent le couple de la roue au panneau.
 * **Frein-filet** (Loctite 243, moyen, facultatif) : une goutte sur les 2 vis sans tête, qui
@@ -198,7 +198,7 @@ l'aluminium. Pas de rondelle fendue (Grower) : elle marquerait le PETG.
 **Clés Allen** : 1,5 mm (vis sans tête), 2 mm (vis fraisées M3), 2,5 mm (vis CHC M3).
 
 **Récapitulatif à acheter** : CHC M3 × 8 : 21 ; M3 × 10 : 11 ; M3 × 12 : 8 ; fraisées M3 × 6 : 3 ;
-sans tête M3 × 4 : 2 ; sans tête M3 × 6 : 4 ; inserts à chaud M3 × 5,7 : 7 ; inserts à chaud M3 × 3 : 26 ;
+sans tête M3 × 4 : 2 ; sans tête M3 × 6 : 3 ; inserts à chaud M3 × 5,7 : 7 ; inserts à chaud M3 × 3 : 25 ;
 écrous M3 : 14 ; écrou 1/4"-20 UNC : 1 ; rondelles M3 : 4 ; rondelles de calage 8 × 14 × 0,5 : 2. Prendre
 quelques vis de rechange de chaque taille.
 
@@ -221,7 +221,7 @@ puis se fige). Le filet est en laiton : on peut démonter autant de fois qu'on v
 | Insert | Qté | À chercher | Trou imprimé | Où |
 |---|---|---|---|---|
 | **M3 × 5,7 mm** (Ø extérieur ≈ 4,6 mm, moleté) | 7 | `M3 heat set insert 5.7mm` (ou `M3x5.7x4.6`) | **Ø4,0 × 6,5 mm** de profondeur | 3 dans les piliers du socle (fond), 2 dans le moyeu (bague d'arrêt), 2 dans le boîtier du capteur solaire |
-| **M3 × 3 mm** (même diamètre extérieur) | 26 | `M3 heat set insert 3mm` (ou `M3x3x4.6`) | **Ø4,0 × 3,8 mm** de profondeur | 3 dans la roue d'azimut (socle), 3 dans le moyeu (plateau), 4 dans le palier et le support d'azimut, 4 dans le palier et le support d'élévation, **8 dans les semelles des bras**, 4 pour les **vis de pression** (roue d'élévation, collier, deux ferrures) |
+| **M3 × 3 mm** (même diamètre extérieur) | 25 | `M3 heat set insert 3mm` (ou `M3x3x4.6`) | **Ø4,0 × 3,8 mm** de profondeur | 3 dans la roue d'azimut (socle), 3 dans le moyeu (plateau), 4 dans le palier et le support d'azimut, 4 dans le palier et le support d'élévation, **8 dans les semelles des bras**, 3 pour les **vis de pression** (roue d'élévation, deux ferrures) |
 
 **Dans la CAO**, les inserts sont modélisés (cylindres creux, Ø4,0 / Ø2,5) dans leurs trous :
 c'est ce qui permet de contrôler la prise de chaque vis. **Autour de chaque trou** il y a au
@@ -232,7 +232,7 @@ le plastique refoulé par le moletage ne perce pas la pièce.
 1. Fer à souder réglé vers **220 à 250 °C**, avec une **pointe d'insert** (`heat set insert tip
    M3`, 5–8 €, souvent fournie en coffret avec les inserts) : la pointe a le même filet que
    l'insert et se retire sans l'entraîner. Température à valider sur l'éprouvette
-   d'ajustements avant de poser les 33 inserts : trop froid, l'insert se coince ; trop chaud, le
+   d'ajustements avant de poser les 32 inserts : trop froid, l'insert se coince ; trop chaud, le
    plastique coule et marque la surface.
 2. Poser l'insert sur la pointe, l'engager droit dans le trou, et **laisser le fer descendre
    sous son propre poids** jusqu'à ce que l'insert affleure la surface (quelques secondes).
@@ -250,8 +250,8 @@ sur le méplat de l'arbre).
 
 | Article | Caractéristiques | Qté | À chercher | Remarque |
 |---|---|---|---|---|
-| **Plateau d'aluminium 5 mm** | Plaque de 506 × 138 mm (forme en T, voir `pieces_metal/Plateau_Alu.dxf`), aluminium 5 mm (5083, 5754 ou 6082), découpée **au laser ou au jet d'eau**, ou à la scie à métaux dans une tôle de 5 mm puis percée d'après le DXF. Trous Ø3,5 (vis des bras, du moyeu) et lumières de l'azimut ; passage Ø15 du moyeu | 1 | `découpe laser aluminium 5 mm sur plan DXF` | Il porte les deux bras et le moyeu. **Ébavurer** les bords |
-| **Cadre du panneau** (celui du panneau acheté) | — | — | — | **Percer 8 trous Ø3,4 dans les deux petits côtés** (4 de chaque côté : à 15 mm de part et d'autre du milieu, à 7 mm sous et 3 mm au-dessus du plan médian du cadre), pour les ferrures ; **percer 2 trous Ø3,4 dans le long côté −Y**, pour l'équerre du capteur solaire. Les parois ne font que 1,5 mm : poser les écrous **dans** le cadre |
+| **Plateau d'aluminium 5 mm** | Plaque de 328 × 138 mm (forme en T, voir `pieces_metal/Plateau_Alu.dxf`), aluminium 5 mm (5083, 5754 ou 6082), découpée **au laser ou au jet d'eau**, ou à la scie à métaux dans une tôle de 5 mm puis percée d'après le DXF. Trous Ø3,5 (vis des bras, du moyeu) et lumières de l'azimut ; passage Ø15 du moyeu | 1 | `découpe laser aluminium 5 mm sur plan DXF` | Il porte les deux bras et le moyeu. **Ébavurer** les bords |
+| **Cadre du panneau** (celui du panneau acheté) | — | — | — | **Percer 8 trous Ø3,4 dans les deux grands côtés** (356 mm ; 4 de chaque côté : à 15 mm de part et d'autre du milieu, à 7 mm sous et 3 mm au-dessus du plan médian du cadre), pour les ferrures ; **percer 2 trous Ø3,4 dans un petit côté** (253 mm), pour l'équerre du capteur solaire. Les parois ne font que 1,5 mm : poser les écrous **dans** le cadre |
 
 ## 5. Consommables
 
@@ -261,8 +261,8 @@ sur le méplat de l'arbre).
 | **PETG noir** pour le boîtier du capteur solaire, qui doit être opaque | Environ 20 g : un reste de bobine suffit. À défaut, imprimer en clair et peindre en noir mat, intérieur des logements compris | `black PETG filament` | — |
 | Colle chaude ou colle époxy (bloque les photodiodes dans leurs logements) | 1 | `hot glue` | 3 € |
 | **Graisse PTFE** (vis sans fin et roues : obligatoire en PETG ; pas les roulements, graissés d'origine) | 1 tube | `PTFE grease` | 8 € |
-| **Colle** cyanoacrylate, ou colle à roulements Loctite 641 : **les tiges Ø8 dans les moyeux des ferrures** (obligatoire) ; vis sans fin sur leur arbre (optionnel) | 1 | `super glue`, `Loctite 641` | 3–12 € |
-| Frein-filet moyen (Loctite 243), facultatif | Sur les 4 vis de pression des tiges | 1 | `Loctite 243` | 8 € |
+| **Colle** cyanoacrylate, ou colle à roulements Loctite 641 : **les tiges Ø8 dans les moyeux des ferrures** (facultatif : les vis de pression suffisent, et le montage reste démontable) ; vis sans fin sur leur arbre (optionnel) | 1 | `super glue`, `Loctite 641` | 3–12 € |
+| Frein-filet moyen (Loctite 243), facultatif | Sur les 3 vis de pression des tiges | 1 | `Loctite 243` | 8 € |
 | **Pointe d'insert M3** pour fer à souder (pose des inserts à chaud, § 3 bis) | 1 | `heat set insert tip M3` | 5–8 € |
 | Colle à roulements, type Loctite 641 (seulement si les arbres font moins de 4,98 mm) | 1 | `Loctite 641` | 8–12 € |
 

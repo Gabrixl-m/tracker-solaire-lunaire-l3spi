@@ -2,7 +2,7 @@
 
 [⬅ Retour au README principal](../../README.md) · [Cas lunaire ➜](../Cas%20Lunaire/README.md)
 
-Une tête à **fourche** imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
+Une tête à **fourche étroite** imprimée en PETG, avec le panneau et le capteur solaire, vissée sur un
 trépied (§ 8) :
 
 | Vue d'ensemble, panneau à 40° | Côté moteurs |
@@ -14,6 +14,11 @@ C'est **le modèle qu'on construit** : ce document donne tout ce qu'il faut pour
 de l'impression au boîtier électronique. Le panneau, le capteur solaire et le principe de la
 commande, communs aux deux cas, sont décrits dans le [README principal](../../README.md).
 
+> **Cahier des charges L3 : la structure tient dans 350 × 350 × 350 mm** (le panneau, lui, peut
+> déborder). La CAO mesure **344 × 139 × 343 mm** hors panneau. Pour y arriver, le panneau est monté
+> **dans le sens de sa largeur** : l'axe d'élévation suit son petit côté de 253 mm (et non les 356 mm),
+> si bien que les deux bras de la fourche ne sont écartés que de 290 mm (§ 1).
+>
 > **Moteurs imposés : deux 28BYJ-48.** Ce sont de petits moteurs à 5 V, 15 à 20 fois moins
 > forts que les NEMA du cas lunaire. Ils ne peuvent pas faire basculer un panneau dont le
 > centre de gravité est loin de l'axe : **la tête a donc été redessinée à zéro, en fourche, pour
@@ -54,10 +59,10 @@ les deux premiers.
 ### Le principe
 
 Dans une **fourche**, le panneau tourne **autour de son propre plan médian**, sur deux
-**tiges d'acier Ø8** fixées à ses petits côtés par deux ferrures imprimées. Les tiges tournent
-dans des roulements 608 portés par les deux **bras** de la fourche. Le centre de gravité de la
-partie qui bascule tombe à **8 mm de l'axe** (au lieu de 62) : le couple de pesanteur résiduel
-n'est plus que de **0,11 N·m**. Aucun contrepoids n'est nécessaire. Le couple disponible vient
+**tiges d'acier Ø8** fixées à ses grands côtés (356 mm) par deux ferrures imprimées : **l'axe
+d'élévation est donc parallèle au côté de 253 mm**. Les tiges tournent dans **un roulement 608
+par bras** (montage symétrique). Le centre de gravité de la partie qui bascule tombe à **9 mm de
+l'axe** (au lieu de 62) : le couple de pesanteur résiduel n'est plus que de **0,13 N·m**. Aucun contrepoids n'est nécessaire. Le couple disponible vient
 d'une roue plus grande : **100 dents en élévation et 120 en azimut** (au lieu de 50 et 60), en
 gardant le module 0,8 des vis sans fin, imprimées en PETG.
 
@@ -69,23 +74,45 @@ gardant le module 0,8 des vis sans fin, imprimées en PETG.
 C'est long pour une mise en position (le moteur tourne à 120 demi-pas par seconde, soit
 1,8 tr/min), sans importance pour le suivi, qui ne fait que des corrections de 0,5° (§ 7).
 
+### Tenir dans 350 × 350 × 350 mm
+
+Le cahier des charges impose 350 mm au plus pour la structure, panneau excepté. Une fourche dont
+les bras encadrent le côté de 356 mm du panneau y dépasserait forcément (519 mm dans une version
+précédente de cette tête). En tournant le panneau de 90°, les bras n'encadrent plus que 253 mm :
+
+| Dimension de la structure (hors panneau) | Valeur mesurée sur la CAO | Limite |
+|---|---|---|
+| Largeur (axe d'élévation) | **344 mm** : x de −157 à +187 (bras gauche, plateau, bras droit, étagère du moteur d'élévation) | 350 |
+| Profondeur | **139 mm** | 350 |
+| Hauteur | **343 mm** : de −2 à 341 mm (le haut est la roue d'élévation, Ø82) | 350 |
+
+Conséquences de ce choix :
+* le panneau, de 356 mm, **pend de 178 mm sous l'axe** quand il est presque vertical : l'axe est
+  donc relevé à **300 mm** au-dessus de la base (240 mm avant), pour que le panneau passe
+  au-dessus du plateau. Garde mesurée sur la CAO : **au moins 13,7 mm** entre le panneau (cadre,
+  laminé, capteur) et la structure, de 5° à 92° d'élévation (le cahier des charges demande 15° à 90°) ;
+* l'axe d'élévation est à **902 mm du sol** sur le trépied (758 mm pour l'ancienne tête à chape) ;
+* **les marges de la structure sont courtes** : 7 mm sur la hauteur, 6 mm sur la largeur. Une
+  tolérance d'impression de 1 mm sur les bras ne les consomme pas, mais l'ajout d'un butoir ou d'un
+  support d'aimant ailleurs que dans ces limites demande de revérifier.
+
 ![Tête à fourche, panneau à 40°](../../docs%20%28extra%29/fourche_iso.png)
 
 ### Ce qui change, pièce par pièce
 
 | Élément | Cas lunaire | Démonstration sur Terre (ce document) |
 |---|---|---|
-| Support du panneau | Chape et chapeau en U, panneau sur deux rails, Al 6061-T6 | **Fourche** : un **plateau d'aluminium de 5 mm** (découpe laser, `pieces_metal/`) qui porte deux **bras imprimés** |
-| Pivots d'élévation | Inox 17-4PH Ø8 (dont un en D), sur 608 | **Deux tiges d'acier rectifié Ø8** (62 et 40 mm), sur **608**, fixées au panneau par des **ferrures imprimées** (vis de pression + colle) |
-| Axe d'élévation | Sous le cadre | **Dans le plan médian du panneau**, à 842 mm du sol sur le trépied (contre 758 mm pour la tête à chape) |
+| Support du panneau | Chape et chapeau en U, panneau sur deux rails, Al 6061-T6 | **Fourche étroite** : un **plateau d'aluminium de 5 mm** (découpe laser, `pieces_metal/`) qui porte deux **bras imprimés** de 9 mm |
+| Pivots d'élévation | Inox 17-4PH Ø8 (dont un en D), sur 608 | **Deux tiges d'acier rectifié Ø8** (25 et 46 mm), sur **un 608 par bras**, fixées au panneau par des **ferrures imprimées** (vis de pression, colle facultative) |
+| Axe d'élévation | Sous le cadre | **Dans le plan médian du panneau**, parallèle à son côté de 253 mm, à 902 mm du sol sur le trépied (contre 758 mm pour la tête à chape) |
 | Roues des vis sans fin | Bronze CuSn12, 50 et 60 dents | **PETG imprimé, 100 et 120 dents**, module 0,8 |
 | Vis sans fin | Inox 17-4PH | **PETG imprimé** |
 | Moteurs | NEMA 17 et NEMA 11 (version vide) | **2 × 28BYJ-48 5 V**, avec cartes **ULN2003** |
 | Accouplements | Al 7075-T73, Ø19 × 25 | Accouplement flexible alu **Ø5 / Ø5, Ø14 × 19 mm** (arbre court du 28BYJ-48) |
 | Drivers | TMC2209 | **Cartes ULN2003 + MCP23017** (extension de broches sur l'I²C), § 6 |
 | Socle, fond, moyeu, bague d'arrêt, paliers, supports | Al 6061-T6 anodisé | **PETG imprimé** |
-| Panneau | Velleman SOL10P | Velleman SOL10P : **cadre percé de 8 trous** (ferrures) dans les petits côtés |
-| Capteur solaire | Boîtier à croix et équerre, Al, photodiodes qualifiées | Boîtier et équerre **imprimés** (PETG noir), photodiodes BPW34 ; **sur le long côté −Y** du cadre |
+| Panneau | Velleman SOL10P | Velleman SOL10P : **cadre percé de 8 trous** (ferrures) dans les grands côtés |
+| Capteur solaire | Boîtier à croix et équerre, Al, photodiodes qualifiées | Boîtier et équerre **imprimés** (PETG noir), photodiodes BPW34 ; sur le **petit côté haut** du cadre |
 | Roulements | 6806, 608, 685 **ZZ** en acier 440C | 6806, **608**, 685 **ZZ** en acier standard |
 | Lubrification | MoS₂ sec | **Graisse PTFE**, obligatoire |
 | Visserie | Inox ou titane | Vis CHC M3 en inox A2, **inserts à chaud** en laiton |
@@ -98,29 +125,29 @@ modifié**.
 
 L'assemblage complet (roulements, tiges, arbres, moteurs, inserts et toute la visserie) est
 contrôlé par `scripts/generate_fourche.py` :
-* **aucune interférence** entre pièces, vis, écrous et inserts, à 40° d'élévation, et de −2° à
+* **aucune interférence** entre pièces, vis, écrous et inserts, à 40° d'élévation, et de 10° à
   92° à deux azimuts ; la même chose sur le trépied ;
-* **garde du panneau** sur toute la course : 16 mm au plus près de la fourche et du plateau ;
-  seul le collier d'arrêt de la tige gauche frôle le bras (0,3 mm, c'est la butée axiale
-  voulue, § 5) ;
+* **garde du panneau** sur toute la course (5° à 92°) : au moins 13,7 mm entre le panneau et la
+  structure ; seule la tige frôle son alésage de 0,5 mm dans le bras (c'est un jeu de 0,5 mm
+  autour de la tige, qui tourne dans le roulement) ;
+* **enveloppe de la structure** : 344 × 139 × 343 mm, dans les 350 mm du cahier des charges ;
 * **prise des vis** : au moins 2,6 mm dans un insert court de 3 mm (c'est-à-dire l'insert
   complet), 5,2 mm dans un insert long, les écrous en prise sur toute leur hauteur ;
 * les vis sans fin et les roues **engrènent sans chevauchement** (calage calculé) ;
-* partie qui bascule : **1,33 kg, centre de gravité à 8,2 mm de l'axe** ; tête complète
-  (partie fixe, panneau et capteur) : **2,81 kg**.
+* partie qui bascule : **1,32 kg, centre de gravité à 9,4 mm de l'axe** ; tête complète
+  (partie fixe, panneau et capteur) : **2,67 kg**.
 
 ## 2. Pièces à imprimer (`a_imprimer/`, déjà orientées sur le plateau)
 
-Les 19 pièces sont orientées pour l'impression et posées sur le plateau virtuel (z = 0).
+Les 18 pièces sont orientées pour l'impression et posées sur le plateau virtuel (z = 0).
 
 ![Pièces à imprimer](../../docs%20%28extra%29/fourche_pieces_a_imprimer.png)
 
 | Pièce | Qté | Orientation (déjà appliquée) | Remarque |
 |---|---|---|---|
-| `Bras_Droit` | 1 | **Sur sa face intérieure**, boss vers le haut | 173 × 92 × 69 mm. Porte deux 608, la roue d'élévation, et l'**étagère** de l'entraînement d'élévation (mur de 7 mm avec deux nervures, debout à l'impression) |
-| `Bras_Gauche` | 1 | **Sur sa face intérieure**, boss vers le haut | 173 × 70 × 48 mm. Un seul 608 |
-| `Ferrure_Droite`, `Ferrure_Gauche` | 1 + 1 | Sur la face intérieure, moyeu Ø20 vers le haut | Se vissent sur les petits côtés du cadre (4 × M3 chacune) ; la tige Ø8 est collée dans le moyeu et bloquée par une vis de pression |
-| `Collier_Axe` | 1 | À plat | Butée axiale de la tige gauche, côté extérieur du bras ; vis de pression |
+| `Bras_Droit` | 1 | **Sur sa face intérieure**, étagère vers le haut | Plaque de 9 mm, 225 mm de haut, un 608. Porte la roue d'élévation à l'extérieur et l'**étagère** de l'entraînement d'élévation (plaque de 7 mm avec deux nervures, debout à l'impression) ; semelle de fixation vers l'extérieur |
+| `Bras_Gauche` | 1 | **Sur sa face extérieure** (la semelle de fixation est vers l'intérieur, elle ressort vers le haut) | Plaque de 9 mm, 225 mm de haut, un 608 : le même montage que le bras droit |
+| `Ferrure_Droite`, `Ferrure_Gauche` | 1 + 1 | Sur la face intérieure, moyeu Ø20 vers le haut | Se vissent sur les **grands côtés** du cadre (4 × M3 chacune) ; la tige Ø8 est bloquée par une vis de pression (colle facultative) |
 | `Roue_Elevation` | 1 | À plat, moyeu en haut | **100 dents**, module 0,8, Ø82 ; moyeu Ø20 ; 6 allègements. 100 % de remplissage |
 | `Roue_Azimut_Fixe` | 1 | Dessous plat sur le plateau | **120 dents**, Ø98 ; buse 0,25 mm conseillée (denture) |
 | `Vis_Elevation`, `Vis_Azimut` | 1 + 1 | Debout, axe vertical | 100 % de remplissage ; bordure (brim) conseillée |
@@ -131,7 +158,7 @@ Les 19 pièces sont orientées pour l'impression et posées sur le plateau virtu
 | `Moyeu_Chape` | 1 | Collerette sur le plateau | Le moyeu qui porte le plateau d'aluminium ; 3 inserts M3×3 (plateau) et 2 inserts M3×5,7 (bague d'arrêt) |
 | `Bague_Arret_Moyeu` | 1 | À plat | |
 | `Capteur_Solaire_Boitier` | 1 | Croix en haut | **PETG noir**, 100 % de remplissage : il doit être opaque (§ 7) |
-| `Capteur_Solaire_Support` | 1 | Plaque sur le plateau, âme vers le haut | Équerre du capteur, vissée sur le **long côté −Y** du cadre |
+| `Capteur_Solaire_Support` | 1 | Plaque sur le plateau, âme vers le haut | Équerre du capteur, vissée sur le **petit côté haut** du cadre |
 
 **Pourquoi les bras et les ferrures sont couchés sur leur face intérieure.** Les efforts
 (panneau, vent, poussée des vis sans fin) agissent dans le plan du bras. Imprimé à plat, ce
@@ -141,17 +168,21 @@ ne tire une couche loin de la suivante. Les trous des roulements et des tiges so
 **verticaux** à l'impression, donc ronds. Seuls les 4 trous d'insert de la semelle de chaque
 bras sont horizontaux (Ø4 × 3,8 mm) : **les essayer sur l'éprouvette** (§ 4).
 
+**Attention : les deux bras font 225 mm de haut**, au-dessus du plafond de 200 mm du cahier des
+charges pour une pièce FDM. Ils sont à **découper en deux** (par exemple un pied et une tête
+assemblés par un recouvrement et des vis M3) : ce découpage n'est **pas encore dessiné**.
+
 Une des pièces est **en aluminium, découpée au laser ou au jet d'eau** (ou à la scie à métaux
-dans une tôle de 5 mm) : `pieces_metal/Plateau_Alu.dxf` (et `.step`), plaque de 506 × 138 mm
+dans une tôle de 5 mm) : `pieces_metal/Plateau_Alu.dxf` (et `.step`), plaque de 328 × 138 mm
 et de 5 mm, avec ses trous. Le cadre du panneau est percé de 8 + 2 trous Ø3,4 (§ 3).
 
-Environ 760 g de PETG si tout était plein (bras : 400 g), 400 à 450 g avec 4 périmètres et
-40 % de remplissage, plus 26 g pour le capteur solaire.
+Environ 750 g de PETG si tout était plein, 400 à 450 g avec 4 périmètres et 40 % de
+remplissage, plus 26 g pour le capteur solaire.
 
 **Réglages conseillés** :
 * PETG, couches de 0,2 mm ;
 * 4 périmètres, 40 % de remplissage gyroïde ;
-* **100 %** pour les deux vis sans fin, les deux roues, les ferrures et le collier ;
+* **100 %** pour les deux vis sans fin, les deux roues et les ferrures ;
 * compensation de la patte d'éléphant (≈ 0,2 mm) ;
 * aucun support : à confirmer dans le trancheur, surtout sous l'étagère du bras droit et ses
   nervures ;
@@ -173,7 +204,7 @@ En résumé, pour la mécanique :
 | Roulement **6806ZZ** (ISO 61806-2Z ; ou 6806-2RS), 30 × 42 × 7 mm | 2 |
 | Roulement **608ZZ** (ou 608-2RS), 8 × 22 × 7 mm | 3 |
 | Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
-| **Tige d'acier rectifiée Ø8**, coupée à **62 mm** (côté roue) et **40 mm** (côté collier) : 102 mm en tout, prendre 150 mm | 1 |
+| **Tige d'acier rectifiée Ø8**, coupée à **46 mm** (côté roue) et **25 mm** (côté gauche) : 71 mm en tout, prendre 100 mm | 1 |
 | Tige acier rectifiée Ø5, coupée à 53 mm (arbres des vis) | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, **Ø14 × 19 mm** (`flexible shaft coupling 5mm 5mm D14 L19`) | 2 |
 | **Moteur 28BYJ-48, 5 V**, avec sa carte **ULN2003** | 2 |
@@ -181,9 +212,9 @@ En résumé, pour la mécanique :
 | Vis CHC M3 : 21 × M3×8, 11 × M3×10, 8 × M3×12 | 40 |
 | Vis à tête fraisée M3×6 (roue d'azimut) | 3 |
 | Vis sans tête M3×4 (blocage des vis sans fin) | 2 |
-| Vis sans tête M3×6, bout plat (blocage des tiges) | 4 |
+| Vis sans tête M3×6, bout plat (blocage des tiges) | 3 |
 | **Insert fileté laiton à chaud** M3 × 5,7 mm (trou imprimé Ø4,0 × 6,5) | 7 |
-| **Insert fileté laiton à chaud** M3 × 3 mm (trou imprimé Ø4,0 × 3,8) | 26 |
+| **Insert fileté laiton à chaud** M3 × 3 mm (trou imprimé Ø4,0 × 3,8) | 25 |
 | Écrou M3 (ferrures, oreilles des moteurs, équerre du capteur) | 14 |
 | Rondelle M3 (ISO 7089, 3,2 × 7 × 0,5), sous les vis d'azimut posées sur les lumières | 4 |
 | Rondelle de calage 8 × 14 × 0,5 mm (DIN 988) | 2 |
@@ -195,10 +226,10 @@ Toute la visserie, avec ses quantités et ses prises : § 5, « Visserie en bref
 [`docs (extra)/visserie/`](../../docs%20%28extra%29/visserie/README.md).
 
 **Le cadre du panneau est à percer** (Velleman SOL10P, cadre en aluminium) :
-* **8 trous Ø3,4 dans les deux petits côtés** (4 de chaque côté : à 15 mm de part et d'autre
-  du milieu, et à 7 mm sous et 3 mm au-dessus du plan médian du cadre), pour les ferrures. Le
-  gabarit est la ferrure elle-même (4 trous, entraxe 30 × 10 mm) ;
-* **2 trous Ø3,4 dans le long côté −Y**, pour l'équerre du capteur solaire.
+* **8 trous Ø3,4 dans les deux grands côtés** (356 mm ; 4 de chaque côté : à 15 mm de part et
+  d'autre du milieu, et à 7 mm sous et 3 mm au-dessus du plan médian du cadre), pour les
+  ferrures. Le gabarit est la ferrure elle-même (4 trous, entraxe 30 × 10 mm) ;
+* **2 trous Ø3,4 dans l'un des petits côtés** (253 mm), pour l'équerre du capteur solaire.
 
 Les parois du cadre ne font que 1,5 mm : les écrous M3 sont posés **dans** le cadre, et on
 les atteint par le dos ouvert du panneau. Percer le cadre avant d'y poser les ferrures.
@@ -210,7 +241,7 @@ acier standard.
 
 | Réf. | Dimensions (Ø int. × Ø ext. × largeur) | Qté | Emplacement |
 |---|---|---|---|
-| **608** | 8 × 22 × 7 mm | 3 | Élévation : deux dans le boss du bras droit (un de chaque bout), un dans le boss du bras gauche ; les tiges Ø8 tournent dedans |
+| **608** | 8 × 22 × 7 mm | 2 | Élévation : un dans chaque bras (montage symétrique), enfoncé depuis l'intérieur ; les tiges Ø8 tournent dedans |
 | **6806** | 30 × 42 × 7 mm | 2 | Azimut : dans le socle, autour du moyeu |
 | **685** | 5 × 11 × 5 mm | 4 | Deux par vis sans fin, dans les joues des paliers |
 
@@ -248,7 +279,7 @@ reçus** (§ 9).
 | Ajustement | Cas lunaire | PETG | Pourquoi |
 |---|---|---|---|
 | Logements de roulements (608, 685, 6806) | nominal | **+0,15 mm** | Les trous imprimés sortent plus petits ; on obtient un serrage léger du roulement |
-| Alésage d'un axe (Ø5 acier des vis ; tige Ø8 dans les ferrures, la roue, le collier) | nominal | **+0,10 mm** | Serré. Une vis de pression bloque chaque vis sans fin et chaque tige |
+| Alésage d'un axe (Ø5 acier des vis ; tige Ø8 dans les ferrures et la roue) | nominal | **+0,10 mm** | Serré. Une vis de pression bloque chaque vis sans fin et chaque tige |
 | Alésage de la tige Ø8 dans les bras | | **Ø9** (jeu de 0,5 mm) | La tige tourne dans les 608, pas dans le plastique |
 | Moyeu dans les 6806 | Ø30 | **Ø29,95** | Serrage léger de la bague intérieure |
 | Fixation sur le trépied | Téton Ø45,5 dans la colonne Ø46 | **Écrou 1/4" captif**, logement de 11,4 mm sur plats (écrou de 11,1) | La vis du trépied tire l'écrou sur un plancher de 1,6 mm et serre le fond sur le moyeu |
@@ -263,7 +294,7 @@ reçus** (§ 9).
 **Imprimer d'abord l'éprouvette** `Eprouvette_Ajustements.stl`, avec les mêmes réglages que les
 pièces :
 * trois logements de **608** (le jeu retenu, −0,1 mm et +0,1 mm) et trois logements de 685 ;
-* un alésage **Ø8,1** (moyeux et collier), un alésage **Ø9** (bras), un passage M3 et un
+* un alésage **Ø8,1** (moyeux), un alésage **Ø9** (bras), un passage M3 et un
   **trou d'insert Ø4,0 × 3,8 mm** (poser un insert M3×3 pour régler la température du fer) ;
 * un téton Ø29,95 pour le 6806 (essayer un vrai roulement dessus : il doit entrer en forçant
   légèrement) ;
@@ -288,7 +319,7 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 
 **Retouches possibles au montage**, car une imprimante n'est jamais exacte au dixième près :
 * la vis sans fin serre entre ses deux 685 : poncer légèrement l'épaulement Ø6,5 d'un moyeu ;
-* un 608 entre trop dur dans un boss : passer un foret Ø22 à la main, sans perceuse ;
+* un 608 entre trop dur dans un bras : passer un foret Ø22 à la main, sans perceuse ;
 * engrènements : réglés au montage (lumières en azimut, clinquant en élévation), voir l'étape 11.
 
 ### Inserts à chaud et épaisseurs de paroi
@@ -296,12 +327,12 @@ Toutes les pièces sont alors régénérées avec ce jeu.
 **Les vis M3 ne sont pas vissées dans le plastique** : elles se vissent dans des **inserts filetés
 en laiton, posés à chaud** dans des trous imprimés. Le fer à souder fait fondre le PETG autour du
 moletage de l'insert, qui se fige ensuite : le filet est en laiton, donc on peut monter et
-démonter sans abîmer la pièce. Il y en a **33** :
+démonter sans abîmer la pièce. Il y en a **32** :
 
 | Insert | Qté | Trou imprimé | Où |
 |---|---|---|---|
 | **M3 × 5,7 mm** (long) | 7 | Ø4,0 × 6,5 mm | 3 dans les piliers du socle (fond), 2 dans le moyeu (bague d'arrêt), 2 dans le boîtier du capteur solaire |
-| **M3 × 3 mm** (court) | 26 | Ø4,0 × 3,8 mm | 3 dans le socle (roue d'azimut), 3 dans le moyeu (plateau), 4 dans les paliers et supports d'azimut, 4 dans le palier et le support d'élévation, **8 dans les semelles des deux bras**, et **4 vis de pression** : dans chaque ferrure (2), le collier (1) et le moyeu de la roue d'élévation (1) |
+| **M3 × 3 mm** (court) | 25 | Ø4,0 × 3,8 mm | 3 dans le socle (roue d'azimut), 3 dans le moyeu (plateau), 4 dans les paliers et supports d'azimut, 4 dans le palier et le support d'élévation, **8 dans les semelles des deux bras**, et **3 vis de pression** : dans chaque ferrure (2) et le moyeu de la roue d'élévation (1) |
 
 Le script modélise chaque insert dans son trou et **mesure la prise de chaque vis dans l'insert** :
 M3×10 et M3×8 dans un insert long : 5,6 et 5,2 mm ; M3×8, M3×10 et M3×6 dans un insert court :
@@ -316,7 +347,7 @@ le prolonge jusqu'à la tige Ø8, et la vis M3×6 passe à travers l'insert pour
 **Pose** : fer à souder à **220-250 °C** avec une pointe d'insert M3 (température à valider sur
 l'éprouvette). Poser l'insert sur la pointe, l'engager droit dans le trou, laisser le fer
 descendre jusqu'à ce que l'insert affleure, retirer le fer en gardant l'insert droit, puis le
-dresser avec une surface plane avant refroidissement. Poser les 33 inserts **avant**
+dresser avec une surface plane avant refroidissement. Poser les 32 inserts **avant**
 l'assemblage.
 
 **Exception** : les 2 vis sans tête M3×4 des vis sans fin restent taillées dans le PETG (moyeu
@@ -326,11 +357,9 @@ de 4,35 mm, trop court pour un insert ; elles ne font que serrer sur le méplat 
 1,6 mm. Les pièces reprises du projet (socle, fond, moyeu, bague, roues, vis, paliers) ont été
 vérifiées dans le projet précédent. Celles de la fourche l'ont été avec `scripts/verifier_parois.py`
 (pas de 0,2 mm, `FOURCHE=1 python scripts/verifier_parois.py 0.2 1.6 Bras_Droit Bras_Gauche
-Ferrure_Droite Palier_Vis_Elevation Support_Moteur_Elevation Collier_Axe`) :
+Ferrure_Droite Palier_Vis_Elevation Support_Moteur_Elevation`) :
 **aucune zone sous 1,6 mm** dans les deux bras, la ferrure droite (la gauche en est le symétrique),
-le palier et le support d'élévation et le collier. Un premier collier de 5 mm avait deux zones de
-1,1 à 1,2 mm autour de l'insert de sa vis de pression : il a été porté à **8 mm**, comme les moyeux.
-La roue d'élévation n'est pas contrôlée (ses dents sont minces par nature).
+le palier et le support d'élévation. La roue d'élévation n'est pas contrôlée (ses dents sont minces par nature).
 
 ## 5. Ordre de montage
 
@@ -352,17 +381,17 @@ La roue d'élévation n'est pas contrôlée (ses dents sont minces par nature).
 * **L'accouplement flexible Ø14 × 19** relie l'arbre du moteur à l'arbre de la vis. L'arbre
   du 28BYJ-48 est court : il entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans
   le lamage Ø17 du support.
-* **Le panneau tourne sur ses deux tiges** : la tige droite (62 mm) passe dans les deux 608
-  du bras droit, dans la ferrure, et porte la roue d'élévation ; la tige gauche (40 mm) passe
-  dans le 608 du bras gauche et la ferrure, et porte le **collier d'arrêt** à l'extérieur du bras.
-  La roue et le collier sont fixés par une vis de pression chacun, sur un **méplat limé
-  sur la tige** (0,5 mm). Les bagues des 608 tournent librement : c'est l'**axe d'élévation**.
-  Le **jeu axial** du panneau est d'environ 1,3 mm en tout : 0,3 mm entre le collier et le
-  bras gauche, 1 mm entre la roue et le boss droit. Pour qu'il ne décale pas la roue par
-  rapport à la vis sans fin, le réduire à environ 0,3 mm avec **deux rondelles de calage**
-  (8 × 14 × 0,5 mm, type DIN 988) entre le boss droit et la roue.
+* **Le panneau tourne sur ses deux tiges** : la tige droite (46 mm) passe dans le 608 du bras
+  droit et la ferrure, et porte la roue d'élévation à l'extérieur du bras ; la tige gauche (25 mm)
+  passe dans le 608 du bras gauche et la ferrure. La roue et chaque ferrure sont bloquées par une
+  vis de pression sur un **méplat limé sur la tige** (0,5 mm). Les bagues des 608 tournent
+  librement : c'est l'**axe d'élévation**. Il n'y a **plus de collier** : les moyeux des deux
+  ferrures, à 0,5 mm de la face intérieure de chaque bras, font butée dans les deux sens. Le **jeu
+  axial** du panneau est ainsi d'environ **1 mm** en tout. Pour qu'il ne décale pas la roue par
+  rapport à la vis sans fin, le réduire à 0,3 mm avec **une rondelle de calage** (8 × 14 × 0,5 mm,
+  type DIN 988) entre le moyeu de chaque ferrure et son bras.
 
-0. **Inserts** : poser à chaud les 33 inserts M3 dans leurs trous (§ 4), sur toutes les pièces
+0. **Inserts** : poser à chaud les 32 inserts M3 dans leurs trous (§ 4), sur toutes les pièces
    qui en portent, avant tout assemblage.
 1. **Socle** : presser le 6806 bas par-dessous, jusqu'à l'épaulement, puis le 6806 haut
    par-dessus. Pousser sur la bague extérieure (douille ou tube de Ø40 à 42), jamais sur la
@@ -382,34 +411,32 @@ La roue d'élévation n'est pas contrôlée (ses dents sont minces par nature).
    fixe. Les 4 vis M3×8 du palier et du support se mettent **par-dessus le plateau**, dans les
    lumières, chacune avec une rondelle M3 sous la tête.
 7. **Bras** : poser chaque bras sur le plateau et le visser **par-dessous** (4 × M3×8 par bras,
-   dans les 4 inserts de sa semelle). Presser les 608 dans les boss, par l'extérieur : deux dans
-   le bras droit, un dans le gauche.
+   dans les 4 inserts de sa semelle). Presser un 608 dans chaque bras, **par l'intérieur** (côté
+   panneau), jusqu'au fond du logement.
 8. **Chaîne d'élévation**, sur l'étagère du bras droit : le palier (2 × 685, vis sans fin,
    arbre Ø5 et vis de pression), l'accouplement, le support et le 28BYJ-48 (2 × M3×8 et deux
    écrous). Le palier et le support se vissent **par-dessous l'étagère** (4 × M3×10,
    dans les inserts de leurs semelles).
-9. **Panneau et ferrures** : visser chaque ferrure sur un petit côté du cadre (4 × M3×12
+9. **Panneau et ferrures** : visser chaque ferrure sur un **grand côté** du cadre (4 × M3×12
    depuis l'extérieur, têtes noyées dans la ferrure, écrou M3 dans le cadre).
-10. **Tiges** : présenter le panneau entre les bras, le sens des ferrures vers l'extérieur.
-    Enfiler la tige droite depuis l'extérieur à travers les deux 608 du bras droit, puis le
-    moyeu de la ferrure (une goutte de colle cyanoacrylate ou de Loctite 641) jusqu'à son
-    bout, puis la roue d'élévation sur son extrémité (vis de pression sur le méplat). Enfiler
-    la tige gauche à travers le 608 gauche et la ferrure, puis le collier (à 0,3 mm du boss,
-    vis de pression sur le méplat). **Placer la roue dans le plan de la vis sans fin** (elle
-    engrène avec elle), puis serrer sa vis de pression ; intercaler les rondelles de calage
-    entre elle et le boss pour supprimer le jeu axial.
+10. **Tiges** : présenter le panneau entre les bras, le moyeu des ferrures vers l'extérieur.
+    Enfiler la tige gauche depuis l'extérieur à travers le 608 gauche et le moyeu de la ferrure
+    (vis de pression sur le méplat), puis la tige droite à travers le 608 droit et la ferrure,
+    et enfin la roue d'élévation sur son extrémité. **Placer la roue dans le plan de la vis sans
+    fin** (elle engrène avec elle), puis serrer sa vis de pression ; intercaler les rondelles de
+    calage pour supprimer le jeu axial.
 11. **Réglage des engrènements** (vis et roues graissées) :
     * en azimut, rapprocher le palier dans ses lumières jusqu'à supprimer le jeu, sans
       point dur sur un tour complet ;
     * en élévation, s'il y a trop de jeu, caler la semelle du palier d'un clinquant de 0,1 mm ;
       si la vis est trop serrée, poncer la semelle.
 12. **Capteur solaire** (§ 7) : coller les 4 BPW34 dans le boîtier et les câbler, visser le
-    boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le **long côté −Y**
+    boîtier sur son équerre (2 × M3×10 par-dessous), puis l'équerre contre le **petit côté haut**
     du cadre (2 × M3×10, écrous M3 posés dans le cadre).
 
 **Équilibrage** : une fois le panneau monté sur ses tiges, **le lâcher à plusieurs inclinaisons**
 (moteur débranché, vis sans fin retirée du contact si besoin). Il doit rester à peu près où on
-le met : le centre de gravité n'est qu'à 8 mm de l'axe. S'il bascule nettement d'un côté,
+le met : le centre de gravité n'est qu'à 9 mm de l'axe. S'il bascule nettement d'un côté,
 chercher ce qui est mal placé (capteur, câbles) avant de toucher au moteur.
 
 ### Visserie en bref
@@ -418,8 +445,8 @@ chercher ce qui est mal placé (capteur, câbles) avant de toucher au moteur.
   écrous en vert clair**.
 * Presque tout est en **vis CHC M3** (tête cylindrique à six pans creux), de 8 à 12 mm. S'y
   ajoutent 3 vis fraisées M3×6 sous la roue d'azimut et des **vis sans tête** : 2 M3×4 qui
-  bloquent les vis sans fin sur leur arbre, 4 M3×6 qui bloquent les deux tiges, la roue et le
-  collier.
+  bloquent les vis sans fin sur leur arbre, 3 M3×6 qui bloquent les tiges (la roue et les deux
+  ferrures).
 
 | Vis (norme) | Qté | Où | Se visse dans |
 |---|---|---|---|
@@ -428,7 +455,7 @@ chercher ce qui est mal placé (capteur, câbles) avant de toucher au moteur.
 | **CHC M3 × 12** | 8 | Ferrures sur le cadre (4 par ferrure) | Écrous M3 dans le cadre |
 | **Fraisée M3 × 6** | 3 | Roue d'azimut sur le socle | Inserts M3×3 |
 | **Sans tête M3 × 4**, bout plat | 2 | Vis sans fin sur leur arbre | PETG (avant-trou Ø2,8) |
-| **Sans tête M3 × 6**, bout plat | 4 | Roue d'élévation, collier, deux ferrures, sur la tige | Inserts M3×3 |
+| **Sans tête M3 × 6**, bout plat | 3 | Roue d'élévation et deux ferrures, sur la tige | Inserts M3×3 |
 
 Écrous M3 : **14** (8 ferrures, 4 moteurs, 2 capteur). Rondelles M3 : **4**. Écrou 1/4" : 1.
 Clés Allen : 1,5 mm (sans tête), 2 mm (fraisées), 2,5 mm (CHC).
@@ -874,9 +901,8 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 
 Le capteur est celui du [README principal](../../README.md) (§ 4) : même boîtier, même croix,
 mêmes photodiodes BPW34. Pour la
-démonstration, le boîtier et son équerre sont imprimés. **Il est fixé sur le long côté −Y du
-cadre** (et non plus sur un petit côté, qu'occupent maintenant les ferrures) : à la verticale, l'autre
-long côté passerait contre le moyeu.
+démonstration, le boîtier et son équerre sont imprimés. **Il est fixé sur le petit côté haut
+du cadre** (le côté de 253 mm qui monte quand le panneau s'incline) : les grands côtés portent les ferrures.
 
 | Pièce | Impression |
 |---|---|
@@ -993,7 +1019,7 @@ colonne Ø50.
 * La vis du trépied doit dépasser du plateau d'au moins **4,5 mm**. Au-delà de 7 mm, elle
   dépasse simplement dans le socle, sans gêner.
 * **Bloquer la rotule** du trépied (panoramique et inclinaison) et la mettre **de niveau**.
-  La tête et le panneau pèsent 2,8 kg : vérifier la charge maximale du trépied.
+  La tête et le panneau pèsent 2,7 kg : vérifier la charge maximale du trépied.
 * **Stabilité** : un trépied léger bascule bien plus tôt que le trépied du projet.
   Le calcul est fait ci-dessous pour un trépied courant.
 
@@ -1013,17 +1039,17 @@ Le trépied y est modélisé simplement, à partir de deux cotes mesurées :
 Le reste (tubes, corps, rotule) est estimé sur les photos.
 
 **Ce que ça donne :**
-* l'axe d'élévation est à **842 mm** du sol (758 mm pour l'ancienne tête à chape : le plateau de
-  la fourche et le moyeu relèvent l'ensemble). Panneau vertical, son bord haut est à environ
-  0,97 m et son point le plus bas à environ 0,72 m ;
+* l'axe d'élévation est à **902 mm** du sol (758 mm pour l'ancienne tête à chape : il faut le
+  relever pour que le panneau, long de 356 mm, passe au-dessus du plateau). Panneau vertical, son
+  bord haut est à environ 1,08 m et son point le plus bas à environ 0,72 m ;
 * **aucune interférence**. Ce qui tourne (tête, vis, panneau) passe à **36 mm** au plus près du
   trépied, panneau vertical (les molettes de la rotule restent en dessous) ;
-* charge sur la rotule : tête et panneau font **2,8 kg**. Leur centre de gravité s'écarte
-  jusqu'à 22 mm de l'axe, ce qui fait 0,6 N·m que les blocages de la rotule doivent tenir ;
+* charge sur la rotule : tête et panneau font **2,65 kg**. Leur centre de gravité s'écarte
+  jusqu'à 12 mm de l'axe, ce qui fait 0,3 N·m que les blocages de la rotule doivent tenir ;
 * masse du trépied estimée à 0,9 kg (à peser : plus lourd, il serait un peu plus stable).
 
 **Stabilité.** C'est le point faible : les pieds ne sont qu'à 23 cm de l'axe. Les bords du
-triangle d'appui sont donc à 11,5 cm du centre, alors que l'axe est à 84 cm du sol et que le
+triangle d'appui sont donc à 11,5 cm du centre, alors que l'axe est à 90 cm du sol et que le
 panneau déporte son centre de gravité.
 
 Le calcul est fait dans toutes les orientations du panneau, avec un vent perpendiculaire au
@@ -1033,13 +1059,14 @@ cette tête.)
 
 | Lest sous le trépied | Pente de basculement (pire orientation) | Vent de basculement (pire orientation) |
 |---|---|---|
-| Aucun | 8,4° | **7,8 m/s (28 km/h)** |
-| Boîtier électronique seul (3 kg) | 15,1° | 10,6 m/s (38 km/h) |
-| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 28,3° | **15,8 m/s (57 km/h)** |
+| Aucun | 8,7° | **7,5 m/s (27 km/h)** |
+| Boîtier électronique seul (3 kg) | 15,4° | 10,3 m/s (37 km/h) |
+| **Boîtier + 2 sacs de sable de 4 kg (11 kg)** | 28,5° | **15,3 m/s (55 km/h)** |
 
-La tête à fourche est plus haute que l'ancienne (axe à 842 mm au lieu de 758) mais un peu plus
-légère à l'extrémité : le vent de basculement est pratiquement le même (28, 38 et 57 km/h contre
-26, 37 et 57 km/h).
+La tête à fourche est plus haute que l'ancienne (axe à 902 mm au lieu de 758) mais son centre de
+gravité est mieux centré : le vent de basculement est pratiquement le même (27, 37 et 55 km/h contre
+26, 37 et 57 km/h). **Le vent de démonstration du cahier des charges, 5 m/s (18 km/h), est
+tenu même sans lest** (basculement à 7,5 m/s : un vent 2,3 fois plus fort en effort).
 
 ### Version lestée, sans toucher au trépied
 
@@ -1072,7 +1099,7 @@ La tête imprimée reste donc telle qu'elle est. La version lestée ajoute seule
 | Plus de 70 km/h, ou toute vigilance | Rentrer le tracker |
 
 * **À vérifier sur le vrai trépied** : la charge qu'il supporte. Une forte rafale lui fait
-  porter jusqu'à 11 kg de lest en plus des 2,8 kg de la tête. Faire l'essai : soulever le
+  porter jusqu'à 11 kg de lest en plus des 2,7 kg de la tête. Faire l'essai : soulever le
   trépied lesté par sa colonne, les verrous des jambes ne doivent pas glisser. Rentrer les
   tubes du bas à fond si possible.
 * **Sur un toit** : placer l'ensemble à 2 m au moins du bord (le vent y accélère) et
@@ -1095,15 +1122,15 @@ solution demande de sangler ou de visser les pieds du trépied sur la planche.
 ## 9. Couples, marges et tenue de la version PETG
 
 Calculés par `scripts/generate_fourche.py`, avec le modèle de couples du projet (mêmes vis sans fin,
-mêmes frottements, mêmes couples de vent) et la **partie qui bascule de cette tête : 1,33 kg,
-centre de gravité à 8,2 mm de l'axe**, soit 0,11 N·m de pesanteur résiduelle. Hypothèses :
+mêmes frottements, mêmes couples de vent) et la **partie qui bascule de cette tête : 1,32 kg,
+centre de gravité à 9,4 mm de l'axe**, soit 0,12 N·m de pesanteur résiduelle (0,13 N·m avec le frottement). Hypothèses :
 **moteur prudent de 25 mN·m**, vis et roues **graissées** (μ ≈ 0,15, rendement 0,30), roulements
 **ZZ**, couple de vent du projet (0,35 N·m en élévation et 0,50 N·m en azimut à 10 m/s, variant comme
 le carré de la vitesse).
 
 | Marge = disponible / besoin | Intérieur | 6 m/s (22 km/h) | 8 m/s (29 km/h) | 10 m/s (36 km/h) |
 |---|---|---|---|---|
-| **Élévation** : 0,76 N·m disponibles | ×6,5 | **×3,1** | **×2,2** | **×1,6** |
+| **Élévation** : 0,76 N·m disponibles | ×5,8 | **×3,0** | **×2,1** | **×1,6** |
 | **Azimut** : 0,91 N·m disponibles | ×30,5 | ×4,4 | **×2,6** | **×1,7** |
 
 Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont multipliées par 1,37.
@@ -1119,8 +1146,8 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 ### Ce que change le PETG en fonctionnement
 
 * **Couples** : les vis et roues en PETG doivent être **graissées**.
-  * À sec (μ ≈ 0,30), le rendement tombe de 0,30 à 0,18 : l'élévation n'a plus que ×1,8 à 6 m/s, et **moins
-    de ×1 à 10 m/s** (×0,95) ; l'azimut ×2,5 à 6 m/s et environ ×1 à 10 m/s : **graisser**.
+  * À sec (μ ≈ 0,30), le rendement tombe de 0,30 à 0,18 : l'élévation n'a plus que ×1,7 à 6 m/s, et **moins
+    de ×1 à 10 m/s** (×0,93) ; l'azimut ×2,5 à 6 m/s et environ ×1 à 10 m/s : **graisser**.
   * Ces marges sont celles des roulements **ZZ**. Avec des 2RS, les joints freinent : environ
     0,008 N·m pour la paire de 685 (à retirer du couple du moteur, soit le quart de celui-ci) et
     environ 0,15 N·m pour la paire de 6806 (à retirer à la roue d'azimut). À 10 m/s, la marge
@@ -1136,15 +1163,16 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
   le maillon faible** : le réducteur en plastique du 28BYJ-48 lâche bien avant elles.
 * **Chemin du couple de l'élévation** (ordres de grandeur, à confirmer par un essai au montage) :
   la roue transmet son couple à la tige par une **vis de pression sur un méplat** (M3, rayon de la
-  tige 4 mm : environ 250 N pour 1 N·m), puis la tige le transmet à la ferrure droite par la **colle**
-  (Ø8 × 8 mm de collage, plusieurs N·m en théorie) et sa vis de pression, puis la ferrure au cadre par
-  **4 vis M3** dans la paroi de 1,5 mm (environ 17 N par vis, 3 MPa d'appui sur l'aluminium).
-  Le **maillon à surveiller est la vis de pression sur la tige** : limer un vrai méplat et la
-  freiner (Loctite 243, facultatif).
-* **Tiges et roulements** : le panneau pèse 1,2 kg, soit 12 N répartis sur trois roulements 608
-  dont la charge admissible dépasse le kilonewton : sans enjeu. Les bras, couchés à l'impression,
-  fléchissent de moins de 0,01 mm dans leur plan à 10 m/s (estimation par un calcul de poutre, à
-  confirmer).
+  tige 4 mm : environ 250 N pour 1 N·m), puis la tige le transmet à la ferrure par **sa propre vis de
+  pression** (et la colle si on en met : elle est facultative, pour rester démontable), puis la
+  ferrure au cadre par **4 vis M3** dans la paroi de 1,5 mm (environ 17 N par vis, 3 MPa d'appui
+  sur l'aluminium). Les **maillons à surveiller sont les deux vis de pression sur la tige** : limer
+  un vrai méplat et les freiner (Loctite 243, facultatif).
+* **Tiges et roulements** : le panneau pèse 1,2 kg, soit 12 N répartis sur deux roulements 608
+  dont la charge admissible dépasse le kilonewton : sans enjeu. Les bras sont hauts (225 mm) et
+  minces (9 mm) : estimation par un calcul de poutre, à confirmer par la simulation demandée par le
+  cahier des charges : en flexion dans leur plan (efforts du vent), environ 0,01 mm à 5 m/s ; hors
+  plan (réaction de la vis sans fin, environ 6 N), de l'ordre de 0,1 mm en tête.
 * **Énergie** : alimenté, un 28BYJ-48 consomme environ 1 W (deux bobines à 5 V et 50 Ω). Les
   sorties du MCP23017 sont à 0 entre deux corrections : moins de 20 mW en moyenne.
 * **Fluage** : sous une charge permanente, le PETG se déforme lentement. Le panneau étant équilibré,
@@ -1168,16 +1196,34 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 5. **Le couple de vent est celui de la géométrie précédente** (0,35 et 0,50 N·m à 10 m/s) : avec le
    pivot au centre du panneau, il est sans doute un peu plus faible en élévation, mais les bras ajoutent
    de la prise au vent. **À mesurer** avant de compter sur la marge de ×1,6 à 10 m/s.
-6. **Contrôler le collier et les ferrures à l'impression** : les trous d'insert horizontaux des semelles
+6. **Contrôler les ferrures et les semelles des bras à l'impression** : les trous d'insert horizontaux des semelles
    des bras sont le point à regarder en premier (§ 2 et § 4). `scripts/verifier_inserts.py` n'a pas été adapté à
    la fourche : la prise des vis est vérifiée par `scripts/generate_fourche.py`.
+
+### Conformité au cahier des charges L3 (partie Matière)
+
+| Exigence | État de cette tête |
+|---|---|
+| Structure ≤ 350 × 350 × 350 mm (panneau hors enveloppe) | ✅ **344 × 139 × 343 mm** mesuré sur la CAO (§ 1) |
+| Chaîne embase → azimut → fourche → élévation → cadre ; axe d'élévation au plus près du centre de gravité | ✅ Fourche étroite, centre de gravité à 9 mm de l'axe |
+| Réduction pour le 28BYJ-48, maintien moteur coupé | ✅ Vis sans fin irréversibles, marge ≥ ×2 jusqu'à 8 m/s (calcul) |
+| Élévation 15° à 90°, azimut ≥ 180° | ✅ CAO contrôlée de 5° à 92° d'élévation ; azimut ±180° géré par le logiciel. **Butées mécaniques et fins de course : non modélisées** |
+| Vent de démonstration 5 m/s | ✅ Moteurs : marge ×3 ou plus. Trépied : basculement à 27 km/h sans lest |
+| Montage symétrique en élévation | ✅ Un 608 par bras |
+| Matériau PETG ou ASA ; pas de PLA | ✅ PETG |
+| Pièces FDM ≤ 200 × 200 × 200 mm, parois ≥ 1,6 mm | ⚠️ Parois vérifiées, toutes les pièces ≤ 200 mm **sauf les deux bras (225 mm de haut)** : ils sont à **découper en deux** (découpage justifié) ou à faire valider |
+| Démontable : vis, inserts, pas de collage irréversible | ✅ Colle facultative sur les tiges ; **photodiodes collées à la colle chaude** |
+| Roulement d'azimut 6202 recommandé | ⚠️ Deux 6806 (30 × 42 × 7) : à justifier par le calcul |
+| Composants du commerce pris dans le kit du FabLab | ⚠️ Le **plateau d'aluminium** (328 mm) et les **tiges d'acier Ø8** n'en font pas partie |
+| Interfaces : aimants AS5600, 4 LDR, batterie dans l'embase | ❌ Non faites : micro-rupteur et capteur Hall, photodiodes BPW34, batterie dans un boîtier sous le trépied |
+| Livrables : plans ISO 128 / 1101, simulation SolidWorks (SF ≥ 2), contrôle dimensionnel, fiches d'interface, maquette testée | ❌ Non faits. Coaxialité ≤ 0,2 mm des deux 608 : les bras sont repérés par des vis dans des trous de 3,5 mm, **sans pion de positionnement** |
 
 ## 10. Fichiers de ce dossier et du boîtier électronique
 
 | Fichier | Contenu |
 |---|---|
-| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/*.stl` (et `.step`) | Les 19 pièces à imprimer (17 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
-| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/pieces_metal/` | `Plateau_Alu.dxf` et `.step` : le plateau d'aluminium de 5 mm à découper (506 × 138 mm) |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/a_imprimer/*.stl` (et `.step`) | Les 18 pièces à imprimer (16 pour la tête, 2 pour le capteur solaire), déjà orientées et posées sur le plateau |
+| `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/pieces_metal/` | `Plateau_Alu.dxf` et `.step` : le plateau d'aluminium de 5 mm à découper (328 × 138 mm) |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Tete_Rotative_Fourche.step` | L'assemblage de la tête (avec roulements, tiges, arbres Ø5, moteurs, inserts et toute la visserie), pour vérifier le montage |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante (§ 4) |
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire, trépied et lest (§ 8) |
@@ -1191,7 +1237,7 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 
 Arborescence de l'assemblage de la tête dans SolidWorks : celle du cas lunaire
 ([README du cas lunaire](../Cas%20Lunaire/README.md), § 10), avec en plus le sous-ensemble
-`SA_Panneau` (panneau, ferrures, tiges, collier et roue d'élévation) qui tourne autour de l'axe
+`SA_Panneau` (panneau, ferrures, tiges et roue d'élévation) qui tourne autour de l'axe
 d'élévation.
 
 Régénération, depuis la racine du dépôt :
@@ -1211,11 +1257,11 @@ la réponse courte et l'endroit où elle est détaillée.
 | Question piège | Réponse |
 |---|---|
 | « Pourquoi des 28BYJ-48, si faibles ? » | **Ils sont imposés.** Ils donnent 34 mN·m (25 en valeur prudente) contre 340 pour un NEMA 17. On a donc redessiné la tête pour qu'ils suffisent (§ 1). |
-| « Pourquoi une fourche et pas un contrepoids ? » | **Un contrepoids ajoute 0,9 kg et ne laisse que ×1,3 de marge à 10 m/s.** La fourche met l'axe dans le plan médian du panneau : le centre de gravité tombe à 8 mm de l'axe, sans masse en plus, et la marge à 10 m/s est de ×1,6 (§ 1 et § 9). La variante à contrepoids est dans le document caché [Variante 28BYJ-48](../../.variante_28BYJ-48/README.md). |
+| « Pourquoi une fourche et pas un contrepoids ? » | **Un contrepoids ajoute 0,9 kg et ne laisse que ×1,3 de marge à 10 m/s.** La fourche met l'axe dans le plan médian du panneau : le centre de gravité tombe à 9 mm de l'axe, sans masse en plus, et la marge à 10 m/s est de ×1,6 (§ 1 et § 9). La variante à contrepoids est dans le document caché [Variante 28BYJ-48](../../.variante_28BYJ-48/README.md). |
 | « Les 28BYJ-48 suffisent-ils vraiment ? » | **Oui, jusqu'à 8 m/s (29 km/h), avec une marge d'au moins ×2,** moteur prudent, vis graissées. Au-delà, le panneau se gare à plat (§ 9). **Et à condition de tester chaque moteur :** ils sont très dispersés. |
 | « Que se passe-t-il si le moteur décroche dans une rafale ? » | **Rien de grave** : il perd des pas, la vis sans fin tient le panneau, les dents ne voient jamais plus que le couple du réducteur du 28BYJ-48. Il faut re-référencer les axes (§ 9). |
 | « Pourquoi ne pas piloter les moteurs directement par le Heltec ? » | **Il n'a que 9 broches libres** et il en faut 8 pour les moteurs en plus du reste. Un MCP23017 sur l'I²C les remplace (§ 6). |
-| « Pourquoi une plaque d'aluminium dans un modèle tout imprimé ? » | **Elle porte les deux bras sur 506 mm** : en PETG elle fléchirait et ne tiendrait pas sur beaucoup d'imprimantes. C'est, avec les tiges, les roulements et la visserie, ce qu'on ne peut pas imprimer (§ 2). |
+| « Pourquoi une plaque d'aluminium dans un modèle tout imprimé ? » | **Elle porte les deux bras sur 328 mm** : en PETG elle fléchirait et ne tiendrait pas sur beaucoup d'imprimantes. C'est, avec les tiges, les roulements et la visserie, ce qu'on ne peut pas imprimer (§ 2). |
 | « Pourquoi des tiges d'acier et pas des pivots imprimés ? » | **Les 608 demandent un axe Ø8 rectifié** : une tige imprimée n'aurait ni ce diamètre ni cet état de surface. L'acier encaisse sans souci le poids du panneau et le couple de la roue (§ 9). Les ferrures, elles, sont imprimées. |
 | « Tout cela est-il vérifié ? » | **En CAO oui** (interférences, prises de vis, garde, marges, stabilité) ; **rien n'est mesuré sur une pièce réelle**. Les points à valider avant impression sont au § 9. |
 
@@ -1228,8 +1274,8 @@ la réponse courte et l'endroit où elle est détaillée.
 | « Des engrenages en plastique, c'est solide ? » | **Oui, parce que le moteur est faible.** Au couple maximal du 28BYJ-48, une dent travaille à environ 7 MPa pour environ 50 MPa de résistance : le réducteur du moteur lâche avant (§ 9). |
 | « Une pièce imprimée sort aux cotes du dessin ? » | **Non.** Les trous sortent trop petits et le haut d'un trou horizontal s'affaisse. D'où les jeux d'ajustement (+0,15 mm sur les logements de roulements), les trous en goutte, et l'éprouvette à imprimer en premier (§ 4). |
 | « Peu importe le sens d'impression d'un bras ? » | **Non.** Les bras et les ferrures s'impriment couchés sur leur face intérieure : les efforts sont alors dans le plan des couches et jamais perpendiculaires à elles (§ 2). |
-| « Vous imprimez tout à 100 % de remplissage pour que ce soit solide ? » | **Non.** La résistance vient surtout des parois : 4 périmètres et 40 % de remplissage suffisent. Seuls les vis sans fin, les roues, les ferrures et le collier sont pleins (§ 2). |
-| « Vous vissez directement dans le plastique ? » | **Non**, sauf deux petites vis sans tête : toutes les autres se vissent dans des **inserts filetés en laiton, posés à chaud** (33 au total, § 4). Le filet est en laiton, donc on démonte autant qu'on veut ; chaque insert est entouré de 1,6 mm de plastique au moins. |
+| « Vous imprimez tout à 100 % de remplissage pour que ce soit solide ? » | **Non.** La résistance vient surtout des parois : 4 périmètres et 40 % de remplissage suffisent. Seuls les vis sans fin, les roues et les ferrures sont pleins (§ 2). |
+| « Vous vissez directement dans le plastique ? » | **Non**, sauf deux petites vis sans tête : toutes les autres se vissent dans des **inserts filetés en laiton, posés à chaud** (32 au total, § 4). Le filet est en laiton, donc on démonte autant qu'on veut ; chaque insert est entouré de 1,6 mm de plastique au moins. |
 | « Le plastique garde sa forme sous charge ? » | **Non, il flue** : sous une charge permanente, il se déforme lentement. Le panneau est équilibré, donc la denture est peu chargée ; on gare le panneau à plat entre deux démonstrations (§ 9). |
 
 ### Lubrification

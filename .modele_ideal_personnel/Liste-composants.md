@@ -100,7 +100,7 @@ des arbres des vis sans fin.
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
 **Montage du boîtier électronique** (implantation au [README du cas terrestre](README.md), § 6, et dans
-`../Electronique/Implantation_Boitier.fzz`) :
+`Electronique/Implantation_Boitier.fzz`) :
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
@@ -120,7 +120,7 @@ des arbres des vis sans fin.
 | Câble IPEX (U.FL) vers **traversée SMA femelle étanche** (avec joint), et antenne 868 MHz articulée à connecteur SMA | Environ 10 cm | 1 + 1 | `IPEX to SMA female bulkhead waterproof`, `868MHz SMA antenna` | Sort l'antenne du boîtier fermé (elle porte plus loin) | 6 € |
 
 Le câblage complet est sur le **schéma électrique**
-([`Electronique/Schema_Electrique.pdf`](../Electronique/Schema_Electrique.pdf), projet QElectroTech
+([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech
 `Electronique/Schema_Electrique.qet`). Le brochage du Heltec V4, le réglage des TMC2209 et les
 bibliothèques sont décrits dans le [README du cas terrestre](README.md), § 6. Le branchement du
 capteur solaire est au § 7.

@@ -2,8 +2,8 @@
 
 Écrit Electronique/Schema_Electrique.qet : un projet QElectroTech 0.9 (s'ouvre aussi dans les
 versions suivantes) avec trois folios :
-  1. le schéma complet : alimentation 12 V / 5 V, Heltec WiFi LoRa 32 V4, 2 drivers TMC2209
-     et leurs moteurs, capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall,
+  1. le schéma complet : alimentation 12 V / 5 V, Heltec WiFi LoRa 32 V4, MCP23017, 2 cartes ULN2003
+     et leurs moteurs 28BYJ-48 de 12 V (avec --nema : 2 drivers TMC2209 et leurs NEMA), capteur solaire (4 BPW34 + ADS1115), fin de course et capteur à effet Hall,
      et la mesure de l'énergie : panneau Velleman SOL10P, régulateur PWM Velleman SOL10UC3, batterie
      au plomb et deux wattmètres INA219 (INA219B d'Adafruit sur le panneau, SEN0291 de DFRobot sur
      le 12 V du tracker, branché sur la sortie LOAD du régulateur) ;
@@ -20,11 +20,16 @@ Pour exporter les images et le PDF, ouvrir le projet dans QElectroTech : Fichier
 (PNG) et Fichier > Exporter en PDF.
 """
 import os
+import sys
 import uuid
 from xml.sax.saxutils import escape, quoteattr
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SORTIE = os.path.join(RACINE, "Electronique", "Schema_Electrique.qet")
+# Par défaut : le cas terrestre, avec deux 28BYJ-48 de 12 V (cartes ULN2003 et MCP23017). Avec --nema :
+# l'ancien modèle idéal personnel (NEMA 17 et NEMA 11, deux TMC2209), rangé dans .modele_ideal_personnel/.
+NEMA = "--nema" in sys.argv
+SORTIE = (os.path.join(RACINE, ".modele_ideal_personnel", "Electronique", "Schema_Electrique.qet") if NEMA
+          else os.path.join(RACINE, "Electronique", "Schema_Electrique.qet"))
 
 # uuid stables d'une génération à l'autre (diff git lisible)
 _NS = uuid.UUID("6b3c1f2e-8d1a-4c55-9a4e-2f1f6c7d9e01")
@@ -115,7 +120,7 @@ class Symbole:
                 f'height="{y1 - y0}" hotspot_x="{-x0}" hotspot_y="{-y0}">'
                 f'<uuid uuid="{uid(self.cle, "definition")}"/>'
                 f'<names><name lang="fr">{escape(self.nom)}</name><name lang="en">{escape(self.nom)}</name></names>'
-                f'<elementInformations/><informations>Tracker solaire lunaire : symbole dessiné par '
+                f'<elementInformations/><informations>Tracker solaire : symbole dessiné par '
                 f'scripts/generate_schema_electrique.py</informations>'
                 f'<description>{"".join(self.prims + bornes)}</description></definition>')
 
@@ -216,9 +221,9 @@ def faire_symboles():
     s.texte(-108, -112, "Heltec WiFi LoRa 32 V4", 9, True)
     s.texte(-108, -98, "ESP32-S3 + radio LoRa SX1262", 6)
     s.texte(-108, -88, "(863-870 MHz), écran OLED, USB-C", 6)
-    for txt, n, y in (("GPIO47  J2-13", "STEP_EL", -100), ("GPIO43  J2-6", "DIR_EL", -80),
-                      ("GPIO33  J2-12", "EN", 0), ("GPIO48  J2-14", "STEP_AZ", 40),
-                      ("GPIO45  J3-6", "DIR_AZ", 60)):
+    for txt, n, y in ((("GPIO47  J2-13", "STEP_EL", -100), ("GPIO43  J2-6", "DIR_EL", -80),
+                       ("GPIO33  J2-12", "EN", 0), ("GPIO48  J2-14", "STEP_AZ", 40),
+                       ("GPIO45  J3-6", "DIR_AZ", 60)) if NEMA else ()):
         s.texte(112 - 3.75 * len(txt), y + 3, txt, 6)
         s.borne(n, 140, y, "e", 20)
     for txt, n, y in (("5V  J2-2", "5V", -60), ("3V3  J3-2", "3V3", -40)):
@@ -239,7 +244,57 @@ def faire_symboles():
                            "26 PSRAM, 35 LED, 36 Vext,", "37 mesure, 34 et 38 à 42 GNSS")):
         s.texte(-108, -2 + 10 * i, t, 6)
 
-    for cle, ordre in (("tmc2209", ("STEP", "DIR", "EN")), ("tmc2209_b", ("EN", "STEP", "DIR"))):
+    if not NEMA:
+        s = symbole("uln2003", "Carte ULN2003 pour 28BYJ-48")
+        s.rect(-60, -70, 120, 140, BLANC)
+        s.texte(-44, -48, "Carte ULN2003", 8, True)
+        s.texte(-44, -36, "kit du 28BYJ-48", 6)
+        s.texte(-44, 52, "+ = 12 V", 6)
+        s.texte(-44, 62, "5 relié au +", 6)
+        for n, y in (("IN1", -30), ("IN2", -10), ("IN3", 10), ("IN4", 30)):
+            s.texte(-54, y + 3, n, 6)
+            s.borne(n, -80, y, "w", 20)
+        for n, t, y in (("1", "1 bleu", -30), ("2", "2 rose", -10), ("3", "3 jaune", 10), ("4", "4 orange", 30),
+                        ("5", "5 rouge", 50)):
+            s.texte(58 - 3.9 * len(t), y + 3, t, 6)
+            s.borne(n, 80, y, "e", 20)
+        s.borne("+", -30, -90, "n", 20)
+        s.borne("-", 30, 90, "s", 20)
+
+        s = symbole("mcp23017", "Extension d'entrées/sorties MCP23017")
+        s.rect(-70, -100, 140, 200, BLANC)
+        s.texte(-56, -20, "MCP23017", 8, True)
+        s.texte(-56, -8, "16 sorties, I2C 0x20", 6)
+        for n, y in (("SDA", -70), ("SCL", -50)):
+            s.texte(-64, y + 3, n, 6)
+            s.borne(n, -90, y, "w", 20)
+        for n, t, y in (("GPA0", "GPA0 IN1", -70), ("GPA1", "GPA1 IN2", -50), ("GPA2", "GPA2 IN3", -30),
+                        ("GPA3", "GPA3 IN4", -10), ("GPB0", "GPB0 IN1", 20), ("GPB1", "GPB1 IN2", 40),
+                        ("GPB2", "GPB2 IN3", 60), ("GPB3", "GPB3 IN4", 80)):
+            s.texte(66 - 3.9 * len(t), y + 3, t, 6)
+            s.borne(n, 90, y, "e", 20)
+        s.texte(-56, 20, "GPA : élévation", 6)
+        s.texte(-56, 30, "GPB : azimut", 6)
+        for n, x in (("VDD", -20), ("RESET", 20)):
+            s.texte(x + 3, -96 + 3.9 * len(n), n, 6, rot=-90)
+            s.borne(n, x, -120, "n", 20)
+        for n, x in (("A0", -60), ("A1", -40), ("A2", -20), ("VSS", 0)):
+            s.texte(x + 3, 96, n, 6, rot=-90)
+            s.borne(n, x, 120, "s", 20)
+
+        s = symbole("moteur_28byj", "Moteur 28BYJ-48 (unipolaire, 5 fils)")
+        s.cercle(0, 0, 90)
+        s.texte(-9, 2, "M", 14, True)
+        s.poly([(-14, 16), (-14, 10), (-7, 10), (-7, 16), (0, 16), (0, 10), (7, 10), (7, 16), (14, 16)],
+               ferme=False, style=FIN)
+        for n, t, y in (("1", "1 bleu", -40), ("2", "2 rose", -20), ("3", "3 jaune", 0), ("4", "4 orange", 20),
+                        ("5", "5 rouge", 40)):
+            xe = -(45 ** 2 - y ** 2) ** 0.5
+            s.ligne(-60, y, xe, y)
+            s.texte(-56, y - 2, t, 6)
+            s.borne(n, -60, y, "w")
+
+    for cle, ordre in ((("tmc2209", ("STEP", "DIR", "EN")), ("tmc2209_b", ("EN", "STEP", "DIR"))) if NEMA else ()):
         s = symbole(cle, "Driver TMC2209")
         s.rect(-60, -70, 120, 140, BLANC)
         s.texte(-40, 34, "TMC2209", 8, True)
@@ -441,6 +496,8 @@ SECTIONS = {
     "ant": ("coaxial", "50 Ω", 1.0, "câble coaxial 50 Ω (1,13 mm ou RG178), IPEX vers SMA"),
     "gnss": ("fourni", "", 1.0, "câble fourni avec le module GNSS"),
 }
+if not NEMA:
+    SECTIONS["mot"] = ("AWG 24", "0,20 mm²", 1.0, "câble souple 5 conducteurs, 1,5 m, un par moteur : 4 bobines et le commun (rouge)")
 DEFAUT_POT = {"12V": "p12", "5V": "p5", "3V3": "log", "0V": "log", None: "log"}
 
 
@@ -541,7 +598,7 @@ class Folio:
         h = self.rows * 80 + 20
         return (f'<diagram title={quoteattr(self.titre)} order="{self.num}" folio="%id/%total" '
                 f'version="0.90" author="Gabrixl-m" date="{date}" filename="Schema_Electrique.qet" '
-                f'plant="Tracker solaire lunaire" locmach="Démonstration sur Terre" indexrev="A" '
+                f'plant="Tracker solaire (démonstration sur Terre)" locmach="{"NEMA 17 et NEMA 11, TMC2209" if NEMA else "28BYJ-48 de 12 V, ULN2003 et MCP23017"}" indexrev="A" '
                 f'auto_page_num="" displayAt="bottom" cols="{self.cols}" colsize="60" rows="{self.rows}" '
                 f'rowsize="80" height="{h}" displaycols="true" displayrows="true" '
                 f'freezeNewElement="false" freezeNewConductor="false">'
@@ -574,6 +631,10 @@ def folio_schema():
     f.fil(j5, "e", d1, "A", pot="5V")
     f.fil(j5, "n", f.auto(P5U, 420, 300), "1", pot="5V")
     f.fil(d1, "K", f.auto(P5, 500, 300), "1", via=[("x", 500)], pot="5V")
+    if not NEMA:
+        f.texte(60, 405, "U1 ne sert qu'au Heltec et au capteur Hall : les\n"
+                         "moteurs 28BYJ-48 de 12 V sont sur le 12 V, par les\n"
+                         "cartes ULN2003 (cadre MOTEURS).", 7)
     f.texte(60, 440, "D1 empêche le 5 V du port USB-C de remonter dans\n"
                      "l'abaisseur quand le Heltec est branché à l'ordinateur.\n"
                      "U1 a une sortie fixe de 5,0 V : la mesurer (4,9 à 5,2 V)\n"
@@ -582,7 +643,8 @@ def folio_schema():
     f.texte(60, 498, "SECTION DES FILS (écrite sur chaque fil ; détail au folio 3)", 7, True)
     f.texte(60, 512, "AWG 18 (0,82 mm²) : batterie ou bloc 12 V jusqu'au boîtier\n"
                      "AWG 20 (0,52 mm²) : 12 V et 0 V de puissance sur la plaque\n"
-                     "AWG 22 (0,33 mm²) : moteurs (câble 4 conducteurs) et 5 V\n"
+                     + ("AWG 22 (0,33 mm²) : moteurs (câble 4 conducteurs) et 5 V\n" if NEMA else
+                        "AWG 22 (0,33 mm²) : 5 V ; moteurs : AWG 24 (câble 5 cond.)\n") +
                      "AWG 24 (0,20 mm²) : signaux et 3,3 V sur la plaque\n"
                      "AWG 26 (0,13 mm²) : capteurs de la tête (blindé pour le solaire)\n"
                      "AWG 20 souple : câbles du panneau et du régulateur de charge\n"
@@ -600,53 +662,103 @@ def folio_schema():
     f.fil(gn, "1", a1, "GNSS", via=[("y", 125), ("x", 880)], cat="gnss")
     f.fil(a1, "GND", f.auto(M, 720, 530), "1", pot="0V", cat="p5")
 
-    # ---- drivers et moteurs -----------------------------------------------------------------
-    f.cadre(1060, 40, 1780, 600, "MOTEURS")
-    f.cadre(1490, 60, 1770, 590, None)
-    f.texte(1496, 64, "sur la tête rotative", 7, True)
-    drv = {}
-    for k, (ref, sym, yc, mref, mot, fils_m) in enumerate((
-            ("U2", "tmc2209", 200, "M1", "NEMA 17 (17HS3401) : élévation",
-             ("broche 1", "broche 4", "broche 3", "broche 6")),
-            ("U3", "tmc2209_b", 480, "M2", "NEMA 11 (11HS18-0674S) : azimut",
-             ("noir", "vert", "rouge", "bleu")))):
-        u = f.el(sym, ref, 1260, yc, (ref, 66, 72, 8, True))
-        drv[ref] = u
-        top = yc - 110
-        jv = f.auto("jonction", 1220, top)
-        f.fil(f.auto(P33, 1220, top - 30), "1", jv, "n", pot="3V3")
-        f.fil(jv, "s", u, "VIO", pot="3V3")
-        jm = f.auto("jonction", 1240, top)
-        f.fil(jv, "e", jm, "w", pot="3V3")
-        f.fil(jm, "s", u, "MS1", pot="3V3")
-        f.fil(jm, "e", u, "MS2", via=[("x", 1260)], pot="3V3")
-        jvm = f.auto("jonction", 1300, top)
-        f.fil(f.auto(P12, 1300, top - 30), "1", jvm, "n", pot="12V")
-        f.fil(jvm, "s", u, "VM", pot="12V")
-        c = f.el("condensateur_polarise", f"C{k + 1}", 1360, yc - 70,
-                 (f"C{k + 1}", 12, -22, 8, True), ("100 µF 25 V", 12, -10, 6, False),
-                 ("au plus près", 12, 0, 6, False))
-        f.fil(jvm, "e", c, "+", via=[("x", 1360)], pot="12V")
-        f.fil(c, "-", f.auto(M, 1360, yc - 30), "1", pot="0V", cat="p12")
-        for b, x, cat in (("PDN_UART", 1220, "log"), ("GND", 1250, "log"), ("GNDM", 1280, "p12")):
-            f.fil(u, b, f.auto(M, x, yc + 110), "1", pot="0V", cat=cat)
-        m = f.el("moteur_pas", mref, 1600, yc + 20, (mref, 40, -50, 8, True), (mot, -70, 42, 6, False))
-        for b_drv, b_mot, t in zip(("1A", "1B", "2A", "2B"), ("A+", "A-", "B+", "B-"), fils_m):
-            f.fil(u, b_drv, m, b_mot, num=t, cat="mot")
+    if NEMA:
+        # ---- drivers et moteurs -----------------------------------------------------------------
+        f.cadre(1060, 40, 1780, 600, "MOTEURS")
+        f.cadre(1490, 60, 1770, 590, None)
+        f.texte(1496, 64, "sur la tête rotative", 7, True)
+        drv = {}
+        for k, (ref, sym, yc, mref, mot, fils_m) in enumerate((
+                ("U2", "tmc2209", 200, "M1", "NEMA 17 (17HS3401) : élévation",
+                 ("broche 1", "broche 4", "broche 3", "broche 6")),
+                ("U3", "tmc2209_b", 480, "M2", "NEMA 11 (11HS18-0674S) : azimut",
+                 ("noir", "vert", "rouge", "bleu")))):
+            u = f.el(sym, ref, 1260, yc, (ref, 66, 72, 8, True))
+            drv[ref] = u
+            top = yc - 110
+            jv = f.auto("jonction", 1220, top)
+            f.fil(f.auto(P33, 1220, top - 30), "1", jv, "n", pot="3V3")
+            f.fil(jv, "s", u, "VIO", pot="3V3")
+            jm = f.auto("jonction", 1240, top)
+            f.fil(jv, "e", jm, "w", pot="3V3")
+            f.fil(jm, "s", u, "MS1", pot="3V3")
+            f.fil(jm, "e", u, "MS2", via=[("x", 1260)], pot="3V3")
+            jvm = f.auto("jonction", 1300, top)
+            f.fil(f.auto(P12, 1300, top - 30), "1", jvm, "n", pot="12V")
+            f.fil(jvm, "s", u, "VM", pot="12V")
+            c = f.el("condensateur_polarise", f"C{k + 1}", 1360, yc - 70,
+                     (f"C{k + 1}", 12, -22, 8, True), ("100 µF 25 V", 12, -10, 6, False),
+                     ("au plus près", 12, 0, 6, False))
+            f.fil(jvm, "e", c, "+", via=[("x", 1360)], pot="12V")
+            f.fil(c, "-", f.auto(M, 1360, yc - 30), "1", pot="0V", cat="p12")
+            for b, x, cat in (("PDN_UART", 1220, "log"), ("GND", 1250, "log"), ("GNDM", 1280, "p12")):
+                f.fil(u, b, f.auto(M, x, yc + 110), "1", pot="0V", cat=cat)
+            m = f.el("moteur_pas", mref, 1600, yc + 20, (mref, 40, -50, 8, True), (mot, -70, 42, 6, False))
+            for b_drv, b_mot, t in zip(("1A", "1B", "2A", "2B"), ("A+", "A-", "B+", "B-"), fils_m):
+                f.fil(u, b_drv, m, b_mot, num=t, cat="mot")
 
-    # signaux de commande : Heltec -> drivers, sans croisement
-    u2, u3 = drv["U2"], drv["U3"]
-    f.fil(a1, "STEP_EL", u2, "STEP", via=[("x", 1080)], num="STEP_EL")
-    f.fil(a1, "DIR_EL", u2, "DIR", via=[("x", 1100)], num="DIR_EL")
-    f.fil(a1, "STEP_AZ", u3, "STEP", via=[("x", 1100)], num="STEP_AZ")
-    f.fil(a1, "DIR_AZ", u3, "DIR", via=[("x", 1080)], num="DIR_AZ")
-    jen = f.auto("jonction", 1120, 320)
-    f.fil(a1, "EN", jen, "w", num="EN")
-    f.fil(jen, "n", u2, "EN", via=[("y", 200)])
-    f.fil(jen, "s", u3, "EN", via=[("y", 440)])
-    r5 = f.el("resistance", "R5", 1160, 290, ("R5", 8, -16, 8, True), ("10 kΩ", 8, -4, 6, False))
-    f.fil(jen, "e", r5, "2", via=[("x", 1160)])
-    f.fil(f.auto(P33, 1160, 240), "1", r5, "1", pot="3V3")
+        # signaux de commande : Heltec -> drivers, sans croisement
+        u2, u3 = drv["U2"], drv["U3"]
+        f.fil(a1, "STEP_EL", u2, "STEP", via=[("x", 1080)], num="STEP_EL")
+        f.fil(a1, "DIR_EL", u2, "DIR", via=[("x", 1100)], num="DIR_EL")
+        f.fil(a1, "STEP_AZ", u3, "STEP", via=[("x", 1100)], num="STEP_AZ")
+        f.fil(a1, "DIR_AZ", u3, "DIR", via=[("x", 1080)], num="DIR_AZ")
+        jen = f.auto("jonction", 1120, 320)
+        f.fil(a1, "EN", jen, "w", num="EN")
+        f.fil(jen, "n", u2, "EN", via=[("y", 200)])
+        f.fil(jen, "s", u3, "EN", via=[("y", 440)])
+        r5 = f.el("resistance", "R5", 1160, 290, ("R5", 8, -16, 8, True), ("10 kΩ", 8, -4, 6, False))
+        f.fil(jen, "e", r5, "2", via=[("x", 1160)])
+        f.fil(f.auto(P33, 1160, 240), "1", r5, "1", pot="3V3")
+    else:
+        # ---- cartes ULN2003, MCP23017 et moteurs 28BYJ-48 de 12 V -------------------------------------
+        f.cadre(1060, 40, 1780, 600, "MOTEURS 28BYJ-48 (12 V)")
+        f.cadre(1490, 60, 1770, 590, None)
+        f.texte(1496, 64, "sur la tête rotative", 7, True)
+        mcp = f.el("mcp23017", "U4", 1180, 330, ("U4", 56, -116, 8, True))
+        jvd = f.auto("jonction", 1160, 190)
+        jrs = f.auto("jonction", 1200, 190)
+        f.fil(f.auto(P33, 1160, 160), "1", jvd, "n", pot="3V3")
+        f.fil(mcp, "VDD", jvd, "s", pot="3V3")
+        f.fil(jvd, "e", jrs, "w", pot="3V3")
+        f.fil(jrs, "s", mcp, "RESET", pot="3V3")
+        jas = [f.auto("jonction", x, 490) for x in (1120, 1140, 1160)]
+        jvss = f.auto("jonction", 1180, 490)
+        for ja, n in zip(jas, ("A0", "A1", "A2")):
+            f.fil(mcp, n, ja, "n", pot="0V")
+        f.fil(jas[0], "e", jas[1], "w", pot="0V")
+        f.fil(jas[1], "e", jas[2], "w", pot="0V")
+        f.fil(jas[2], "e", jvss, "w", pot="0V")
+        f.fil(mcp, "VSS", jvss, "n", pot="0V")
+        f.fil(jvss, "s", f.auto(M, 1180, 510), "1", pot="0V")
+        f.texte(1090, 530, "A0 = A1 = A2 = 0 V : adresse 0x20.\n"
+                           "RN1 : réseau de 8 résistances 10 kΩ (SIP-9,\n"
+                           "commun au 0 V) sur chaque sortie GPA0 à GPA3,\n"
+                           "GPB0 à GPB3 : aucune bobine ne s'allume pendant\n"
+                           "le démarrage (sorties en haute impédance).", 6)
+        drv = {}
+        for k, (ref, yc, mref, mot, gp) in enumerate((
+                ("U2", 220, "M1", "28BYJ-48 12 V : élévation", ("GPA0", "GPA1", "GPA2", "GPA3")),
+                ("U3", 480, "M2", "28BYJ-48 12 V : azimut", ("GPB0", "GPB1", "GPB2", "GPB3")))):
+            u = f.el("uln2003", ref, 1400, yc, (ref, -58, -92, 8, True))
+            drv[ref] = u
+            xs_coude = (1280, 1290, 1300, 1310) if k == 0 else (1310, 1300, 1290, 1280)   # sans croisement
+            for n_mcp, n_in, dx in zip(gp, ("IN1", "IN2", "IN3", "IN4"), xs_coude):
+                f.fil(mcp, n_mcp, u, n_in, via=[("x", dx)])
+            top = yc - 130
+            jv = f.auto("jonction", 1370, top)
+            f.fil(f.auto(P12, 1370, top - 35), "1", jv, "n", pot="12V")
+            f.fil(jv, "s", u, "+", pot="12V")
+            if k == 0:                  # un seul 100 µF pour les deux cartes (jamais deux moteurs ensemble)
+                c = f.el("condensateur_polarise", "C1", 1470, top + 40, ("C1", 12, -22, 8, True),
+                         ("100 µF 25 V", 12, -10, 6, False), ("commun aux 2 cartes", 12, 0, 6, False))
+                f.fil(jv, "e", c, "+", pot="12V")
+                f.fil(c, "-", f.auto(M, 1470, top + 80), "1", pot="0V", cat="p12")
+            f.fil(u, "-", f.auto(M, 1430, yc + 105), "1", pot="0V", cat="p12")
+            m = f.el("moteur_28byj", mref, 1620, yc + 10, (mref, 56, -56, 8, True), (mot, -60, 54, 6, False))
+            for n, t, pot in (("1", "bleu", None), ("2", "rose", None), ("3", "jaune", None),
+                              ("4", "orange", None), ("5", "rouge", "12V")):
+                f.fil(u, n, m, n, num=t, cat="mot", pot=pot)
 
     # ---- capteur solaire ---------------------------------------------------------------------
     f.cadre(40, 620, 740, 1030, "CAPTEUR SOLAIRE")
@@ -687,8 +799,18 @@ def folio_schema():
     f.fil(jg, "s", f.auto(M, 710, 1000), "1", pot="0V")
     jsda = f.auto("jonction", 760, ads.p("SDA")[1])
     jscl = f.auto("jonction", 800, ads.p("SCL")[1])
-    f.fil(a1, "SDA", jsda, "n", num="SDA")
-    f.fil(a1, "SCL", jscl, "n", num="SCL")
+    if NEMA:
+        f.fil(a1, "SDA", jsda, "n", num="SDA")
+        f.fil(a1, "SCL", jscl, "n", num="SCL")
+    else:                              # le MCP23017 des moteurs est sur le même bus I2C
+        jm1 = f.auto("jonction", 760, 550)
+        jm2 = f.auto("jonction", 800, 570)
+        f.fil(a1, "SDA", jm1, "n", num="SDA")
+        f.fil(a1, "SCL", jm2, "n", num="SCL")
+        f.fil(jm1, "s", jsda, "n")
+        f.fil(jm2, "s", jscl, "n")
+        f.fil(jm1, "e", mcp, "SDA", via=[("x", 1070)])
+        f.fil(jm2, "e", mcp, "SCL", via=[("x", 1080)])
     f.fil(jsda, "w", ads, "SDA")
     f.fil(jscl, "w", ads, "SCL")
 
@@ -785,24 +907,48 @@ def folio_schema():
             "A6 sur un bloc secteur.", 7)
 
     # ---- réglages -------------------------------------------------------------------------------
-    f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
-    f.texte(1330, 644,
-            "Courant des moteurs : potentiomètre de chaque TMC2209\n"
-            "(modules à R_sense = 0,11 Ω) : Vref = 1,41 × I\n"
-            "  U2 / M1, NEMA 17 : 0,6 A en PETG -> Vref = 0,85 V\n"
-            "     (cas réel : 1,0 A -> 1,41 V)\n"
-            "  U3 / M2, NEMA 11 : 0,67 A -> Vref = 0,95 V\n"
-            "Mesurer Vref entre GND et le potentiomètre.\n\n"
-            "MS1 = MS2 = 3,3 V : 16 micro-pas.\n"
-            "PDN_UART à la masse : courant réduit à l'arrêt.\n"
-            "EN = 0 seulement pendant les mouvements ; à l'arrêt\n"
-            "et au démarrage, EN = 1 (R5) : moteurs coupés, ils ne\n"
-            "chauffent pas leurs supports en PETG.\n\n"
-            "Capteur solaire : 1 kΩ par photodiode, dehors comme\n"
-            "sous une lampe. L'ADS1115 change de calibre :\n"
-            "±4,096 V au soleil, ±0,256 V en intérieur.\n\n"
-            "LoRa : ne jamais émettre sans l'antenne W1.\n"
-            "Tous les 0 V sont reliés entre eux.", 7)
+    if NEMA:
+        f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
+        f.texte(1330, 644,
+                "Courant des moteurs : potentiomètre de chaque TMC2209\n"
+                "(modules à R_sense = 0,11 Ω) : Vref = 1,41 × I\n"
+                "  U2 / M1, NEMA 17 : 0,6 A en PETG -> Vref = 0,85 V\n"
+                "     (cas réel : 1,0 A -> 1,41 V)\n"
+                "  U3 / M2, NEMA 11 : 0,67 A -> Vref = 0,95 V\n"
+                "Mesurer Vref entre GND et le potentiomètre.\n\n"
+                "MS1 = MS2 = 3,3 V : 16 micro-pas.\n"
+                "PDN_UART à la masse : courant réduit à l'arrêt.\n"
+                "EN = 0 seulement pendant les mouvements ; à l'arrêt\n"
+                "et au démarrage, EN = 1 (R5) : moteurs coupés, ils ne\n"
+                "chauffent pas leurs supports en PETG.\n\n"
+                "Capteur solaire : 1 kΩ par photodiode, dehors comme\n"
+                "sous une lampe. L'ADS1115 change de calibre :\n"
+                "±4,096 V au soleil, ±0,256 V en intérieur.\n\n"
+                "LoRa : ne jamais émettre sans l'antenne W1.\n"
+                "Tous les 0 V sont reliés entre eux.", 7)
+    else:
+        f.cadre(1320, 620, 1780, 1030, "RÉGLAGES")
+        f.texte(1330, 644,
+                "Moteurs 28BYJ-48 de 12 V : bobines de 200 Ω, 60 mA, donc\n"
+                "aucun réglage de courant (pas de potentiomètre Vref).\n"
+                "Les cartes ULN2003 sont alimentées en 12 V, PAS en 5 V\n"
+            "(la carte du kit, 31 x 35 mm, peut être remplacée par une\n"
+            "puce ULN2003A DIP-16 sur la plaque : broches 1-4 = IN1-4,\n"
+            "16-13 = sorties, 9 COM et fil rouge au +12 V, 8 au 0 V) :\n"
+                "un 12 V sur 5 V perd environ 2,4 fois de couple.\n"
+                "Un seul moteur alimenté à la fois (0,12 A sous 12 V).\n\n"
+                "Pilotage en demi-pas, 8 phases, 120 phases/s (100 si un\n"
+                "moteur décroche). Les 8 sorties du MCP23017 sont mises à 0\n"
+                "entre deux corrections : aucun courant, pas d'échauffement\n"
+                "du support en PETG ; la vis sans fin tient le panneau.\n\n"
+                "Fils du moteur : 1 bleu, 2 rose, 3 jaune, 4 orange,\n"
+                "5 rouge (commun, au +12 V). Vérifier 200 Ω entre le\n"
+                "rouge et chaque autre fil.\n\n"
+                "Capteur solaire : 1 kΩ par photodiode, dehors comme\n"
+                "sous une lampe. L'ADS1115 change de calibre :\n"
+                "±4,096 V au soleil, ±0,256 V en intérieur.\n\n"
+                "LoRa : ne jamais émettre sans l'antenne W1.\n"
+                "Tous les 0 V sont reliés entre eux.", 7)
     return f
 
 
@@ -820,38 +966,59 @@ def tableau(lignes, largeurs):
 def folio_brochage():
     f = Folio(2, "Brochage du Heltec V4 et liaisons", 30, 16)
     f.texte(60, 50, "Brochage du Heltec WiFi LoRa 32 V4 utilisé par le tracker", 11, True)
-    f.texte(60, 84, tableau([
-        ("Broche", "Connecteur", "Sens", "Signal", "Vers", "Remarque"),
-        ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 4,7 V (5,0 V moins D1)"),
-        ("GND", "J2-1", "-", "0 V", "masse commune", ""),
-        ("3V3", "J3-2, J3-3", "sortie", "+3,3 V", "U2 U3 A2 A4 A5 D2 à D5",
-         "VIO des drivers, ADS1115, wattmètres, photodiodes, tirages"),
-        ("GPIO47", "J2-13", "sortie", "STEP_EL", "U2 STEP", "impulsions de pas, élévation"),
-        ("GPIO43", "J2-6", "sortie", "DIR_EL", "U2 DIR",
-         "sens, élévation (TX0 : bouge au démarrage, sans effet : EN = 1)"),
-        ("GPIO48", "J2-14", "sortie", "STEP_AZ", "U3 STEP", "impulsions de pas, azimut"),
-        ("GPIO45", "J3-6", "sortie", "DIR_AZ", "U3 DIR",
-         "sens, azimut (broche de démarrage : laissée basse par le driver)"),
-        ("GPIO33", "J2-12", "sortie", "EN", "U2 EN, U3 EN", "0 = moteurs alimentés ; tirage R5 au 3,3 V"),
-        ("GPIO3", "J3-14", "I2C", "SDA", "A2, A4, A5 : SDA", "Wire.begin(3, 4) ; bus I2C partagé par trois modules"),
-        ("GPIO4", "J3-15", "I2C", "SCL", "A2, A4, A5 : SCL", ""),
-        ("GPIO44", "J2-5", "entrée", "FDC_EL", "S2 NC (commun à 0 V)", "1 = butée atteinte OU fil coupé ; tirage R6"),
-        ("GPIO6", "J3-17", "entrée", "HALL_AZ", "B1 OUT", "0 = aimant devant le capteur ; tirage R7"),
-        ("IPEX", "-", "radio", "ANT", "W1", "antenne LoRa 868 MHz"),
-        ("GNSS", "SH1.25 8 br", "-", "-", "A3 (facultatif)", "GPIO 34, 38 à 42 réservés au GNSS")],
-        (6, 11, 6, 8, 22, 62)), 8, mono=True)
+    if NEMA:
+        f.texte(60, 84, tableau([
+            ("Broche", "Connecteur", "Sens", "Signal", "Vers", "Remarque"),
+            ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 4,7 V (5,0 V moins D1)"),
+            ("GND", "J2-1", "-", "0 V", "masse commune", ""),
+            ("3V3", "J3-2, J3-3", "sortie", "+3,3 V", "U2 U3 A2 A4 A5 D2 à D5",
+             "VIO des drivers, ADS1115, wattmètres, photodiodes, tirages"),
+            ("GPIO47", "J2-13", "sortie", "STEP_EL", "U2 STEP", "impulsions de pas, élévation"),
+            ("GPIO43", "J2-6", "sortie", "DIR_EL", "U2 DIR",
+             "sens, élévation (TX0 : bouge au démarrage, sans effet : EN = 1)"),
+            ("GPIO48", "J2-14", "sortie", "STEP_AZ", "U3 STEP", "impulsions de pas, azimut"),
+            ("GPIO45", "J3-6", "sortie", "DIR_AZ", "U3 DIR",
+             "sens, azimut (broche de démarrage : laissée basse par le driver)"),
+            ("GPIO33", "J2-12", "sortie", "EN", "U2 EN, U3 EN", "0 = moteurs alimentés ; tirage R5 au 3,3 V"),
+            ("GPIO3", "J3-14", "I2C", "SDA", "A2, A4, A5 : SDA", "Wire.begin(3, 4) ; bus I2C partagé par trois modules"),
+            ("GPIO4", "J3-15", "I2C", "SCL", "A2, A4, A5 : SCL", ""),
+            ("GPIO44", "J2-5", "entrée", "FDC_EL", "S2 NC (commun à 0 V)", "1 = butée atteinte OU fil coupé ; tirage R6"),
+            ("GPIO6", "J3-17", "entrée", "HALL_AZ", "B1 OUT", "0 = aimant devant le capteur ; tirage R7"),
+            ("IPEX", "-", "radio", "ANT", "W1", "antenne LoRa 868 MHz"),
+            ("GNSS", "SH1.25 8 br", "-", "-", "A3 (facultatif)", "GPIO 34, 38 à 42 réservés au GNSS")],
+            (6, 11, 6, 8, 22, 62)), 8, mono=True)
+
+    else:
+        f.texte(60, 84, tableau([
+            ("Broche", "Connecteur", "Sens", "Signal", "Vers", "Remarque"),
+            ("5V", "J2-2", "entrée", "+5 V", "D1 (abaisseur U1)", "alimentation de la carte, environ 4,7 V (5,0 V moins D1)"),
+            ("GND", "J2-1", "-", "0 V", "masse commune", ""),
+            ("3V3", "J3-2, J3-3", "sortie", "+3,3 V", "U4 A2 A4 A5 D2 à D5", "MCP23017, ADS1115, wattmètres, photodiodes, tirages"),
+            ("libres", "-", "-", "-", "-", "GPIO 47, 43, 48, 45, 33 : plus de STEP/DIR/EN (pas de TMC2209)"),
+            ("GPIO3", "J3-14", "I2C", "SDA", "A2, A4, A5, U4 : SDA", "Wire.begin(3, 4) ; bus I2C partagé par quatre modules"),
+            ("GPIO4", "J3-15", "I2C", "SCL", "A2, A4, A5, U4 : SCL", ""),
+            ("GPIO44", "J2-5", "entrée", "FDC_EL", "S2 NC (commun à 0 V)", "1 = butée atteinte OU fil coupé ; tirage R6"),
+            ("GPIO6", "J3-17", "entrée", "HALL_AZ", "B1 OUT", "0 = aimant devant le capteur ; tirage R7"),
+            ("IPEX", "-", "radio", "ANT", "W1", "antenne LoRa 868 MHz"),
+            ("GNSS", "SH1.25 8 br", "-", "-", "A3 (facultatif)", "GPIO 34, 38 à 42 réservés au GNSS")],
+            (6, 11, 6, 8, 22, 62)), 8, mono=True)
+
     f.texte(60, 300, "Broches de la carte à ne pas utiliser", 10, True)
     f.texte(60, 324,
             "GPIO0 bouton PRG (démarrage) - GPIO1 mesure de la batterie LiPo - GPIO2, 5, 7, 46 ampli radio (FEM)\n"
             "GPIO8 à 14 radio SX1262 - GPIO17, 18, 21 écran OLED - GPIO19, 20 USB - GPIO26 mémoire PSRAM\n"
             "GPIO34, 38 à 42 module GNSS - GPIO35 LED - GPIO36 Vext - GPIO37 commande de la mesure batterie\n"
-            "Il ne reste donc que 9 broches libres sur les connecteurs : toutes sont utilisées ci-dessus. C'est pourquoi\n"
+            + ("Il ne reste donc que 9 broches libres sur les connecteurs : toutes sont utilisées ci-dessus. C'est pourquoi\n"
             "les TMC2209 sont réglés par leur potentiomètre (pas d'UART), et les photodiodes et les wattmètres sont lus\n"
-            "par l'I2C : trois modules sur les deux mêmes broches, chacun à son adresse.", 8)
-    f.texte(60, 420, "Bus I2C (GPIO 3 et 4, 100 kHz) : trois modules", 10, True)
+            "par l'I2C : trois modules sur les deux mêmes broches, chacun à son adresse." if NEMA else
+            "Il ne reste que 9 broches libres sur les connecteurs : seules 2 sont utilisées pour les origines (GPIO44 et 6)\n"
+            "et 2 pour l'I2C (GPIO3 et 4). Les moteurs 28BYJ-48 n'ont besoin d'aucune broche à eux : leurs 8 phases sont écrites\n"
+            "par l'I2C dans le MCP23017 (4 broches de moteur par carte ULN2003 = 8, plus que les 5 libres du Heltec)."), 8)
+    f.texte(60, 420, "Bus I2C (GPIO 3 et 4, 100 kHz) : " + ("trois modules" if NEMA else "quatre modules"), 10, True)
     f.texte(60, 444, tableau([
         ("Repère", "Module", "Adresse", "Réglage de l'adresse", "Mesure"),
         ("A2", "ADS1115", "0x48", "ADDR à 0 V", "les 4 photodiodes du capteur solaire"),
+        ] + ([] if NEMA else [("U4", "MCP23017", "0x20", "A0 = A1 = A2 = 0 V", "8 sorties pour les 2 cartes ULN2003")]) + [
         ("A4", "INA219B (Adafruit 904)", "0x40", "A0 et A1 ouverts (d'origine)",
          "panneau : tension et courant (shunt 0,1 Ω, ±3,2 A)"),
         ("A5", "SEN0291 (DFRobot, INA219)", "0x45", "micro-interrupteurs A0 = 1 et A1 = 1",
@@ -860,8 +1027,10 @@ def folio_brochage():
     f.texte(60, 520, "Câbles et fils du boîtier étanche (au pied du trépied)", 10, True)
     f.texte(60, 544, tableau([
         ("Câble", "Bornier", "Conducteurs", "Signaux"),
-        ("Moteur d'élévation M1", "X2", "4 × AWG 22", "A+ / A- (bobine A), B+ / B- (bobine B)"),
-        ("Moteur d'azimut M2", "X3", "4 × AWG 22", "noir A+, vert A-, rouge B+, bleu B-"),
+        ] + ([("Moteur d'élévation M1", "X2", "4 × AWG 22", "A+ / A- (bobine A), B+ / B- (bobine B)"),
+        ("Moteur d'azimut M2", "X3", "4 × AWG 22", "noir A+, vert A-, rouge B+, bleu B-")] if NEMA else
+        [("Moteur d'élévation M1", "X2", "5 × AWG 24", "bleu, rose, jaune, orange (bobines) et rouge (commun, +12 V)"),
+         ("Moteur d'azimut M2", "X3", "5 × AWG 24", "idem : 1 bleu, 2 rose, 3 jaune, 4 orange, 5 rouge")]) + [
         ("Fin de course S2", "X4", "2 × AWG 26", "C (0 V), NC (FDC_EL)"),
         ("Capteur à effet Hall B1", "X5", "3 × AWG 26", "+5 V (de U1, avant D1), 0 V, OUT (HALL_AZ)"),
         ("Capteur solaire", "X6", "5 × AWG 26 blindé", "+3,3 V (cathodes), PD_HG, PD_HD, PD_BG, PD_BD"),
@@ -910,21 +1079,30 @@ def folio_cablage():
     f.texte(60, 46, "Section de chaque fil", 11, True)
     f.texte(60, 84, tableau([
         ("Liaison", "De -> vers", "Courant", "Longueur", "Section", "Fil à utiliser"),
-        ("12 V du tracker, +", "A6 LOAD+ (ou bloc) -> F1 -> S1 -> A5 -> X1", "1,5 A", "< 30 cm", "AWG 18  0,82 mm²",
+        ("12 V du tracker, +", "A6 LOAD+ (ou bloc) -> F1 -> S1 -> A5 -> X1", ("1,5 A" if NEMA else "0,5 A"), "< 30 cm", "AWG 18  0,82 mm²",
          "souple, rouge ; F1 à la sortie LOAD"),
-        ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", "1,5 A", "< 30 cm", "AWG 18  0,82 mm²", "souple, noir"),
-        ("12 V sur la plaque", "X1 -> VM de U2 et U3, C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
-        ("0 V de puissance", "X1 -> U2, U3 (GND), C1, C2, U1", "1,5 A", "< 15 cm", "AWG 20  0,52 mm²", "noir"),
-        ("5 V", "U1 OUT+ -> D1 -> A1 5V ; U1 OUT+ -> X5", "0,5 A", "< 10 cm", "AWG 22  0,33 mm²",
+        ("12 V du tracker, 0 V", "A6 LOAD- (ou bloc) -> X1", ("1,5 A" if NEMA else "0,5 A"), "< 30 cm", "AWG 18  0,82 mm²", "souple, noir"),
+        ("12 V sur la plaque", ("X1 -> VM de U2 et U3, C1, C2, U1" if NEMA else "X1 -> U1, + de U2 et U3, C1"), ("1,5 A" if NEMA else "0,4 A"), "< 15 cm", "AWG 20  0,52 mm²", "rouge"),
+        ("0 V de puissance", ("X1 -> U2, U3 (GND), C1, C2, U1" if NEMA else "X1 -> U1, - de U2 et U3, C1"), ("1,5 A" if NEMA else "0,4 A"), "< 15 cm", "AWG 20  0,52 mm²", "noir"),
+        ("5 V", "U1 OUT+ -> D1 -> A1 5V ; U1 OUT+ -> X5", ("0,5 A" if NEMA else "0,3 A"), "< 10 cm", "AWG 22  0,33 mm²",
          "orange ; 0 V de U1 et de A1 : noir"),
+    ] + ([
         ("Moteur M1 (élévation)", "U2 1A 1B 2A 2B -> X2 -> M1", "1,0 A", "1,5 m", "AWG 22  0,33 mm²",
          "câble souple 4 conducteurs"),
         ("Moteur M2 (azimut)", "U3 1A 1B 2A 2B -> X3 -> M2", "0,67 A", "1,5 m", "AWG 22  0,33 mm²",
-         "câble souple 4 conducteurs"),
-        ("STEP, DIR, EN", "A1 -> U2, U3 ; R5", "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin, une couleur par signal"),
+         "câble souple 4 conducteurs")] if NEMA else [
+        ("Moteur M1 (élévation)", "U2 1 à 5 -> X2 -> M1", "0,06 A par bobine", "1,5 m", "AWG 24  0,20 mm²",
+         "câble souple 5 conducteurs (fil 5 = rouge, +12 V)"),
+        ("Moteur M2 (azimut)", "U3 1 à 5 -> X3 -> M2", "0,06 A par bobine", "1,5 m", "AWG 24  0,20 mm²",
+         "câble souple 5 conducteurs (fil 5 = rouge, +12 V)")]) + [
+        ] + ([("STEP, DIR, EN", "A1 -> U2, U3 ; R5", "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin, une couleur par signal"),
         ("3,3 V, VIO, MS1, MS2, PDN", "A1 3V3 -> U2, U3, A2, J1, R5 à R7", "< 20 mA", "< 10 cm", "AWG 24  0,20 mm²",
-         "monobrin, jaune ; 0 V : noir"),
-        ("I2C (SDA, SCL)", "A1 GPIO3, GPIO4 -> A2, J1", "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin"),
+         "monobrin, jaune ; 0 V : noir")] if NEMA else
+        [("IN1 à IN4, des 2 cartes", "U4 GPA0 à GPA3, GPB0 à GPB3 -> U2, U3 IN1 à IN4 ; RN1", "< 1 mA", "< 10 cm",
+          "AWG 24  0,20 mm²", "monobrin, une couleur par signal"),
+         ("3,3 V, RESET, tirages", "A1 3V3 -> U4 VDD, RESET, A2, J1, R6, R7", "< 20 mA", "< 10 cm", "AWG 24  0,20 mm²",
+          "monobrin, jaune ; 0 V : noir")]) + [
+        ("I2C (SDA, SCL)", ("A1 GPIO3, GPIO4 -> A2, J1" if NEMA else "A1 GPIO3, GPIO4 -> A2, U4, J1"), "< 1 mA", "< 10 cm", "AWG 24  0,20 mm²", "monobrin"),
         ("I2C des wattmètres", "J1 -> A4, A5 (3,3 V, 0 V, SDA, SCL)", "< 2 mA", "< 20 cm", "AWG 26  0,13 mm²",
          "câble STEMMA QT (A4) et Gravity (A5)"),
         ("Filtres du capteur solaire", "R1 à R4, C3 à C6 -> A2 A0 à A3", "2 mA", "< 5 cm", "AWG 24  0,20 mm²", "monobrin"),
@@ -939,7 +1117,7 @@ def folio_cablage():
          "câble souple 2 conducteurs, par la boucle de câble"),
         ("Wattmètre A4 -> régulateur", "A4 VIN- -> A6 PV+", "0,6 A", "< 20 cm", "AWG 20  0,52 mm²",
          "rouge, dans le boîtier"),
-        ("Wattmètre A5 (12 V)", "S1 -> A5 VIN+, A5 VIN- -> X1+", "1,5 A", "< 20 cm", "AWG 18  0,82 mm²", "souple, rouge"),
+        ("Wattmètre A5 (12 V)", "S1 -> A5 VIN+, A5 VIN- -> X1+", ("1,5 A" if NEMA else "0,5 A"), "< 20 cm", "AWG 18  0,82 mm²", "souple, rouge"),
         ("Régulateur -> batterie", "A6 BAT+ -> F2 -> G1+, BAT- -> G1-", "0,6 A", "< 20 cm", "AWG 18  0,82 mm²",
          "souple ; F2 à moins de 10 cm de G1+"),
         ("Antenne LoRa", "A1 IPEX -> W1", "radio", "10 cm", "coaxial 50 Ω", "IPEX vers SMA, 1,13 mm ou RG178"),
@@ -949,15 +1127,19 @@ def folio_cablage():
     f.texte(60, 470,
             "* Le courant fixe le minimum, la chute de tension le confirme. Résistance du cuivre : AWG 18 = 0,021 Ω/m,\n"
             "  AWG 20 = 0,033 Ω/m, AWG 22 = 0,053 Ω/m, AWG 24 = 0,084 Ω/m, AWG 26 = 0,134 Ω/m.\n"
-            "* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). Tout est dans le boîtier : en\n"
+            + ("* 12 V : 1,5 A au plus (les deux moteurs, environ 12 W, et le Heltec qui émet). Tout est dans le boîtier : en\n" if NEMA else
+               "* 12 V : 0,5 A au plus (un seul moteur à la fois, 0,12 A, et l'abaisseur du Heltec). Tout est dans le boîtier : en\n") +
             "  AWG 18 sur moins de 2 × 30 cm, la chute est inférieure à 0,02 V. Le fil entre la batterie et F2 n'est protégé par\n"
             "  rien : il reste court (< 10 cm). F1, à la sortie LOAD du régulateur, protège les fils qui vont à la plaque.\n"
             "* Panneau (Velleman SOL10P) : 0,61 A au point de puissance maximale, un peu plus en court-circuit. En AWG 20 sur\n"
             "  2 × 2 m, la chute est de 0,08 V. Le câble suit ceux des moteurs dans la boucle : souple, multibrin, soudé sur\n"
             "  les cosses de la boîte de jonction du panneau.\n"
-            "* Moteurs : 1,0 A au plus par bobine. En AWG 22 sur 2 × 1,5 m, la boucle fait 0,16 Ω contre plusieurs ohms\n"
+            + ("* Moteurs : 1,0 A au plus par bobine. En AWG 22 sur 2 × 1,5 m, la boucle fait 0,16 Ω contre plusieurs ohms\n"
             "  pour la bobine : le driver régule le courant, le moteur ne perd rien. Torsader A+ avec A-, et B+ avec B- :\n"
-            "  moins de parasites rayonnés vers les capteurs.\n"
+            "  moins de parasites rayonnés vers les capteurs.\n" if NEMA else
+            "* Moteurs 28BYJ-48 de 12 V : 60 mA par bobine, 120 mA avec deux bobines. En AWG 24 sur 2 × 1,5 m, la boucle fait\n"
+            "  0,25 Ω contre 200 Ω pour la bobine : aucune perte. Le fil rouge (commun, +12 V) est un des 5 conducteurs ;\n"
+            "  l'isoler du reste du câble n'est pas nécessaire, mais le tenir à l'écart du câble du capteur solaire.\n") +
             "* Capteurs : quelques milliampères ; en AWG 26 sur 1,5 m, la chute est inférieure à 4 mV. Le câble du capteur\n"
             "  solaire est blindé (blindage relié au 0 V côté boîtier seulement) et passe à l'écart des câbles moteurs.\n"
             "* Tout ce qui bouge avec la tête (moteurs, capteurs, panneau) est en fil multibrin souple, jamais en monobrin :\n"
@@ -990,14 +1172,14 @@ def projet(folios):
                   '<name lang="fr">Tracker solaire</name><name lang="en">Solar tracker</name></names>'
                   f'{syms}</category></category></collection>')
     nouv = ('<newdiagrams><border cols="30" colsize="60" rows="16" rowsize="80" displaycols="true" '
-            'displayrows="true"/><inset displayAt="bottom" title="Tracker solaire lunaire" author="Gabrixl-m" '
+            'displayrows="true"/><inset displayAt="bottom" title="Tracker solaire (démonstration sur Terre)" author="Gabrixl-m" '
             f'date="{date}" folio="%id/%total" filename="Schema_Electrique.qet" plant="" locmach="" '
             'indexrev="" auto_page_num="" version=""/><conductors type="multi" num="" numsize="7" '
             'condsize="1" displaytext="1"/><report label="%f-%l%c"/><xrefs/>'
             '<conductors_autonums current_autonum="" freeze_new_conductors="false"/><folio_autonums/>'
             '<element_autonums current_autonum="" freeze_new_elements="false"/></newdiagrams>')
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<project title="Tracker solaire lunaire - schéma électrique" version="0.90">'
+            '<project title="Tracker solaire - schéma électrique" version="0.90">'
             f'<properties/>{nouv}{"".join(fo.xml(date) for fo in folios)}{collection}</project>\n')
 
 

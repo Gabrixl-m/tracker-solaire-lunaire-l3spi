@@ -11,7 +11,7 @@
 > `Demo_Trepied.step`, `Eprouvette_Ajustements.*`, [`Liste-composants.md`](Liste-composants.md) (sa liste de composants) et
 > `apercus/` (ses images sur le trépied). Les générateurs sont toujours dans `scripts/`
 > (`generate_tete_vis_sans_fin.py`, `generate_demo_trepied.py`), et écrivent désormais ici. Les
-> schémas électriques de `Electronique/` sont ceux de ce modèle (TMC2209) ; les photos
+> schémas électriques de `.modele_ideal_personnel/Electronique/` (ce dossier) sont ceux de ce modèle (TMC2209) ; ceux du modèle actuel, à 28BYJ-48, sont dans `Electronique/` à la racine ; les photos
 > d'explication sont dans `docs (extra)/explications/`.
 >
 > Dans ce document, « le cas terrestre » et « la démonstration » désignent ce modèle NEMA.
@@ -394,14 +394,14 @@ capteur solaire et les origines, mesure l'énergie produite par le panneau et co
 tracker, et envoie toutes ces données en LoRa.
 
 Le **schéma électrique complet** est un projet QElectroTech :
-[`Electronique/Schema_Electrique.qet`](../Electronique/Schema_Electrique.qet), avec son export
-[`Electronique/Schema_Electrique.pdf`](../Electronique/Schema_Electrique.pdf) (3 folios, à
+[`Electronique/Schema_Electrique.qet`](Electronique/Schema_Electrique.qet), avec son export
+[`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf) (3 folios, à
 imprimer en A3). Il est généré par `scripts/generate_schema_electrique.py`. Chaque fil y porte
 sa section (AWG), et l'épaisseur du trait suit cette section.
 
 | Folio 1 : schéma complet | Folio 2 : brochage et liaisons | Folio 3 : section des fils |
 |---|---|---|
-| ![Schéma électrique](../docs%20%28extra%29/electronique/schema_electrique.png) | ![Brochage du Heltec V4](../docs%20%28extra%29/electronique/brochage_heltec.png) | ![Section des fils](../docs%20%28extra%29/electronique/cablage_sections.png) |
+| ![Schéma électrique](electronique/schema_electrique.png) | ![Brochage du Heltec V4](electronique/brochage_heltec.png) | ![Section des fils](electronique/cablage_sections.png) |
 
 **Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
 7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
@@ -699,15 +699,15 @@ plaque d'essais ECS1/2 en époxy, coupée à 28 × 34 trous, voir la liste des c
 plus près. Le même boîtier étanche reçoit aussi les deux wattmètres, la batterie, les
 fusibles et le régulateur de charge, vissé sous la porte. L'implantation est dessinée à
 l'échelle dans Fritzing :
-[`Electronique/Implantation_Boitier.fzz`](../Electronique/Implantation_Boitier.fzz), à ouvrir dans
+[`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz), à ouvrir dans
 Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 `scripts/generate_implantation_fritzing.py`.
 
-![Implantation du boîtier électronique](../docs%20%28extra%29/electronique/implantation_boitier.png)
+![Implantation du boîtier électronique](electronique/implantation_boitier.png)
 
 | La plaque à pastilles, de plus près |
 |---|
-| ![Plaque à pastilles 7 × 9 cm](../docs%20%28extra%29/electronique/plaque_pastilles.png) |
+| ![Plaque à pastilles 7 × 9 cm](electronique/plaque_pastilles.png) |
 
 * **Organisation de la plaque** : chaque pièce est à côté de ce qu'elle dessert, ce qui
   raccourcit les fils.
@@ -1103,9 +1103,9 @@ roulements ZZ :
 | `Tete_Rotative_PETG.step` | L'assemblage de la tête imprimée (avec roulements, arbres Ø5, moteurs et vis), pour vérifier le montage |
 | `Eprouvette_Ajustements.stl` | Éprouvette à imprimer en premier pour régler les ajustements sur ton imprimante |
 | `Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire et trépied (§ 8) |
-| **[`Electronique/Schema_Electrique.qet`](../Electronique/Schema_Electrique.qet)** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
-| [`Electronique/Schema_Electrique.pdf`](../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
-| **[`Electronique/Implantation_Boitier.fzz`](../Electronique/Implantation_Boitier.fzz)** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs (extra)/electronique/implantation_boitier.png` et `docs (extra)/electronique/plaque_pastilles.png` |
+| **[`Electronique/Schema_Electrique.qet`](Electronique/Schema_Electrique.qet)** | **Schéma électrique** de la démonstration, projet QElectroTech (3 folios : schéma complet avec la section de chaque fil et la mesure de l'énergie ; brochage du Heltec V4, bus I²C, câbles et trame LoRa ; câblage et sections des fils) |
+| [`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
+| **[`Electronique/Implantation_Boitier.fzz`](Electronique/Implantation_Boitier.fzz)** | **Implantation du boîtier électronique**, à l'échelle, dans Fritzing (vue « Platine d'essai ») : plaque à pastilles 7 × 9 cm, modules, borniers, wattmètres, régulateur, batterie, contour du boîtier ; images dans `docs (extra)/electronique/implantation_boitier.png` et `docs (extra)/electronique/plaque_pastilles.png` |
 | **[`Liste-composants.md`](Liste-composants.md)** | **Liste des composants** de la démonstration sur Terre : roulements, accouplements, arbres Ø5 des vis sans fin, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | `docs (extra)/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin (joues, roulements, arbre), vis sans fin imprimée (filet, moyeux, vis de blocage) axe d'élévation imprimé (pivots, roulements 6801, roue), éprouvette de réglage des ajustements, fond sur trépied, capteur solaire (vue et coupe) |
 

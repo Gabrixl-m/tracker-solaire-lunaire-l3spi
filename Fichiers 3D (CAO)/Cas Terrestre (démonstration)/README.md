@@ -507,7 +507,7 @@ sa section (AWG), et l'épaisseur du trait suit cette section.
 |---|---|---|
 | ![Schéma électrique](../../docs%20%28extra%29/electronique/schema_electrique.png) | ![Brochage du Heltec V4](../../docs%20%28extra%29/electronique/brochage_heltec.png) | ![Section des fils](../../docs%20%28extra%29/electronique/cablage_sections.png) |
 
-> **État du schéma et de l'implantation.** Les fichiers de `Electronique/` (schéma QElectroTech, PDF, implantation Fritzing) sont ceux du **modèle idéal personnel** (NEMA 17 et NEMA 11, deux TMC2209) : **ils ne sont pas redessinés pour les 28BYJ-48**. Tout le reste (alimentation, mesure de l'énergie, capteur solaire, LoRa, câbles de la tête) est identique. Ce qui change pour le modèle à fourche est décrit dans ce paragraphe : à la place de chaque TMC2209, une carte (ou une puce) ULN2003, pilotée par un MCP23017 sur l'I²C ; les moteurs 28BYJ-48 de 12 V sont alimentés directement en 12 V par les cartes ULN2003 ; le mini abaisseur U1 ne sert plus qu'au Heltec et au capteur Hall.
+> **Schéma et implantation à jour pour les 28BYJ-48 de 12 V.** `Electronique/` contient le schéma (QElectroTech) et l'implantation (Fritzing) de ce modèle : MCP23017 et deux ULN2003 à la place des TMC2209, moteurs alimentés en 12 V, mini abaisseur U1 réservé au Heltec et au capteur Hall. Ceux de l'ancien modèle à NEMA et TMC2209 sont dans `.modele_ideal_personnel/Electronique/`. Les images et le PDF sont exportés par `scripts/exporter_schema.py` (le schéma est redessiné à partir du fichier .qet, sans QElectroTech) : l'export de QElectroTech lui-même est un peu différent (polices), mais le contenu est le même.
 
 **Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
 7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
@@ -518,10 +518,11 @@ tracker (I²C, fin de course, Hall) : il en manque 3.
 **Solution : un MCP23017**, extension de 16 sorties sur l'I²C déjà en place :
 * alimenté en **3,3 V**, adresse **0x20** (A0, A1, A2 à la masse), RESET au 3,3 V : aucun conflit avec
   les adresses 0x48 (ADS1115), 0x40 et 0x45 (wattmètres) ;
-* ses 8 sorties pilotent IN1 à IN4 des deux cartes ULN2003 (GPA0 à GPA3 : élévation ; GPB0 à
+* ses 8 sorties pilotent IN1 à IN4 des deux ULN2003 (GPA0 à GPA3 : élévation ; GPB0 à
   GPB3 : azimut) ;
-* **8 résistances de 10 kΩ vers la masse** sur les sorties : à la mise sous tension, le MCP23017
-  a ses sorties en haute impédance, et sans tirage une bobine pourrait s'allumer au démarrage ;
+* **un réseau de 8 résistances de 10 kΩ (RN1, boîtier SIP-9, borne commune à la masse)** sur les sorties : à la mise sous
+  tension, le MCP23017 a ses sorties en haute impédance, et sans tirage une bobine pourrait s'allumer au démarrage
+  (8 résistances séparées conviennent aussi) ;
 * alternative : un 74HC595 (3 broches : données, horloge, verrou) plus une 4ᵉ pour OE.
 
 | GPIO | Connecteur | Signal | Vers |
@@ -570,7 +571,7 @@ différent.
 * Le 12 V va au **mini abaisseur 5 V** (U1, environ 18 × 13 mm), qui alimente le Heltec et le capteur
   Hall, et **directement aux cartes ULN2003** (moteurs de 12 V). **U1 doit fournir au moins 0,5 A**
   (Heltec avec WiFi et capteur Hall) : vérifier la référence du module. Un condensateur de
-  **100 µF 25 V** sur le 12 V, près des cartes ULN2003.
+  **un 100 µF 25 V (C1)** sur le 12 V, près des deux ULN2003 (les moteurs ne tournent jamais ensemble).
 * U1 a une **sortie fixe de 5,0 V** : **la mesurer au multimètre (4,9 à 5,2 V) avant de
   brancher le Heltec**. Le 5 V passe ensuite par une diode Schottky 1N5819 (D1) : le Heltec
   reçoit environ 4,7 V, assez pour son régulateur 3,3 V, et le 5 V de l'USB-C ne remonte pas
@@ -581,8 +582,8 @@ différent.
   photodiodes et les résistances de tirage. Tous les 0 V sont reliés, sauf le − du panneau
   (voir plus bas, « Mesure de l'énergie »).
 
-**Moteurs : 2 × 28BYJ-48 sur cartes ULN2003.** Les cartes sont livrées avec les moteurs dans les
-kits courants ; elles pilotent chaque bobine par un transistor Darlington. Les entrées IN1 à IN4
+**Moteurs : 2 × 28BYJ-48 sur ULN2003.** Les cartes ULN2003 sont livrées avec les moteurs dans les
+kits courants (sur la plaque, on les remplace par la puce ULN2003A, § plus bas) ; elles pilotent chaque bobine par un transistor Darlington. Les entrées IN1 à IN4
 sont reliées aux sorties du MCP23017 (3,3 V suffisent), et le + de la carte au **12 V**.
 * **Un seul moteur alimenté à la fois** : le suivi corrige l'élévation, puis l'azimut. Jamais les deux
   ensemble (le courant de 12 V ne double pas, et le fusible et le wattmètre A5 n'ont à tenir qu'un moteur).
@@ -821,21 +822,22 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 
 * **Organisation de la plaque** : chaque pièce est à côté de ce qu'elle dessert, ce qui
   raccourcit les fils.
-  * **En haut**, les borniers des câbles de la tête : ceux des moteurs (X2, X3) au-dessus de
-    leurs cartes ULN2003, ceux des capteurs (X4 à X6) au-dessus de l'ADS1115. Les 4 photodiodes de X6
-    tombent droit sur les entrées A0 à A3.
-  * **Au milieu**, le MCP23017 avec ses 8 résistances de tirage, et l'ADS1115 avec ses filtres
-    juste dessous (R1 à R4, C3 à C6). **Les cartes ULN2003** du kit mesurent environ 31 × 35 mm : elles
-    **ne tiennent pas** sur la plaque de 7 × 9 cm déjà pleine. Deux solutions : la **puce ULN2003A**
-    (DIP-16, 20 × 7 mm) soudée sur la plaque à la place de chaque TMC2209, ou les deux cartes
-    fixées au fond du boîtier, à côté de la plaque. **L'implantation Fritzing n'est pas redessinée.**
-  * **En bas**, le Heltec, USB-C au bord gauche. D1 et les résistances de tirage R5 à R7 sont le
+  * **En haut**, les borniers des câbles de la tête : ceux des moteurs (X2, X3, 5 pôles au pas de
+    2,54 mm) au-dessus de leurs ULN2003A, ceux des capteurs (X4 à X6) au-dessus de l'ADS1115. Les 4 photodiodes
+    de X6 tombent droit sur les entrées A0 à A3.
+  * **Au milieu à gauche**, les deux **puces ULN2003A** (DIP-16, couchées), puis le réseau de tirages
+    RN1 et le **MCP23017** (DIP-28), avec le **100 µF C1** à leur droite. Les **cartes ULN2003 du kit**
+    (31 × 35 mm) ne tiennent pas sur la plaque de 7 × 9 cm : on met à leur place la **puce ULN2003A**
+    (mêmes entrées et sorties : broches 1 à 4 = IN1 à IN4, 16 à 13 = sorties 1 à 4, 9 = COM et fil rouge
+    au +12 V, 8 = 0 V, entrées 5 à 7 au 0 V). Les cartes du kit restent en secours.
+    À droite, l'**ADS1115** avec ses filtres juste dessous (R1 à R4, C3 à C6).
+  * **En bas**, le Heltec, USB-C au bord gauche. D1 et les résistances de tirage R6 et R7 sont le
     long du bas, près des broches qu'elles desservent.
   * **Au bord droit**, vers l'énergie : J1 (bus I²C des wattmètres), le mini abaisseur U1 et X1
     (12 V, fils entrant par la droite).
   * Aucune pièce n'est cachée sous un module : tout reste visible, mesurable et réparable.
 * **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
-  ADS1115 (1 × 10) et MCP23017. Les résistances, les condensateurs et la diode
+  ADS1115 (1 × 10) ; ULN2003A et MCP23017 sur des supports DIP. Les résistances, les condensateurs et la diode
   sont soudés. U1 est posé à plat, tenu par 4 pattes (des chutes de pattes de résistance)
   soudées dans ses pastilles et dans la plaque.
 * **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
@@ -1256,9 +1258,9 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire, trépied et lest (§ 8) |
 | `scripts/generate_fourche.py` | **Génère tout ce qui précède** (CAO, STEP, STL, DXF) et fait les contrôles : interférences, prise des vis, garde, couples et marges, stabilité |
 | `scripts/render_fourche.py` | Les images de ce document (`docs (extra)/fourche_*.png` et `trepied_fourche_*.png`) |
-| **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | Schéma électrique, projet QElectroTech, **version NEMA / TMC2209 : à redessiner pour les 28BYJ-48** (§ 6) |
-| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
-| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | Implantation du boîtier électronique dans Fritzing, **version NEMA / TMC2209** (§ 6) |
+| **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | Schéma électrique, projet QElectroTech, **28BYJ-48 de 12 V, ULN2003 et MCP23017** (§ 6) |
+| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` (générés par `scripts/exporter_schema.py`) |
+| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | Implantation du boîtier électronique dans Fritzing, **version 28BYJ-48** (§ 6) ; l'ancienne version NEMA / TMC2209 est dans `.modele_ideal_personnel/Electronique/` |
 | **[`Liste-composants.md`](../../Liste-composants.md)** | **Liste des composants** de la démonstration sur Terre : roulements, accouplements, tiges, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | `docs (extra)/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin, vis sans fin imprimée, fond sur trépied, capteur solaire (vue et coupe) |
 

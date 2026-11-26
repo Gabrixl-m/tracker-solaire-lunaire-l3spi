@@ -71,8 +71,9 @@ découper (§ 4).
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
 | **Moteur 28BYJ-48, 12 V**, avec sa carte **ULN2003** (kit courant) | **12 V**, unipolaire, 5 fils, bobines de 200 Ω (60 mA), réducteur intégré 63,68:1, **34,3 mN·m** à l'arbre (25 retenu dans les calculs), 28 mm de diamètre, 2 oreilles à 35 mm, arbre Ø5 à méplats court et décentré de 8 mm, 30 g | 2 | `28BYJ-48 12V stepper motor ULN2003 driver board` | Élévation et azimut. **Tester chaque moteur avant montage** : ils sont très dispersés (README du cas terrestre, § 9) | 3–5 € pièce |
-| **Extension d'entrées/sorties MCP23017** (module ou composant) | 16 sorties sur l'I²C, adresse 0x20 (A0, A1, A2 à la masse, RESET au 3,3 V) | 1 | `MCP23017 module I2C` | Pilote les 8 entrées IN1 à IN4 des deux cartes ULN2003 : le Heltec n'a pas assez de broches libres | 1–3 € |
-| **Résistance 10 kΩ**, 1/4 W (tirage vers la masse des sorties du MCP23017) | | 8 | `10k ohm resistor 1/4W` | Évite qu'une bobine s'allume à la mise sous tension (les sorties du MCP23017 sont alors en haute impédance) | 0,1 € |
+| **Extension d'entrées/sorties MCP23017** (boîtier DIP-28 étroit, `MCP23017-E/SP`) et son **support DIP-28** | 16 sorties sur l'I²C, adresse 0x20 (A0, A1, A2 à la masse, RESET au 3,3 V). Une version en module (carte d'adaptation) convient aussi si elle tient sur la plaque | 1 | `MCP23017-E/SP DIP28`, `DIP-28 IC socket 0.3in` | Pilote les 8 entrées IN1 à IN4 des deux ULN2003 : le Heltec n'a pas assez de broches (README du cas terrestre, § 6) | 2 € |
+| **Puce ULN2003A** (DIP-16) et son **support DIP-16** | 7 Darlington, 500 mA par sortie, diodes de roue libre (broche COM au +12 V) | 2 | `ULN2003A DIP16`, `DIP-16 IC socket` | Remplace sur la plaque la carte ULN2003 du kit (31 × 35 mm, qui ne tient pas) : une par moteur. Les cartes du kit restent en secours | 1 € |
+| **Réseau de résistances 10 kΩ SIP-9** (8 résistances à borne commune) | Boîtier SIP-9, pas de 2,54 mm. À défaut : 8 résistances 10 kΩ 1/4 W séparées | 1 | `10k ohm resistor network SIP9 bussed` | RN1 : tirage vers la masse des 8 sorties du MCP23017 ; évite qu'une bobine s'allume à la mise sous tension (sorties en haute impédance) | 0,5 € |
 | **Heltec WiFi LoRa 32 V4**, version 863–870 MHz | ESP32-S3R2 + radio LoRa SX1262, écran OLED, USB-C, antenne LoRa 868 MHz fournie (IPEX). Prendre le V4 standard, **pas la variante V4-R8** (brochage différent) | 1 | `Heltec WiFi LoRa 32 V4 868MHz` | Commande des moteurs, lecture des capteurs, envoi des données en LoRa | 20–30 € |
 | Module GNSS L76K pour Heltec V4 (facultatif) | Se branche sur le connecteur GNSS de la carte | 1 | `Heltec V4 GNSS L76K` | Heure et position pour le calcul du Soleil | 8–12 € |
 | **Convertisseur ADS1115** (module) | 16 bits, 4 entrées, I²C (adresse 0x48), résistances de tirage I²C sur le module | 1 | `ADS1115 module 16 bit I2C` | Lit les 4 photodiodes du capteur solaire | 2–4 € |
@@ -86,7 +87,7 @@ découper (§ 4).
 | **Interrupteur étanche** marche / arrêt | IP65 au moins : à bascule avec capuchon en silicone, ou à levier avec soufflet ; 12 V continu, 3 A au moins | 1 | `waterproof rocker switch IP65 12V` | S1, sur la paroi du boîtier : coupe tout | 3 € |
 | **Mini abaisseur 12 V → 5 V** | Module à découpage, entrée 5 à 30 V, **sortie fixe 5,0 V**, 3 A annoncés (1,5 à 2 A en réalité, il en faut **au moins 0,5 A** : Heltec et Hall ; les moteurs de 12 V ne passent plus par lui), environ 18 × 13 mm. Vérifier à réception que c'est bien la version 5 V : **mesurer sa sortie (4,9 à 5,2 V) avant de brancher le Heltec** | 1 | `mini buck converter 5V fixed 3A 5-30V` | U1 : alimente le Heltec (par D1) et le capteur Hall (avant D1) | 2 € |
 | **Diode Schottky 1N5819** | 1 A, 40 V | 1 | `1N5819` | Entre l'abaisseur et le Heltec : le 5 V de l'USB-C ne remonte pas dans l'abaisseur | 0,2 € |
-| **Condensateur 100 µF 25 V** | Électrolytique | 1 | `100uF 25V capacitor` | Sur le 12 V, près des cartes ULN2003 | 0,2 € |
+| **Condensateur 100 µF 25 V** | Électrolytique | 1 | `100uF 25V capacitor` | C1, sur le 12 V, près des deux ULN2003A (commun aux deux : les moteurs ne tournent jamais ensemble) | 0,2 € |
 | **Fin de course** | Micro-rupteur à levier SPS75GCC (Gotronic), ou KW12. Branché sur son contact NC | 2 (1 de rechange) | `SPS75GCC`, `KW12 micro limit switch` | Origine de l'élévation, en butée basse | 3 € |
 | **Capteur à effet Hall + aimant** | Capteur **A3144 nu** + aimant néodyme 5 × 2 mm. Pas de module KY-003 : il tire sa sortie au 5 V, trop pour l'ESP32 | 1 + 1 | `A3144 hall sensor`, `neodymium magnet 5x2mm` | Origine de l'azimut | 2 € |
 | **Résistance 10 kΩ**, 1/4 W | Résistances de tirage au 3,3 V | 2 | `10k ohm resistor 1/4W` | Fin de course (R6) et capteur Hall (R7) | 0,1 € |
@@ -106,16 +107,16 @@ découper (§ 4).
 | Gaine thermorétractable fine | Ø1,5 à 2,5 mm | quelques cm | `heat shrink tube 2mm` | Isole les soudures des pattes des photodiodes | 1 € |
 
 **Montage du boîtier électronique** (voir le [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 6 ;
-l'implantation `Electronique/Implantation_Boitier.fzz` est celle du modèle NEMA, avec ses TMC2209, et n'est
-pas redessinée pour les 28BYJ-48 : les cartes ULN2003, de 31 × 35 mm, ne tiennent pas sur la plaque) :
+l'implantation `Electronique/Implantation_Boitier.fzz` est celle du modèle à 28BYJ-48 : les cartes ULN2003 du kit,
+de 31 × 35 mm, sont remplacées sur la plaque par des puces ULN2003A) :
 
 | Article | Caractéristiques | Qté | À chercher | Rôle | ≈ Prix |
 |---|---|---|---|---|---|
 | **Plaque d'essais ECS1/2** (Gotronic, code 12041) | Époxy FR4, 80 × 100 mm, **pastilles carrées séparées** au pas de 2,54 mm, non étamée. L'implantation en utilise 24 × 30 : la couper à **28 × 34 trous** (≈ 71 × 87 mm, deux trous de marge tout autour), à la scie à métaux, puis, dans chaque coin, percer à Ø 3,2 mm le trou de la 2e rangée et de la 2e colonne (celui du bord est trop près de la découpe) pour les entretoises M3. Trous de 1 mm : bons pour toutes les pattes, sauf peut-être celles des borniers KF301, plus grosses ; s'ils forcent, agrandir leurs 10 trous à Ø 1,2 mm. Frotter le cuivre (gomme abrasive) juste avant de souder. Moins cher pour en avoir deux : l'ECS1 de 100 × 160 mm (code 12046, 7,20 €), coupée en deux. À défaut, une plaque 7 × 9 cm double face générique, si elle a bien 24 × 30 trous (certaines n'en ont que 23 × 31) | 1 | Gotronic 12041 | Reçoit toute l'électronique du boîtier | 5,90 € |
-| **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 1 × 10 (ADS1115), et pour le MCP23017 | 2 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
+| **Barrettes femelles** au pas de 2,54 mm | Barrettes de 40 broches, à couper : 2 × 18 (Heltec), 1 × 10 (ADS1115) ; les ULN2003A et le MCP23017 vont sur des supports DIP | 2 barrettes de 40 | `female header 2.54mm 40 pin` | Modules démontables | 2 € |
 | **Barrette mâle** au pas de 2,54 mm, double rangée | À couper : 2 × 4 broches | 1 | `male header 2x40 2.54mm` | J1 : bus I²C des deux wattmètres (3V3, GND, SDA, SCL pour chacun) | 1 € |
-| **Borniers à vis KF301**, pas de 5,08 mm, emboîtables | 3 de 2 pôles, 2 de 3 pôles (on les emboîte : 5 pôles = 2 + 3) | 5 | `KF301 2P 5.08mm`, `KF301 3P 5.08mm` | X1 (12 V : 2 pôles), X2 et X3 (moteurs : 5 pôles chacun) | 2 € |
-| **Borniers à vis au pas de 2,54 mm** (DG308 ou équivalent) | Fils AWG 26 à 18, 6 A ; un de 2 pôles, un de 3, un de 5. Deux fois moins larges que les KF301 | 1 + 1 + 1 | `DG308 2.54mm screw terminal 2P`, `3P`, `5P` | X4 (fin de course), X5 (Hall), X6 (capteur solaire) | 2 € |
+| **Borniers à vis KF301**, pas de 5,08 mm | 1 de 2 pôles (+ 1 de rechange) | 2 | `KF301 2P 5.08mm` | X1 (12 V : 2 pôles) | 1 € |
+| **Borniers à vis au pas de 2,54 mm** (DG308 ou équivalent) | Fils AWG 26 à 18, 6 A ; un de 2 pôles, un de 3, trois de 5. Deux fois moins larges que les KF301 | 1 + 1 + 3 | `DG308 2.54mm screw terminal 2P`, `3P`, `5P` | X2 et X3 (moteurs, 5 pôles chacun), X4 (fin de course), X5 (Hall), X6 (capteur solaire) | 2 € |
 | **Boîtier étanche IP65 à porte sur charnières** | ABS ou polycarbonate, au moins 226 × 120 mm à l'intérieur (vu de face) et **80 mm de profondeur** intérieure (batterie couchée de 70 mm) : un boîtier d'environ 250 × 150 × 100 mm, ou plus grand. La porte reçoit le régulateur (110 × 80 mm). Vérifier les cotes **intérieures** : les vis et les charnières prennent de la place dans les coins. **Porte opaque, boîtier de couleur claire** (il chauffe moins au soleil) | 1 | `IP65 ABS enclosure hinged door 100mm deep` | Reçoit tout ce qui ne tourne pas avec la tête : plaque, wattmètres, batterie, fusibles ; le régulateur est vissé sous la porte | 20–30 € |
 | Vis inox de la taille des trous du régulateur (M3 ou M4), avec **rondelle d'étanchéité** EPDM (ou joint torique) et écrou frein | Longueur : épaisseur de la porte + patte du régulateur + écrou. À défaut, adhésif double face pour l'extérieur (type VHB) | 4 | `M4 stainless screw sealing washer EPDM` | Fixent le régulateur sous la porte sans laisser entrer l'eau | 3 € |
 | Gaine spirale Ø 10 mm, colliers et embases adhésives | 30 cm de gaine | 1 + 6 | `spiral wrap 10mm`, `adhesive cable tie mount` | Boucle des 6 fils du régulateur à la charnière, attachée de chaque côté | 3 € |
@@ -128,8 +129,7 @@ pas redessinée pour les 28BYJ-48 : les cartes ULN2003, de 31 × 35 mm, ne tienn
 
 Le câblage complet est sur le **schéma électrique**
 ([`Electronique/Schema_Electrique.pdf`](Electronique/Schema_Electrique.pdf), projet QElectroTech
-`Electronique/Schema_Electrique.qet`) montre la version à NEMA et TMC2209 : à lire en remplaçant
-les deux drivers par le MCP23017 et les cartes ULN2003. Le brochage du Heltec V4, les 28BYJ-48 avec le MCP23017 et les
+`Electronique/Schema_Electrique.qet`) : 28BYJ-48 de 12 V, ULN2003 et MCP23017, sans TMC2209. Le brochage du Heltec V4, les 28BYJ-48 avec le MCP23017 et les
 bibliothèques sont décrits dans le [README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 6. Le branchement du
 capteur solaire est au § 7.
 

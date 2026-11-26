@@ -319,7 +319,8 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité sur le trépied de la tête du modèle idéal personnel (vent de toutes les directions, glissement, planche lestée, incertitudes) ; **non relancé pour la fourche** |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
-| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle ; version NEMA, pas encore refaite pour les 28BYJ-48) |
+| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, ULN2003A, MCP23017, ADS1115 et borniers dessinés à l'échelle ; `--nema` : ancien modèle à TMC2209 ; `--apercu` : images PNG sans Fritzing) |
+| `scripts/exporter_schema.py` | Exporte le schéma .qet en PDF et en PNG (sans QElectroTech) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py`, `scripts/render_visserie.py` | Génèrent les rendus PNG, les images annotées et les vues de la visserie |
 | [`tracker_solaire_composants.pdf`](tracker_solaire_composants.pdf) | Liste des composants à commander, telle qu'elle a été envoyée au professeur (15 références Gotronic) |
 | `requirements.txt` | Dépendances Python (CadQuery) |
@@ -390,8 +391,9 @@ python scripts/generate_demo_trepied.py               # tête NEMA (modèle idé
 xvfb-run -a python scripts/render_fourche.py                       # rendus du cas terrestre (fourche)
 python scripts/verification_stabilite.py              # stabilité de la tête NEMA (modèle idéal personnel), calcul indépendant
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
-python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
-python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
+python scripts/generate_schema_electrique.py          # schéma électrique 28BYJ-48 (Electronique/*.qet) ; --nema : ancien modèle
+python scripts/exporter_schema.py                     # PDF et PNG du schéma (ou Fichier > Exporter dans QElectroTech)
+python scripts/generate_implantation_fritzing.py --apercu   # implantation du boîtier (Electronique/*.fzz) et ses images
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau

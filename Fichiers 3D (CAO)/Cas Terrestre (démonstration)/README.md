@@ -265,9 +265,11 @@ Le **28BYJ-48 5 V** est livré avec sa carte **ULN2003** dans tous les kits cour
 | Résistance d'une bobine | environ 50 Ω, soit ≈ 100 mA par bobine allumée |
 | Réduction intégrée | 64:1 nominal, **63,68:1** mesuré ; environ 4076 demi-pas par tour de l'arbre de sortie |
 | Couple de sortie | **34,3 mN·m** à 120 Hz (25 mN·m retenu dans les calculs, par prudence) |
-| Arbre de sortie | Ø5 à deux méplats (3 mm entre méplats), court (7,5 mm au-dessus de la face), **décentré de 8 mm** par rapport au corps |
+| Arbre de sortie | Ø5 à deux méplats (3 mm entre méplats, longueur 6 mm depuis le bout), **10 mm au-dessus de la face du corps** (bossage de 1,5 mm compris), **décentré de 8 mm** par rapport au corps ; méplats perpendiculaires à la ligne des oreilles |
 | Fixation | corps Ø28 mm, deux oreilles à 35 mm d'entraxe, bossage Ø9 × 1,5 mm |
 | Masse | environ 30 g |
+
+> **Attention à la tension du moteur.** La fiche technique fournie avec la demande est celle du **28BYJ-48 en 12 V** (bobines de **200 Ω**, environ 60 mA par bobine), alors que ce document, l'électronique (§ 6) et la nomenclature sont écrits pour le **5 V** (environ 50–60 Ω). Les deux ont la même mécanique (cotes ci-dessus) et le même couple annoncé (34,3 mN·m à 120 Hz), mais **un 12 V alimenté en 5 V donne environ 2,4 fois moins de couple (5/12)** et ne tient plus la marge : il doit être alimenté en **12 V** (le 12 V du tracker existe déjà, la carte ULN2003 en kit accepte 5 à 12 V). La fiche du 12 V donne aussi **100 pas/s** de fréquence de fonctionnement et 120 Hz pour le couple annoncé. **Vérifier sur l'étiquette du moteur reçu** (« 5V » ou « 12V ») avant de câbler.
 
 Sources : [fiche technique 28BYJ-48](https://cdn.shopify.com/s/files/1/0015/7571/4865/files/datasheet_28BYJ-48.pdf),
 [fiche 52Pi](https://wiki.52pi.com/images/3/3a/Stepper-Motor-28BJY-48-Datasheet.pdf). Ces cotes
@@ -379,8 +381,10 @@ le palier et le support d'élévation. La roue d'élévation n'est pas contrôl�
   viennent en appui sur les bagues intérieures des 685 par un épaulement Ø6,5, qui ne
   touche pas la flasque. Une vis sans tête M3×4 dans un moyeu bloque la vis sans fin sur l'arbre.
 * **L'accouplement flexible Ø14 × 19** relie l'arbre du moteur à l'arbre de la vis. L'arbre
-  du 28BYJ-48 est court : il entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans
-  le lamage Ø17 du support.
+  du 28BYJ-48 est court (10 mm) : il entre de 8,1 mm dans l'accouplement, qui s'engage de 2,1 mm dans
+  le lamage Ø17 du support (0,4 mm de jeu avec le bossage). Le bout de l'arbre du moteur reste à
+  1,4 mm de celui de la vis. Les axes du moteur, de l'accouplement et de l'arbre de la vis sont
+  confondus (écart nul dans la CAO, voir « Montage de l'accouplement » plus bas).
 * **Le panneau tourne sur ses deux tiges** : la tige droite (46 mm) passe dans le 608 du bras
   droit et la ferrure, et porte la roue d'élévation à l'extérieur du bras ; la tige gauche (25 mm)
   passe dans le 608 du bras gauche et la ferrure. La roue et chaque ferrure sont bloquées par une
@@ -438,6 +442,29 @@ le palier et le support d'élévation. La roue d'élévation n'est pas contrôl�
 (moteur débranché, vis sans fin retirée du contact si besoin). Il doit rester à peu près où on
 le met : le centre de gravité n'est qu'à 9 mm de l'axe. S'il bascule nettement d'un côté,
 chercher ce qui est mal placé (capteur, câbles) avant de toucher au moteur.
+
+### Monter l'accouplement flexible sur l'arbre du moteur
+
+**Les deux diamètres que l'on voit sur le moteur** (fiche technique du 28BYJ-48, cotes reprises dans la CAO) :
+
+| Partie | Cotes | Rôle |
+|---|---|---|
+| **Bossage** (la « collerette » qui sort de la face) | **Ø9** (Ø7,8 sur certaines fiches), 1,5 mm de haut | Centre le moteur dans le trou Ø9,6 de la plaque du support. **L'accouplement n'y touche pas** |
+| **Arbre de sortie** | **Ø5 (−0,1)**, **10 mm depuis la face** du corps, soit **8,5 mm** qui dépassent du bossage : 2,5 mm ronds, puis **6 mm à deux méplats** distants de **3 mm** | C'est lui qui entre dans l'accouplement |
+
+L'alésage de l'accouplement est **rond, Ø5** : l'arbre y entre quelle que soit son orientation (les méplats sont à l'intérieur du cercle). La vis de serrage de l'accouplement doit simplement tomber **sur un méplat** : on tourne l'accouplement autour de l'arbre avant de serrer, l'arbre n'a pas à être orienté. Sur la fiche, les méplats sont **perpendiculaires à la ligne des deux oreilles** : leurs normales sont verticales (axe Z de la tête), donc la vis de serrage est au-dessus ou au-dessous de l'arbre.
+
+**Ordre à suivre (accouplement d'abord sur le moteur, sur l'établi) :**
+
+1. Enfiler l'accouplement par sa moitié « moteur » sur l'arbre jusqu'à **0,4 mm du bossage** (une cale de carton de 0,4 mm). L'arbre est alors engagé de **8,1 mm** sur les 9,5 mm de la moitié, et son bout s'arrête à **1,4 mm** du milieu de l'accouplement : les deux arbres ne se touchent jamais.
+2. Tourner l'accouplement pour que sa vis de serrage soit **sur un méplat**, du côté qui sera accessible une fois monté : **vers le haut (+Z) à l'élévation, vers le bas (−Z) à l'azimut**. Serrer la vis (M3 à six pans creux, environ 0,5 N·m ; une goutte de frein-filet faible).
+3. Poser le moteur sur son support : le **bossage entre dans le trou Ø9,6** de la plaque, le **bout de l'accouplement dans le lamage Ø17** (2,1 mm), l'**arbre acier de la vis sans fin** entre dans l'autre moitié de l'accouplement (9,5 mm engagés). Serrer les deux vis M3×8 des oreilles **en poussant le moteur vers le fond de l'accouplement**.
+4. Serrer la deuxième vis de serrage sur l'arbre de la vis sans fin, par le même côté (+Z / −Z). L'arbre est **rond** : lui limer d'abord un **méplat de 0,5 mm** au droit de la vis, sinon elle le marque et peut glisser. Orienter ce méplat vers +Z (élévation) ou −Z (azimut) avant de bloquer la vis sans fin sur son arbre.
+5. Vérifier à la main que la vis sans fin tourne sans point dur sur un tour complet, moteur hors tension.
+
+**Alignement des trois axes (arbre du moteur, accouplement, arbre de la vis sans fin).** Dans la CAO, les trois axes sont **confondus** : à l'élévation comme à l'azimut, le centre de chaque section est à la même position à **0,000 mm** près (arbre du moteur, accouplement, arbre de la vis). Ce n'est pas un hasard : l'arbre du moteur est placé sur l'axe de l'arbre de la vis (le corps, lui, est décentré de 8 mm ; c'est l'arbre, pas le corps, qui est sur l'axe). Le **jeu de 1,4 mm** entre le bout de l'arbre du moteur et le début de l'arbre de la vis est aussi mesuré. En réalité, l'alignement dépend de l'impression du support : le bossage Ø9 dans un trou Ø9,6 laisse **±0,3 mm** (±0,9 mm si le bossage est de Ø7,8). L'accouplement flexible absorbe ce défaut (plusieurs dixièmes de millimètre de décalage, 1 à 2° d'angle). Pour ne pas le solliciter, serrer les vis des oreilles **après** avoir engagé l'arbre de la vis dans l'accouplement.
+
+**Accès aux vis de serrage** (clé à six pans de 2,5 mm, vérifié sur la CAO avec un dégagement libre de 60 mm) : à l'azimut, **par le bas, tout droit**, pour les deux vis ; à l'élévation, **par le haut, clé inclinée de 25°** (clé à rotule) : la roue d'élévation et le bras droit gênent une clé droite. Les vis des deux moitiés sont à 4,75 mm de chaque extrémité de l'accouplement (à ajuster à l'accouplement reçu : sur le plan du fabricant).
 
 ### Visserie en bref
 
@@ -1185,7 +1212,7 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
    100 mm fixé sur l'arbre, une masse accrochée au bout. À 5 V et 120 phases/s, le moteur doit lever
    **25 g** (prudent) et idéalement **35 g** (nominal) sans perdre de pas. S'il n'y arrive pas, le
    changer : ils sont très dispersés.
-2. **Mesurer le moteur reçu** avant d'imprimer les supports : arbre (7,5 mm au-dessus de la
+2. **Mesurer le moteur reçu** avant d'imprimer les supports : arbre (10 mm au-dessus de la
    face, méplats de 3 mm), bossage (Ø9 × 1,5 mm), décentrage de 8 mm, entraxe des oreilles (35 mm),
    trous Ø4,2. Les supports sont modélisés sur ces cotes ; une différence de 0,5 mm se rattrape au
    lamage, pas davantage.

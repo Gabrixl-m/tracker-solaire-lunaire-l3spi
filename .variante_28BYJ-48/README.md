@@ -180,11 +180,11 @@ roues, vis sans fin, paliers, pivots, socle, moyeu, bague d'arrêt, fond, capteu
 ![Moteur d'élévation : plaque, oreilles, écrous, accouplement](apercus/variante_detail_moteur_elevation.png)
 
 * Le **28BYJ-48** modélisé : corps Ø28 × 19 mm décentré de 8 mm par rapport à l'arbre, bossage de
-  Ø9 × 1,5 mm, arbre Ø5 à deux méplats de 3 mm, 7,5 mm au-dessus de la face, deux oreilles de
+  Ø9 × 1,5 mm, arbre Ø5 à deux méplats de 3 mm, 10 mm au-dessus de la face, deux oreilles de
   0,8 mm à 35 mm d'entraxe (trous Ø4,2), bloc de connexion à l'arrière (approximation). En
   élévation, le corps est **au-dessus** de l'arbre ; en azimut, **au-dessous**.
 * **Accouplement flexible Ø14 × 19 mm** (au lieu de Ø19 × 25) : l'arbre du 28BYJ-48 est court. Il
-  entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans le lamage du support, à 0,3 mm
+  entre de 8,1 mm dans l'accouplement, qui s'engage de 2,1 mm dans le lamage du support, à 0,3 mm
   du fond. La face du moteur est **12,6 mm plus près** de l'accouplement qu'avec un NEMA. Les
   arbres Ø5 des vis sans fin, les paliers et les vis sans fin ne bougent pas.
 
@@ -289,7 +289,7 @@ euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature es
    une masse de 300 g à 100 mm de l'axe d'élévation (0,29 N·m, ce que le moteur doit encore
    vaincre à sec) ; le moteur doit faire tourner la roue.
 3. **Vérifier l'équilibre** du contrepoids (pesée, puis les deux appuis, § 4).
-4. **Mesurer le 28BYJ-48 reçu** avant d'imprimer les supports : arbre (7,5 mm au-dessus de la face,
+4. **Mesurer le 28BYJ-48 reçu** avant d'imprimer les supports : arbre (10 mm au-dessus de la face,
    méplats de 3 mm), bossage (Ø9 × 1,5 mm), décentrage de 8 mm, entraxe des oreilles (35 mm), trous
    Ø4,2. Les supports sont modélisés sur ces cotes (§ 5) ; une différence de 0,5 mm se rattrape au
    lamage, pas davantage. L'éprouvette d'ajustements de la version principale permet de régler la

@@ -564,7 +564,7 @@ def _maj_inserts():
     LAMAGE_RAIL_CH = 4.5 if ins else 3.5                 # lamage des vis rail -> chapeau (M3x12 en insert court)
     X_PALIER_AZ = 14.5 if ins else 16.5                  # vis du palier d'azimut, 2,5 mm de matière au bord
     COUPLEUR.update(d=14.0, L=19.0) if VAR28 else COUPLEUR.update(d=19.0, L=25.0)
-    if VAR28:                       # 28BYJ-48 : l'arbre est court (7,5 mm), la face du moteur se rapproche de l'accouplement
+    if VAR28:                       # 28BYJ-48 : l'arbre est court (10 mm depuis la face, dont 1,5 mm de bossage), la face du moteur se rapproche de l'accouplement
         dec = COUPLEUR["L"] / 2 + 1.9                    # accouplement jusqu'à 0,3 mm du fond du lamage (1,6 mm)
         AZ_VIS["x_face"] = AZ_VIS["x_joint"] - dec
         EL_VIS["y_face"] = EL_VIS["y_joint"] - dec
@@ -638,7 +638,7 @@ MOT_AZ = dict(c=28.2, L=45.0, pilot=22.0, holes=23.0, hole_d=2.5, prof=2.5, shaf
 # Repère du moteur : origine sur l'axe de l'arbre, sur la face avant ; arbre vers +Z, corps vers -Z ; oreilles
 # selon X ; le corps est décentré de `decal` vers -Y (l'arbre est excentré de 8 mm). Cotes de fiches techniques
 # courantes, à vérifier au pied à coulisse sur les moteurs reçus.
-MOT_28 = dict(d=28.0, L=19.0, decal=8.0, boss_d=9.0, boss_h=1.5, arbre=7.5, meplat=3.0, l_meplat=6.0,
+MOT_28 = dict(d=28.0, L=19.0, decal=8.0, boss_d=9.0, boss_h=1.5, arbre=10.0, meplat=3.0, l_meplat=6.0,
               entraxe=35.0, oreille_l=7.0, oreille_ep=0.8, oreille_trou=4.2, conn=(17.0, 5.0, 8.0),
               nom="28BYJ-48 5 V (couple de sortie 34,3 mN·m, réducteur 63,68:1)")
 VAR28 = False                        # variante 28BYJ-48 : voir set_variante()
@@ -800,9 +800,9 @@ def p_28byj():
     corps = corps.union(box_span(-w / 2, w / 2, yc - d / 2 - sa, yc - d / 2 + 6.0, -L, -L + h))
     corps = corps.union(cyl_z(m["boss_d"], m["boss_h"]))
     arbre = cyl_z(5, m["arbre"])
-    for sx in (-1, 1):                   # deux méplats à 3 mm l'un de l'autre
-        x0, x1 = sorted((sx * m["meplat"] / 2, sx * 3.0))
-        arbre = arbre.cut(box_span(x0, x1, -3, 3, m["arbre"] - m["l_meplat"], m["arbre"] + 1))
+    for sy in (-1, 1):                   # deux méplats à 3 mm l'un de l'autre, normales selon Y (ligne arbre -> centre du corps,
+        y0, y1 = sorted((sy * m["meplat"] / 2, sy * 3.0))      # perpendiculaire aux oreilles, fiche technique)
+        arbre = arbre.cut(box_span(-3, 3, y0, y1, m["arbre"] - m["l_meplat"], m["arbre"] + 1))
     return corps.union(arbre)
 
 

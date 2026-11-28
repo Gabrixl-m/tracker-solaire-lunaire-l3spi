@@ -19,7 +19,7 @@ commande, communs aux deux cas, sont décrits dans le [README principal](../../R
 > **dans le sens de sa largeur** : l'axe d'élévation suit son petit côté de 253 mm (et non les 356 mm),
 > si bien que les deux bras de la fourche ne sont écartés que de 290 mm (§ 1).
 >
-> **Moteurs imposés : deux 28BYJ-48.** Ce sont de petits moteurs à 5 V, 15 à 20 fois moins
+> **Moteurs imposés : deux 28BYJ-48.** Ce sont de petits moteurs (version **12 V**), 15 à 20 fois moins
 > forts que les NEMA du cas lunaire. Ils ne peuvent pas faire basculer un panneau dont le
 > centre de gravité est loin de l'axe : **la tête a donc été redessinée à zéro, en fourche, pour
 > que le panneau soit équilibré par sa géométrie**, sans contrepoids (§ 1). L'ancien modèle
@@ -46,8 +46,8 @@ commande, communs aux deux cas, sont décrits dans le [README principal](../../R
 
 ### Le problème du 28BYJ-48
 
-Le 28BYJ-48 (5 V, réducteur intégré 63,68:1) donne **34,3 mN·m** à son arbre, soit **25 mN·m en
-valeur prudente** (dispersion d'un moteur à l'autre, usure du réducteur, alimentation à 4,5 V),
+Le 28BYJ-48 (12 V, réducteur intégré 63,68:1) donne **34,3 mN·m** à son arbre, soit **25 mN·m en
+valeur prudente** (dispersion d'un moteur à l'autre, usure du réducteur, alimentation à 10,8 V, soit 12 V − 10 %),
 contre 0,34 N·m pour le NEMA 17 de l'ancien modèle. Dans la tête à chape, l'axe d'élévation est
 **sous le cadre, à 46 mm de son dos** : la partie qui bascule (1,51 kg) a son centre de gravité
 à **62 mm de l'axe**, et le panneau pèse en permanence sur la denture : **0,93 N·m rien que pour
@@ -107,7 +107,7 @@ Conséquences de ce choix :
 | Axe d'élévation | Sous le cadre | **Dans le plan médian du panneau**, parallèle à son côté de 253 mm, à 902 mm du sol sur le trépied (contre 758 mm pour la tête à chape) |
 | Roues des vis sans fin | Bronze CuSn12, 50 et 60 dents | **PETG imprimé, 100 et 120 dents**, module 0,8 |
 | Vis sans fin | Inox 17-4PH | **PETG imprimé** |
-| Moteurs | NEMA 17 et NEMA 11 (version vide) | **2 × 28BYJ-48 5 V**, avec cartes **ULN2003** |
+| Moteurs | NEMA 17 et NEMA 11 (version vide) | **2 × 28BYJ-48 12 V**, avec cartes **ULN2003** |
 | Accouplements | Al 7075-T73, Ø19 × 25 | Accouplement flexible alu **Ø5 / Ø5, Ø14 × 19 mm** (arbre court du 28BYJ-48) |
 | Drivers | TMC2209 | **Cartes ULN2003 + MCP23017** (extension de broches sur l'I²C), § 6 |
 | Socle, fond, moyeu, bague d'arrêt, paliers, supports | Al 6061-T6 anodisé | **PETG imprimé** |
@@ -202,12 +202,12 @@ En résumé, pour la mécanique :
 | Article | Qté |
 |---|---|
 | Roulement **6806ZZ** (ISO 61806-2Z ; ou 6806-2RS), 30 × 42 × 7 mm | 2 |
-| Roulement **608ZZ** (ou 608-2RS), 8 × 22 × 7 mm | 3 |
+| Roulement **608ZZ** (ou 608-2RS), 8 × 22 × 7 mm | 2 (un de plus, de rechange, pour essayer sur l'éprouvette) |
 | Roulement **685ZZ** (ou 685-2RS), 5 × 11 × 5 mm — **pas le 685 ouvert, large de 3 mm** | 4 |
 | **Tige d'acier rectifiée Ø8**, coupée à **46 mm** (côté roue) et **25 mm** (côté gauche) : 71 mm en tout, prendre 100 mm | 1 |
 | Tige acier rectifiée Ø5, coupée à 53 mm (arbres des vis) | 2 |
 | Accouplement flexible alu 5 mm / 5 mm, **Ø14 × 19 mm** (`flexible shaft coupling 5mm 5mm D14 L19`) | 2 |
-| **Moteur 28BYJ-48, 5 V**, avec sa carte **ULN2003** | 2 |
+| **Moteur 28BYJ-48, 12 V**, avec sa carte **ULN2003** | 2 |
 | **Plateau d'aluminium 5 mm**, découpé d'après `pieces_metal/Plateau_Alu.dxf` | 1 |
 | Vis CHC M3 : 21 × M3×8, 11 × M3×10, 8 × M3×12 | 40 |
 | Vis à tête fraisée M3×6 (roue d'azimut) | 3 |
@@ -257,17 +257,19 @@ acier standard.
 
 ### Moteurs
 
-Le **28BYJ-48 5 V** est livré avec sa carte **ULN2003** dans tous les kits courants.
+Le **28BYJ-48 12 V** est livré avec sa carte **ULN2003** dans les kits courants (la carte accepte 5 à 12 V). La fiche technique du moteur reçu est celle du 12 V ; les cotes ci-dessous en viennent.
 
 | Caractéristique | Valeur |
 |---|---|
-| Alimentation | 5 V, unipolaire, 5 fils (rouge = commun) |
-| Résistance d'une bobine | environ 50 Ω, soit ≈ 100 mA par bobine allumée |
+| Alimentation | **12 V**, unipolaire, 5 fils (rouge = commun) |
+| Résistance d'une bobine | **200 Ω ±7 %**, soit **60 mA** par bobine allumée (≈ 1,4 W avec deux bobines) |
 | Réduction intégrée | 64:1 nominal, **63,68:1** mesuré ; environ 4076 demi-pas par tour de l'arbre de sortie |
-| Couple de sortie | **34,3 mN·m** à 120 Hz (25 mN·m retenu dans les calculs, par prudence) |
-| Arbre de sortie | Ø5 à deux méplats (3 mm entre méplats), court (7,5 mm au-dessus de la face), **décentré de 8 mm** par rapport au corps |
+| Couple de sortie | **> 34,3 mN·m** à 120 Hz (25 mN·m retenu dans les calculs, par prudence) ; couple d'auto-maintien ≥ 450 gf·cm, frottement 800 à 1800 gf·cm ; fréquence de fonctionnement indiquée : 100 pas/s |
+| Arbre de sortie | Ø5 à deux méplats (3 mm entre méplats, longueur 6 mm depuis le bout), **10 mm au-dessus de la face du corps** (bossage de 1,5 mm compris), **décentré de 8 mm** par rapport au corps ; méplats perpendiculaires à la ligne des oreilles |
 | Fixation | corps Ø28 mm, deux oreilles à 35 mm d'entraxe, bossage Ø9 × 1,5 mm |
 | Masse | environ 30 g |
+
+> **Moteurs en 12 V (confirmé).** La fiche technique est celle du 28BYJ-48 **12 V**. Il est alimenté en **12 V**, par le 12 V du tracker (après le wattmètre A5), directement sur la carte ULN2003 (elle accepte 5 à 12 V). **Un 12 V alimenté en 5 V ne donnerait qu'environ 2,4 fois moins de couple (5/12) : ne jamais le brancher sur le 5 V de U1.** À réception, vérifier l'étiquette « 12V » et les 200 Ω entre le fil rouge et chaque autre fil. Le couple annoncé (34,3 mN·m) est mesuré à 120 Hz ; la fiche indique 100 pas/s en fonctionnement : si un moteur décroche à 120 phases/s, descendre à 100 (le tour de 90° passe alors de 14 à 17 minutes à l'élévation et de 17 à 20 à l'azimut).
 
 Sources : [fiche technique 28BYJ-48](https://cdn.shopify.com/s/files/1/0015/7571/4865/files/datasheet_28BYJ-48.pdf),
 [fiche 52Pi](https://wiki.52pi.com/images/3/3a/Stepper-Motor-28BJY-48-Datasheet.pdf). Ces cotes
@@ -379,8 +381,10 @@ le palier et le support d'élévation. La roue d'élévation n'est pas contrôl�
   viennent en appui sur les bagues intérieures des 685 par un épaulement Ø6,5, qui ne
   touche pas la flasque. Une vis sans tête M3×4 dans un moyeu bloque la vis sans fin sur l'arbre.
 * **L'accouplement flexible Ø14 × 19** relie l'arbre du moteur à l'arbre de la vis. L'arbre
-  du 28BYJ-48 est court : il entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans
-  le lamage Ø17 du support.
+  du 28BYJ-48 est court (10 mm) : il entre de 8,1 mm dans l'accouplement, qui s'engage de 2,1 mm dans
+  le lamage Ø17 du support (0,4 mm de jeu avec le bossage). Le bout de l'arbre du moteur reste à
+  1,4 mm de celui de la vis. Les axes du moteur, de l'accouplement et de l'arbre de la vis sont
+  confondus (écart nul dans la CAO, voir « Montage de l'accouplement » plus bas).
 * **Le panneau tourne sur ses deux tiges** : la tige droite (46 mm) passe dans le 608 du bras
   droit et la ferrure, et porte la roue d'élévation à l'extérieur du bras ; la tige gauche (25 mm)
   passe dans le 608 du bras gauche et la ferrure. La roue et chaque ferrure sont bloquées par une
@@ -439,6 +443,29 @@ le palier et le support d'élévation. La roue d'élévation n'est pas contrôl�
 le met : le centre de gravité n'est qu'à 9 mm de l'axe. S'il bascule nettement d'un côté,
 chercher ce qui est mal placé (capteur, câbles) avant de toucher au moteur.
 
+### Monter l'accouplement flexible sur l'arbre du moteur
+
+**Les deux diamètres que l'on voit sur le moteur** (fiche technique du 28BYJ-48, cotes reprises dans la CAO) :
+
+| Partie | Cotes | Rôle |
+|---|---|---|
+| **Bossage** (la « collerette » qui sort de la face) | **Ø9** (Ø7,8 sur certaines fiches), 1,5 mm de haut | Centre le moteur dans le trou Ø9,6 de la plaque du support. **L'accouplement n'y touche pas** |
+| **Arbre de sortie** | **Ø5 (−0,1)**, **10 mm depuis la face** du corps, soit **8,5 mm** qui dépassent du bossage : 2,5 mm ronds, puis **6 mm à deux méplats** distants de **3 mm** | C'est lui qui entre dans l'accouplement |
+
+L'alésage de l'accouplement est **rond, Ø5** : l'arbre y entre quelle que soit son orientation (les méplats sont à l'intérieur du cercle). La vis de serrage de l'accouplement doit simplement tomber **sur un méplat** : on tourne l'accouplement autour de l'arbre avant de serrer, l'arbre n'a pas à être orienté. Sur la fiche, les méplats sont **perpendiculaires à la ligne des deux oreilles** : leurs normales sont verticales (axe Z de la tête), donc la vis de serrage est au-dessus ou au-dessous de l'arbre.
+
+**Ordre à suivre (accouplement d'abord sur le moteur, sur l'établi) :**
+
+1. Enfiler l'accouplement par sa moitié « moteur » sur l'arbre jusqu'à **0,4 mm du bossage** (une cale de carton de 0,4 mm). L'arbre est alors engagé de **8,1 mm** sur les 9,5 mm de la moitié, et son bout s'arrête à **1,4 mm** du milieu de l'accouplement : les deux arbres ne se touchent jamais.
+2. Tourner l'accouplement pour que sa vis de serrage soit **sur un méplat**, du côté qui sera accessible une fois monté : **vers le haut (+Z) à l'élévation, vers le bas (−Z) à l'azimut**. Serrer la vis (M3 à six pans creux, environ 0,5 N·m ; une goutte de frein-filet faible).
+3. Poser le moteur sur son support : le **bossage entre dans le trou Ø9,6** de la plaque, le **bout de l'accouplement dans le lamage Ø17** (2,1 mm), l'**arbre acier de la vis sans fin** entre dans l'autre moitié de l'accouplement (9,5 mm engagés). Serrer les deux vis M3×8 des oreilles **en poussant le moteur vers le fond de l'accouplement**.
+4. Serrer la deuxième vis de serrage sur l'arbre de la vis sans fin, par le même côté (+Z / −Z). L'arbre est **rond** : lui limer un **méplat de 0,5 mm** au droit de la vis (à 4,75 mm du bout de l'arbre), sinon elle le marque et peut glisser. Ce méplat se lime **en dernier**, sur le bout qui dépasse du palier, **après** avoir calé et bloqué la vis sans fin sur son arbre : l'angle de l'arbre est alors fixé par le calage de la vis, et on lime le méplat du côté +Z (élévation) ou −Z (azimut), vers la clé.
+5. Vérifier à la main que la vis sans fin tourne sans point dur sur un tour complet, moteur hors tension.
+
+**Alignement des trois axes (arbre du moteur, accouplement, arbre de la vis sans fin).** Dans la CAO, les trois axes sont **confondus** : à l'élévation comme à l'azimut, le centre de chaque section est à la même position à **0,000 mm** près (arbre du moteur, accouplement, arbre de la vis). Ce n'est pas un hasard : l'arbre du moteur est placé sur l'axe de l'arbre de la vis (le corps, lui, est décentré de 8 mm ; c'est l'arbre, pas le corps, qui est sur l'axe). Le **jeu de 1,4 mm** entre le bout de l'arbre du moteur et le début de l'arbre de la vis est aussi mesuré. En réalité, l'alignement dépend de l'impression du support : le bossage Ø9 dans un trou Ø9,6 laisse **±0,3 mm** (±0,9 mm si le bossage est de Ø7,8). L'accouplement flexible absorbe ce défaut (plusieurs dixièmes de millimètre de décalage, 1 à 2° d'angle). Pour ne pas le solliciter, serrer les vis des oreilles **après** avoir engagé l'arbre de la vis dans l'accouplement.
+
+**Accès aux vis de serrage** (clé à six pans de 2,5 mm, vérifié sur la CAO avec un dégagement libre de 60 mm) : à l'azimut, **par le bas, tout droit**, pour les deux vis ; à l'élévation, **par le haut, clé inclinée de 25°** (clé à rotule) : la roue d'élévation et le bras droit gênent une clé droite. Les vis des deux moitiés sont à 4,75 mm de chaque extrémité de l'accouplement (à ajuster à l'accouplement reçu : sur le plan du fabricant).
+
 ### Visserie en bref
 
 * Dans les fichiers 3D et les images, les **vis sont en orange**, les **rondelles et les
@@ -480,7 +507,7 @@ sa section (AWG), et l'épaisseur du trait suit cette section.
 |---|---|---|
 | ![Schéma électrique](../../docs%20%28extra%29/electronique/schema_electrique.png) | ![Brochage du Heltec V4](../../docs%20%28extra%29/electronique/brochage_heltec.png) | ![Section des fils](../../docs%20%28extra%29/electronique/cablage_sections.png) |
 
-> **État du schéma et de l'implantation.** Les fichiers de `Electronique/` (schéma QElectroTech, PDF, implantation Fritzing) sont ceux du **modèle idéal personnel** (NEMA 17 et NEMA 11, deux TMC2209) : **ils ne sont pas redessinés pour les 28BYJ-48**. Tout le reste (alimentation, mesure de l'énergie, capteur solaire, LoRa, câbles de la tête) est identique. Ce qui change pour le modèle à fourche est décrit dans ce paragraphe : à la place de chaque TMC2209, une carte (ou une puce) ULN2003, pilotée par un MCP23017 sur l'I²C ; le mini abaisseur U1 fournit aussi le 5 V des moteurs ; le 12 V ne va plus aux drivers.
+> **Schéma et implantation à jour pour les 28BYJ-48 de 12 V.** `Electronique/` contient le schéma (QElectroTech) et l'implantation (Fritzing) de ce modèle : MCP23017 et deux ULN2003 à la place des TMC2209, moteurs alimentés en 12 V, mini abaisseur U1 réservé au Heltec et au capteur Hall. Ceux de l'ancien modèle à NEMA et TMC2209 sont dans `.modele_ideal_personnel/Electronique/`. Les images et le PDF sont exportés par `scripts/exporter_schema.py` (le schéma est redessiné à partir du fichier .qet, sans QElectroTech) : l'export de QElectroTech lui-même est un peu différent (polices), mais le contenu est le même.
 
 **Brochage.** Le Heltec V4 garde pour lui la plupart de ses GPIO : radio et son ampli (2, 5,
 7, 8 à 14, 46), écran (17, 18, 21), USB (19, 20), mémoire (26), GNSS (34, 38 à 42), LED,
@@ -491,10 +518,11 @@ tracker (I²C, fin de course, Hall) : il en manque 3.
 **Solution : un MCP23017**, extension de 16 sorties sur l'I²C déjà en place :
 * alimenté en **3,3 V**, adresse **0x20** (A0, A1, A2 à la masse), RESET au 3,3 V : aucun conflit avec
   les adresses 0x48 (ADS1115), 0x40 et 0x45 (wattmètres) ;
-* ses 8 sorties pilotent IN1 à IN4 des deux cartes ULN2003 (GPA0 à GPA3 : élévation ; GPB0 à
+* ses 8 sorties pilotent IN1 à IN4 des deux ULN2003 (GPA0 à GPA3 : élévation ; GPB0 à
   GPB3 : azimut) ;
-* **8 résistances de 10 kΩ vers la masse** sur les sorties : à la mise sous tension, le MCP23017
-  a ses sorties en haute impédance, et sans tirage une bobine pourrait s'allumer au démarrage ;
+* **un réseau de 8 résistances de 10 kΩ (RN1, boîtier SIP-9, borne commune à la masse)** sur les sorties : à la mise sous
+  tension, le MCP23017 a ses sorties en haute impédance, et sans tirage une bobine pourrait s'allumer au démarrage
+  (8 résistances séparées conviennent aussi) ;
 * alternative : un 74HC595 (3 broches : données, horloge, verrou) plus une 4ᵉ pour OE.
 
 | GPIO | Connecteur | Signal | Vers |
@@ -540,26 +568,26 @@ différent.
 
   Un fusible ne protège que ce qui vient après lui : chacun est donc au plus près de sa
   source.
-* Le 12 V ne va plus qu'au **mini abaisseur 5 V** (U1, environ 18 × 13 mm), qui alimente aussi
-  les moteurs. **U1 doit fournir au moins 0,6 A** (Heltec avec WiFi, capteur Hall, **un seul**
-  moteur à la fois, environ 0,2 A) : vérifier la référence du module. Un condensateur de
-  **100 µF** sur le 5 V, près des cartes ULN2003.
+* Le 12 V va au **mini abaisseur 5 V** (U1, environ 18 × 13 mm), qui alimente le Heltec et le capteur
+  Hall, et **directement aux cartes ULN2003** (moteurs de 12 V). **U1 doit fournir au moins 0,5 A**
+  (Heltec avec WiFi et capteur Hall) : vérifier la référence du module. Un condensateur de
+  **un 100 µF 25 V (C1)** sur le 12 V, près des deux ULN2003 (les moteurs ne tournent jamais ensemble).
 * U1 a une **sortie fixe de 5,0 V** : **la mesurer au multimètre (4,9 à 5,2 V) avant de
   brancher le Heltec**. Le 5 V passe ensuite par une diode Schottky 1N5819 (D1) : le Heltec
   reçoit environ 4,7 V, assez pour son régulateur 3,3 V, et le 5 V de l'USB-C ne remonte pas
   dans l'abaisseur quand la carte est branchée à l'ordinateur.
-* Le **capteur Hall B1 et les deux cartes ULN2003 sont alimentés avant D1**, directement par
-  U1 : l'A3144 demande 4,5 V au moins, et les moteurs ont besoin de leurs 5 V entiers.
+* Le **capteur Hall B1 est alimenté avant D1**, directement par U1 : l'A3144 demande 4,5 V au
+  moins. Les **cartes ULN2003 ne sont pas sur le 5 V** : leur + est au 12 V de la plaque.
 * Le 3,3 V du Heltec alimente le MCP23017, l'ADS1115, les deux wattmètres, les
   photodiodes et les résistances de tirage. Tous les 0 V sont reliés, sauf le − du panneau
   (voir plus bas, « Mesure de l'énergie »).
 
-**Moteurs : 2 × 28BYJ-48 sur cartes ULN2003.** Les cartes sont livrées avec les moteurs dans les
-kits courants ; elles pilotent chaque bobine par un transistor Darlington. Les entrées IN1 à IN4
-sont reliées aux sorties du MCP23017 (3,3 V suffisent).
+**Moteurs : 2 × 28BYJ-48 sur ULN2003.** Les cartes ULN2003 sont livrées avec les moteurs dans les
+kits courants (sur la plaque, on les remplace par la puce ULN2003A, § plus bas) ; elles pilotent chaque bobine par un transistor Darlington. Les entrées IN1 à IN4
+sont reliées aux sorties du MCP23017 (3,3 V suffisent), et le + de la carte au **12 V**.
 * **Un seul moteur alimenté à la fois** : le suivi corrige l'élévation, puis l'azimut. Jamais les deux
-  ensemble (le 5 V de U1 n'est pas dimensionné pour cela).
-* **À l'arrêt, les 8 sorties à 0** : une bobine alimentée en continu dissipe environ 1 W et
+  ensemble (le courant de 12 V ne double pas, et le fusible et le wattmètre A5 n'ont à tenir qu'un moteur).
+* **À l'arrêt, les 8 sorties à 0** : une bobine alimentée en continu dissipe environ 1,4 W (deux bobines : 12 V, 200 Ω) et
   chaufferait le support en PETG. Les vis sans fin tiennent le panneau moteurs coupés. Les
   sorties sont mises à 0 entre deux corrections.
 * **Séquence demi-pas**, 8 phases (IN1 à IN4 sur les bits 0 à 3 du quartet de chaque moteur) :
@@ -574,9 +602,9 @@ const uint8_t PHASES[8] = {0b0001, 0b0011, 0b0010, 0b0110, 0b0100, 0b1100, 0b100
 ```
 
 * **Ordre des fils** : bleu, rose, jaune, orange pour IN1 à IN4 sur les cartes courantes, rouge au
-  + 5 V. **Vérifier le sens et l'ordre sur le moteur reçu** : une inversion fait vibrer l'arbre
-  sans le faire tourner. Au multimètre, environ 50 Ω entre le rouge et chaque autre fil, environ
-  100 Ω entre deux fils de bobines différentes d'une même paire.
+  **+ 12 V**. **Vérifier le sens et l'ordre sur le moteur reçu** : une inversion fait vibrer l'arbre
+  sans le faire tourner. Au multimètre, environ 200 Ω entre le rouge et chaque autre fil, environ
+  400 Ω entre deux fils de bobines différentes d'une même paire.
 * Si un moteur tourne à l'envers, inverser son sens dans le programme.
 * **Rallonge** : le câble d'origine du moteur est court (environ 25 cm). Le prolonger avec un
   câble souple 5 conducteurs (§ plus bas), vers un bornier de la plaque.
@@ -745,9 +773,9 @@ QElectroTech (« Section du conducteur »).
 | Liaison | Courant | Longueur | Section | Fil |
 |---|---|---|---|---|
 | Sortie LOAD du régulateur (ou bloc 12 V) → F1 → S1 → A5 → X1, et 0 V | 1,5 A | < 30 cm | **AWG 18** (0,82 mm²) | souple, rouge et noir, dans le boîtier |
-| 12 V et 0 V sur la plaque (entrée de U1) | 0,3 A | < 15 cm | **AWG 22** (0,33 mm²) | rouge et noir |
-| 5 V : U1 → D1 → Heltec, U1 → capteur Hall (X5) et cartes ULN2003, et leur 0 V | 0,6 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
-| Moteurs M1 et M2 (cartes ULN2003 → X2, X3 → moteur) | 0,1 A par bobine | 1,5 m | **AWG 24** (0,20 mm²) | câble souple 5 conducteurs par moteur : 4 bobines et le commun (rouge) |
+| 12 V et 0 V sur la plaque (entrée de U1 et cartes ULN2003, un seul moteur à la fois) | 0,4 A | < 15 cm | **AWG 22** (0,33 mm²) | rouge et noir |
+| 5 V : U1 → D1 → Heltec, U1 → capteur Hall (X5), et leur 0 V | 0,5 A | < 10 cm | **AWG 22** (0,33 mm²) | orange et noir |
+| Moteurs M1 et M2 (cartes ULN2003 → X2, X3 → moteur) | 0,06 A par bobine, sous 12 V | 1,5 m | **AWG 24** (0,20 mm²) | câble souple 5 conducteurs par moteur : 4 bobines et le commun (rouge) |
 | Entrées IN1 à IN8 des cartes, 3,3 V, I²C, filtres du capteur | < 20 mA | < 10 cm | **AWG 24** (0,20 mm²) | monobrin |
 | Fin de course S2 (X4) et capteur Hall B1 (X5) | 10 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple 2 et 3 conducteurs |
 | Capteur solaire (X6) | 8 mA | 1,5 m | **AWG 26** (0,13 mm²) | câble souple **blindé** 6 conducteurs |
@@ -759,7 +787,7 @@ QElectroTech (« Section du conducteur »).
 | Antenne LoRa | radio | 10 cm | coaxial 50 Ω | IPEX vers SMA (1,13 mm ou RG178) |
 
 * En AWG 18, la chute de tension sur l'aller-retour du 12 V (2 × 1 m, 1,5 A) n'est que de
-  0,06 V. Un moteur 28BYJ-48 a des bobines de 50 Ω : la résistance du câble de 1,5 m en AWG 24
+  0,06 V. Un moteur 28BYJ-48 12 V a des bobines de 200 Ω : la résistance du câble de 1,5 m en AWG 24
   (environ 0,25 Ω par fil) ne change rien.
 * **Tout ce qui va vers la tête est en multibrin souple** (câble du panneau compris), jamais
   en monobrin, qui casse à force de plier dans la boucle de câble.
@@ -794,21 +822,22 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
 
 * **Organisation de la plaque** : chaque pièce est à côté de ce qu'elle dessert, ce qui
   raccourcit les fils.
-  * **En haut**, les borniers des câbles de la tête : ceux des moteurs (X2, X3) au-dessus de
-    leurs cartes ULN2003, ceux des capteurs (X4 à X6) au-dessus de l'ADS1115. Les 4 photodiodes de X6
-    tombent droit sur les entrées A0 à A3.
-  * **Au milieu**, le MCP23017 avec ses 8 résistances de tirage, et l'ADS1115 avec ses filtres
-    juste dessous (R1 à R4, C3 à C6). **Les cartes ULN2003** du kit mesurent environ 31 × 35 mm : elles
-    **ne tiennent pas** sur la plaque de 7 × 9 cm déjà pleine. Deux solutions : la **puce ULN2003A**
-    (DIP-16, 20 × 7 mm) soudée sur la plaque à la place de chaque TMC2209, ou les deux cartes
-    fixées au fond du boîtier, à côté de la plaque. **L'implantation Fritzing n'est pas redessinée.**
-  * **En bas**, le Heltec, USB-C au bord gauche. D1 et les résistances de tirage R5 à R7 sont le
+  * **En haut**, les borniers des câbles de la tête : ceux des moteurs (X2, X3, 5 pôles au pas de
+    2,54 mm) au-dessus de leurs ULN2003A, ceux des capteurs (X4 à X6) au-dessus de l'ADS1115. Les 4 photodiodes
+    de X6 tombent droit sur les entrées A0 à A3.
+  * **Au milieu à gauche**, les deux **puces ULN2003A** (DIP-16, couchées), puis le réseau de tirages
+    RN1 et le **MCP23017** (DIP-28), avec le **100 µF C1** à leur droite. Les **cartes ULN2003 du kit**
+    (31 × 35 mm) ne tiennent pas sur la plaque de 7 × 9 cm : on met à leur place la **puce ULN2003A**
+    (mêmes entrées et sorties : broches 1 à 4 = IN1 à IN4, 16 à 13 = sorties 1 à 4, 9 = COM et fil rouge
+    au +12 V, 8 = 0 V, entrées 5 à 7 au 0 V). Les cartes du kit restent en secours.
+    À droite, l'**ADS1115** avec ses filtres juste dessous (R1 à R4, C3 à C6).
+  * **En bas**, le Heltec, USB-C au bord gauche. D1 et les résistances de tirage R6 et R7 sont le
     long du bas, près des broches qu'elles desservent.
   * **Au bord droit**, vers l'énergie : J1 (bus I²C des wattmètres), le mini abaisseur U1 et X1
     (12 V, fils entrant par la droite).
   * Aucune pièce n'est cachée sous un module : tout reste visible, mesurable et réparable.
 * **Modules sur barrettes femelles**, pour pouvoir les retirer : Heltec V4 (2 × 18 broches),
-  ADS1115 (1 × 10) et MCP23017. Les résistances, les condensateurs et la diode
+  ADS1115 (1 × 10) ; ULN2003A et MCP23017 sur des supports DIP. Les résistances, les condensateurs et la diode
   sont soudés. U1 est posé à plat, tenu par 4 pattes (des chutes de pattes de résistance)
   soudées dans ses pastilles et dans la plaque.
 * **Wattmètres A4 et A5 sous la plaque**, sur entretoises (M2,5 pour l'INA219B, M3 pour le
@@ -857,8 +886,8 @@ Fritzing (gratuit), vue « Platine d'essai ». Le fichier est généré par
   | Bornier | Pôles | Pas | Câble |
   |---|---|---|---|
   | X1 | 2 | 5,08 mm | 12 V (depuis A5 IN−) et 0 V (depuis LOAD− du régulateur) |
-  | X2 | 5 | 5,08 mm | moteur M1 (élévation) : 4 bobines et le commun 5 V |
-  | X3 | 5 | 5,08 mm | moteur M2 (azimut) : 4 bobines et le commun 5 V |
+  | X2 | 5 | 5,08 mm | moteur M1 (élévation) : 4 bobines et le commun 12 V |
+  | X3 | 5 | 5,08 mm | moteur M2 (azimut) : 4 bobines et le commun 12 V |
   | X4 | 2 | 2,54 mm | fin de course S2 |
   | X5 | 3 | 2,54 mm | capteur à effet Hall B1 (+5 V pris avant D1) |
   | X6 | 5 | 2,54 mm | capteur solaire |
@@ -994,7 +1023,7 @@ avec les moteurs coupés entre deux corrections :
   sans fin bloque le moteur quand il est coupé, il repart exactement de là où il s'était arrêté.
 
 **Pourquoi pas un suivi continu.** Il faudrait garder les moteurs alimentés en permanence :
-environ 1 W par moteur (deux bobines à 5 V, 100 mA chacune, à 50 Ω), de quoi chauffer et ramollir
+environ 1,4 W par moteur (deux bobines à 12 V, 60 mA chacune, à 200 Ω), de quoi chauffer et ramollir
 leur support en PETG, et un gaspillage pour un panneau qui produit 8 W en plein soleil. Avec la
 cadence ci-dessus, les moteurs sont alimentés moins de 2 % du temps, et l'écart de pointage ne
 dépasse jamais 0,25°, soit 0,001 % de puissance perdue.
@@ -1173,7 +1202,7 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
   minces (9 mm) : estimation par un calcul de poutre, à confirmer par la simulation demandée par le
   cahier des charges : en flexion dans leur plan (efforts du vent), environ 0,01 mm à 5 m/s ; hors
   plan (réaction de la vis sans fin, environ 6 N), de l'ordre de 0,1 mm en tête.
-* **Énergie** : alimenté, un 28BYJ-48 consomme environ 1 W (deux bobines à 5 V et 50 Ω). Les
+* **Énergie** : alimenté, un 28BYJ-48 consomme environ 1,4 W (deux bobines à 12 V et 200 Ω ; en demi-pas, 1,1 W en moyenne). Les
   sorties du MCP23017 sont à 0 entre deux corrections : moins de 20 mW en moyenne.
 * **Fluage** : sous une charge permanente, le PETG se déforme lentement. Le panneau étant équilibré,
   la denture n'est presque pas chargée au repos : garer à plat reste conseillé entre deux
@@ -1182,10 +1211,10 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 ### À valider avant de commander et d'imprimer
 
 1. **Mesurer le couple réel de chaque 28BYJ-48**, avant tout montage : arbre horizontal, un bras de
-   100 mm fixé sur l'arbre, une masse accrochée au bout. À 5 V et 120 phases/s, le moteur doit lever
+   100 mm fixé sur l'arbre, une masse accrochée au bout. À 12 V et 120 phases/s, le moteur doit lever
    **25 g** (prudent) et idéalement **35 g** (nominal) sans perdre de pas. S'il n'y arrive pas, le
    changer : ils sont très dispersés.
-2. **Mesurer le moteur reçu** avant d'imprimer les supports : arbre (7,5 mm au-dessus de la
+2. **Mesurer le moteur reçu** avant d'imprimer les supports : arbre (10 mm au-dessus de la
    face, méplats de 3 mm), bossage (Ø9 × 1,5 mm), décentrage de 8 mm, entraxe des oreilles (35 mm),
    trous Ø4,2. Les supports sont modélisés sur ces cotes ; une différence de 0,5 mm se rattrape au
    lamage, pas davantage.
@@ -1229,9 +1258,9 @@ Avec un moteur « nominal » (34,3 mN·m au lieu de 25), toutes les marges sont 
 | `Fichiers 3D (CAO)/Cas Terrestre (démonstration)/Demo_Trepied.step` | La démonstration complète sur un trépied : tête PETG, panneau, capteur solaire, trépied et lest (§ 8) |
 | `scripts/generate_fourche.py` | **Génère tout ce qui précède** (CAO, STEP, STL, DXF) et fait les contrôles : interférences, prise des vis, garde, couples et marges, stabilité |
 | `scripts/render_fourche.py` | Les images de ce document (`docs (extra)/fourche_*.png` et `trepied_fourche_*.png`) |
-| **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | Schéma électrique, projet QElectroTech, **version NEMA / TMC2209 : à redessiner pour les 28BYJ-48** (§ 6) |
-| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` |
-| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | Implantation du boîtier électronique dans Fritzing, **version NEMA / TMC2209** (§ 6) |
+| **[`Electronique/Schema_Electrique.qet`](../../Electronique/Schema_Electrique.qet)** | Schéma électrique, projet QElectroTech, **28BYJ-48 de 12 V, ULN2003 et MCP23017** (§ 6) |
+| [`Electronique/Schema_Electrique.pdf`](../../Electronique/Schema_Electrique.pdf) | Le même schéma en PDF, à imprimer en A3 ; images dans `docs (extra)/electronique/` (générés par `scripts/exporter_schema.py`) |
+| **[`Electronique/Implantation_Boitier.fzz`](../../Electronique/Implantation_Boitier.fzz)** | Implantation du boîtier électronique dans Fritzing, **version 28BYJ-48** (§ 6) ; l'ancienne version NEMA / TMC2209 est dans `.modele_ideal_personnel/Electronique/` |
 | **[`Liste-composants.md`](../../Liste-composants.md)** | **Liste des composants** de la démonstration sur Terre : roulements, accouplements, tiges, moteurs, électronique, visserie, consommables, avec les noms à chercher et les quantités |
 | `docs (extra)/explications/*.png` | Images annotées pour le montage : palier d'une vis sans fin, vis sans fin imprimée, fond sur trépied, capteur solaire (vue et coupe) |
 

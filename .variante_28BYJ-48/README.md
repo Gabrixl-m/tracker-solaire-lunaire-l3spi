@@ -32,8 +32,8 @@
 
 | Caractéristique | Valeur |
 |---|---|
-| Alimentation | 5 V, unipolaire, 5 fils (rouge = commun) |
-| Résistance d'une bobine | environ 50 Ω, donc ≈ 100 mA par bobine allumée |
+| Alimentation | **12 V** (version de la fiche reçue), unipolaire, 5 fils (rouge = commun) |
+| Résistance d'une bobine | 200 Ω ±7 %, donc ≈ 60 mA par bobine allumée (≈ 1,4 W avec deux bobines) |
 | Réduction intégrée | 64:1 nominal, **63,68:1** mesuré ; environ 4076 demi-pas par tour de l'arbre de sortie |
 | Couple de sortie | **34,3 mN·m** à 120 Hz (« in-traction torque » de la fiche technique) |
 | Frottement du réducteur | 600 à 1200 gf·cm (59 à 118 mN·m) : le réducteur tient le moteur coupé, mais il est en plastique |
@@ -50,7 +50,7 @@ pas retenue**.
 script applique un facteur 0,7 pour passer au couple *en marche*. Les 34,3 mN·m du 28BYJ-48 sont
 déjà un couple en marche, à l'arbre de sortie : ils sont pris tels quels. Le calcul utilise aussi
 une valeur **prudente de 25 mN·m**, pour la dispersion d'un moteur à l'autre, l'usure du réducteur
-et une alimentation à 4,5 V.
+et une alimentation à 10,8 V (12 V − 10 %).
 
 **Vitesse.** À 120 demi-pas par seconde (vitesse où le couple est garanti), l'arbre fait environ
 1,8 tr/min. Pour 90° de roue : **7 min en élévation et 8,5 min en azimut**. C'est long pour la
@@ -180,11 +180,11 @@ roues, vis sans fin, paliers, pivots, socle, moyeu, bague d'arrêt, fond, capteu
 ![Moteur d'élévation : plaque, oreilles, écrous, accouplement](apercus/variante_detail_moteur_elevation.png)
 
 * Le **28BYJ-48** modélisé : corps Ø28 × 19 mm décentré de 8 mm par rapport à l'arbre, bossage de
-  Ø9 × 1,5 mm, arbre Ø5 à deux méplats de 3 mm, 7,5 mm au-dessus de la face, deux oreilles de
+  Ø9 × 1,5 mm, arbre Ø5 à deux méplats de 3 mm, 10 mm au-dessus de la face, deux oreilles de
   0,8 mm à 35 mm d'entraxe (trous Ø4,2), bloc de connexion à l'arrière (approximation). En
   élévation, le corps est **au-dessus** de l'arbre ; en azimut, **au-dessous**.
 * **Accouplement flexible Ø14 × 19 mm** (au lieu de Ø19 × 25) : l'arbre du 28BYJ-48 est court. Il
-  entre de 5,6 mm dans l'accouplement, qui s'engage de 2,1 mm dans le lamage du support, à 0,3 mm
+  entre de 8,1 mm dans l'accouplement, qui s'engage de 2,1 mm dans le lamage du support, à 0,3 mm
   du fond. La face du moteur est **12,6 mm plus près** de l'accouplement qu'avec un NEMA. Les
   arbres Ø5 des vis sans fin, les paliers et les vis sans fin ne bougent pas.
 
@@ -208,7 +208,7 @@ roues, vis sans fin, paliers, pivots, socle, moyeu, bague d'arrêt, fond, capteu
 
 ## 6. Électronique
 
-On remplace les deux **TMC2209** (et leur 12 V) par deux **cartes ULN2003** alimentées en 5 V,
+On remplace les deux **TMC2209** (et leur 12 V) par deux **cartes ULN2003** alimentées en **12 V** (moteurs 12 V),
 fournies avec le moteur dans les kits courants.
 
 **Problème de broches.** Le Heltec V4 n'a que 9 broches libres, toutes utilisées (voir le README
@@ -229,14 +229,14 @@ manque 3.
 |---|---|
 | MCP23017 GPA0 à GPA3 | IN1 à IN4 de la carte d'élévation |
 | MCP23017 GPB0 à GPB3 | IN1 à IN4 de la carte d'azimut |
-| 5 V (sortie de U1, **avant la diode D1**, comme le capteur Hall) | broche + des deux cartes ULN2003 |
+| 12 V (après le wattmètre A5, comme l'entrée de U1) | broche + des deux cartes ULN2003 (et fil rouge des moteurs) |
 | 0 V | broche − des deux cartes, 0 V du boîtier |
 
-**Alimentation.** Un 28BYJ-48 tire environ 0,2 A à 5 V. Le mini abaisseur U1 doit donc fournir
-au moins **0,6 A** (Heltec, Hall, un moteur) : vérifier la référence du module. **Ne jamais
+**Alimentation.** Un 28BYJ-48 de 12 V tire environ 0,12 A sous 12 V (deux bobines de 200 Ω). Le mini abaisseur U1 ne sert plus qu'au Heltec et au Hall : il doit fournir
+au moins **0,5 A** ; vérifier la référence du module. **Ne jamais
 faire tourner les deux moteurs ensemble** : le suivi corrige l'élévation, puis l'azimut. Le
-12 V n'alimente plus que U1 : la batterie, le régulateur et les wattmètres ne changent pas.
-Le 100 µF des anciens drivers n'est plus utile ; garder 100 µF sur le 5 V des cartes.
+12 V alimente U1 et les cartes ULN2003 : la batterie, le régulateur et les wattmètres ne changent pas.
+Garder un 100 µF 25 V sur le 12 V des cartes. **Ne jamais brancher un 28BYJ-48 de 12 V sur le 5 V** : environ 2,4 fois moins de couple.
 
 **À l'arrêt, les 8 sorties à 0** : une bobine alimentée en continu dissipe environ 1 W et
 chaufferait le support en PETG. Les vis sans fin tiennent le panneau moteurs coupés, comme dans
@@ -265,7 +265,7 @@ changement**.
 
 | Retiré (version NEMA) | Ajouté (variante 28BYJ-48) |
 |---|---|
-| NEMA 17 (Usongshine 17HS3401), NEMA 11 (11HS18-0674S) | 2 × **28BYJ-48 5 V**, avec leurs cartes ULN2003 |
+| NEMA 17 (Usongshine 17HS3401), NEMA 11 (11HS18-0674S) | 2 × **28BYJ-48 12 V**, avec leurs cartes ULN2003 |
 | 2 × driver TMC2209 | 1 × **MCP23017** (module ou composant) + 8 × 10 kΩ |
 | 2 × accouplement flexible 5 mm / 5 mm, Ø19 × 25 | 2 × accouplement flexible **Ø5 / Ø5, Ø14 × 19 mm** (ou Ø14 × 25 si le 19 n'existe pas : la CAO est faite pour 19) |
 | 4 × M3×8 + 4 × M2,5×6 (moteurs) | 4 × M3×8 + **4 écrous M3** (oreilles des moteurs) |
@@ -282,14 +282,14 @@ euros pièce), le bloc d'acier est peu cher. Tout le reste de la nomenclature es
 ## 8. À valider avant de commander et d'imprimer
 
 1. **Mesurer le couple réel de chaque moteur**, avant tout montage : arbre horizontal, un bras
-   de 100 mm fixé sur l'arbre, une masse accrochée au bout. À 5 V et 120 phases/s, le moteur doit
+   de 100 mm fixé sur l'arbre, une masse accrochée au bout. À 12 V et 120 phases/s, le moteur doit
    lever **25 g** (prudent) et idéalement **35 g** (nominal) sans perdre de pas. Si un moteur
    n'y arrive pas, le changer : ils sont très dispersés.
 2. **Contrôler le couple à la roue** une fois la tête assemblée (avec le contrepoids) : accrocher
    une masse de 300 g à 100 mm de l'axe d'élévation (0,29 N·m, ce que le moteur doit encore
    vaincre à sec) ; le moteur doit faire tourner la roue.
 3. **Vérifier l'équilibre** du contrepoids (pesée, puis les deux appuis, § 4).
-4. **Mesurer le 28BYJ-48 reçu** avant d'imprimer les supports : arbre (7,5 mm au-dessus de la face,
+4. **Mesurer le 28BYJ-48 reçu** avant d'imprimer les supports : arbre (10 mm au-dessus de la face,
    méplats de 3 mm), bossage (Ø9 × 1,5 mm), décentrage de 8 mm, entraxe des oreilles (35 mm), trous
    Ø4,2. Les supports sont modélisés sur ces cotes (§ 5) ; une différence de 0,5 mm se rattrape au
    lamage, pas davantage. L'éprouvette d'ajustements de la version principale permet de régler la

@@ -46,11 +46,11 @@ tout le projet, la **« démonstration »** désigne le cas terrestre.
 |---|---|---|
 | Support du panneau | Chape et chapeau en U, panneau sur deux rails | **Fourche étroite** : panneau tourné de 90°, pivotant autour de son plan médian sur deux tiges d'acier Ø8 ; structure de 344 × 139 × 343 mm |
 | Pivots d'élévation | Inox Ø8 sur roulements 608 | Tiges d'acier Ø8, un roulement 608 par bras |
-| Moteurs | NEMA 17 (élévation) et NEMA 11 (azimut) | **2 × 28BYJ-48** (5 V), cartes ULN2003 et MCP23017 |
+| Moteurs | NEMA 17 (élévation) et NEMA 11 (azimut) | **2 × 28BYJ-48** (12 V), cartes ULN2003 et MCP23017 |
 | Roues des vis sans fin | Bronze, 50 et 60 dents | PETG, **100 et 120 dents** |
 | Masse de la tête (hors panneau) | 1,86 kg | 1,51 kg |
 | Partie qui bascule (panneau, ferrures, tiges, roue, capteur) | 1,73 kg, centre de gravité à 55,7 mm de l'axe | 1,32 kg, centre de gravité à **9,4 mm** de l'axe |
-| Alimentation des moteurs | 12 V, 1,0 A (NEMA 17) | 5 V, environ 0,2 A, un seul moteur à la fois |
+| Alimentation des moteurs | 12 V, 1,0 A (NEMA 17) | 12 V, environ 0,12 A, un seul moteur à la fois |
 | Marge d'élévation, vent de 10 m/s | ×2,7 | ×1,6 (moteur prudent) ; suivi limité à 8 m/s (×2,2) |
 | Marge d'azimut, vent de 10 m/s | ×2,3 | ×1,7 (moteur prudent) |
 | Lubrification des vis et des roues | MoS₂ sec | Graisse PTFE (obligatoire) |
@@ -126,7 +126,7 @@ Ce sont des moteurs du commerce : ils donnent la taille et le couple de référe
 vol, il faut leur équivalent en version vide ou spatiale, de même taille
 ([README du cas lunaire](Fichiers%203D%20%28CAO%29/Cas%20Lunaire/README.md), § 9).
 
-**Cas terrestre : deux 28BYJ-48** (5 V, réducteur intégré 63,68:1, 34,3 mN·m à l'arbre, 25
+**Cas terrestre : deux 28BYJ-48** (12 V, réducteur intégré 63,68:1, 34,3 mN·m à l'arbre, 25
 retenu par prudence, environ 30 g), un par axe. Ils sont imposés, et c'est pour eux que la tête
 a été refaite en fourche ([README du cas terrestre](Fichiers%203D%20%28CAO%29/Cas%20Terrestre%20%28d%C3%A9monstration%29/README.md), § 1, § 3 et § 9).
 
@@ -269,9 +269,9 @@ La **stratégie de suivi** diffère d'un modèle à l'autre :
   lunaire** : deux drivers **TMC2209** (16 micro-pas, StealthChop) ; pour le vol, il faudrait leurs
   équivalents résistants aux rayonnements. **Cas terrestre** : les deux **28BYJ-48** se pilotent par
   des cartes **ULN2003** commandées par un **MCP23017** sur l'I²C (le Heltec n'a pas assez de
-  broches libres), en 5 V.
+  broches libres), alimentées en 12 V.
 * **Courants de marche** : 1,0 A pour le NEMA 17 et 0,67 A pour le NEMA 11 (cas lunaire) ;
-  environ 0,2 A à 5 V pour un 28BYJ-48 (cas terrestre), **un seul moteur à la fois**.
+  environ 0,12 A à 12 V pour un 28BYJ-48 (cas terrestre), **un seul moteur à la fois**.
 * **À l'arrêt, les moteurs sont coupés** (drivers coupés, ou sorties du MCP23017 à 0) : les vis
   tiennent seules, donc ni courant ni échauffement entre deux mouvements.
 * **Origines** :
@@ -319,7 +319,8 @@ Le détail des fichiers de chaque modèle est à la fin de son README. Fichiers 
 | `scripts/verification_stabilite.py` | Vérifie par un calcul indépendant la stabilité sur le trépied de la tête du modèle idéal personnel (vent de toutes les directions, glissement, planche lestée, incertitudes) ; **non relancé pour la fourche** |
 | `scripts/optimisation_angle.py` | Calcule l'angle φ optimal des jambes à partir des masses de la CAO |
 | `scripts/generate_schema_electrique.py` | Écrit le schéma électrique au format QElectroTech (symboles, composants, fils) |
-| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, TMC2209, ADS1115 et borniers dessinés à l'échelle ; version NEMA, pas encore refaite pour les 28BYJ-48) |
+| `scripts/generate_implantation_fritzing.py` | Écrit l'implantation du boîtier au format Fritzing (Heltec V4, ULN2003A, MCP23017, ADS1115 et borniers dessinés à l'échelle ; `--nema` : ancien modèle à TMC2209 ; `--apercu` : images PNG sans Fritzing) |
+| `scripts/exporter_schema.py` | Exporte le schéma .qet en PDF et en PNG (sans QElectroTech) |
 | `scripts/render_apercu.py`, `scripts/render_tete_vis_sans_fin.py`, `scripts/render_explications.py`, `scripts/render_visserie.py` | Génèrent les rendus PNG, les images annotées et les vues de la visserie |
 | [`tracker_solaire_composants.pdf`](tracker_solaire_composants.pdf) | Liste des composants à commander, telle qu'elle a été envoyée au professeur (15 références Gotronic) |
 | `requirements.txt` | Dépendances Python (CadQuery) |
@@ -390,8 +391,9 @@ python scripts/generate_demo_trepied.py               # tête NEMA (modèle idé
 xvfb-run -a python scripts/render_fourche.py                       # rendus du cas terrestre (fourche)
 python scripts/verification_stabilite.py              # stabilité de la tête NEMA (modèle idéal personnel), calcul indépendant
 python scripts/optimisation_angle.py                  # angle φ optimal des jambes (à reporter dans P["leg_angle"])
-python scripts/generate_schema_electrique.py          # schéma électrique (Electronique/*.qet) ; PDF et PNG : Fichier > Exporter dans QElectroTech
-python scripts/generate_implantation_fritzing.py      # implantation du boîtier (Electronique/*.fzz) ; image : fritzing -svg Electronique
+python scripts/generate_schema_electrique.py          # schéma électrique 28BYJ-48 (Electronique/*.qet) ; --nema : ancien modèle
+python scripts/exporter_schema.py                     # PDF et PNG du schéma (ou Fichier > Exporter dans QElectroTech)
+python scripts/generate_implantation_fritzing.py --apercu   # implantation du boîtier (Electronique/*.fzz) et ses images
 xvfb-run -a python scripts/render_apercu.py           # rendus du tracker (xvfb-run seulement sans écran)
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py             # rendus de la tête seule
 xvfb-run -a python scripts/render_tete_vis_sans_fin.py --plateau   # pièces à imprimer sur le plateau

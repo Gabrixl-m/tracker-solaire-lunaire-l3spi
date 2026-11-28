@@ -1,8 +1,8 @@
 """Implantation du boîtier électronique de la démonstration, au format Fritzing (vue platine).
 
 Écrit Electronique/Implantation_Boitier.fzz : une plaque à pastilles de 7 × 9 cm (24 × 30 trous)
-avec, à l'échelle, tout ce qui reste au pied du trépied (Heltec WiFi LoRa 32 V4, 2 TMC2209,
-ADS1115, mini abaisseur 5 V, borniers, résistances, diode et condensateurs), et à côté d'elle,
+avec, à l'échelle, tout ce qui reste au pied du trépied (Heltec WiFi LoRa 32 V4, 2 ULN2003A et le
+MCP23017 pour les deux 28BYJ-48 de 12 V ; avec --nema : 2 TMC2209 ; ADS1115, mini abaisseur 5 V, borniers, résistances, diode et condensateurs), et à côté d'elle,
 dans le même boîtier étanche, les deux wattmètres INA219 (INA219B d'Adafruit pour le panneau, SEN0291 de
 DFRobot pour le 12 V du tracker), le régulateur de charge Velleman SOL10UC3, la batterie au plomb
 et les deux fusibles en ligne F1 et F2. Ce qui est sur la tête (moteurs, fin de course, capteur
@@ -22,11 +22,16 @@ Ouvrir le fichier dans Fritzing (gratuit, https://fritzing.org) : vue « Platine
 Le câblage est celui du schéma électrique (Electronique/Schema_Electrique.qet).
 """
 import os
+import sys
 import zipfile
 from xml.sax.saxutils import escape, quoteattr
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SORTIE = os.path.join(RACINE, "Electronique", "Implantation_Boitier.fzz")
+# Par défaut : cas terrestre, 2 × 28BYJ-48 de 12 V (puces ULN2003A et MCP23017 sur la plaque). Avec --nema :
+# l'ancien modèle idéal personnel (NEMA 17 et 11, 2 TMC2209), rangé dans .modele_ideal_personnel/.
+NEMA = "--nema" in sys.argv
+SORTIE = (os.path.join(RACINE, ".modele_ideal_personnel", "Electronique", "Implantation_Boitier.fzz") if NEMA
+          else os.path.join(RACINE, "Electronique", "Implantation_Boitier.fzz"))
 
 PX = 90 / 25.4              # unités de la scène Fritzing : 90 px par pouce
 PAS = 2.54                  # pas de la plaque à pastilles
@@ -191,6 +196,59 @@ def tmc2209():
             broches.append((n, xp, y))
     return Piece("TMC2209", "Driver TMC2209 (StepStick)", l, h, broches, "".join(d),
                  "Module TMC2209 au format StepStick, 15,24 x 20,32 mm, avec son dissipateur.")
+
+
+def uln2003a():
+    """Puce ULN2003A en boîtier DIP-16 sur support, couchée : rangées de broches à 7,62 mm, 8 broches à 2,54 mm,
+    encoche à gauche. Rangée du haut (broches 16 à 9) : sorties 1C à 4C, 5C à 7C, COM (diodes de roue libre,
+    au +12 V des moteurs) ; rangée du bas (broches 1 à 8) : entrées 1B à 4B, 5B à 7B (au 0 V), E (0 V)."""
+    l, h = 8 * PAS, 10.16
+    haut = ("1C", "2C", "3C", "4C", "5C", "6C", "7C", "COM")
+    bas = ("1B", "2B", "3B", "4B", "5B", "6B", "7B", "E")
+    d = [f'<rect x="0.4" y="2.0" width="{f(l - 0.8)}" height="{f(h - 4.0)}" rx="0.4" fill="#222" stroke="#000" '
+         f'stroke-width="0.2"/>',
+         f'<path d="M0.4,{f(h / 2 - 0.9)} a0.9,0.9 0 0 1 0,1.8" fill="none" stroke="#777" stroke-width="0.25"/>',
+         txt(l / 2, h / 2 + 0.5, "ULN2003A", 1.4, "#ddd", "middle")]
+    broches = [(n, 1.27 + i * PAS, 1.27) for i, n in enumerate(haut)]
+    broches += [(n, 1.27 + i * PAS, h - 1.27) for i, n in enumerate(bas)]
+    for n, x, y in broches:
+        d.append(txt(x, 3.7 if y < h / 2 else h - 3.0, n, 0.62, "#bbb", "middle"))
+    return Piece("ULN2003A", "Puce ULN2003A (DIP-16)", l, h, broches, "".join(d),
+                 "ULN2003A en boîtier DIP-16 : 7 Darlington, sorties 500 mA, diodes de roue libre (COM).")
+
+
+def mcp23017():
+    """MCP23017 en boîtier SPDIP-28 (rangées à 7,62 mm), couché : 14 broches par rangée. Rangée du bas :
+    broches 1 à 14 (GPB0 à GPB7, VDD, VSS, NC, SCL, SDA, NC) ; rangée du haut : 28 à 15 (GPA7 à GPA0, INTA,
+    INTB, RESET, A2, A1, A0)."""
+    l, h = 14 * PAS, 4 * PAS
+    bas = ("GPB0", "GPB1", "GPB2", "GPB3", "GPB4", "GPB5", "GPB6", "GPB7", "VDD", "VSS", "NC", "SCL", "SDA", "NC2")
+    haut = ("GPA7", "GPA6", "GPA5", "GPA4", "GPA3", "GPA2", "GPA1", "GPA0", "INTA", "INTB", "RESET", "A2", "A1", "A0")
+    d = [f'<rect x="0.4" y="2.0" width="{f(l - 0.8)}" height="{f(h - 4.0 + 0.2)}" rx="0.4" fill="#222" stroke="#000" '
+         f'stroke-width="0.2"/>',
+         f'<path d="M0.4,{f(h / 2 - 0.9)} a0.9,0.9 0 0 1 0,1.8" fill="none" stroke="#777" stroke-width="0.25"/>',
+         txt(l / 2, h / 2 + 0.4, "MCP23017", 1.5, "#ddd", "middle")]
+    broches = []
+    for i, n in enumerate(bas):
+        broches.append((n, 1.27 + i * PAS, h - 1.27))
+    for i, n in enumerate(haut):
+        broches.append((n, 1.27 + i * PAS, 1.27))
+    for n, x, y in broches:
+        d.append(txt(x, 4.2 if y < h / 2 else h - 3.3, n, 0.62, "#bbb", "middle"))
+    return Piece("MCP23017", "Extension d'E/S MCP23017 (SPDIP-28)", l, h, broches, "".join(d),
+                 "MCP23017 en boîtier SPDIP-28, adresse I2C 0x20 (A0, A1, A2 à la masse).")
+
+
+def reseau_sip9():
+    """Réseau de résistances 10 kΩ en boîtier SIP-9 à borne commune (pattes au pas de 2,54 mm) : 8 résistances de
+    tirage vers le 0 V, de la broche commune (1) vers chacune des 8 sorties du MCP23017."""
+    l, h = 9 * PAS, 5.0
+    d = [f'<rect x="0.2" y="0.2" width="{f(l - 0.4)}" height="3.4" fill="#c9a24a" stroke="#6b5a1a" stroke-width="0.2"/>',
+         txt(l / 2, 2.4, "10 kΩ ×8 (SIP-9, commun = 0 V)", 1.0, "#222", "middle"),
+         f'<circle cx="1.27" cy="0.9" r="0.3" fill="#222"/>']
+    broches = [("COM", 1.27, 2.5)] + [(f"R{i}", 1.27 + i * PAS, 2.5) for i in range(1, 9)]
+    return Piece("Reseau_SIP9", "Réseau de résistances 10 kΩ SIP-9", l, h, broches, "".join(d),
+                 "Réseau de 8 résistances 10 kΩ à borne commune, boîtier SIP-9.", broche=0.7)
 
 
 def ads1115():
@@ -527,6 +585,7 @@ def boitier(l, h):
 class Croquis:
     def __init__(self):
         self.instances, self.pieces, self.index = [], {}, 100
+        self.poses = []                     # (z, type, objet, titre, x, y, etiquette) pour l'aperçu PNG
 
     def _inst(self, module, chemin, titre, x, y, z, props=(), couche="breadboard", etiquette=None, extra=""):
         self.index += 1
@@ -547,12 +606,15 @@ class Croquis:
     def piece(self, p, titre, x, y, etiquette=None, z=2.5):
         """Pièce dessinée ici, placée par son coin haut gauche (mm, repère de la plaque)."""
         self.pieces[p.module_id] = p
+        self.poses.append((z, "piece", p, titre, x, y, etiquette))
         self._inst(p.module_id, f"tracker_{p.cle.lower()}.fzp", titre, x, y, z, etiquette=etiquette)
 
     def standard(self, module, fzp, titre, x, y, props=(), etiquette=None):
+        self.poses.append((2.6, "std", module, titre, x, y, etiquette))
         self._inst(module, f"/usr/share/fritzing/parts/core/{fzp}", titre, x, y, 2.6, props, etiquette=etiquette)
 
     def plaque(self, x, y):
+        self.poses.append((1.5, "plaque", None, "", x, y, None))
         cols, rangs = TROUS
         self._inst(f"{cols}.{rangs}PerfboardModuleID", "", "Plaque à pastilles", x, y, 1.5,
                    (("size", f"{cols}.{rangs}"),), couche="breadboardbreadboard")
@@ -591,9 +653,79 @@ def sur_trou(p, c, r, i=0):
     return (tx - bx, ty - by)
 
 
+def apercu(k, bornes, chemin, echelle=8.0):
+    """Aperçu PNG (vue de dessus) du croquis, sans Fritzing : les pièces dessinées ici, et des
+    formes simples pour la plaque, les résistances et l'interrupteur (pièces standard de Fritzing).
+    bornes = (x0, y0, x1, y1) en mm, repère de la plaque."""
+    import cairosvg
+    x0, y0, x1, y1 = bornes
+    corps = []
+    for z, genre, obj, titre, x, y, et in sorted(k.poses, key=lambda t: t[0]):
+        if genre == "plaque":
+            pts = "".join(f'<circle cx="{f(PAS * (c + 1))}" cy="{f(PAS * (r + 1))}" r="0.55" fill="#b8860b" '
+                          f'stroke="#6b4e08" stroke-width="0.12"/>' for c in range(TROUS[0]) for r in range(TROUS[1]))
+            corps.append(f'<g transform="translate({f(x)} {f(y)})"><rect x="0" y="0" width="{f(PAS * (TROUS[0] + 1))}" '
+                         f'height="{f(PAS * (TROUS[1] + 1))}" fill="#e8d8a8"/>{pts}</g>')
+        elif genre == "piece":
+            pins = "".join(f'<rect x="{f(bx - obj.broche / 2)}" y="{f(by - obj.broche / 2)}" width="{f(obj.broche)}" '
+                           f'height="{f(obj.broche)}" fill="#c9b04a" stroke="#6b5a1a" stroke-width="0.15"/>'
+                           for _n, bx, by in obj.broches)
+            corps.append(f'<g transform="translate({f(x)} {f(y)})">{obj.dessin}{pins}</g>')
+        elif "Resistor" in obj:
+            corps.append(f'<g transform="translate({f(x)} {f(y)})"><rect x="1.8" y="0.2" width="6.7" height="2.4" rx="1" '
+                         f'fill="#d9b382" stroke="#7a5a2a" stroke-width="0.15"/><line x1="0.4" y1="1.4" x2="1.8" y2="1.4" '
+                         f'stroke="#999" stroke-width="0.4"/><line x1="8.5" y1="1.4" x2="9.8" y2="1.4" stroke="#999" '
+                         f'stroke-width="0.4"/></g>')
+        else:
+            corps.append(f'<g transform="translate({f(x)} {f(y)})"><rect x="0" y="0" width="12" height="7" rx="1" '
+                         f'fill="#90a4ae" stroke="#37474f" stroke-width="0.3"/>'
+                         + txt(6, 4.4, "S1", 2.2, "#fff", "middle", True) + '</g>')
+        if et:
+            corps.append(txt(et[0], et[1] + 1.0, titre, 1.05, "#202124"))
+    w, h = x1 - x0, y1 - y0
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{f(w * echelle)}" height="{f(h * echelle)}" '
+           f'viewBox="{f(x0)} {f(y0)} {f(w)} {f(h)}"><rect x="{f(x0)}" y="{f(y0)}" width="{f(w)}" height="{f(h)}" '
+           f'fill="#ffffff"/>{"".join(corps)}</svg>')
+    cairosvg.svg2png(bytestring=svg.encode("utf-8"), write_to=chemin)
+    print(chemin)
+
+
+def lignes_28byj(lignes):
+    """Texte du cartouche pour les 28BYJ-48 de 12 V : remplace ce qui parlait des TMC2209."""
+    rempl = {
+        "qu'il dessert : moteurs (X2, X3) sur leurs drivers, capteurs": "qu'il dessert : moteurs (X2, X3) sur leurs ULN2003A, capteurs",
+        "(X4 à X6) sur l'ADS1115. À droite, vers l'énergie : J1 (I2C": "(X4 à X6) sur l'ADS1115. Au milieu, le MCP23017. À droite : J1 (I2C",
+        "au bord, avec D1 et R5 à R7 près de leurs broches.": "au bord, avec D1, R6 et R7 près de leurs broches.",
+        "TMC2209 sur barrettes, avec dissipateur : ≈ 20 mm": "ULN2003A et MCP23017 sur supports (DIP) : ≈ 10 mm",
+        "Heltec 2 × 18, TMC2209 2 × 8 chacun, ADS1115 1 × 10.": "Heltec 2 × 18 et ADS1115 1 × 10 ; ULN2003A (DIP-16) et MCP23017 sur supports DIP.",
+        "(LOAD- du régulateur), AWG 18 ; X2 et X3, moteurs, AWG 22.": "(LOAD- du régulateur), AWG 18.",
+        "Pas de 2,54 mm (DG308), câbles AWG 26 : X4 fin de course,": "Pas de 2,54 mm (DG308) : X2 et X3, moteurs, 5 pôles, AWG 24 ; X4 fin de course,",
+        "2 pôles ; X5 Hall, 3 pôles ; X6 capteur solaire, 5 pôles.": "2 pôles ; X5 Hall, 3 pôles ; X6 capteur solaire, 5 pôles (AWG 26).",
+    }
+    sortie = []
+    for t, taille, gras in lignes:
+        sortie.append((rempl.get(t, t), taille, gras))
+        if t == "Heltec, après D1, reçoit ≈ 4,7 V.":
+            sortie += [("", 1.0, False), ("Moteurs 28BYJ-48 de 12 V", 2.1, True),
+                       ("Alimentés en 12 V (jamais en 5 V : 2,4 fois moins de couple).", 1.9, False),
+                       ("ULN2003A (U2, U3) : broches 1 à 4 = entrées IN1 à IN4 du", 1.9, False),
+                       ("MCP23017 ; 16 à 13 = sorties vers X2 / X3 ; 8 = 0 V ; 9 =", 1.9, False),
+                       ("COM au +12 V ; les entrées inutilisées (5 à 7) au 0 V. Le", 1.9, False),
+                       ("fil rouge (commun) du moteur va au +12 V. 100 µF 25 V près", 1.9, False),
+                       ("de chaque ULN2003A. U4 MCP23017 : I2C (SDA, SCL), VDD et", 1.9, False),
+                       ("RESET au 3,3 V, A0 à A2 au 0 V. RN1 : réseau 10 kΩ ×8,", 1.9, False),
+                       ("commun au 0 V, une patte sur chaque sortie GPA0 à GPA3 et", 1.9, False),
+                       ("GPB0 à GPB3 (ou 8 résistances séparées). La carte ULN2003", 1.9, False),
+                       ("du kit (31 × 35 mm) ne tient pas sur la plaque : elle", 1.9, False),
+                       ("reste en secours, ou se fixe au fond du boîtier à la", 1.9, False),
+                       ("place de la puce.", 1.9, False)]
+    return tuple(sortie)
+
+
 def main():
     k = Croquis()
-    hel, tmc, ads, u1 = heltec_v4(), tmc2209(), ads1115(), abaisseur_5v()
+    hel, ads, u1 = heltec_v4(), ads1115(), abaisseur_5v()
+    tmc = tmc2209() if NEMA else uln2003a()
     b4, t2, t3, t5 = bornier(4), bornier_254(2), bornier_254(3), bornier_254(5)
     el, ce, j1, d1 = elko(vertical=True), ceramique(), barrette_2x4(), diode_do41()
 
@@ -611,16 +743,32 @@ def main():
         """Position dans le boîtier (depuis le coin intérieur haut gauche) -> repère de la plaque."""
         return (x - bx, y - by)
 
-    # bord haut : les câbles de la tête, chacun au-dessus de ce qu'il dessert
-    for p, c, titre in ((b4, 1, "X2 moteur M1"), (b4, 9, "X3 moteur M2"), (t2, 17, "X4 FDC"),
-                        (t3, 20, "X5 Hall"), (t5, 24, "X6 capteur solaire")):
-        k.piece(p, titre, *sur_trou(p, c, 2), etiquette=(trou(c, 2)[0] - 1.5, -2.6))
+    if NEMA:
+        # bord haut : les câbles de la tête, chacun au-dessus de ce qu'il dessert
+        for p, c, titre in ((b4, 1, "X2 moteur M1"), (b4, 9, "X3 moteur M2"), (t2, 17, "X4 FDC"),
+                            (t3, 20, "X5 Hall"), (t5, 24, "X6 capteur solaire")):
+            k.piece(p, titre, *sur_trou(p, c, 2), etiquette=(trou(c, 2)[0] - 1.5, -2.6))
 
-    # les deux drivers sous leurs borniers, chacun avec son 100 µF contre VM et GND
-    for c, ref, cond, cc in ((0, "U2 (élévation)", "C1", 7), (9, "U3 (azimut)", "C2", 16)):
-        x, y = sur_trou(tmc, c, 4)
-        k.piece(tmc, ref, x, y, etiquette=(x, 9.0))
-        k.piece(el, cond, *sur_trou(el, cc, 4), etiquette=(trou(cc, 4)[0] - 1.2, 17.6))
+        # les deux drivers sous leurs borniers, chacun avec son 100 µF contre VM et GND
+        for c, ref, cond, cc in ((0, "U2 (élévation)", "C1", 7), (9, "U3 (azimut)", "C2", 16)):
+            x, y = sur_trou(tmc, c, 4)
+            k.piece(tmc, ref, x, y, etiquette=(x, 9.0))
+            k.piece(el, cond, *sur_trou(el, cc, 4), etiquette=(trou(cc, 4)[0] - 1.2, 17.6))
+    else:
+        # bord haut : les câbles de la tête, chacun au-dessus de ce qu'il dessert (moteurs : 5 fils, bornier de 5)
+        for p, c, titre in ((t5, 1, "X2 moteur M1"), (t5, 7, "X3 moteur M2"), (t2, 17, "X4 FDC"),
+                            (t3, 20, "X5 Hall"), (t5, 24, "X6 capteur solaire")):
+            k.piece(p, titre, *sur_trou(p, c, 2), etiquette=(trou(c, 2)[0] - 1.5, -2.6))
+
+        # les deux ULN2003A (couchées) sous leurs borniers ; en dessous le réseau de tirages RN1, puis le MCP23017 ;
+        # un seul 100 µF (C1) entre COM (+12 V) et 0 V pour les deux : les moteurs ne tournent jamais ensemble
+        for c, ref in ((0, "U2 ULN2003A (élévation)"), (9, "U3 ULN2003A (azimut)")):
+            x, y = sur_trou(tmc, c, 4)
+            k.piece(tmc, ref, x, y, etiquette=(x, 3.2))
+        mcp, rn = mcp23017(), reseau_sip9()
+        k.piece(rn, "RN1 réseau 8 × 10 kΩ (tirages)", *sur_trou(rn, 0, 8), etiquette=(trou(9, 8)[0] + 3.0, 22.6))
+        k.piece(mcp, "U4 MCP23017", *sur_trou(mcp, 0, 12, 0), etiquette=(trou(0, 9)[0], 22.9))
+        k.piece(el, "C1 100 µF", *sur_trou(el, 16, 9), etiquette=(trou(16, 9)[0] - 2.2, 26.6))
 
     # ADS1115 sous X6 : les 4 photodiodes tombent droit sur A0 à A3 ; filtres juste dessous
     k.piece(ads, "A2 ADS1115", *sur_trou(ads, 19, 11), etiquette=(48.4, 11.6))
@@ -634,7 +782,7 @@ def main():
     # Heltec V4 en bas, USB-C au bord gauche ; le long du bas, D1 et les tirages, près de leurs broches
     k.piece(hel, "A1 Heltec WiFi LoRa 32 V4", *sur_trou(hel, 0, 13), etiquette=(1.0, 31.9))
     k.piece(d1, "D1", *sur_trou(d1, 0, 23), etiquette=(trou(1, 23)[0] - 0.6, 62.4))
-    for c, titre in ((5, "R6"), (10, "R5"), (15, "R7")):
+    for c, titre in (((5, "R6"), (10, "R5"), (15, "R7")) if NEMA else ((5, "R6"), (15, "R7"))):
         x, y = trou(c, 23)
         k.standard("ResistorModuleID", "resistor.fzp", titre, x - 0.37, y - 1.28,
                    (("resistance", "10kΩ"), ("pin spacing", "400 mil")), etiquette=(x + 3.6, 62.4))
@@ -672,7 +820,7 @@ def main():
 
     # règle, explications
     k.piece(regle(bl), "Règle", -bx, 2 * bh - by + ecart + 5)
-    k.piece(cartouche(86, (
+    lignes = (
         ("Boîtier étanche, au pied du trépied", 2.6, True),
         ("Tout ce qui n'est pas sur la tête, régulateur, batterie et", 1.9, False),
         ("fusibles compris : seuls la tête et le panneau sont dehors.", 1.9, False),
@@ -753,8 +901,17 @@ def main():
         ("porte ouverte (câble USB-C coudé), ou par le WiFi (OTA).", 1.9, False),
         ("Boîtier opaque et clair, à l'ombre : A6, sur la porte, ne", 1.9, False),
         ("supporte que 55 °C, et la batterie craint la chaleur.", 1.9, False),
-    )), "Explications", bl - bx + 12, -by)
+    )
+    if not NEMA:
+        lignes = lignes_28byj(lignes)
+    k.piece(cartouche(86, lignes), "Explications", bl - bx + 12, -by)
     k.ecrire(SORTIE)
+    if "--apercu" in sys.argv:
+        img = (os.path.join(RACINE, ".modele_ideal_personnel", "electronique") if NEMA
+               else os.path.join(RACINE, "docs (extra)", "electronique"))
+        os.makedirs(img, exist_ok=True)
+        apercu(k, (-bx - 4, -by - 4, bl - bx + 12 + 90, 2 * bh - by + ecart + 20), os.path.join(img, "implantation_boitier.png"), 7.0)
+        apercu(k, (-6, -8, 98, 72), os.path.join(img, "plaque_pastilles.png"), 16.0)
     print(f"{SORTIE} : {len(k.instances)} éléments, {len(k.pieces)} pièces dessinées")
 
 
